@@ -186,7 +186,7 @@ class eshop_custom_field_gui {
 		$out = '<input type="hidden" name="eshop-custom-field-gui-verify-key" id="eshop-custom-field-gui-verify-key"
 				value="' . wp_create_nonce('eshop-custom-field-gui') . '" />';
 		$out .= '<fieldset id="eshopcustom">
-		<div id="pagepostcustom" class="postbox'.$class.'">
+		<div id="epagepostcustom" class="postbox'.$class.'">
 		<h3>Product Entry</h3>
 		<div class="inside">
 		<div id="eshopcustomstuff">
@@ -223,7 +223,7 @@ class eshop_custom_field_gui {
 		if(get_option('eshop_stock_control')=='yes'){
 			$out .= eshop_custom_field_gui::make_stock_control( 'Stock Quantity', '4')."\n";
 		}
-		$out .= '</div</div></div></fieldset>';
+		$out .= '</div></div></div></fieldset>';
 		echo $out;
 	}
 
