@@ -177,7 +177,7 @@ function eshop__format_custom ($field, $meta_values, $before='', $after='', $non
 function eshop_boing($pee){
 	global $wpdb,$post;
 //if the search page we don't want the form!
-if(!is_search()){
+if(!is_search() && !is_tag()){
 	if(eshop_get_custom('Sku')!='' && eshop_get_custom('Product Description')!='' &&
 	eshop_get_custom('Option 1')!='' && eshop_get_custom('Price 1')!='' &&
 	eshop_get_custom('Shipping Rate')!='' && eshop_get_custom('Stock Available')=='Yes'){
