@@ -95,6 +95,95 @@ function eshop_list_subpages($atts){
 		return $echo;
 	} 
 	return;
+}
+function eshop_list_new($atts){
+	global $wpdb, $post;
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','show'=>'6','records'=>'6'), $atts));
+
+	//my pager
+	include_once ("pager-class.php");
+	$range=10;
+	//$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_status='publish' limit 0,$show");
+	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	if($max>$show)
+		$max=$show;
+	if($max>0){
+
+		if(isset($_GET['viewall']))$records=$max;
+
+		$phpself=explode('?',get_permalink($post->ID));
+		$pager = new eshopPager( 
+			$max ,          //see above
+			$records,            // how many records to display at one time
+			@$_GET['_p'],	//this is the current page no. carried via _GET
+			array('php_self'=>$phpself[0])
+		);
+
+		$pager->set_range($range);
+		$offset=$pager->get_limit_offset();
+		if($records>$show)
+			$records=$show;
+		if($pager->curr > 1 && $show % $records > 0 && $show % $records < $records)
+			$records=$show % $records;
+
+	}
+	/*
+	unable to use this due to eshop products in meta table
+	$args = array(
+	'post_type' => 'page',
+	'post_status' => 'publish',
+	'post_parent' => $post->ID, // any parent
+	'orderby'=> 'post_date',
+	'order'=> 'DESC',
+	'numberposts' => $records, 
+	'offset' => $offset,
+	); 
+
+	$pages = get_posts($args);
+	*/
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
+
+	if($pages) {
+		//paginate
+		$echo = '<div class="paginate"><p>';
+		if($pager->_pages > 1){
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
+		}else{
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		}
+		$echo .= '</p>';
+		//set up correct link
+		$permalink = get_option('permalink_structure');
+		if('' != $permalink)
+			$bits='?';
+		else
+			$bits='&amp;';
+		if($pager->_pages > 1){
+			$eecho =  '<ul>';
+			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
+			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
+			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
+			if($pager->_pages >= 2){
+				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
+			}
+			$eecho .= '</ul>';
+			//$echo .= $eecho;
+		}
+		$echo .= '</div>';
+		//end
+		if($panels=='no'){
+			$echo .= eshop_listpages($pages,$class);
+		}else{
+			if($class='eshopsubpages') $class='eshoppanels';
+			$echo .= eshop_listpanels($pages,$class);
+		}
+
+		if(isset($eecho)){
+			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+		}
+		return $echo;
+	} 
+	return;
 } 
 function eshop_list_featured($atts){
 	global $wpdb, $post;

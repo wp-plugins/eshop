@@ -144,7 +144,7 @@ function eshop_products_manager() {
 		<th id="sku"><?php _e('Sku','eshop'); ?></th>
 		<th id="page"><?php _e('Page','eshop'); ?></th>
 		<th id="desc"><?php _e('Description','eshop'); ?></th>
-		<th id="down"><?php _e('Downloa','eshop'); ?>d</th>
+		<th id="down"><?php _e('Download','eshop'); ?></th>
 		<th id="ship"><?php _e('Shipping','eshop'); ?></th>
 		<th id="stk"><?php _e('Stock','eshop'); ?></th>
 		<th id="purc"><?php _e('Purchases','eshop'); ?></th>

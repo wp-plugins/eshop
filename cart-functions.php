@@ -412,7 +412,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$itemid=$myrow->item_id;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
-				$cart.= __('"Shipping Charge:','eshop').' '.$currsymbol.number_format($value, 2)."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.$currsymbol.number_format($value, 2)."\n\n";
 			}else{
 				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".$currsymbol.number_format($value, 2)."\n\n";
 			}
@@ -423,7 +423,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}
 		}
 		
-		$cart.= __('"Total','eshop').' '.$currsymbol.number_format($total, 2)."\n";
+		$cart.= __('Total','eshop').' '.$currsymbol.number_format($total, 2)."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);

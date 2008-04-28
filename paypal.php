@@ -308,7 +308,7 @@ switch ($_GET['action']) {
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']."\n";
 
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
-			 $body .= "\n\n".__('Regards\n\nYour friendly automated response.','eshop')."\n\n";
+			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
 			if(get_option('eshop_business')!=''){
 				$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";

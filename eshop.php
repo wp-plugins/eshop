@@ -1,12 +1,12 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.5.1');
+define('ESHOP_VERSION', '2.5.2');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.5.1
+Version: 2.5.2
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -226,7 +226,7 @@ if (!function_exists('eshop_install')) {
        		include 'eshop_install.php';
        	}else{
        		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
-			wp_die(__('"ERROR! This plugin requires that the wp_content directory is writable."','eshop')); //add a more descriptive message of course.
+			wp_die(__('ERROR! This plugin requires that the wp_content directory is writable.','eshop')); //add a more descriptive message of course.
 		}
     }
 }
@@ -288,7 +288,7 @@ add_shortcode('eshop_show_cart', 'eshop_show_cart');
 add_shortcode('eshop_show_shipping', 'eshop_get_shipping');
 add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
 add_shortcode('eshop_show_success', 'eshop_show_success');
-//add_shortcode('eshop_list_panel', 'eshop_list_panel');
+add_shortcode('eshop_list_new', 'eshop_list_new');
 
 //add credits
 add_action('wp_footer', 'eshop_visible_credits');
