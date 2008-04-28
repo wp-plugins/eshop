@@ -1,6 +1,6 @@
 <?php
 if ('eshop_products.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
 See eshop.php for information and license terms
@@ -35,8 +35,8 @@ function eshop_products_manager() {
 	
 	?>
 	<div class="wrap">
-	<h2>Products</h2>
-	<p>A reference table for identifying products.</p>
+	<h2><?php _e('Products','eshop'); ?></h2>
+	<p><?php _e('A reference table for identifying products','eshop'); ?>.</p>
 	<?php
 	
 	//sort by switch statement
@@ -99,13 +99,13 @@ function eshop_products_manager() {
 	if($max>0){
 		$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 		echo '<ul id="eshopsubmenu">';
-		echo '<li><span>Sort Orders by &raquo;</span></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>ID Number</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>Sku</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>Product</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sc"'.$csc.'>Shipping</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>Stock</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=se"'.$cse.'>Featured</a></li>';
+		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>'.__('Product','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sc"'.$csc.'>'.__('Shipping','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>'.__('Stock','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=se"'.$cse.'>'.__('Featured','eshop').'</a></li>';
 		echo '</ul>';
 		
 		$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id LIMIT $thispage");
@@ -138,18 +138,18 @@ function eshop_products_manager() {
 		$grab=$B->aData;
 	?>	
 		<table id="listing" summary="product listing">
-		<caption>Product Quick reference table</caption>
+		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
-		<th id="sku">Sku</th>
-		<th id="page">Page</th>
-		<th id="desc">Description</th>
-		<th id="down">Download</th>
-		<th id="ship">Shipping</th>
-		<th id="stk">Stock</th>
-		<th id="purc">Purchases</th>
-		<th id="ftrd">Featured</th>
-		<th id="opt">Option/Price</th>
+		<th id="sku"><?php _e('Sku','eshop'); ?></th>
+		<th id="page"><?php _e('Page','eshop'); ?></th>
+		<th id="desc"><?php _e('Description','eshop'); ?></th>
+		<th id="down"><?php _e('Downloa','eshop'); ?>d</th>
+		<th id="ship"><?php _e('Shipping','eshop'); ?></th>
+		<th id="stk"><?php _e('Stock','eshop'); ?></th>
+		<th id="purc"><?php _e('Purchases','eshop'); ?></th>
+		<th id="ftrd"><?php _e('Featured','eshop'); ?></th>
+		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -183,7 +183,7 @@ function eshop_products_manager() {
 					if($grabit['Stock Available']=='No'){
 						$available='No';
 					}elseif($grabit['Stock Available']=='Yes' && $available==''){
-						$available='not set';
+						$available=__('not set','eshop');
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 					$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$pid limit 1");
@@ -222,19 +222,19 @@ function eshop_products_manager() {
 		//paginate
 		echo '<div class="paginate"><p>';
 		if($pager->_pages > 1){
-			echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>'). '<br />';
+			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
 		}else{
-			echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>'). '<br />';
+			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
 		}
-		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ','&laquo; First Page','Last Page &raquo;').'';
+		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
 		//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
 		if($pager->_pages >= 2){
-			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="View all '.$status.' orders">View All &raquo;</a>';
+			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="'.$status.' '.__('orders','eshop').'">'.__('View All &raquo;','eshop').'</a>';
 		}
 		echo '</p></div>';
 		//end
 	}else{	
-		echo '<p>There are no products available.</p>';
+		echo '<p>'.__('There are no products available.','eshop').'</p>';
 	}
 	echo '</div>';
 	eshop_show_credits();

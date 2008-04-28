@@ -1,6 +1,6 @@
 <?php
 if ('eshop_about.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
 See eshop.php for information and license terms
@@ -13,7 +13,7 @@ else {
 }
 //so that user is no longer auto redirected to this page.
 if('yes'==get_option('eshop_first_time')){
-	echo'<div id="message" class="updated fade"><p>This page is normally accessible via the <strong>About</strong> link.</p></div>'."\n";
+	echo'<div id="message" class="updated fade"><p>'.__('This page is normally accessible via the <strong>About</strong> link.','eshop').'</p></div>'."\n";
 }
 update_option('eshop_first_time','no');
 ?>

@@ -1,6 +1,6 @@
 <?php
 if ('eshop_shipping.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 
 
 /*
@@ -27,7 +27,7 @@ include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
 // Back to our regularly scheduled script :)
 
 echo '<div class="wrap">';
-echo '<h2>eShop Customer Contact</h2><p>Use this form to notify the selected customer at any time, for any reason.</p>';
+echo '<h2>'.__('eShop Customer Contact','eshop').'</h2><p>'.__('Use this form to notify the selected customer at any time, for any reason.','eshop').'</p>';
 
 if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	if (get_magic_quotes_gpc()) {
@@ -48,8 +48,8 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	}
 	wp_mail($to, $subject, $body, $headers);
 	$page='?page='.$_GET['page'].'&amp;view='.$_POST['id'];
-	echo '<p class="success">Email sent successfully.</p>';
-	echo '<p><a class="return" href="'.$page.'">&laquo; Return to Order Detail</a></p>';
+	echo '<p class="success">'.__('Email sent successfully.','eshop').'</p>';
+	echo '<p><a class="return" href="'.$page.'">'.__('&laquo; Return to Order Detail','eshop').'</a></p>';
 	
 }elseif(isset($_GET['viewemail'])){
 	$view=$wpdb->escape($_GET['viewemail']);
@@ -62,7 +62,7 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	$templateFile = $eshopurl['0'];
 	$this_email = stripslashes(file_get_contents($eshopurl['0'].'customer-response-email.tpl'));
 	// START SUBST
-	$subject=get_bloginfo('name').' Notification';
+	$subject=get_bloginfo('name').__(' Notification','eshop');
 	$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 	$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
 	$this_email = str_replace('{NAME}', $array['ename'], $this_email);
@@ -82,8 +82,8 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	}
 	?>
 	<div id="eshopemailform"><form id="emailer" action="<?php echo wp_specialchars($_SERVER['REQUEST_URI']);?>" method="post">
-	<fieldset><legend>Send a notification to: <strong><?php echo $email; ?></strong></legend>
-	<label for="from">Select a reply-to address:<br />
+	<fieldset><legend><?php _e('Send a notification to:','eshop'); ?> <strong><?php echo $email; ?></strong></legend>
+	<label for="from"><?php _e('Select a reply-to address:','eshop'); ?><br />
     <select class="pointer" name="from" id="from">
     <option value="<?php echo get_option('eshop_business'); ?>" selected="selected"><?php echo get_option('eshop_business'); ?></option>
 	<?php
@@ -94,17 +94,17 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 		} 
 	}
 	?></select></label><br />
-	<label for="subject">Enter your subject line:<br /><input type="text" id="subject" name="subject" size="60" value="<?php echo $subject; ?>" /></label><br />
-	<label for="thisemail">Enter your custom message:<br /><textarea name="thisemail" id="thisemail" cols="70" rows="20"><?php echo $this_email; ?></textarea></label>
+	<label for="subject"><?php _e('Enter your subject line:','eshop'); ?><br /><input type="text" id="subject" name="subject" size="60" value="<?php echo $subject; ?>" /></label><br />
+	<label for="thisemail"><?php _e('Enter your custom message:','eshop'); ?><br /><textarea name="thisemail" id="thisemail" cols="70" rows="20"><?php echo $this_email; ?></textarea></label>
 	<input type="hidden" id="email" name="email" value="<?php echo $email; ?>" />
 	<input type="hidden" id="id" name="id" value="<?php echo $view; ?>" />
 
-	<p class="submit eshop"><input type="submit" id="submit" value="Send Email" /></p>
+	<p class="submit eshop"><input type="submit" id="submit" value="<?php _e('Send Email','eshop'); ?>" /></p>
 	</fieldset></form></div>
 <?php
 }else{
 
-	echo '<p>Nothing here yet.</p>';
+	echo '<p>'.__('Nothing here yet.','eshop').'</p>';
 }
 echo '</div>';
 

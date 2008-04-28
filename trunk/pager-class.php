@@ -1,6 +1,6 @@
 <?php
 if ('pager-class.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /**basic pagination class
 * Servers that don't correctly pass QUERY_STRING will need to set $extras['query_string']
