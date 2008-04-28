@@ -3,8 +3,8 @@ Contributors: Rich Pedley
 Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop
 Requires at least: 2.5
-Tested up to: 2.5
-Stable tag: 2.5.0
+Tested up to: 2.5.1
+Stable tag: 2.5.1
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -71,3 +71,7 @@ adjust other pages that use the code:
 * `<!--eshop_random_product-->` becomes `[eshop_random_products list='no']`
 * `<!--eshop_list_featured-->` becomes `[eshop_list_featured]`
 * `<!--eshop_list_subpages-->` becomes `[eshop_list_subpages]`
+
+= Is eShop translatable =
+
+Yes! the po file is available via quirm.net
