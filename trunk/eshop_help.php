@@ -71,12 +71,14 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <ol>
 <li><code>[eshop_list_subpages]</code> This displays a list of pages with products and is ideal for use on a Department page.</li>
 <li><code>[eshop_list_featured]</code> This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</li>
+<li><code>[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
 <li><code>[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on othe rpages within your site.</li>
 </ol>
 
 <p>However there are a few optional extras for those codes. You can amend the CSS class, which is useful if you want to tailor the style for a specific page. You can also show items in a grid view.</p>
 <p>To change the class add <em>class="myclass"</em> to the shortcode eg.<code>[eshop_list_subpages class="myclass"]</code>. To change to a grid layout then add <em>panels="yes"</em> eg.<code>[eshop_list_subpages panels="yes"]</code>. You can of course use them together eg. <code>[eshop_list_subpages panels="yes" class="myclass"]</code></p>
 <p>The random products has one additional option <em>list="no"</em> which can be added to show just one random product.</p>
+<p>The 'list new' has two additional options <em>show="6"</em> which sets how many to show, and <em>records="6"</em> sets how many to display on a page.</p>
 
 </div>
 <div class="wrap">
