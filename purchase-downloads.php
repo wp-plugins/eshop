@@ -20,7 +20,7 @@ if (!function_exists('eshop_downloads')) {
 				$tsize=0;
 				$x=0;
 				if($dlcount>1){
-					$echo .= '<p class="jdl"><a href="#dlall">Download all files</a></p>';
+					$echo .= '<p class="jdl"><a href="#dlall">'.__('Download all files','eshop').'</a></p>';
 				}
 				$dlresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
 				foreach($dlresult as $dlrow){
@@ -29,9 +29,9 @@ if (!function_exists('eshop_downloads')) {
 			   		$dlfilesize = @filesize($filepath);
 			   		$tsize=$tsize+$dlfilesize;
 			   		if($dlrow->downloads==1){
-			   			$dlword='download';
+			   			$dlword=__('download','eshop');
 			   		}else{
-			   			$dlword='downloads';
+			   			$dlword=__('downloads','eshop');
 			   		}
 			   		$dltitle = (strlen($dlrow->title) >= 20) ? substr($dlrow->title,0,20) . "&#8230;" : $dlrow->title;
 					$echo.='
@@ -41,9 +41,9 @@ if (!function_exists('eshop_downloads')) {
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
 					<input name="id" type="hidden" value="'.$dlrow->id.'" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
-					<label for="ro">Number of downloads remaining</label>
+					<label for="ro">'.__('Number of downloads remaining','eshop').'</label>
 					<input type="text" readonly="readonly" name="ro" class="ro" id="ro'.$x.'" value="'.$dlrow->downloads.'" />
-					<input type="submit" class="button" id="submit'.$x.'" name="Submit" value="Download '.$dltitle.'" />
+					<input type="submit" class="button" id="submit'.$x.'" name="Submit" value="'.__('Download','eshop').' '.$dltitle.'" />
 					</fieldset></form>
 					';
 					$x++;
@@ -53,21 +53,21 @@ if (!function_exists('eshop_downloads')) {
 					//download all form.
 					$echo.='
 					<form method="post" action="" id="dlall"><fieldset>
-					<legend>Download all files ('.check_filesize($tsize).') in one zip file.</legend>
+					<legend>'.__('Download all files','eshop').' ('.check_filesize($tsize).') '.__('in one zip file.','eshop').'</legend>
 					<input name="email" type="hidden" value="'.$_POST['email'].'" />
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
 					<input name="id" type="hidden" value="all" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
-					<p><input class="button" type="submit" id="submit" name="Submit" value="Download All Files" /></p>
+					<p><input class="button" type="submit" id="submit" name="Submit" value="'.__('Download All Files','eshop').'" /></p>
 					</fieldset></form>
 					';
 				}
 			}else{
 				$prevdlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code'");
 				if($dlcount==$prevdlcount){
-					$error='<p>Either your email address or code is incorrect, please try again.</p>';
+					$error='<p>'.__('Either your email address or code is incorrect, please try again.','eshop').'</p>';
 				}else{
-					$error='<p>Your email address and code are correct, however you have no downloads remaining.</p>';
+					$error='<p>'.__('Your email address and code are correct, however you have no downloads remaining.','eshop').'</p>';
 				}
 				$echo .= eshop_dloadform($email,$code,$error);
 			}
@@ -85,12 +85,12 @@ function eshop_dloadform($email,$code,$error=''){
 	}
 	$echo .='
 	<form method="post" action="" id="eshopdlform">
-	<fieldset><legend>Enter Details</legend>
-	<label for="email">Email:</label> 
+	<fieldset><legend>'.__('Enter Details','eshop').'</legend>
+	<label for="email">'.__('Email:','eshop').'</label> 
 	<input name="email" id="email" type="text" value="'.$email.'" /><br />
-	<label for="code">Code:</label> 
+	<label for="code">'.__('Code:','eshop').'</label> 
 	<input name="code" id="code" type="text" value="'.$code.'" /><br />
-	<input type="submit" id="submit" class="button" name="Submit" value="Submit" />
+	<input type="submit" id="submit" class="button" name="Submit" value="'.__('Submit','eshop').'" />
 	</fieldset>
 	</form>
 	';

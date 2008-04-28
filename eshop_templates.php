@@ -9,7 +9,7 @@ function eshop_process_template($templateFile) {
    			$f = fopen($templateFile, 'w+');
          	fwrite($f, $newfile);
         	fclose($f);
-    		echo ' <div id="message" class="updated fade"><p><strong>The Template Has Been Updated</strong></p></div>'."\n";
+    		echo '<div id="message" class="updated fade"><p><strong>'.__('The Template Has Been Updated','eshop').'</strong></p></div>'."\n";
 		} 
 	}
 	
@@ -38,11 +38,11 @@ function eshop_template_email(){
 		$editthis=$file1;
 		$oemail=' selected="selected"';
 	}
-	$name1='Automatic order email';
-	$name2='Customer responce email';
+	$name1=__('Automatic order email','eshop');
+	$name2=__('Customer responce email','eshop');
     
     if(!is_writeable($templateFile) && (!isset($_POST['choose'])||!isset($_POST['edit']))) {
-  			echo ' <div id="message" class="error fade"><p><strong>Warning!</strong> The template file is not currently editable/writable! File permissions must first be changed.</p>
+  			echo '<div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The template file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
 	 		</div>'."\n";
  	}
      $template=eshop_process_template($templateFile);
@@ -50,15 +50,15 @@ function eshop_template_email(){
     
 ?>
 <div class="wrap">
-<h2>eShop Email Templates</h2>
- <p>Use this page to modify your default email templates.</p> 
+<h2><?php _e('eShop Email Templates','eshop'); ?></h2>
+ <p><?php _e('Use this page to modify your default email templates','eshop'); ?>.</p> 
 </div>
 <div class="wrap">
-<h2>Choose template</h2>
-<p>Choose which email template you would like to alter.</p>
+<h2><?php _e('Choose template','eshop'); ?></h2>
+<p><?php _e('Choose which email template you would like to alter.','eshop'); ?></p>
 <form action="#edit_section" method="post" id="template_form" name="template">
  <fieldset>
-  <legend>Choose Template</legend>
+  <legend><?php _e('Choose Template','eshop'); ?></legend>
   <label for="template">Edit</label>
   <select id="template" name="template">
   <?php
@@ -72,17 +72,17 @@ function eshop_template_email(){
   ?>
   </select>
   	<input type="hidden" name="choose" value="c" />
-   <p class="submit eshop"><input type="submit" value="Choose" name="submit" /></p>
+   <p class="submit eshop"><input type="submit" value="<?php _e('Choose','eshop'); ?>" name="submit" /></p>
 </fieldset>
 </form>
 </div>
 <div class="wrap">
-<h2 id="edit_section">Email Template Editor</h2>
- <p>Use this simple file editor to modify the default email template file.</p>
+<h2 id="edit_section"><?php _e('Email Template Editor','eshop'); ?></h2>
+ <p><?php _e('Use this simple file editor to modify the default email template file.','eshop'); ?></p>
  <form method="post" action="" id="edit_box">
   <fieldset>
-   <legend>Template File Editor.</legend>
-   <label for="stylebox">Edit Template</label><br />
+   <legend><?php _e('Template File Editor.','eshop'); ?></legend>
+   <label for="stylebox"><?php _e('Edit Template','eshop'); ?></label><br />
 	<textarea rows="20" cols="80" id="stylebox" name="templateFile"><?php 
 	if(!is_file($templateFile))
 		$error = 1;
@@ -94,11 +94,11 @@ function eshop_template_email(){
 		echo $file;
 		fclose($f);
 	} else 
-		echo 'Sorry. The file you are looking for could not be found';
+		_e('Sorry. The file you are looking for could not be found','eshop');
 		?>
 	</textarea>
 	<input type="hidden" name="edit" value="<?php echo $editthis;?>" />
-   <p class="submit eshop"><input type="submit" value="Update Template" name="submit" /></p>
+   <p class="submit eshop"><input type="submit" value="<?php _e('Update Templat','eshop'); ?>e" name="submit" /></p>
   </fieldset>
 </form>
 </div>

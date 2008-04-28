@@ -193,7 +193,7 @@ if(!is_search() && !is_tag()){
 			}
 		}
 		if('yes' == get_option('eshop_stock_control') && 'yes' == get_option('eshop_show_stock') && isset($currst) && eshop_get_custom('Product Download')==''){
-			$replace='<p class="stkqty">Stock Available: <span>'.$currst.'</span></p>';
+			$replace='<p class="stkqty">'.__('Stock Available:','eshop').' <span>'.$currst.'</span></p>';
 		}
 		if(eshop_get_custom('Sku')!='' && eshop_get_custom('Product Description')!='' &&
 		eshop_get_custom('Option 1')!='' && eshop_get_custom('Price 1')!='' &&
@@ -202,7 +202,7 @@ if(!is_search() && !is_tag()){
 			$currsymbol=get_option('eshop_currency_symbol');
 			$replace .= '
 			<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="addtocart">
-			<fieldset><legend><span class="offset">Order '.eshop_get_custom('Product Description').'</span></legend>';
+			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.eshop_get_custom('Product Description').'</span></legend>';
 			
 			if(get_option('eshop_options_num')>1){
 				$opt=get_option('eshop_options_num');
@@ -221,26 +221,26 @@ if(!is_search() && !is_tag()){
 			}
 			$replace .='
 			<input type="hidden" name="pclas" value="'.eshop_get_custom('Shipping Rate').'" />
-			<label for="'.eshop_get_custom('Sku').'qty" class="qty"><dfn title="Quantity">Qty</dfn>:</label>
+			<label for="'.eshop_get_custom('Sku').'qty" class="qty">'.__('<dfn title="Quantity">Qty</dfn>:','eshop').'</label>
 			<input type="text" value="1" id="'.eshop_get_custom('Sku').'qty" maxlength="3" size="3" name="qty" class="iqty" />
 			<input type="hidden" name="pname" value="'.eshop_get_custom('Product Description').'" />
 			<input type="hidden" name="pid" value="'.eshop_get_custom('Sku').'" />
 			<input type="hidden" name="purl" value="'.get_permalink($post->ID).'" />
 			<input type="hidden" name="postid" value="'.$post->ID.'" />
 
-			<input class="button" value="Add to Cart" title="Add selected item to your shopping basket" type="submit" />
+			<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />
 			</fieldset>
 			</form>';
 			if(get_option('eshop_cart_shipping')!=''){
 				$replace .='
 				<p class="eshopshipping">
-				<a href="'.get_permalink(get_option('eshop_cart_shipping')).'#eshopshiprates"><span>Shipping Rate:</span> '.eshop_get_custom('Shipping Rate').'</a>
+				<a href="'.get_permalink(get_option('eshop_cart_shipping')).'#eshopshiprates"><span>'.__('Shipping Rate:','eshop').'</span> '.eshop_get_custom('Shipping Rate').'</a>
 				</p> 
 				';
 			}else{
 				$replace .='
 				<p class="eshopshipping">
-				<span>Shipping Rate:</span> '.eshop_get_custom('Shipping Rate').'</p> 
+				<span>'.__('Shipping Rate:','eshop').'</span> '.eshop_get_custom('Shipping Rate').'</p> 
 				';
 			
 			}

@@ -58,9 +58,9 @@ function eshop_list_subpages($atts){
 		//paginate
 		$echo = '<div class="paginate"><p>';
 		if($pager->_pages > 1){
-			$echo .= $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>'). '<br />';
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
 		}else{
-			$echo .= $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>'). '<br />';
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
 		}
 		$echo .= '</p>';
 		//set up correct link
@@ -71,11 +71,11 @@ function eshop_list_subpages($atts){
 			$bits='&amp;';
 		if($pager->_pages > 1){
 			$eecho =  '<ul>';
-			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">Prev</a></li>');
+			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
 			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
-			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">Next</a></li>');  		
+			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
 			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">View All</a></li>';
+				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
 			}
 			$eecho .= '</ul>';
 			//$echo .= $eecho;

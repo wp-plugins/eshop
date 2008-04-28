@@ -1,6 +1,6 @@
 <?php
 if ('eshop_products.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
 See eshop.php for information and license terms
@@ -38,10 +38,9 @@ function eshop_base_manager() {
 if(!isset($_GET['change'])){
 	?>
 	<div class="wrap">
-	<h2>eShop Base Products</h2>
-	<p>A reference table for products in your base feed..</p>
-	<?php
-	
+	<h2><?php _e('eShop Base Products','eshop'); ?></h2>
+	<p><?php _e('A reference table for products in your base feed.','eshop'); ?></p>
+	<?php	
 	//sort by switch statement
 	$csa=$csb=$csc=$csd=$cse=$csf='';
 	if(isset($_GET['by'])){
@@ -75,7 +74,7 @@ if(!isset($_GET['change'])){
 	$numoptions=get_option('eshop_options_num');
 	$metatable=$wpdb->prefix.'postmeta';
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable where meta_key='Option 1' AND meta_value!=''");
+	$max = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable where meta_key='".__('Option','eshop')." 1' AND meta_value!=''");
 	if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
 		$records=get_option('eshop_records');
 	}else{
@@ -96,14 +95,14 @@ if(!isset($_GET['change'])){
 	if($max>0){
 		$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 		echo '<ul id="eshopsubmenu">';
-		echo '<li><span>Sort Orders by &raquo;</span></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>ID Number</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>Sku</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>Product</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>Stock</a></li>';
+		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>'.__('Product','eshop').'</a></li>';
+		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>'.__('Stock','eshop').'</a></li>';
 		echo '</ul>';
 		
-		$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id LIMIT $thispage");
+		$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='".__('Option','eshop')." 1' AND meta_value!='' order by post_id LIMIT $thispage");
 		$calt=0;
 		$currsymbol=get_option('eshop_currency_symbol');
 		$x=0;
@@ -132,17 +131,17 @@ if(!isset($_GET['change'])){
 		$B->sort();
 		$grab=$B->aData;
 	?>	
-		<table id="listing" summary="product listing">
-		<caption>Product Quick reference table</caption>
+		<table id="listing" summary="<?php _e('product listing','eshop'); ?>">
+		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
-		<th id="sku">Sku</th>
-		<th id="page">Page</th>
-		<th id="desc">Description</th>
-		<th id="down">Download</th>
-		<th id="stk">Stock</th>
-		<th id="opt">Option/Price</th>
-		<th id="imga">Image</th>
+		<th id="sku"><?php _e('Sku','eshop'); ?></th>
+		<th id="page"><?php _e('Page','eshop'); ?></th>
+		<th id="desc"><?php _e('Description','eshop'); ?></th>
+		<th id="down"><?php _e('Download','eshop'); ?></th>
+		<th id="stk"><?php _e('Stock','eshop'); ?></th>
+		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<th id="imga"><?php _e('Image','eshop'); ?></th>
 
 		</tr>
 		</thead>
@@ -165,7 +164,7 @@ if(!isset($_GET['change'])){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="change details">'.$grabit['Sku'].'</a></td>';
+				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('change details','eshop').'">'.$grabit['Sku'].'</a></td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.$grabit['Product Description'].'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
@@ -224,7 +223,7 @@ if(!isset($_GET['change'])){
 					}
 				}
 				if($x==1){
-					echo '<p>Not available.</p>';
+					echo '<p>'.__('Not available.','eshop').'</p>';
 				}
 				echo '</td>';
 				echo '</tr>';
@@ -237,19 +236,19 @@ if(!isset($_GET['change'])){
 		//paginate
 		echo '<div class="paginate"><p>';
 		if($pager->_pages > 1){
-			echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>'). '<br />';
+			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
 		}else{
-			echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>'). '<br />';
+			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
 		}
-		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ','&laquo; First Page','Last Page &raquo;').'';
+		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
 		//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
 		if($pager->_pages >= 2){
-			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="View all '.$status.' orders">View All &raquo;</a>';
+			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="'.$status.' '.__('orders','eshop').'">'.__('View All &raquo;','eshop').'</a>';
 		}
 		echo '</p></div>';
 		//end
 	}else{	
-		echo '<p>There are no products available.</p>';
+		echo '<p>'.__('There are no products available.','eshop').'</p>';
 	}
 	echo '</div>';
 }else{
@@ -278,8 +277,8 @@ if(!isset($_GET['change'])){
 			$baseexpiration_day=$_POST['baseexpiration_day'];
 
 			if(!is_numeric($baseqty)){
-				$baseqty='99';
-				$err.='<li>Quantity was not numeric, a default of 99 has been applied.</li>';
+				$baseqty='25';
+				$err.='<li>'.__('Quantity was not numeric, a default of 25 has been applied.','eshop').'</li>';
 			}
 			$baseexpiration=$wpdb->escape($baseexpiration_year.'-'.$baseexpiration_month.'-'.$baseexpiration_day);
 
@@ -294,16 +293,16 @@ if(!isset($_GET['change'])){
 			)");
 
 			if($err!=''){
-				echo'<div id="message" class="error fade"><p><strong>Error</strong> the following were not valid:</p><ul>'.$err.'</ul></div>'."\n";
+				echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'</p><ul>'.$err.'</ul></div>'."\n";
 			}else{
-				echo'<div id="message" class="updated fade"><p>eshop Base details for this product have been updated.</p></div>'."\n";
+				echo'<div id="message" class="updated fade"><p>'.__('eshop Base details for this product have been updated.','eshop').'</p></div>'."\n";
 			}
 		}
 		$basedata=$wpdb->get_row("SELECT * FROM $basetable WHERE post_id = $change");
 	?>
 		<div class="wrap">
-		<h2>Products</h2>
-		<p>A reference table for identifying products.</p>
+		<h2><?php _e('Products','eshop'); ?></h2>
+		<p><?php _e('A reference table for identifying products.','eshop'); ?></p>
 		<?php
 
 		//sort by switch statement
@@ -334,17 +333,17 @@ if(!isset($_GET['change'])){
 			}
 		}
 		?>	
-		<table id="listing" summary="product listing">
-		<caption>Product Quick reference table</caption>
+		<table id="listing" summary="<?php _e('product listin','eshop'); ?>g">
+		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
-		<th id="sku">Sku</th>
-		<th id="page">Page</th>
-		<th id="desc">Description</th>
-		<th id="down">Download</th>
-		<th id="stk">Stock</th>
-		<th id="opt">Option/Price</th>
-		<th id="imga">Image</th>
+		<th id="sku"><?php _e('Sku','eshop'); ?></th>
+		<th id="page"><?php _e('Page','eshop'); ?></th>
+		<th id="desc"><?php _e('Description','eshop'); ?></th>
+		<th id="down"><?php _e('Download','eshop'); ?></th>
+		<th id="stk"><?php _e('Stock','eshop'); ?></th>
+		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<th id="imga"><?php _e('Image','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -422,7 +421,7 @@ if(!isset($_GET['change'])){
 					}
 				}
 				if($x==1){
-					echo '<p>Not available.</p>';
+					echo '<p>'.__('Not available.','eshop').'</p>';
 				}
 
 				echo '</td>'."\n";
@@ -437,12 +436,12 @@ if(!isset($_GET['change'])){
 		</table>
 		<?php
 		}
-		echo '<h3>Additional settings</h3>'."\n";
+		echo '<h3>'.__('Additional settings','eshop').'</h3>'."\n";
 
 		$id=$grabit['id'];
 		echo '<form method="post" action="" id="eshop-gbase-alt">'."\n";
 		$attachments = $wpdb->get_col("SELECT ID FROM $wpdb->posts where post_parent= ".$change." and post_type = 'attachment'");
-		echo '<fieldset><legend>Image</legend>'."\n";
+		echo '<fieldset><legend>'.__('Image','eshop').'</legend>'."\n";
 
 		$imgs= eshop_get_images($change);
 		$x=1;
@@ -458,28 +457,28 @@ if(!isset($_GET['change'])){
 			}
 		}
 		if($x==1){
-			echo '<p>No images found that were associated with this page, and hence cannot be associated with the product.</p>';
+			echo '<p>'.__('No images found that were associated with this page, and hence cannot be associated with the product.','eshop').'</p>';
 		}
 		?>
 		</fieldset>
 		
 		
 		
-		<fieldset id="baseothers"><legend>Others</legend>
+		<fieldset id="baseothers"><legend><?php _e('Others','eshop'); ?></legend>
 
-		<label for="basebrand">Brand <small>The brand name of the product</small></label>
+		<label for="basebrand"><?php _e('Brand <small>The brand name of the product</small>','eshop'); ?></label>
 		<input type="text" name="basebrand" id="basebrand" value="<?php echo wp_specialchars($basedata->brand); ?>" />
-		<label for="baseean">EAN <small>European Article Number is a 13 digit number often below the bar code of the item.</small></label>
+		<label for="baseean"><?php _e('EAN <small>European Article Number is a 13 digit number often below the bar code of the item.</small>','eshop'); ?></label>
 		<input type="text" name="baseean" id="baseean" value="<?php echo wp_specialchars($basedata->ean); ?>" />
-		<label for="baseisbn">ISBN <small>The unique 10- or 13-digit number assigned to every printed book.</small></label>
+		<label for="baseisbn"><?php _e('ISBN <small>The unique 10- or 13-digit number assigned to every printed book.</small>','eshop'); ?></label>
 		<input type="text" name="baseisbn" id="baseisbn" value="<?php echo wp_specialchars($basedata->isbn); ?>" />
-		<label for="basempn">MPN <small>Manufacturer's Part Number is a unique code determined by the manufacturer for that product.</small></label>
+		<label for="basempn"><?php _e('MPN <small>Manufacturer\'s Part Number is a unique code determined by the manufacturer for that product.</small>','eshop'); ?></label>
 		<input type="text" name="basempn" id="basempn" value="<?php echo wp_specialchars($basedata->mpn); ?>" />
-		<label for="baseptype">Product type <small>The type of product being offered.</small></label>
+		<label for="baseptype"><?php _e('Product type <small>The type of product being offered.</small>','eshop'); ?></label>
 		<input type="text" name="baseptype" id="baseptype" value="<?php echo wp_specialchars($basedata->ptype); ?>" />
-		<label for="baseqty">Quantity</label>
+		<label for="baseqty"><?php _e('Quantity','eshop'); ?></label>
 		<input type="text" name="baseqty" id="baseqty" value="<?php echo wp_specialchars($basedata->qty); ?>" />
-	  <label for="basecondition">Condition <small>the condition of this product</small></label>
+	  <label for="basecondition"><?php _e('Condition <small>the condition of this product</small>','eshop'); ?></label>
 	  <select name="basecondition" id="basecondition">
 		<?php
 		//'
@@ -500,8 +499,8 @@ if(!isset($_GET['change'])){
 
 		?>
 	  </select>
-	  <fieldset><legend>Expiration date <small>(or how long a product will be available.)</small></legend>
-	  <label for="baseexpiration_year">Year</label>
+	  <fieldset><legend><?php _e('Expiration date <small>(or how long a product will be available.)</small>','eshop'); ?></legend>
+	  <label for="baseexpiration_year"><?php _e('Year','eshop'); ?></label>
 		<select name="baseexpiration_year" id="baseexpiration_year">
 		<?php
 		// work this out!!!
@@ -523,7 +522,7 @@ if(!isset($_GET['change'])){
 		}
 		?>
 	  </select>
-		<label for="baseexpiration_month">Month</label>
+		<label for="baseexpiration_month"><?php _e('Month','eshop'); ?></label>
 
 		  <select name="baseexpiration_month" id="baseexpiration_month">
 		<?php
@@ -538,7 +537,7 @@ if(!isset($_GET['change'])){
 		}
 		?>
 	  </select>
-		<label for="baseexpiration_day">Day</label>
+		<label for="baseexpiration_day"><?php _e('Day','eshop'); ?></label>
 
 		  <select name="baseexpiration_day" id="baseexpiration_day">
 		<?php
@@ -565,13 +564,12 @@ if(!isset($_GET['change'])){
 	}else{
 	?>
 	<div class="wrap">
-	<h2>Error</h2>
-	<p>That product does not exist!</p>
+	<h2><?php _e('Error','eshop'); ?></h2>
+	<p><?php _e('That product does not exist!','eshop'); ?></p>
 	</div>
 	<?php
 	}
 }
 	eshop_show_credits();
-
 }
 ?>

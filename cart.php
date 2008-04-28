@@ -1,6 +1,6 @@
 <?php
 if ('cart.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 
 if (!function_exists('eshop_cart')) {
 	function eshop_cart($_POST){
@@ -26,7 +26,7 @@ if (!function_exists('eshop_cart')) {
 		//if adding a product to the cart
 		if(isset($_POST['qty']) && !isset($_POST['save']) && (!ctype_digit(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
 			$qty=$_POST['qty']=1;
-			$error='<p><strong class="error">Error: The quantity must contain numbers only, with a 999 maximum.</strong></p>';
+			$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 		}
 		if(isset($_POST['option']) && !isset($_POST['save'])){
 			$option=$_POST['option'];
@@ -34,13 +34,13 @@ if (!function_exists('eshop_cart')) {
 			$pclas=$_POST['pclas'];
 			$productid=$pid=$_POST['pid'];
 			$pname=$_POST['pname'];
-			$getprice='Price '.ltrim($option,'Option ');
+			$getprice=__('Price','eshop').' '.ltrim($option,__('Option','eshop').' ');
 			//////////////////////////////
 			$postid=$wpdb->escape($_POST['postid']);
 			$table=$wpdb->prefix.'postmeta';
 			$iprice= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$getprice' AND post_id='$postid'");
 			if($iprice==''){
-				$error='<p><strong class="error">Error: That product is currently not available.</strong></p>';
+				$error='<p><strong class="error">'.__('Error: That product is currently not available.','eshop').'</strong></p>';
 				$option=$_POST['option']='';
 				$qty=$_POST['qty']='';
 				$pclas=$_POST['pclas']='';
@@ -93,7 +93,7 @@ if (!function_exists('eshop_cart')) {
 								unset($_SESSION['shopcart'][$productid]);
 							}else{
 								if(!ctype_digit(trim($qty))|| strlen($qty)>3){
-									$error='<p><strong class="error">Error: The quantity must contain numbers only, with a 999 maximum.</strong></p>';
+									$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 								}else{
 									$_SESSION['shopcart'][$productid]['qty'] =$qty;
 								}
@@ -110,8 +110,8 @@ if (!function_exists('eshop_cart')) {
 
 		if(isset($_SESSION['shopcart'])){
 			if($_GET['action']=='cancel' && !isset($_POST['save'])){
-				$echo.= "<h3>The order was canceled at ".get_option('eshop_method').".</h3>"; 
-				$echo.= '<p>We have not deleted the contents of your shopping cart in case you may want to edit its content.</p>';
+				$echo.= "<h3>".__('The order was canceled at','eshop')." ".get_option('eshop_method').".</h3>"; 
+				$echo.= '<p>'.__('We have not deleted the contents of your shopping cart in case you may want to edit its content.','eshop').'</p>';
 			}
 			if(isset($_POST['purl'])){
 				$return=wp_specialchars($_POST['purl']);
@@ -119,10 +119,10 @@ if (!function_exists('eshop_cart')) {
 				$return=get_option('siteurl');
 			}
 			$echo.= display_cart($_SESSION['shopcart'],'true', get_option('eshop_checkout'));
-			$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">&laquo; Continue Shopping</a></li><li><a href="'.get_permalink(get_option('eshop_checkout')).'">Proceed to Checkout &raquo;</a></li></ul>';
+			$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li><li><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
 		}else{
 			//can be altered as desired.
-			$echo.= "<p><strong class=\"error\">Your shopping cart is currently empty.</strong></p>";
+			$echo.= '<p><strong class="error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';
 		}
 		
 		return $echo;

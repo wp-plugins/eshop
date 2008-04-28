@@ -1,6 +1,6 @@
 <?php
 if ('eshop_orders.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
 See eshop.php for information and license terms
@@ -34,9 +34,9 @@ if (!function_exists('displayorders')) {
 					$mark=$_POST['mark'];
 					$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$ch'");
 				}
-				echo '<p class="updated fade">Order status changed successfully.</p>';
+				echo '<p class="updated fade">'.__('Order status changed successfully.','eshop').'</p>';
 			}else{
-				echo '<p class="error">No orders were selected.</p>';
+				echo '<p class="error">'.__('No orders were selected.','eshop').'</p>';
 			}
 		}
 		
@@ -95,29 +95,29 @@ if (!function_exists('displayorders')) {
 			$calt=0;
 			$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'];
 			echo '<ul id="eshopsubmenu">';
-			echo '<li><span>Sort Orders by &raquo;</span></li>';
-			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>Date Ascending</a></li>';
-			echo '<li><a href="'.$apge.'&amp;by=dd"'.$cdd.'>Date Descending</a></li>';
-			echo '<li><a href="'.$apge.'&amp;by=tn"'.$ctn.'>ID Number</a></li>';
-			echo '<li><a href="'.$apge.'&amp;by=ca"'.$cca.'>Company</a></li>';
-			echo '<li><a href="'.$apge.'&amp;by=na"'.$cna.'>Customer</a></li>';
+			echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
+			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascendin','eshop').'g</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=dd"'.$cdd.'>'.__('Date Descending','eshop').'</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=tn"'.$ctn.'>'.__('ID Number','eshop').'</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=ca"'.$cca.'>'.__('Compan','eshop').'y</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=na"'.$cna.'>'.__('Customer','eshop').'</a></li>';
 
 			echo '</ul>';
 		
 			echo "<form id=\"orderstatus\" action=\"".$phpself."\" method=\"post\">";
 			echo '<div class="orderlist tablecontainer">';
 			echo '<table id="listing" class="hidealllabels" summary="order listing">
-			<caption class="offset">eshop Order Listing</caption>
+			<caption class="offset">'.__('eshop Order Listing','eshop').'</caption>
 			<thead>
 			<tr>
 			<th id="line" title="Line number">#</th>
-			<th id="date">Date/Time</th>
-			<th id="customer">Customer</th>
-			<th id="items">Items</th>
-			<th id="price">Price</th>
-			<th id="downloads">Contains Downloads</th>
-			<th id="transid">Transaction ID</th>
-			<th id="bulk" title="Bulk operations">Bulk</th>
+			<th id="date">'.__('Date/Time','eshop').'</th>
+			<th id="customer">'.__('Customer','eshop').'</th>
+			<th id="items">'.__('Items','eshop').'</th>
+			<th id="price">'.__('Price','eshop').'</th>
+			<th id="downloads">'.__('Contains Downloads','eshop').'</th>
+			<th id="transid">'.__('Transaction ID','eshop').'</th>
+			<th id="bulk" title="Bulk operations">'.__('Bulk','eshop').'</th>
 			</tr></thead><tbody>'."\n";
 			$move=array();
 			foreach($myrowres as $myrow){
@@ -153,7 +153,7 @@ if (!function_exists('displayorders')) {
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$c.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
-					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="View complete order details">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
+					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
 					<td headers="items numb'.$c.'">'.$x.'</td>
 					<td headers="price numb'.$c.'" class="right">'.$currsymbol.number_format($total, 2).'</td>
 					<td headers="downloads numb'.$c.'" class="right">'.$myrow->downloads.'</td>
@@ -165,16 +165,16 @@ if (!function_exists('displayorders')) {
 			}
 			echo "</tbody></table></div>\n";
 			//paginate
-				echo '<div class="paginate"><p class="checkers">Bulk:<a href="javascript:checkedAll(\'orderstatus\', true)" title="Select all of the checkboxes above">Check</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="Deselect all of the checkboxes above">Uncheck</a></p><p>';
+				echo '<div class="paginate"><p class="checkers">'.__('Bulk:','eshop').'<a href="javascript:checkedAll(\'orderstatus\', true)" title="'.__('Select all of the checkboxes above','eshop').'">'.__('Check','eshop').'</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="'.__('Deselect all of the checkboxes above','eshop').'">'.__('Uncheck','eshop').'</a></p><p>';
 					if($pager->_pages > 1){
-						echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>'). '<br />';
+						echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
 					}else{
-						echo $pager->get_title('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>'). '<br />';
+						echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
 					}
-					echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ','&laquo; First Page','Last Page &raquo;').'';
+					echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
 					//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
 					if($pager->_pages >= 2){
-						echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="View all '.$status.' orders">View All &raquo;</a>';
+						echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="'.$status.' '.__('orders','eshop').'">'.__('View All &raquo','eshop').';</a>';
 					}
 					echo '</p></div>';
 			//end
@@ -182,18 +182,18 @@ if (!function_exists('displayorders')) {
 			
 			//moved order status box
 				?>
-				<fieldset id="changestat"><legend>Change Orders Status</legend>
-				<p class="submit eshop"><label for="mark">Mark orders as:</label>
+				<fieldset id="changestat"><legend><?php _e('Change Orders Status','eshop'); ?></legend>
+				<p class="submit eshop"><label for="mark"><?php _e('Mark orders as:','eshop'); ?></label>
 				<select name="mark" id="mark">
-				<option value="Sent">Shipped</option>
-				<option value="Completed">Active</option>
-				<option value="Pending">Pending</option>
-				<option value="Failed">Failed</option>
-				<option value="Deleted">Deleted</option>
+				<option value="Sent"><?php _e('Shipped','eshop'); ?></option>
+				<option value="Completed"><?php _e('Active','eshop'); ?></option>
+				<option value="Pending"><?php _e('Pending','eshop'); ?></option>
+				<option value="Failed"><?php _e('Failed','eshop'); ?></option>
+				<option value="Deleted"><?php _e('Deleted','eshop'); ?></option>
 				</select>
 				<input type="hidden" name="action" value="<?php echo $_GET['action']; ?>" />
 				<input type="hidden" name="change" value="yes" />
-				<input type="submit" id="submit1" value="Change" /></p>
+				<input type="submit" id="submit1" value="<?php _e('Change','eshop'); ?>" /></p>
 				</fieldset></form>
 				<?php
 	//order status box code end
@@ -203,8 +203,8 @@ if (!function_exists('displayorders')) {
 			if($type=='Deleted'){
 			?>
 				<div id="eshopformleft"><form id="ordersdelete" action="<?php echo wp_specialchars($_SERVER['REQUEST_URI']); ?>" method="post">
-				<fieldset><legend>Complete Order Deletion</legend>
-				<p class="submit eshop"><label for="dhours">Orders that are 
+				<fieldset><legend><?php _e('Complete Order Deletion','eshop'); ?></legend>
+				<p class="submit eshop"><label for="dhours"><?php _e('Orders that are ','eshop'); ?>
 				<select name="dhours" id="dhours">
 				<option value="72" selected="selected">72</option>
 				<option value="36">48</option>
@@ -213,7 +213,7 @@ if (!function_exists('displayorders')) {
 				<option value="8">8</option>
 				<option value="4">4</option>
 				<option value="0">0</option>
-				</select> hours old</label>
+				</select> <?php _e('hours old','eshop'); ?></label>
 				<input type="hidden" name="dall" value="yes" />
 				<input type="submit" id="submit2" value="Delete" /></p>
 				</fieldset></form></div>
@@ -224,7 +224,7 @@ if (!function_exists('displayorders')) {
 		}else{
 			if($type=='Completed'){$type='Active';}
 			if($type=='Sent'){$type='Shipped';}
-			echo "<p class=\"notice\">There are no <span>".$type."</span> orders.</p>";
+			echo "<p class=\"notice\">".__('There are no','eshop')." <span>".$type."</span> ".__('orders','eshop').".</p>";
 		}
 	}
 }
@@ -236,15 +236,15 @@ if (!function_exists('displaystats')) {
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$array=array('Pending','Completed','Sent','Failed','Deleted');
-		echo '<h3>Order Stats</h3><ul class="eshop-stats">';
+		echo '<h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
 		foreach($array as $k=>$type){
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
 			switch($type){
 				case 'Completed':
-					$type='Active';
+					$type=__('Active','eshop');
 					break;
 				case 'Sent':
-					$type='Shipped';
+					$type=__('Shipped','eshop');
 					break;
 			}			
 			echo '<li><strong>'.$max.'</strong> '.$type.' orders</li>';
@@ -273,12 +273,12 @@ if (!function_exists('displaystats')) {
 		}
 
 		?>
-		<h3>Product stats</h3>
+		<h3><?php _e('Product stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
-		<li><strong><?php echo $count; ?></strong> products.</li>
-		<li><strong><?php echo $countprod; ?></strong> products in stock.</li>
-		<li><strong><?php echo $countfeat; ?></strong> featured products.</li>
-		<li><strong><?php echo $stkpurc; ?></strong> purchases.</li>
+		<li><strong><?php echo $count; ?></strong> <?php _e('products.','eshop'); ?></li>
+		<li><strong><?php echo $countprod; ?></strong> <?php _e('products in stock.','eshop'); ?></li>
+		<li><strong><?php echo $countfeat; ?></strong> <?php _e('featured products.','eshop'); ?></li>
+		<li><strong><?php echo $stkpurc; ?></strong> <?php _e('purchases','eshop'); ?>.</li>
 
 		</ul>	
 		<?php
@@ -294,10 +294,10 @@ if (!function_exists('displaystats')) {
 			$purchased=0;
 		}
 		?>
-		<h3>Product Download Stats</h3>
+		<h3><?php _e('Product Download Stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
-		<li><strong><?php echo $total; ?></strong> Total Downloads</li>
-		<li><strong><?php echo $purchased; ?></strong> Total Purchases</li>
+		<li><strong><?php echo $total; ?></strong> <?php _e('Total Download','eshop'); ?>s</li>
+		<li><strong><?php echo $purchased; ?></strong> <?php _e('Total Purchases','eshop'); ?></li>
 		</ul>  
 		<?php
 		
@@ -311,7 +311,7 @@ if (!function_exists('deleteorder')) {
 		$checkid=$wpdb->get_var("Select checkid From $dtable where id='$delid' && status='Deleted'");
 		$delquery2=$wpdb->get_results("DELETE FROM $itable WHERE checkid='$checkid'");
 		$delquery=$wpdb->get_results("DELETE FROM $dtable WHERE checkid='$checkid'");
-		echo '<p class="success">That order has now been deleted from the system.</p>';
+		echo '<p class="success">'.__('That order has now been deleted from the system.','eshop').'</p>';
 	}
 }
 
@@ -364,43 +364,43 @@ echo '<div class="wrap">';
 if(isset($_GET['view'])){
 	$view=$_GET['view'];
 	$status=$wpdb->get_var("Select status From $dtable where id='$view'");
-	if($status=='Completed'){$status='Active Order';}
-	if($status=='Pending'){$status='Pending Order';}
-	if($status=='Sent'){$status='Shipped Order';}
-	if($status=='Deleted'){$status='Deleted Order';}
-	if($status=='Failed'){$status='Failed Order';}
+	if($status=='Completed'){$status=__('Active Order','eshop');}
+	if($status=='Pending'){$status=__('Pending Order','eshop');}
+	if($status=='Sent'){$status=__('Shipped Order','eshop');}
+	if($status=='Deleted'){$status=__('Deleted Order','eshop');}
+	if($status=='Failed'){$status=__('Failed Order','eshop');}
 	$state=$status;
 }elseif(isset($_GET['action'])){
 	switch ($_GET['action']) {
 		case 'Dispatch':
-			$state='Active Orders';
+			$state=__('Active Orders','eshop');
 			break;
 		case 'Pending':
-			$state='Pending Orders';
+			$state=__('Pending Orders','eshop');
 			break;
 		case 'Failed':
-			$state='Failed Orders';
+			$state=__('Failed Orders','eshop');
 			break;
 		case 'Sent':
-			$state='Shipped Orders';
+			$state=__('Shipped Orders','eshop');
 			break;
 		case 'Deleted':
-			$state='Deleted Orders';
+			$state=__('Deleted Orders','eshop');
 			break;
 		case 'Stats':
-			$state='eShop Order Stats';
+			$state=__('eShop Order Stats','eshop');
 			break;
 		default:
 			break;
 	}
 }else{
-	die ('<h2 class="error">Error</h2>');
+	die ('<h2 class="error">'.__('Error','eshop').'</h2>');
 }
 
 echo '<h2>'.$state."</h2>\n";
 echo '<ul class="subsubsub">';
 
-$stati=array('Stats'=>'Stats','Pending' => 'Pending','Dispatch'=>'Active','Sent'=>'Shipped','Failed'=>'Failed','Deleted'=>'Deleted');
+$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
@@ -431,16 +431,16 @@ if(isset($_POST['dall'])){
 			$delquery2=$wpdb->query("DELETE FROM $itable WHERE checkid='$checkid'");
 			$query2=$wpdb->query("DELETE FROM $dtable WHERE status='Deleted' && checkid='$checkid' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
 		}
-		echo '<p class="success">Deleted orders older than '.$replace.' have now been <strong>completely</strong> deleted.</p>';
+		echo '<p class="success">'.__('Deleted orders older than','eshop').' '.$replace.' '.__('have now been <strong>completely</strong> deleted.','eshop').'</p>';
 	}else{
-		echo '<p class="error">There was an error, and nothing has been deleted.</p>';
+		echo '<p class="error">'.__('There was an error, and nothing has been deleted.','eshop').'</p>';
 	}
 }
 if(isset($_POST['mark']) && !isset($_POST['change'])){
 	$mark=$_POST['mark'];
 	$checkid=$_POST['checkid'];
 	$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$checkid'");
-	echo '<p class="success">Order status changed successfully.</p>';
+	echo '<p class="success">'.__('Order status changed successfully.','eshop').'</p>';
 }
 if (isset($_GET['view'])){
 	$view=$_GET['view'];
@@ -451,44 +451,44 @@ if (isset($_GET['view'])){
 		$custom=$drow->custom_field;
 		$transid=$drow->transid;
 	}
-	if($status=='Completed'){$status='Active';}
-	if($status=='Pending'){$status='Pending';}
-	if($status=='Sent'){$status='Shipped';}
+	if($status=='Completed'){$status=__('Active','eshop');}
+	if($status=='Pending'){$status=__('Pending','eshop');}
+	if($status=='Sent'){$status=__('Shipped','eshop');}
 	//moved order status box
 	echo "<div id=\"eshopformfloat\"><form id=\"orderstatus\" action=\"".$phpself."\" method=\"post\">";
 	?>
-	<fieldset><legend>Change Order Status</legend>
-	<p class="submit eshop"><label for="mark">Mark order as:</label>
+	<fieldset><legend><?php _e('Change Order Status','eshop'); ?></legend>
+	<p class="submit eshop"><label for="mark"><?php _e('Mark order as:','eshop'); ?></label>
 	<select name="mark" id="mark">
-	<option value="Sent">Shipped</option>
-	<option value="Completed">Active</option>
-	<option value="Pending">Pending</option>
-	<option value="Failed">Failed</option>
-	<option value="Deleted">Deleted</option>
+	<option value="Sent"><?php _e('Shipped','eshop'); ?></option>
+	<option value="Completed"><?php _e('Active','eshop'); ?></option>
+	<option value="Pending"><?php _e('Pending','eshop'); ?></option>
+	<option value="Failed"><?php _e('Failed','eshop'); ?></option>
+	<option value="Deleted"><?php _e('Deleted','eshop'); ?></option>
 	</select>
 	<input type="hidden" name="action" value="<?php echo $_GET['action']; ?>" />
 	<input type="hidden" name="checkid" value="<?php echo $checkid; ?>" />
-	<input type="submit" id="submit3" value="Change" /></p>
+	<input type="submit" id="submit3" value="<?php _e('Change','eshop'); ?>" /></p>
 	</fieldset></form></div>
 	<?php
 	//order status box code end
-	echo '<h3 class="status"><span>'.$status.'</span> Order Details</h3>';
+	echo '<h3 class="status"><span>'.$status.'</span> '.__('Order Details','eshop').'</h3>';
 	$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 	$total=0;
 	$calt=0;
 	$currsymbol=get_option('eshop_currency_symbol');
 	?>
 	<div class="orders tablecontainer">
-	<p>Transaction ID: <strong><?php echo $transid; ?></strong></p>
-	<table id="listing" summary="Table for order details">
-	<caption>Order Details</caption>
+	<p><?php _e('Transaction ID:','eshop'); ?> <strong><?php echo $transid; ?></strong></p>
+	<table id="listing" summary="<?php _e('Table for order details','eshop'); ?>">
+	<caption><?php _e('Order Details','eshop'); ?></caption>
 	<thead>
 	<tr>
-	<th id="opname">Product Name</th>
-	<th id="oitem">Item or Unit Data</th>
-	<th id="odown">Download?</th>
-	<th id="oqty">Quantity</th>
-	<th id="oprice">Price</th></tr>
+	<th id="opname"><?php _e('Product Name','eshop'); ?></th>
+	<th id="oitem"><?php _e('Item or Unit Data','eshop'); ?></th>
+	<th id="odown"><?php _e('Download?','eshop'); ?></th>
+	<th id="oqty"><?php _e('Quantity','eshop'); ?></th>
+	<th id="oprice"><?php _e('Price','eshop'); ?></th></tr>
 	</thead>
 	<tbody>
 	<?php
@@ -502,13 +502,13 @@ if (isset($_GET['view'])){
 		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
 		if($dlchk!='' && $dlchk!='0'){
 			//item is a download
-			$downloadable='<span class="downprod">Yes</span>';
+			$downloadable='<span class="downprod">'.__('Yes','eshop').'</span>';
 		}else{
-			$downloadable='<span class="offlineprod">No</span>';
+			$downloadable='<span class="offlineprod">'.__('No','eshop').'</span>';
 		}
 		// add in a check if postage here as well as a link to the product
 		if($itemid=='postage'){
-			$showit='Shipping';
+			$showit=__('Shipping','eshop');
 			$downloadable=$itemid='&nbsp;';
 		}else{
 			$showit=$myrow->optname;
@@ -522,7 +522,7 @@ if (isset($_GET['view'])){
 		<td headers="opname onum'.$calt.'">'.$myrow->item_qty.'</td>
 		<td headers="opname onum'.$calt.'" class="right">'.$currsymbol.number_format($value, 2)."</td></tr>\n";
 	}
-	echo "<tr><td colspan=\"4\" class=\"totalr\">Total &raquo; </td><td class=\"total\">".$currsymbol.number_format($total, 2)."</td></tr>\n";
+	echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".$currsymbol.number_format($total, 2)."</td></tr>\n";
 	echo "</tbody></table>\n";
 	$cyear=substr($custom, 0, 4);
 	$cmonth=substr($custom, 4, 2);
@@ -530,72 +530,72 @@ if (isset($_GET['view'])){
 	$chours=substr($custom, 8, 2);
 	$cminutes=substr($custom, 10, 2);
 	$thisdate=$cyear."-".$cmonth."-".$cday.' at '.$chours.':'.$cminutes;
-	echo "<p>Order placed on <strong>".$thisdate."</strong>.</p>\n";
+	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.</p>\n";
 	
 	echo "</div>\n";
 	echo "<p class=\"orderaddress\">\n";
 	foreach($dquery as $drow){
 
-		echo "Name: ".$drow->first_name." ".$drow->last_name."<br />\n";
-		echo "Company: ".$drow->company."<br />\n";
-		echo "Phone: ".$drow->phone."<br />\n";
-		echo "Email: <a href=\"".$phpself."&amp;viewemail=".$view."\">".$drow->email."</a><br />\n";
+		echo __("Name: ",'eshop').$drow->first_name." ".$drow->last_name."<br />\n";
+		echo __("Company: ",'eshop').$drow->company."<br />\n";
+		echo __("Phone: ",'eshop').$drow->phone."<br />\n";
+		echo __('Email:','eshop')." <a href=\"".$phpself."&amp;viewemail=".$view."\">".$drow->email."</a><br />\n";
 
-		echo "Address: ".$drow->address1.", ".$drow->address2."<br />\n";
-		echo "City: ".$drow->city."<br />\n";
-		echo "Zip/Post code: ".$drow->zip."<br />\n";
+		echo __("Address: ",'eshop').$drow->address1.", ".$drow->address2."<br />\n";
+		echo __("City: ",'eshop').$drow->city."<br />\n";
+		echo __("Zip/Post code: ",'eshop').$drow->zip."<br />\n";
 		if($drow->country=='US'){
 			$qcode=$wpdb->escape($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
-			echo "State: ".$qstate."<br />";
+			echo __("State: ",'eshop').$qstate."<br />";
 		}
 		$qcode=$wpdb->escape($drow->country);
 		$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 		$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-		echo "Country: ".$qcountry."<br />";
+		echo __("Country: ",'eshop').$qcountry."<br />";
 		if(get_option('eshop_shipping_zone')=='country'){
 			$qzone=$countryzone;
 		}else{
 			$qzone=$statezone;
 		}
-		echo "Shipping Zone: <strong>".$qzone."</strong></p>\n";
+		echo __('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p>\n";
 		if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
-			echo "<p class=\"shippingaddress\"><strong>Shipping Address</strong><br />";
-			echo "Name: ".$drow->ship_name."<br />\n";
-			echo "Company: ".$drow->ship_company."<br />\n";
-			echo "Phone: ".$drow->ship_phone."<br />\n";
-			echo "Address: ".$drow->ship_address."<br />\n";
-			echo "City: ".$drow->ship_city."<br />\n";
-			echo "Zip/Post code: ".$drow->ship_postcode."<br />\n";
+			echo "<p class=\"shippingaddress\"><strong>".__('Shipping Address','eshop')."</strong><br />";
+			echo __("Name: ",'eshop').$drow->ship_name."<br />\n";
+			echo __("Company: ",'eshop').$drow->ship_company."<br />\n";
+			echo __("Phone: ",'eshop').$drow->ship_phone."<br />\n";
+			echo __("Address: ",'eshop').$drow->ship_address."<br />\n";
+			echo __("City: ",'eshop').$drow->ship_city."<br />\n";
+			echo __("Zip/Post code: ",'eshop').$drow->ship_postcode."<br />\n";
 			if($drow->ship_country=='US'){
 				$qcode=$wpdb->escape($drow->ship_state);
 				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 				$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
-				echo "State: ".$qstate."<br />";
+				echo __("State: ",'eshop').$qstate."<br />";
 			}
 			$qcode=$wpdb->escape($drow->ship_country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-			echo "Country: ".$qcountry."<br />";
+			echo __("Country: ",'eshop').$qcountry."<br />";
 			if(get_option('eshop_shipping_zone')=='country'){
 				$qzone=$countryzone;
 			}else{
 				$qzone=$statezone;
 			}
-			echo "Shipping Zone: <strong>".$qzone."</strong></p>\n";
+			echo __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p>\n";
 		}
 		if($drow->memo!=''){
-			echo '<p><strong>Customer paypal memo:</strong><br />'.$drow->memo.'</p>';
+			echo '<p><strong>'.__('Customer paypal memo:','eshop').'</strong><br />'.$drow->memo.'</p>';
 		}
 		if($drow->reference!=''){
-				echo '<p><strong>Customer reference:</strong><br />'.$drow->reference.'</p>';
+				echo '<p><strong>'.__('Customer reference:','eshop').'</strong><br />'.$drow->reference.'</p>';
 		}
 		if($drow->comments!=''){
-				echo '<p><strong>Customer order comments:</strong><br />'.$drow->comments.'</p>';
+				echo '<p><strong>'.__('Customer order comments:','eshop').'</strong><br />'.$drow->comments.'</p>';
 		}
 	}
-	if($status=='Deleted'){$delete="<p class=\"delete\"><a href=\"".$phpself."&amp;delid=".$view."\">Completely delete this order?</a><br /><small><strong>Warning:</strong> this order will be completely deleted and cannot be recovered at a later date.</small></p>";}else{$delete='';};
+	if($status=='Deleted'){$delete="<p class=\"delete\"><a href=\"".$phpself."&amp;delid=".$view."\">".__('Completely delete this order?','eshop')."</a><br />".__('<small><strong>Warning:</strong> this order will be completely deleted and cannot be recovered at a later date.</small>','eshop')."</p>";}else{$delete='';};
 	echo $delete;
 }else{
 

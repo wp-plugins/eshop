@@ -1,6 +1,6 @@
 <?php
 if ('cart-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 
 if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
@@ -25,13 +25,13 @@ if (!function_exists('display_cart')) {
 			if ($change == 'true'){
 				$echo.= '<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshopcart">';
 			}
-			$echo.= '<table class="cart" summary="Shopping cart contents overview">
-			<caption>Shopping Cart</caption>
+			$echo.= '<table class="cart" summary="'.__('Shopping cart contents overview','eshop').'">
+			<caption>'.__('Shopping Cart','eshop').'</caption>
 			<thead>
 			<tr class="thead">
-			<th id="cartItem" class="nb">Item Description</th>
-			<th id="cartQty" class="bt"><dfn title="Quantity">Qty</dfn></th>
-			<th id="cartTotal" class="btbr">Total</th>
+			<th id="cartItem" class="nb">'.__('Item Description','eshop').'</th>
+			<th id="cartQty" class="bt"><dfn title="'.__('Quantity','eshop').'">'.__('Qty','eshop').'</dfn></th>
+			<th id="cartTotal" class="btbr">'.__('Total','eshop').'</th>
 			</tr></thead><tbody>';
 			//display each item as a table row
 			$calt=0;
@@ -62,7 +62,7 @@ if (!function_exists('display_cart')) {
 				}
 			}
 			// display subtotal row - total for products only
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">Sub-Total</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($sub_total, 2)."</td></tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop')."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($sub_total, 2)."</td></tr>\n";
 				
 			// SHIPPING PRICE HERE
 			$shipping=0;
@@ -116,25 +116,25 @@ if (!function_exists('display_cart')) {
 				}
 
 				//display shipping cost
-				$echo.= "<tr class=\"alt\">
-				<th headers=\"cartItem\" id=\"scharge\" class=\"leftb\">Shipping";
+				$echo.= '<tr class="alt">
+				<th headers="cartItem" id="scharge" class="leftb">'.__('Shipping','eshop');
 				if(get_option('eshop_cart_shipping')!=''){
 					$ptitle=get_post(get_option('eshop_cart_shipping'));
 					$echo.=' <small>(<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.$ptitle->post_title.'</a>)</small>';
 				}
-				$echo.="</th>
-				<td headers=\"cartItem scharge\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($shipping,2)."</td>
-				</tr>";
+				$echo.='</th>
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.$currsymbol.number_format($shipping,2).'</td>
+				</tr>';
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price']=$final_price;
-				$echo.= "<tr class=\"total\"><th id=\"cTotal\" class=\"leftb\">Total Order Charges</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".$currsymbol.number_format($final_price, 2)."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".$currsymbol.number_format($final_price, 2)."</strong></td></tr>";
 			}
 			$echo.= "</tbody></table>\n";
 			// display unset/update buttons
 			if($change == true){
 				$echo.= "<div class=\"cartopt\"><input type=\"hidden\" name=\"save\" value=\"true\" />\n"; 
-				$echo.= "<p><label for=\"unset\"><input type=\"submit\" class=\"button\" id=\"unset\" name=\"unset\" value=\"Empty Cart\" /></label>";
-				$echo.= "<label for=\"update\"><input type=\"submit\" class=\"button\" id=\"update\" name=\"update\" value=\"Update Cart\" /></label></p>\n";
+				$echo.= "<p><label for=\"unset\"><input type=\"submit\" class=\"button\" id=\"unset\" name=\"unset\" value=\"".__('Empty Cart','eshop')."\" /></label>";
+				$echo.= "<label for=\"update\"><input type=\"submit\" class=\"button\" id=\"update\" name=\"update\" value=\"".__('Update Cart','eshop')."\" /></label></p>\n";
 				$echo.= "</div>\n";
 			}
 			if ($change == 'true'){
@@ -142,10 +142,10 @@ if (!function_exists('display_cart')) {
 			}
 		}else{
 			//if cart is empty - display a message - this is only a double check and should never be hit
-			$echo.= "<p class=\"error\">Your shopping cart is currently empty.</p>\n";
+			$echo.= "<p class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</p>\n";
 		}
 		if(get_option('eshop_status')!='live'){
-			$echo ="<p class=\"testing\"><strong>Test Mode &#8212; No money will be collected.</strong></p>\n".$echo;
+			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
 		}
 		return $echo;
 	}
@@ -213,6 +213,8 @@ if (!function_exists('orderhandle')) {
 	function orderhandle($_POST,$checkid){
 		//This function puts the order into the db.
 		global $wpdb;
+		//$wpdb->show_errors();
+
 		if (get_magic_quotes_gpc()) {
 			$_POST=stripslashes_array($_POST);
 		}
@@ -242,7 +244,7 @@ if (!function_exists('orderhandle')) {
 
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
-
+		$processing=__('Processing&#8230;','eshop');
 		$query1=$wpdb->query("INSERT INTO  $detailstable
 			(checkid, first_name, last_name,company,email,phone, address1, address2, city,
 			state, zip, country, reference, ship_name,ship_company,ship_phone, 
@@ -270,8 +272,8 @@ if (!function_exists('orderhandle')) {
 			'$ship_state',
 			'$ship_country',
 			'$custom_field',
-			'Processing&#8230;',
-				NOW(),
+			'$processing',
+			NOW(),
 			'$comments'
 				);");
 		$i=1;
@@ -295,7 +297,7 @@ if (!function_exists('orderhandle')) {
 				'$item_amt','$optname','$post_id');");
 			$i++;
 			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
+			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='".__('Product Download','eshop')."' AND post_id='$post_id'");
 			if($dlchk!=''){
 				//order contains downloads
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
@@ -396,13 +398,13 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$custom=$drow->custom_field;
 			$transid=$drow->transid;
 		}
-		if($status=='Completed'){$status='Order Recieved';}
-		if($status=='Pending'){$status='Pending Payment';}
+		if($status=='Completed'){$status=__('Order Recieved','eshop');}
+		if($status=='Pending'){$status=__('Pending Payment','eshop');}
 		$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 		$total=0;
 		$currsymbol=get_option('eshop_currency_symbol');
-		$cart.='Transaction id: '.$transid."\n";
+		$cart.=__('Transaction id:','eshop').' '.$transid."\n";
 		$containsdownloads=0;
 		foreach($result as $myrow){
 			$value=$myrow->item_qty * $myrow->item_amt;
@@ -410,26 +412,26 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$itemid=$myrow->item_id;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
-				$cart.= "Shipping Charge: ".$currsymbol.number_format($value, 2)."\n\n";
+				$cart.= __('"Shipping Charge:','eshop').' '.$currsymbol.number_format($value, 2)."\n\n";
 			}else{
-				$cart.= $myrow->optname." ".$itemid."\nQuantity: ".$myrow->item_qty."\nPrice: ".$currsymbol.number_format($value, 2)."\n\n";
+				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".$currsymbol.number_format($value, 2)."\n\n";
 			}
 			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$myrow->post_id'");
+			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='".__('Product Download','eshop')."' AND post_id='$myrow->post_id'");
 			if($dlchk!=''){
 				$containsdownloads++;
 			}
 		}
 		
-		$cart.= "Total ".$currsymbol.number_format($total, 2)."\n";
+		$cart.= __('"Total','eshop').' '.$currsymbol.number_format($total, 2)."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);
 		$thisdate=$cyear."-".$cmonth."-".$cday;
-		$cart.= "\nOrder placed on ".$thisdate."\n";
+		$cart.= "\n".__('Order placed on','eshop')." ".$thisdate."\n";
 
 		foreach($dquery as $drow){
-			$address.= "\nMailing Address:\n".$drow->address1.", ".$drow->address2."\n";
+			$address.= "\n".__('Mailing Address:','eshop')."\n".$drow->address1.", ".$drow->address2."\n";
 			$address.= $drow->city."\n";
 			$qcode=$wpdb->escape($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
@@ -439,15 +441,15 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 			$address.= $qcountry."\n";
 		
-			$contact.= 'Phone: '.$drow->phone."\n";
-			$contact.= 'Email: '.$drow->email."\n";
+			$contact.= __('Phone:','eshop').' '.$drow->phone."\n";
+			$contact.= __('Email:','eshop').' '.$drow->email."\n";
 
 			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
-				$address.= "\nShipping Address:\n";
+				$address.= "\n".__('Shipping Address:','eshop')."\n";
 				$address.= $drow->ship_name."\n";
 				$address.= $drow->ship_company."\n";
 				if(($drow->ship_phone!=$drow->phone) && $drow->ship_phone!=''){
-					$contact.= 'Shipping address phone number:'."\n".$drow->ship_phone."\n";
+					$contact.= __('Shipping address phone number:','eshop')."\n".$drow->ship_phone."\n";
 				}
 				$address.= $drow->ship_address."\n";
 				$address.= $drow->ship_city."\n";
@@ -460,17 +462,17 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$address.= $sqcountry."\n";
 			}
 			if($drow->memo!=''){
-				$extras.= 'Paypal memo:'."\n".$drow->memo."\n";
+				$extras.= __('Paypal memo:','eshop')."\n".$drow->memo."\n";
 			}
 			if($drow->reference!=''){
-					$extras.= 'Reference/PO:'."\n".$drow->reference."\n";
+					$extras.= __('Reference/PO:','eshop')."\n".$drow->reference."\n";
 			}
 			if($drow->comments!=''){
-					$extras.= 'Order comments:'."\n".$drow->comments."\n";
+					$extras.= __('Order comments:','eshop')."\n".$drow->comments."\n";
 			}
 		}
 		if($drow->company!=''){
-			$ename=$drow->first_name." ".$drow->last_name." of ".$drow->company;
+			$ename=$drow->first_name." ".$drow->last_name.' '.__('of','eshop').' '.$drow->company;
 		}else{
 			$ename=$drow->first_name." ".$drow->last_name;
 		}
@@ -480,8 +482,8 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$downtable=$wpdb->prefix.'eshop_download_orders';
 			$chkcode= $wpdb->get_var("SELECT code FROM $downtable WHERE checkid='$drow->checkid' && email='$drow->email'");
 			$downloads=get_permalink(get_option('eshop_show_downloads'))."\n";
-			$downloads.='Email: '.$drow->email."\n";
-			$downloads.='Code: '.$chkcode."\n";
+			$downloads.=__('Email:','eshop').' '.$drow->email."\n";
+			$downloads.=__('Code:','eshop').' '.$chkcode."\n";
 		}
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact);
 		return $array;
@@ -498,9 +500,9 @@ if (!function_exists('eshop_get_shipping')) {
 		$query=$wpdb->get_results("SELECT * from $dtable");
 		$currsymbol=get_option('eshop_currency_symbol');
 
-		$eshopshiptable='<table id="eshopshiprates" summary="This is a table of our online order shipping rates">';
-		$eshopshiptable.='<caption><span>Shipping rates by class and zone <small>(subject to change)</small></span></caption>';
-		$eshopshiptable.='<thead><tr><th id="class">Ship Class</th><th id="zone1">Zone 1</th><th id="zone2">Zone 2</th><th id="zone3">Zone 3</th><th id="zone4">Zone 4</th><th id="zone5">Zone 5</th></tr></thead>';
+		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'">';
+		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone','eshop').' <small>'.__('(subject to change)','eshop').'</small></span></caption>';
+		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>';
 		$x=1;
 		$eshopshiptable.='<tbody>';
 		$x=1;
@@ -515,9 +517,9 @@ if (!function_exists('eshop_get_shipping')) {
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$eshopshiptable.= '<tr'.$alt.'>';
 					if($row->items==1){
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>(First Item)</small></th>'."\n";
+						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
 					}else{
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>(Additional Items)</small></th>'."\n";
+						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 					}
 					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
 					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
@@ -546,13 +548,13 @@ if (!function_exists('eshop_get_shipping')) {
 				break;
 			case '3'://( one overall charge no matter how many are ordered )
 
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='A' ORDER BY 'class'  ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='".__('A','eshop')." ORDER BY 'class'  ASC");
 		
 				foreach ($query as $row){
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$eshopshiptable.= '<tr'.$alt.'>';
-					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>(Overall charge)</small></th>'."\n";
+					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
 					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
 					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
 					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
@@ -566,7 +568,7 @@ if (!function_exists('eshop_get_shipping')) {
 		$calt++;
 		$alt = ($calt % 2) ? '' : ' class="alt"';
 		$eshopshiptable.= '<tr'.$alt.'>';
-		$eshopshiptable.= '<th id="cname'.$x.'" headers="class">F <small>(Free)</small></th>'."\n";
+		$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.__('F','eshop').' <small>'.__('(Free)','eshop').'</small></th>'."\n";
 		$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.$currsymbol.'0.00</td>'."\n";
 		$eshopshiptable.= '</tr>';
 		$eshopshiptable.='</tbody>';
@@ -598,9 +600,9 @@ if (!function_exists('eshop_show_zones')) {
 				$country=$_POST['country'];
 			}
 			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
-			<legend>Check your shipping zone</legend>
-			 <label for="country">Country <select class="med" name="country" id="country">';
-			$echo .='<option value="" selected="selected">Select your Country</option>';
+			<legend>'.__('Check your shipping zone','eshop').'</legend>
+			 <label for="country">'.__('Country','eshop').' <select class="med" name="country" id="country">';
+			$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
 			foreach($countryList as $code => $label)	{
 				if (isset($country) && $country == $code){
 					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -609,12 +611,12 @@ if (!function_exists('eshop_show_zones')) {
 				}
 			}
 			$echo.= '</select></label> 
-			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="Submit" /></label>
+			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></label>
 			</fieldset></form>';
 			if(isset($_POST) && $_POST['country']!=''){
 				$qccode=$wpdb->escape($_POST['country']);
 				$qcountry = $wpdb->get_row("SELECT country,zone FROM $tablec WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.$qcountry['country'].' is in Zone '.$qcountry['zone'].'.</p>';
+				$echo .='<p id="customzone">'.$qcountry['country'].' '.__('is in Zone','eshop').' '.$qcountry['zone'].'.</p>';
 			}
 
 		}else{
@@ -630,9 +632,9 @@ if (!function_exists('eshop_show_zones')) {
 				$state=$_POST['state'];
 			}
 			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
-			<legend>Check your shipping zone</legend>
-			<label for="state">State<select class="med" name="state" id="state">';
-			$echo .='<option value="" selected="selected">Select your State</option>';
+			<legend>'.__('Check your shipping zone','eshop').'</legend>
+			<label for="state">'.__('State','eshop').'<select class="med" name="state" id="state">';
+			$echo .='<option value="" selected="selected">'.__('Select your State','eshop').'</option>';
 			foreach($stateList as $code => $label)	{
 				if (isset($state) && $state == $code){
 					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -641,16 +643,16 @@ if (!function_exists('eshop_show_zones')) {
 				}
 			}
 			$echo.= '</select></label>
-			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="Submit" /></label>
+			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></label>
 			</fieldset></form>';
 			if(isset($_POST) && $_POST['state']!=''){
 				$qccode=$wpdb->escape($_POST['state']);
 				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $dtable WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.$qstate['stateName'].' is in Zone '.$qstate['zone'].'.</p>';
+				$echo .='<p id="customzone">'.$qstate['stateName'].' '.__('is in Zone','eshop').' '.$qstate['zone'].'.</p>';
 			}
 		}
 
-		remove_filter('the_content', 'wpautop');
+//		remove_filter('the_content', 'wpautop');
 
 		return $echo;
 	}
@@ -712,7 +714,7 @@ if (!function_exists('eshop_random_code')) {
 		$password = "";
 		//characters allowed
 		//lower case l, upper case O, number 1 and number 0 have been removed for clarity
-		$allowed = "abcdefghijkmnopqrstuvwxyz23456789ABCDEFGHIJKLMNPQRSTUVWXYZ";    
+		$allowed = __('abcdefghijkmnopqrstuvwxyz23456789ABCDEFGHIJKLMNPQRSTUVWXYZ','eshop');    
 		$i = 0; 
 		// Loop until password string is the required length
 		while ($i < $length){  
@@ -805,7 +807,7 @@ if (!function_exists('eshop_show_credits')) {
 	function eshop_show_credits(){
 	//for admin
 	?>
-	<p class="creditline">Powered by <a href="http://www.quirm.net/" title="Created by Rich Pedley">eShop</a>
+	<p class="creditline"><?php _e('Powered by','eshop'); ?> <a href="http://www.quirm.net/" title="<?php __('Created by','eshop'); ?> Rich Pedley">eShop</a>
 	<dfn title="<?php echo ESHOP_VERSION; ?>">v.2</dfn></p> 
 	<?php 
 	}
@@ -814,10 +816,10 @@ if (!function_exists('eshop_visible_credits')) {
 	function eshop_visible_credits($pee){
 		//for front end
 		if('yes' == get_option('eshop_credits')){
-			 echo '<p class="creditline">Powered by <a href="http://www.quirm.net/" title="Created by Rich Pedley">eShop</a>
-		<dfn title="Version '.ESHOP_VERSION.'">v.2</dfn></p> ';
+			 echo '<p class="creditline">'.__('Powered by','eshop').' <a href="http://www.quirm.net/" title="'.__('Created by','eshop').' Rich Pedley">eShop</a>
+		<dfn title="'.__('Version','eshop').' '.ESHOP_VERSION.'">v.2</dfn></p> ';
 		}else{
-			echo '<!--Powered by eShop v'.ESHOP_VERSION.' by Rich Pedley http://www.quirm.net/-->';
+			echo '<!--'.__('Powered by','eshop').' eShop v'.ESHOP_VERSION.' by Rich Pedley http://www.quirm.net/-->';
 		}
 		return;
 	}

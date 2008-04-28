@@ -1,6 +1,6 @@
 <?php
 if ('checkout.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 
 
 global $wpdb;
@@ -17,34 +17,34 @@ if (!function_exists('eshopShowform')) {
 	}
 	$xtralinks=eshop_show_extra_links();
 
-$echo = <<<EOT
+$echo = '
 <div class="hr"></div>
 <div class="custdetails">
-<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> Denotes Required Field - 
-$xtralinks</small></p>
+<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field - ','eshop').'
+'.$xtralinks.'</small></p>
 <form action="" method="post" class="eshopform">
-<fieldset><legend id="mainlegend">Please Enter Your Details<br />
+<fieldset><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'<br />
 </legend><fieldset>
-<legend>Mailing Address</legend>
- <label for="first_name">First Name <span class="reqd">*</span><br />
-  <input class="med" type="text" name="first_name" value="$first_name" id="first_name" maxlength="40" size="40" /></label><br />
- <label for="last_name">Last Name <span class="reqd">*</span><br />
-  <input class="med" type="text" name="last_name" value="$last_name" id="last_name" maxlength="40" size="40" /></label><br />
- <label for="company">Company<br />
-  <input class="med" type="text" name="company" value="$company" id="company" size="40" /></label><br />
- <label for="email">Email <span class="reqd">*</span><br />
-  <input class="med" type="text" name="email" value="$email" id="email" maxlength="40" size="40" /></label><br />
- <label for="phone">Phone <span class="reqd">*</span><br />
-  <input class="med" type="text" name="phone" value="$phone" id="phone" maxlength="30" size="30" /></label><br />
- <label for="address1">Address <span class="reqd">*</span><br />
-  <input class="med" type="text" name="address1" id="address1" value="$address1" maxlength="40" size="40" /></label><br />
- <label for="address2">Address (continued)<br />
-  <input class="med" type="text" name="address2" id="address2" value="$address2" maxlength="40" size="40" /></label><br />
- <label for="city">City or town <span class="reqd">*</span><br />
-  <input class="med" type="text" name="city" value="$city" id="city" maxlength="40" size="40" /></label><br />
- <label for="state"><abbr title="United States">US</abbr> State $sreqd<br />
+<legend>'.__('Mailing Address','eshop').'</legend>
+ <label for="first_name">'.__('First Name','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="40" size="40" /></label><br />
+ <label for="last_name">'.__('Last Name','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /></label><br />
+ <label for="company">'.__('Company','eshop').'<br />
+  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" /></label><br />
+ <label for="email">'.__('Email','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="email" value="'.$email.'" id="email" maxlength="40" size="40" /></label><br />
+ <label for="phone">'.__('Phone','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /></label><br />
+ <label for="address1">'.__('Address','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /></label><br />
+ <label for="address2">'.__('Address','eshop').' (continued)<br />
+  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /></label><br />
+ <label for="city">'.__('City or town','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /></label><br />
+ <label for="state">'.__('<abbr title="United States">US</abbr> State','eshop').' '.$sreqd.'<br />
   <select class="med pointer" name="state" id="state">
-EOT;
+';
 // state list from db
 $table=$wpdb->prefix.'eshop_states';
 $List=$wpdb->get_results("SELECT code,stateName FROM $table ORDER BY stateName",ARRAY_A);
@@ -53,8 +53,8 @@ foreach($List as $key=>$value){
 	$v=$value['stateName'];
 	$stateList[$k]=$v;
 }
-$echo .='<option value="" selected="selected">Select your state</option>';
-$echo .='<option value="">not applicable</option>';
+$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
+$echo .='<option value="">'.__('not applicable','eshop').'</option>';
 
 foreach($stateList as $code => $label)	{
 	if (isset($state) && $state == $code){
@@ -65,12 +65,12 @@ foreach($stateList as $code => $label)	{
 }
 $echo.= "</select></label><br />";
 
-$echo .= <<<EOT
- <label for="zip">Zip/Post code <span class="reqd">*</span><br />
-  <input class="short" type="text" name="zip" value="$zip" id="zip" maxlength="20" size="20" /></label><br />
- <label for="country">Country $creqd<br />
+$echo .= '
+ <label for="zip">'.__('Zip/Post code','eshop').' <span class="reqd">*</span><br />
+  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /></label><br />
+ <label for="country">'.__('Country','eshop').' '.$creqd.'<br />
   <select class="med pointer" name="country" id="country">
-EOT;
+';
 // country list from db
 $tablec=$wpdb->prefix.'eshop_countries';
 $List=$wpdb->get_results("SELECT code,country FROM $tablec ORDER BY country",ARRAY_A);
@@ -79,7 +79,7 @@ foreach($List as $key=>$value){
 	$v=$value['country'];
 	$countryList[$k]=$v;
 }
-$echo .='<option value="" selected="selected">Select your Country</option>';
+$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
 foreach($countryList as $code => $label)	{
 	if (isset($country) && $country == $code){
 		$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -89,33 +89,33 @@ foreach($countryList as $code => $label)	{
 }
 $echo.= "</select></label></fieldset>";
 
-$echo .= <<<EOT
+$echo .= '
 
 <fieldset>
-<legend>Additional information</legend>
- <label for="reference">Reference or <dfn title="Purchase Order number">PO</dfn><br />
-  <input type="text" class="med" name="reference" value="$reference" id="reference" size="30" /></label><br />
- <label for="eshop-comments">Comments or special instructions<br />
-  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">$comments</textarea></label></fieldset>
+<legend>'.__('Additional information','eshop').'</legend>
+ <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
+  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
+ <label for="eshop-comments">'.__('Comments or special instructions','eshop').'<br />
+  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>
 
 <fieldset>
-<legend>Shipping address (if different)</legend>
- <label for="ship_name">Name<br />
-  <input class="med" type="text" name="ship_name" id="ship_name" value="$ship_name" maxlength="40" size="40" /></label><br />
- <label for="ship_company">Company<br />
-  <input class="med" type="text" name="ship_company" value="$ship_company" id="ship_company" size="40" /></label><br />
- <label for="ship_phone">Phone<br />
-  <input class="med" type="text" name="ship_phone" value="$ship_phone" id="ship_phone" maxlength="30" size="30" /></label><br />
- <label for="ship_address">Address<br />
-  <input class="med" type="text" name="ship_address" id="ship_address" value="$ship_address" maxlength="40" size="40" /></label><br />
- <label for="ship_city">City or town<br />
-  <input class="med" type="text" name="ship_city" id="ship_city" value="$ship_city" maxlength="40" size="40" /></label><br />
- <label for="shipstate"><abbr title="United States">US</abbr> State<br />
+<legend>'.__('Shipping address (if different)','eshop').'</legend>
+ <label for="ship_name">'.__('Name','eshop').'<br />
+  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
+ <label for="ship_company">'.__('Company','eshop').'<br />
+  <input class="med" type="text" name="ship_company" value="'.$ship_company.'" id="ship_company" size="40" /></label><br />
+ <label for="ship_phone">'.__('Phone','eshop').'<br />
+  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
+ <label for="ship_address">'.__('Address','eshop').'<br />
+  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
+ <label for="ship_city">'.__('City or town','eshop').'<br />
+  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />
+ <label for="shipstate">'.__('<abbr title="United States">US</abbr> State','eshop').'<br />
   <select class="med pointer" name="ship_state" id="shipstate">
-EOT;
+';
 //state list from db, as above
-$echo .='<option value="" selected="selected">Select your state</option>';
-$echo .='<option value="">not applicable</option>';
+$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
+$echo .='<option value="">'.__('not applicable','eshop').'</option>';
 foreach($stateList as $code => $label){
 	if (isset($ship_state) && $ship_state == $code){
 		$echo.="<option value=\"$code\" selected=\"selected\">$label</option>";
@@ -124,16 +124,16 @@ foreach($stateList as $code => $label){
 	}
 }
 $final_price=number_format($_SESSION['final_price'], 2);
-$echo .= <<<EOT
+$echo .= '
 </select></label><br />
- <label for="ship_postcode">Zip/Post Code<br />
-  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="$ship_postcode" maxlength="20" size="20" /></label>
+ <label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
+  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
   <br />
-  <input type="hidden" name="amount" value="$final_price" />
-<label for="shipcountry">Country<br />
+  <input type="hidden" name="amount" value="'.$final_price.'" />
+<label for="shipcountry">'.__('Country','eshop').'<br />
   <select class="med pointer" name="ship_country" id="shipcountry">
-EOT;
-$echo .='<option value="" selected="selected">Select your Country</option>';
+';
+$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
 foreach($countryList as $code => $label)	{
 	if (isset($ship_country) && $ship_country == $code){
 		$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -156,15 +156,16 @@ foreach ($_SESSION['shopcart'] as $productid => $opt){
 
 }
 
-$echo .= <<<EOT
+$echo .= '
 </fieldset>
 <label for="submitit">
-  <small><strong>Note:</strong> Submit to show shipping charges.</small><br />
-   <input type="submit" class="button" id="submitit" name="submit" value="Proceed to Confirmation &raquo;" /></label>
+  <small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small><br />
+   <input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" /></label>
 </fieldset>
 </form>
 </div>
-EOT;
+';
+//	remove_filter('the_content', 'wpautop');
 	return $echo;
 	}
 }
@@ -292,7 +293,7 @@ if (!function_exists('eshop_checkout')) {
 					break;
 				case '3'://( one overall charge no matter how many are ordered )
 					if(!in_array($opt["pclas"], $shiparray)) {
-						array_push($shiparray, 'A');
+						array_push($shiparray, __('A','eshop'));
 					}
 					break;
 				}
@@ -311,46 +312,46 @@ if (!function_exists('eshop_checkout')) {
 			$key = $value;
 			}
 			$chkerror=0;
-			$error="<p><strong class=\"error\">There were some errors with the details you entered&#8230;</strong></p><ul class=\"errors\">";
+			$error="<p><strong class=\"error\">".__('There were some errors with the details you entered&#8230;','eshop')."</strong></p><ul class=\"errors\">";
 		if(isset($_POST['first_name'])){
 			$valid=checkAlpha($_POST['first_name']);
 			if($valid==FALSE){
-				$error.= "<li><strong>First name</strong> - missing or incorrect.</li>";
+				$error.= '<li>'.__('<strong>First name</strong> - missing or incorrect.','eshop').'</li>';
 				$chkerror++;
 			}
 		}
 		if(isset($_POST['last_name'])){
 				$valid=checkAlpha($_POST['last_name']);
 				if($valid==FALSE) {
-					$error.= "<li><strong>Last name</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Last name</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 		}
 		if(isset($_POST['email'])){
 				$valid=checkEmail($_POST['email']);
 				if($valid==FALSE){
-					$error.= "<li><strong>Email address</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Email address</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 		}
 		if(isset($_POST['phone'])){
 				$valid=checkPhone($_POST['phone']);
 				if($valid==FALSE){
-					$error.= "<li><strong>Phone Number</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Phone Number</strong> - missing or incorrect','eshop').'.</li>';
 					$chkerror++;
 				}
 		}
 		if(isset($_POST['address1'])){
 				$valid=checkAlpha($_POST['address1']);
 				if($valid==FALSE){
-					$error.= "<li><strong>Address</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Address</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 		}
 		if(isset($_POST['city'])){
 				$valid=checkAlpha($_POST['city']);
 				if($valid==FALSE){
-					$error.= "<li><strong>City or town</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>City or town</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 		}
@@ -358,7 +359,7 @@ if (!function_exists('eshop_checkout')) {
 			if(isset($_POST['country'])){
 				$valid=checkAlpha($_POST['country']);
 				if($valid==FALSE){
-					$error.= "<li><strong>Country</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Country</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 			}
@@ -366,7 +367,7 @@ if (!function_exists('eshop_checkout')) {
 			if(isset($_POST['state'])){
 				$valid=checkAlpha($_POST['state']);
 				if($valid==FALSE){
-					$error.= "<li><strong><abbr title=\"United States\">US</abbr> State</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong><abbr title="United States">US</abbr> State</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 			}
@@ -374,14 +375,14 @@ if (!function_exists('eshop_checkout')) {
 		
 		if(isset($_POST['country']) && $_POST['country']=='US' && $_POST['state']==''){
 			//must pick a state for US deliveries
-				$error.= "<li><strong><abbr title=\"United States\">US</abbr> State</strong> - missing or incorrect.</li>";
+				$error.= '<li>'.__('<strong><abbr title="United States">US</abbr> State</strong> - missing or incorrect.','eshop').'</li>';
 				$chkerror++;
 
 		}
 		if(isset($_POST['zip'])){
 				$valid=checkAlphaNum($_POST['zip']);
 				if($valid==FALSE){
-					$error.= "<li><strong>Zip/Post code</strong> - missing or incorrect.</li>";
+					$error.= '<li>'.__('<strong>Zip/Post code</strong> - missing or incorrect.','eshop').'</li>';
 					$chkerror++;
 				}
 		}
@@ -411,7 +412,7 @@ if (!function_exists('eshop_checkout')) {
 				$comments=$_POST['comments'];
 		}else{
 			if(!isset($_GET['action'])){
-				$echoit.= "<div class=\"hr\"></div><h3><span class=\"noprint\">Please Confirm </span>Your Details</h3>";
+				$echoit.= "<div class=\"hr\"></div><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
 				// create a custom id, and shove details in database
 				$date=date('YmdHis');
 				$_SESSION['date']=$date;
@@ -455,14 +456,14 @@ if (!function_exists('eshop_checkout')) {
 						foreach ($shiparray as $nowt => $shipclass){
 							//add to temp array for shipping
 							if(!in_array($shipclass, $tempshiparray)) {
-								if($shipclass!='F'){
+								if($shipclass!=__('F','eshop')){
 									array_push($tempshiparray, $shipclass);
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
 							}else{
-								if($shipclass!='F'){
+								if($shipclass!=__('F','eshop')){
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
 									$shipping+=$shipcost;
@@ -474,7 +475,7 @@ if (!function_exists('eshop_checkout')) {
 						foreach ($shiparray as $nowt => $shipclass){
 							if(!in_array($shipclass, $tempshiparray)) {
 								array_push($tempshiparray, $shipclass);
-								if($shipclass!='F'){
+								if($shipclass!=__('F','eshop')){
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
@@ -484,7 +485,7 @@ if (!function_exists('eshop_checkout')) {
 						break;
 					case '3'://( one overall charge no matter how many are ordered )
 						$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
+						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='".__('A','eshop')."' and items='1' limit 1");
 						$shipping+=$shipcost;
 						break;
 				}
@@ -494,59 +495,59 @@ if (!function_exists('eshop_checkout')) {
 				$ctable=$wpdb->prefix.'eshop_countries';
 				$stable=$wpdb->prefix.'eshop_states';
 				$echoit.='
-				<h4>Mailing Address</h4>
+				<h4>'.__('Mailing Address','eshop').'</h4>
 				 <ul>';
-				$echoit.= "<li><span class=\"items\">Full name:</span> ".$_POST['first_name']." ".$_POST['last_name']."</li>\n";
-				$echoit.= "<li><span class=\"items\">Company:</span> ".$_POST['company']."</li>\n";
-				$echoit.= "<li><span class=\"items\">Email:</span> ".$_POST['email']."</li>\n";
-				$echoit.= "<li><span class=\"items\">Phone:</span> ".$_POST['phone']."</li>\n";
-				$echoit.= "<li><span class=\"items\">Address:</span> ".$_POST['address1']." ".$_POST['address2']."</li>\n";
-				$echoit.= "<li><span class=\"items\">City or town:</span> ".$_POST['city']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['first_name']." ".$_POST['last_name']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['company']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Email:','eshop')."</span> ".$_POST['email']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['phone']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['address1']." ".$_POST['address2']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['city']."</li>\n";
 				if($_POST['country']=='US'){
 					$qcode=$wpdb->escape($_POST['state']);
 					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-					$echoit.= "<li><span class=\"items\">State:</span> ".$qstate."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
 				}
-				$echoit.= "<li><span class=\"items\">Zip/Post code:</span> ".$_POST['zip']."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['zip']."</li>\n";
 				$qccode=$wpdb->escape($_POST['country']);
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
-				$echoit.= "<li><span class=\"items\">Country:</span> ".$qcountry."</li>\n";
+				$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
 				
 				$echoit.= "</ul>\n";
 
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])==''){
-					$echoit.= "<h4>Additional information</h4>\n<ul>\n";
-					$echoit.= '<li><span class="items">Reference or PO:</span> '.$_POST['reference'].'</li>'."\n";
+					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= '<li><span class="items">'.__('Reference or PO:','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
 					$echoit.= '</ul>'."\n";
 				}
 				if( (trim($_POST['reference'])=='') && trim($_POST['comments'])!=''){
-					$echoit.= "<h4>Additional information</h4>\n<ul>\n";
-					$echoit.= '<li><span class="items">Comments or instructions:</span> '.$_POST['comments'].'</li>'."\n";
+					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= '<li><span class="items">'.__('Comments or instructions:','eshop').'</span> '.$_POST['comments'].'</li>'."\n";
 					$echoit.= '</ul>'."\n";
 				}
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])!=''){
-					$echoit.= "<h4>Additional information</h4>\n<ul>\n";
-					$echoit.= '<li><span class="items">Reference or PO:</span> '.$_POST['reference'].'</li>'."\n";
-					$echoit.= '<li><span class="items">Comments or instructions:</span> '.$_POST['comments'].'</li>'."\n";
+					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= '<li><span class="items">'.__('Reference or PO:','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
+					$echoit.= '<li><span class="items">'.__('Comments or instructions:','eshop').'</span> '.$_POST['comments'].'</li>'."\n";
 					$echoit.= '</ul>'."\n";
 				}
 
 				if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
-					$echoit.= "<h4>Shipping Address</h4>\n<ul>\n";
-					$echoit.= "<li><span class=\"items\">Full name:</span> ".$_POST['ship_name']."</li>\n";
-					$echoit.= "<li><span class=\"items\">Company:</span> ".$_POST['ship_company']."</li>\n";
-					$echoit.= "<li><span class=\"items\">Phone:</span> ".$_POST['ship_phone']."</li>\n";
-					$echoit.= "<li><span class=\"items\">Address:</span> ".$_POST['ship_address']."</li>\n";
-					$echoit.= "<li><span class=\"items\">City or town:</span> ".$_POST['ship_city']."</li>\n";
+					$echoit.= "<h4>".__('Shipping Address','eshop')."</h4>\n<ul>\n";
+					$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
 					if($_POST['ship_country']=='US'){
 						$qcode=$wpdb->escape($_POST['ship_state']);
 						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-						$echoit.= "<li><span class=\"items\">State:</span> ".$qstate."</li>\n";
+						$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
 					}
-					$echoit.= "<li><span class=\"items\">Zip/Post code:</span> ".$_POST['ship_postcode']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
 					$qccode=$wpdb->escape($_POST['ship_country']);
 					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
-					$echoit.= "<li><span class=\"items\">Country:</span> ".$qcountry."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
 					$echoit.= "</ul>\n";
 				}
 				$echoit.= "\n";
@@ -580,7 +581,7 @@ if (!function_exists('eshop_checkout')) {
 			//add others in here if needed
 			$array['comments']=$array['reference']='';
 			$biscuits=eshop_build_cookie($array);
-			setcookie("greencart", $biscuits,time()+60*60*24*365);
+			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
 			include($paymentmethod.'.php');
 		}
 	}else{
@@ -608,8 +609,8 @@ if (!function_exists('eshop_checkout')) {
 			$ship_postcode=$_SESSION['addy']['ship_postcode'];
 			$comments=$_SESSION['addy']['comments'];
 		}else{
-			if(isset($_COOKIE["greencart"]) && calculate_items()!=0){
-			$crumbs=eshop_break_cookie($_COOKIE["greencart"]);
+			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0){
+			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
 					$$k=$v;
 				}
@@ -646,12 +647,12 @@ if (!function_exists('eshop_checkout')) {
 
 	if(isset($_SESSION['shopcart'])){
 		if($chkerror==0 && !isset($_GET['action'])){
-			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink(get_option('eshop_cart')).'">&laquo; Edit Cart or Continue Shopping</a></li></ul>';
+			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink(get_option('eshop_cart')).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
 		}else{	
-			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink(get_option('eshop_checkout')).'">&laquo; Edit Details or Continue Shopping</a></li></ul>';
+			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
 		}
 	}else{
-		$echoit.= "<p><strong class=\"error\">Your shopping cart is currently empty.</strong></p>";
+		$echoit.= "<p><strong class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</strong></p>";
 	}
 	return $echoit;
  }

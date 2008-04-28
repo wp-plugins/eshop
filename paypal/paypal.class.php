@@ -1,6 +1,6 @@
 <?php
 if ('paypal.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*******************************************************************************
  *                      PHP Paypal IPN Integration Class
@@ -140,8 +140,8 @@ class paypal_class {
       foreach ($this->fields as $name => $value) {
          $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
       }
-      $echo.='<label for="ppsubmit"><small><strong>Note:</strong> Submit to finalize order at PayPal.</small><br />
-      <input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="Proceed to Checkout &raquo;" /></label>';
+      $echo.='<label for="ppsubmit"><small>'.__('<strong>Note:</strong> Submit to finalize order at PayPal.','eshop').'</small><br />
+      <input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="'.__('Proceed to Checkout &raquo;','eshop').'" /></label>';
 	  $echo.="</div></form>\n";
       
       return $echo;
@@ -161,8 +161,8 @@ class paypal_class {
       // is redirected to paypal.
 		?>
        <div id="process">
-         <p><strong>Please wait, your order is being processed&#8230;</strong></p>
-	     <p>If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.</p>
+         <p><strong><?php _e('Please wait, your order is being processed&#8230;','eshop'); ?></strong></p>
+	     <p><?php _e('If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.','eshop'); ?></p>
          <form method="post" id="eshopgateway" action="<?php echo $this->paypal_url; ?>">
           <p><?php
 		  foreach ($_POST as $name => $value) {
@@ -176,7 +176,7 @@ class paypal_class {
 
 		  }
       	?> 
-         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="Proceed to Paypal &raquo;" /></p>
+         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="<?php _e('Proceed to Paypal &raquo;','eshop'); ?>" /></p>
 	     </form>
 	  </div>
 	  <?php

@@ -1,5 +1,6 @@
 <?php
 //These are a collections of functions to allow ease of removing any conflicting plugins
+//not currently used. but left for backwards compatability
 function eshoplistfix(){
 	//this function is for removing conflicting actions from the 2 listing pages
 	//add as necessary.

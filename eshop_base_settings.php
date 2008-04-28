@@ -1,6 +1,6 @@
 <?php
 if ('eshop_settings.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
 See eshop.php for information and license terms
@@ -17,7 +17,7 @@ global $wpdb;
 if(isset($_GET['reset']) && $_GET['reset']=='yes'){
 	$table=$wpdb->prefix.'eshop_base_products';
 	$wpdb->query("TRUNCATE TABLE $table"); 
-	echo'<div id="message" class="updated fade"><p>eShop Base product data has been reset.</p></div>'."\n";
+	echo'<div id="message" class="updated fade"><p>'.__('eShop Base product data has been reset.','eshop').'</p></div>'."\n";
 }
 if(isset($_POST['submit'])){
 	include 'cart-functions.php';
@@ -33,12 +33,12 @@ if(isset($_POST['submit'])){
 	update_option('eshop_base_payment',$wpdb->escape($_POST['eshop_base_payment']));
 }
 if($err!=''){
-	echo'<div id="message" class="error fade"><p><strong>Error</strong> the following were not valid:</p><ul>'.$err.'</ul></div>'."\n";
+	echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'</p><ul>'.$err.'</ul></div>'."\n";
 }elseif(isset($_POST['submit'])){
-	echo'<div id="message" class="updated fade"><p>eShop Base Settings have been updated.</p></div>'."\n";
+	echo'<div id="message" class="updated fade"><p>'.__('eShop Base Settings have been updated.','eshop').'</p></div>'."\n";
 }
 echo '<div class="wrap">';
-echo '<h2>eShop Base Settings</h2>'."\n";
+echo '<h2>'.__('eShop Base Settings','eshop').'</h2>'."\n";
 
 
 /* defaults will need to be created */
@@ -46,10 +46,10 @@ echo $result;
 ?>
 <form method="post" action="" id="eshop-settings">
 <?php wp_nonce_field('update-options') ?>
-<fieldset><legend>eShop Base Options</legend>
+<fieldset><legend><?php _e('eShop Base Options','eshop'); ?></legend>
 
-<label for="eshop_base_brand">Brand</label><input id="eshop_base_brand" name="eshop_base_brand" type="text" value="<?php echo get_option('eshop_base_brand'); ?>" size="30" /><br />
-<label for="eshop_base_condition">Condition</label>
+<label for="eshop_base_brand"><?php _e('Brand','eshop'); ?></label><input id="eshop_base_brand" name="eshop_base_brand" type="text" value="<?php echo get_option('eshop_base_brand'); ?>" size="30" /><br />
+<label for="eshop_base_condition"><?php _e('Condition','eshop'); ?></label>
 	<select name="eshop_base_condition" id="eshop_base_condition">
 	<?php
 		
@@ -64,7 +64,7 @@ echo $result;
 	
 	?>
 	</select><br />
-<label for="eshop_base_expiry">Product expiry in days</label>
+<label for="eshop_base_expiry"><?php _e('Product expiry in days','eshop'); ?></label>
 	<select name="eshop_base_expiry" id="eshop_base_expiry">
 	<?php
 	$currentexpiry=array('1', '7', '28', '180', '365','730');
@@ -79,8 +79,8 @@ echo $result;
 	?>
 </select><br />
 
-<label for="eshop_base_ptype">Product type</label><input id="eshop_base_ptype" name="eshop_base_ptype" type="text" value="<?php echo get_option('eshop_base_ptype'); ?>" size="30" /><br />
-<label for="eshop_base_payment">Payment Accepted <small> comma delimited list of payment methods available in addition to paypal.</small></label><input id="eshop_base_payment" name="eshop_base_payment" type="text" value="<?php echo get_option('eshop_base_payment'); ?>" size="30" /><br />
+<label for="eshop_base_ptype"><?php _e('Product type','eshop'); ?></label><input id="eshop_base_ptype" name="eshop_base_ptype" type="text" value="<?php echo get_option('eshop_base_ptype'); ?>" size="30" /><br />
+<label for="eshop_base_payment"><?php _e('Payment Accepted <small> comma delimited list of payment methods available in addition to paypal.</small>','eshop'); ?></label><input id="eshop_base_payment" name="eshop_base_payment" type="text" value="<?php echo get_option('eshop_base_payment'); ?>" size="30" /><br />
 
 
 <input type="hidden" name="page_options" value="eshop_base_brand,eshop_base_condition,
@@ -94,9 +94,9 @@ eshop_base_expiry,eshop_base_ptype,eshop_base_payment" />
 
 </div>
 <div class="wrap">
-<h2>Reset eShop Base</h2>
-<p>This resets all product data entered on the <a href="?page=eshop_base.php">eShop Base Products</a> page.</p>
-<p class="ebox"><a class="ebox" href="?page=eshop_base_settings.php&amp;reset=yes">Reset Now</a></p>
+<h2><?php _e('Reset eShop Base','eshop'); ?></h2>
+<p><?php _e('This resets all product data entered on the <a href="?page=eshop_base.php">eShop Base Products</a> page.','eshop'); ?></p>
+<p class="ebox"><a class="ebox" href="?page=eshop_base_settings.php&amp;reset=yes"><?php _e('Reset Now','eshop'); ?></a></p>
 </div>
 
 <?php eshop_show_credits(); ?>

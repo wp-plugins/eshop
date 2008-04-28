@@ -1,12 +1,12 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>Direct File Access Prohibited</h2>');
-define('ESHOP_VERSION', '2.5.0');
+     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+define('ESHOP_VERSION', '2.5.1');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.5.0
+Version: 2.5.1
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -50,19 +50,19 @@ if (!function_exists('eshop_admin')) {
         	//access level : default of 7 is for editors, change to 8 for administrators.
         	$alevel=7;
         	//goto stats page
-            add_menu_page('eShop', 'eShop', $alevel, __FILE__, 'eshop_admin_orders_stats');
-            add_submenu_page(__FILE__,'eShop Orders', 'Orders',$alevel, basename('eshop_orders.php'),'eshop_admin_orders');
-      	    add_submenu_page(__FILE__,'eShop Shipping', 'Shipping',$alevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
-      	    add_submenu_page(__FILE__,'eShop Products','Products', $alevel, basename('eshop_products.php'), 'eshop_admin_products');
-      	    add_submenu_page(__FILE__,'eShop Downloads','Downloads', $alevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
-      	    add_submenu_page(__FILE__,'eShop Base','Base', $alevel, basename('eshop_base.php'), 'eshop_admin_base');
-      	    add_submenu_page(__FILE__,'eShop Style', 'Style',$alevel, basename('eshop_style.php'),'eshop_admin_style');
-			add_submenu_page(__FILE__,'eShop Email Templates', 'Templates',$alevel, basename('eshop_templates.php'),'eshop_admin_templates');
-      	    add_submenu_page(__FILE__,'eShop About','About', $alevel, basename('eshop_about.php'), 'eshop_admin_about');
-      	    add_submenu_page(__FILE__,'eShop Help','Help', $alevel, basename('eshop_help.php'), 'eshop_admin_help');
-			add_options_page('eShop Base Settings', 'eShop Base',$alevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
-			add_management_page('eShop Base Feed', 'eShop Base Feed',$alevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
-			add_options_page('eShop Settings', 'eShop',$alevel, basename('eshop_settings.php'),'eshop_admin_settings');
+            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), $alevel, __FILE__, 'eshop_admin_orders_stats');
+            add_submenu_page(__FILE__,__('eShop Orders','eshop'), __('Orders','eshop'),$alevel, basename('eshop_orders.php'),'eshop_admin_orders');
+      	    add_submenu_page(__FILE__,__('eShop Shipping','eshop'), __('Shipping','eshop'),$alevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
+      	    add_submenu_page(__FILE__,__('eShop Products','eshop'),__('Products','eshop'), $alevel, basename('eshop_products.php'), 'eshop_admin_products');
+      	    add_submenu_page(__FILE__,__('eShop Downloads','eshop'),__('Downloads','eshop'), $alevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
+      	    add_submenu_page(__FILE__,__('eShop Base','eshop'),__('Base','eshop'), $alevel, basename('eshop_base.php'), 'eshop_admin_base');
+      	    add_submenu_page(__FILE__,__('eShop Style','eshop'), __('Style','eshop'),$alevel, basename('eshop_style.php'),'eshop_admin_style');
+			add_submenu_page(__FILE__,__('eShop Email Templates','eshop'), __('Templates','eshop'),$alevel, basename('eshop_templates.php'),'eshop_admin_templates');
+      	    add_submenu_page(__FILE__,__('eShop About','eshop'),__('About','eshop'), $alevel, basename('eshop_about.php'), 'eshop_admin_about');
+      	    add_submenu_page(__FILE__,__('eShop Help','eshop'),__('Help','eshop'), $alevel, basename('eshop_help.php'), 'eshop_admin_help');
+			add_options_page(__('eShop Base Settings','eshop'), __('eShop Base','eshop'),$alevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
+			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$alevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
+			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$alevel, basename('eshop_settings.php'),'eshop_admin_settings');
       	}        
     }
 }
@@ -226,7 +226,7 @@ if (!function_exists('eshop_install')) {
        		include 'eshop_install.php';
        	}else{
        		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
-			wp_die("ERROR! This plugin requires that the wp_content directory is writable."); //add a more descriptive message of course.
+			wp_die(__('"ERROR! This plugin requires that the wp_content directory is writable."','eshop')); //add a more descriptive message of course.
 		}
     }
 }
@@ -234,8 +234,8 @@ if (!function_exists('eshop_install')) {
 
 function eshop_show_cancel(){
 	if(isset($_GET['action']) && $_GET['action']=='cancel'){
-		$echo ="<h3 class=\"error\">The order was canceled at PayPal.</h3>";
-		$echo.='<p>We have not emptied your shopping cart in case you want to make changes.</p>';
+		$echo ="<h3 class=\"error\">".__('The order was canceled at PayPal.','eshop')."</h3>";
+		$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 	}
 	return $echo;
 }
@@ -248,7 +248,7 @@ function eshop_show_success(){
 		if(get_option('eshop_status')=='live'){
 			$txn_id = $wpdb->escape($_POST['txn_id']);
 		}else{
-			$txn_id = "TEST-".$wpdb->escape($_POST['txn_id']);
+			$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
 		}
 		$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
 		if($checkid!=''){
@@ -258,7 +258,7 @@ function eshop_show_success(){
 					$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
 				<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /><br />
 				<input name="code" type="hidden" value="'.$row->code.'" /><br />
-				<input type="submit" id="submit" class="button" name="Submit" value="View your downloads" /></p>
+				<input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></p>
 				</form>';
 			}
 		}

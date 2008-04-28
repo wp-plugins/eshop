@@ -176,9 +176,9 @@ switch ($_GET['action']) {
 		$frow=$wpdb->get_var("select first_name from $detailstable where transid='$txn_id' limit 1");
 		$lrow=$wpdb->get_var("select last_name from $detailstable where transid='$txn_id' limit 1");
 		if($frow!='' && $lrow!=''){
-			$echoit .= "<h3>Thank you for your order, ".$frow." ".$lrow."!</h3>";
+			$echoit .= "<h3>".__('Thank you for your order','eshop').", ".$frow." ".$lrow."!</h3>";
 		}else{
-			$echoit .= "<h3>Thank you for your order!</h3>";
+			$echoit .= "<h3>".__('Thank you for your order!','eshop')."</h3>";
 		}
 		//echo 'name='.$row->first_name.' '.$row->last_name.'<br>';
 		// You could also simply re-direct them to another page, or your own 
@@ -236,10 +236,10 @@ switch ($_GET['action']) {
 
 			if(get_option('eshop_status')=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
-				$subject = 'Paypal IPN -';
+				$subject = __('Paypal IPN -','eshop');
 			}else{
-				$txn_id = "TEST-".$wpdb->escape($p->ipn_data['txn_id']);
-				$subject = 'Testing: Paypal IPN - ';
+				$txn_id = __("TEST-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+				$subject = __('Testing: Paypal IPN - ','eshop');
 			}
 			//check txn_id is unique
 			$checktrans=$wpdb->get_results("select transid from $detailstable");
@@ -247,13 +247,13 @@ switch ($_GET['action']) {
 			foreach($checktrans as $trans){
 				if(strpos($trans->transid, $p->ipn_data['txn_id'])===true){
 					$astatus='Failed';
-					$txn_id = "Duplicated-".$wpdb->escape($p->ipn_data['txn_id']);
+					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
 				}
 			}
 			//check reciever email is correct - we will use business for now
 			if($p->ipn_data['receiver_email']!= get_option('eshop_business')){
 				$astatus='Failed';
-				$txn_id = "Fraud-".$wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = __("Fraud-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
 			}
 			//add any memo from user at paypal here
 			$memo=$wpdb->escape($p->ipn_data['memo']);
@@ -261,7 +261,7 @@ switch ($_GET['action']) {
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $_POST['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
-				$subject .="Completed Payment";	
+				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
 				//product stock control updater
 				$itemstable=$wpdb->prefix ."eshop_order_items";
@@ -295,20 +295,20 @@ switch ($_GET['action']) {
 				}
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
-				$subject .="A Failed Payment";
+				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = get_option('eshop_business');    //  your email
-			 $body =  "An instant payment notification was recieved\n";
-			 $body .= "\nfrom ".$p->ipn_data['payer_email']." on ".date('m/d/Y');
-			 $body .= " at ".date('g:i A')."\n\nDetails:\n";
+			 $body =  __("An instant payment notification was recieved",'eshop')."\n";
+			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
+			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 //debug
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']."\n";
 
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
-			 $body .= "\n\nRegards\n\nYour friendly automated response.\n\n";
+			 $body .= "\n\n".__('Regards\n\nYour friendly automated response.','eshop')."\n\n";
 
 			if(get_option('eshop_business')!=''){
 				$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
@@ -362,10 +362,10 @@ switch ($_GET['action']) {
       		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['mc_gross']);
 			if(get_option('eshop_status')=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
-				$subject = 'Paypal IPN -';
+				$subject = __('Paypal IPN -','eshop');
 			}else{
-				$txn_id = "TEST-".$wpdb->escape($p->ipn_data['txn_id']);
-				$subject = 'Testing: Paypal IPN - ';
+				$txn_id = __("TEST-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+				$subject = __('Testing: Paypal IPN - ','eshop');
 			}
 
 			$astatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
@@ -375,19 +375,19 @@ switch ($_GET['action']) {
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
-				$subject .="INVALID Payment";	
+				$subject .=__("INVALID Payment",'eshop');	
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
-				$subject .="Invalid and Failed Payment";
+				$subject .=__("Invalid and Failed Payment",'eshop');
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = get_option('eshop_business');    //  your email
-			 $body =  "An instant payment notification was recieved\n";
-			 $body .= "\nfrom ".$p->ipn_data['payer_email']." on ".date('m/d/Y');
-			 $body .= " at ".date('g:i A')."\n\nDetails:\n";
+			 $body =  __("An instant payment notification was recieved",'eshop')."\n";
+			 $body .= "\n".__('from','eshop')." ".$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
+			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
-			 $body .= "\n\nRegards\n\nYour friendly automated response.\n\n";
+			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
 			 if(get_option('eshop_business')!=''){
 			 	$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
 			 }else{

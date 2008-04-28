@@ -14,10 +14,9 @@ else {
 function eshop_base_create_feed(){
 	?>
 	<div class="wrap">
-		<h2>Here be Feeds</h2>
-		<p><a href="../wp-content/plugins/eshop/eshop_base_feed.php?d=1">Download</a> the xml file, or <a href="../wp-content/plugins/eshop/eshop_base_feed.php">view</a> it online.</p>
+		<h2><?php _e('Here be Feeds','eshop'); ?></h2>
+		<p><a href="../wp-content/plugins/eshop/eshop_base_feed.php?d=1"><?php _e('Download</a> the xml file, or','eshop'); ?> <a href="../wp-content/plugins/eshop/eshop_base_feed.php"><?php _e('view</a> it online.','eshop'); ?></p>
 	</div>
-	
 	<?php
 	eshop_show_credits();
 

@@ -116,7 +116,7 @@ class eshop_custom_field_gui {
     $out =
       '<label for="' . $name . '">' . $title . ' </label>'.
       '<select name="' . $name . '" id="' . $name . '">' .
-      '<option value="">Select</option>';
+      '<option value="">'.__('Select','eshop').'</option>';
       
     foreach( $values as $val ) {
       $checked = ( trim( $val ) == trim( $selected ) ) ? 'selected="selected"' : '';
@@ -147,7 +147,7 @@ class eshop_custom_field_gui {
       $out =
         '<label for="' . $name . '">' . $title . ' </label>'.
         '<select name="' . $name . '" id="' . $name . '">' .
-        '<option value="">No (or select)</option>';
+        '<option value="">'.__('No (or select)','eshop').'</option>';
         
       foreach( $values as $key=>$val ) {
         $checked = ( trim( $key ) == trim( $selected ) ) ? 'selected="selected"' : '';
@@ -187,7 +187,7 @@ class eshop_custom_field_gui {
 				value="' . wp_create_nonce('eshop-custom-field-gui') . '" />';
 		$out .= '<fieldset id="eshopcustom">
 		<div id="epagepostcustom" class="postbox'.$class.'">
-		<h3>Product Entry</h3>
+		<h3>'.__('Product Entry','eshop').'</h3>
 		<div class="inside">
 		<div id="eshopcustomstuff">
 		';
