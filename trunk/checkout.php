@@ -165,7 +165,9 @@ $echo .= '
 </form>
 </div>
 ';
-//	remove_filter('the_content', 'wpautop');
+	if(get_bloginfo('version')<'2.5.1')
+		remove_filter('the_content', 'wpautop');
+		
 	return $echo;
 	}
 }

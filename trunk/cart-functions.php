@@ -651,8 +651,8 @@ if (!function_exists('eshop_show_zones')) {
 				$echo .='<p id="customzone">'.$qstate['stateName'].' '.__('is in Zone','eshop').' '.$qstate['zone'].'.</p>';
 			}
 		}
-
-//		remove_filter('the_content', 'wpautop');
+		if(get_bloginfo('version')<'2.5.1')
+			remove_filter('the_content', 'wpautop');
 
 		return $echo;
 	}
@@ -861,7 +861,7 @@ if (!function_exists('eshop_download_directory')) {
         }
 
         $dirpath=ABSPATH.$dir_path.$dir_upload.'/';
-        if(is_writable(ABSPATH.'wp-content/')){
+      //  if(is_writable($dir_path)){
 			wp_mkdir_p( $dirpath );
 			if(!file_exists($dirpath.'.htaccess')){
 				$eshoppath=ABSPATH.'wp-content/plugins/eshop/downloads/';
@@ -876,10 +876,11 @@ if (!function_exists('eshop_download_directory')) {
 				}
 			}
 			return $dirpath;
-		}else{
-			return 0;
-		}
-		return 0;
+		//}else{
+		//	return 0;
+		//}
+		//return 0;
+		//commented lines are a quick fix - need feedback
     }
 }
 
@@ -892,7 +893,9 @@ if (!function_exists('eshop_files_directory')) {
             $dir_path=get_option('upload_path').'/eshop_';
         }
         $dirpath=ABSPATH.$dir_path.$dir_upload.'/';
-        if(is_writable(ABSPATH.'wp-content/')){
+       // if(is_writable($dir_path)){
+       	if(!file_exists($dirpath.'eshop.css')){
+
 			wp_mkdir_p( $dirpath );
 			if(!file_exists($dirpath.'eshop.css')){
 				$eshoppath=ABSPATH.'wp-content/plugins/eshop/files/';
@@ -907,6 +910,12 @@ if (!function_exists('eshop_files_directory')) {
 					closedir($handle);
 				}
 			}
+			$urlpath=get_bloginfo('url').'/'.$dir_path.$dir_upload.'/';
+			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
+			$rtn=array(0=>$dirpath,1=>$urlpath);
+
+			return $rtn;
+		}else{
 			$urlpath=get_bloginfo('url').'/'.$dir_path.$dir_upload.'/';
 			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
 			$rtn=array(0=>$dirpath,1=>$urlpath);
