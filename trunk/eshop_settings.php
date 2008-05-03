@@ -149,14 +149,16 @@ echo $result;
 <label for="eshop_location"><?php _e('Business Location','eshop'); ?></label>
 	<select name="eshop_location" id="eshop_location">
 	<?php
-	$currentlocations=array('GB', 'US', 'JP', 'CA', 'DE');
-	foreach($currentlocations as $code){
-		if($code == get_option('eshop_location')){
+	$ctable=$wpdb->prefix.'eshop_countries';
+	$currentlocations=$wpdb->get_results("SELECT * from $ctable ORDER BY country");
+	//$currentlocations=array('GB', 'US', 'JP', 'CA', 'DE');
+	foreach ($currentlocations as $row){
+		if($row->code == get_option('eshop_location')){
 			$sel=' selected="selected"';
 		}else{
 			$sel='';
 		}
-		echo '<option value="'. $code .'"'. $sel .'>'. $code .'</option>';
+		echo '<option value="'. $row->code .'"'. $sel .'>'. $row->country .'</option>';
 	}
 	?>
 </select><br />

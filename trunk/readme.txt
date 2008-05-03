@@ -4,7 +4,7 @@ Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop
 Requires at least: 2.5
 Tested up to: 2.5.1
-Stable tag: 2.5.3
+Stable tag: 2.5.4
 
 An accessible Paypal Shopping Cart plugin.
 
