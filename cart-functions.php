@@ -277,6 +277,8 @@ if (!function_exists('orderhandle')) {
 			'$comments'
 				);");
 		$i=1;
+		//this is here to generate just one code per order
+		$code=eshop_random_code(); 
 		while($i<=$_POST['numberofproducts']){
 			$chk_id='item_number_'.$i;
 			$chk_qty='quantity_'.$i;
@@ -314,7 +316,6 @@ if (!function_exists('orderhandle')) {
 				$wpdb->query("UPDATE $prodtable SET purchases=purchases+1 where title='$grabit->title' && files='$grabit->files' limit 1");
 				*/
 				$downloads = get_option('eshop_downloads_num');
-				$code=eshop_random_code(); 
 
 				$wpdb->query("INSERT INTO $dloadtable
 				(checkid, title,purchased,files,downloads,code,email)values(
