@@ -1,12 +1,12 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.5.4');
+define('ESHOP_VERSION', '2.5.5');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.5.4
+Version: 2.5.5
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -63,9 +63,22 @@ if (!function_exists('eshop_admin')) {
 			add_options_page(__('eShop Base Settings','eshop'), __('eShop Base','eshop'),$alevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
 			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$alevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
 			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$alevel, basename('eshop_settings.php'),'eshop_admin_settings');
+      	//test
+      		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),$alevel, basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+		//
       	}        
     }
 }
+//test
+	if (!function_exists('eshop_admin_uninstall')) {
+		/**
+		 * display the uninstall page.
+		 */
+		 function eshop_admin_uninstall() {
+			 include 'eshop_uninstall.php';
+		 }
+	}
+//
 if (!function_exists('eshop_admin_help')) {
     /**
      * display the help page.

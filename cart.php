@@ -11,7 +11,7 @@ if (!function_exists('eshop_cart')) {
 		//delete the session, empties the cart
 		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['shopcart']))){
 			$_SESSION = array();
-			session_destroy();
+			//session_destroy();
 			$_POST['save']='false';
 		}
 		//on windows this check isn't working correctly, so I've added ==0 

@@ -5,7 +5,7 @@ if ('eshop-install.php' == basename($_SERVER['SCRIPT_FILENAME']))
 if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 } else {
-    require_once(ABSPATH . 'wp-admin/upgrade-fucntions.php');
+    require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
 
 $table = $wpdb->prefix . "eshop_states";

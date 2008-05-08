@@ -31,6 +31,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#extr">Cart Operations</a></li>
 <li><a href="#conf">Conflicting plugins</a></li>
 <li><a href="#comp">Compatability</a></li>
+<li><a href="#del">Deactivating and Uninstalling</a></li>
+
 </ul>
 </div>
 <div class="wrap">
@@ -264,6 +266,11 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <div class="wrap">
 <h2 id="comp">Compatability</h2>
 <p>eShop has been written for Wordpress 2.5 and up, and is not compatible with earlier versions.</p>
+</div>
+
+<div class="wrap">
+<h2 id="del">Deactivating and Uninstalling</h2>
+<p>To deactivate the plugin without losing data use the <strong>deactivate</strong> link on the plugins page. If you want to completely uninstall the plugin, delete all associated data and files use the <strong>eShop Uninstall</strong> link from the plugins page.</p>
 </div>
 </div>
 <?php eshop_show_credits(); ?>
