@@ -1,12 +1,12 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.5.6');
+define('ESHOP_VERSION', '2.6.0');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.5.6
+Version: 2.6.0
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -236,6 +236,9 @@ if (!function_exists('eshop_install')) {
         if( eshop_files_directory()!=0 ){
        		eshop_download_directory();
        		eshop_files_directory();
+       		//mdy
+       		$eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
+       		wp_schedule_event($eshoptime, 'daily', 'eshop_event');
        		include 'eshop_install.php';
        	}else{
        		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
@@ -244,7 +247,35 @@ if (!function_exists('eshop_install')) {
     }
 }
 
-
+if (!function_exists('eshop_deactivate')) {
+    /**
+     * mostly handled by uninstall - this just resets the cron
+     */
+    function eshop_deactivate() {
+    	wp_clear_scheduled_hook('eshop_event');
+    }
+}
+//cron
+add_action('eshop_event', 'eshop_cron');
+function eshop_cron(){
+	global $wpdb;
+	if(get_option('eshop_cron_email')!=''){
+		$dtable=$wpdb->prefix.'eshop_orders';
+		$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Pending'");
+		if($max>0){
+			$to = get_option('eshop_cron_email');    //  your email
+			$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
+			$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
+			if(get_option('eshop_business')!=''){
+				$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
+			}else{
+				$headers='';
+			}
+			$subject=get_bloginfo('name').__(": outstanding orders");
+			wp_mail($to, $subject, $body, $headers);
+		}
+	}
+}
 function eshop_show_cancel(){
 	if(isset($_GET['action']) && $_GET['action']=='cancel'){
 		$echo ="<h3 class=\"error\">".__('The order was canceled at PayPal.','eshop')."</h3>";
@@ -385,6 +416,9 @@ add_action('admin_menu', 'eshop_admin');
 
 /* activations */
 register_activation_hook(__FILE__,'eshop_install');
+
+/*deactivation*/
+register_deactivation_hook( __FILE__, 'eshop_deactivate' );
 
 /**
 * eshop download products - need to process afore page is rendered

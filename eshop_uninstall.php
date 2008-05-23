@@ -46,32 +46,37 @@ if(isset($_POST['delete'])){
 	}
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
 	//options
+	$epages[] = 'eshop_business';
 	$epages[] = 'eshop_cart';
-	$epages[] = 'eshop_checkout';
-	$epages[] = 'eshop_cart_success';
 	$epages[] = 'eshop_cart_cancel';
-	$epages[] = 'eshop_cart_shipping';
-	$epages[] = 'eshop_show_downloads';
-	$epages[] = 'eshop_style';
-	$epages[] = 'eshop_method';
-	$epages[] = 'eshop_records';
-	$epages[] = 'eshop_options_num';
-	$epages[] = 'eshop_downloads_num';
-	$epages[] = 'eshop_random_num';
-	$epages[] = 'eshop_pagelist_num';
 	$epages[] = 'eshop_cart_nostock';
-	$epages[] = 'eshop_status';
-	$epages[] = 'eshop_currency_symbol';
+	$epages[] = 'eshop_cart_shipping';
+	$epages[] = 'eshop_cart_success';
+	$epages[] = 'eshop_checkout';
+	$epages[] = 'eshop_credits';
+	$epages[] = 'eshop_cron_email';
 	$epages[] = 'eshop_currency';
+	$epages[] = 'eshop_currency_symbol';
+	$epages[] = 'eshop_downloads_num';
+	$epages[] = 'eshop_first_time';
 	$epages[] = 'eshop_location';
-	$epages[] = 'eshop_sudo_cat';
+	$epages[] = 'eshop_method';
+	$epages[] = 'eshop_options_num';
+	$epages[] = 'eshop_pagelist_num';
+	$epages[] = 'eshop_random_num';
+	$epages[] = 'eshop_records';
 	$epages[] = 'eshop_shipping';
 	$epages[] = 'eshop_shipping_zone';
+	$epages[] = 'eshop_show_downloads';
+	$epages[] = 'eshop_show_stock'; 
 	$epages[] = 'eshop_show_zones';
-	$epages[] = 'eshop_credits';
-	$epages[] = 'eshop_stock_control';
-	$epages[] = 'eshop_show_stock';
-	$epages[] = 'eshop_first_time';
+	$epages[] = 'eshop_status'; 
+	$epages[] = 'eshop_stock_control'; 
+	$epages[] = 'eshop_style';
+	$epages[] = 'eshop_sudo_cat'; 
+	$epages[] = 'eshop_sysemails'; 
+	$epages[] = 'eshop_xtra_help'; 
+	$epages[] = 'eshop_xtra_privacy'; 
 	foreach($epages as $epage){
 		delete_option($epages);
 	}
@@ -117,7 +122,8 @@ if(isset($_POST['delete'])){
 		rmdir ($filedir[0]);
 		echo '<li>'.__('eShop files deleted','eshop').'</li>';
 	}
-	
+	//clear the cron
+	wp_clear_scheduled_hook('eshop_event');
 	//and finally deactivate the plugin - might cause the page to go walkabout - may need to redirect to plugins page
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	echo '<li>'.__('Plugin deactivated','eshop').'</li>';

@@ -143,6 +143,11 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <h3>Other Settings</h3>	
 <p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by <abbr title="United States">US</abbr> States. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
 <p>The eShop <strong>Style</strong> page allows you to amend the default style, or disable it completely.</p>
+
+<h3>Cron</h3>
+<p>Cron automatically sends out a daily email to the specified address if there are any outstanding, or pending, orders.
+This is only triggered when someone visits the site.</p>
+<p>To stop this feature, simply delete the Cron Email address.</p>
 <h3>Settings - eShop Base</h3>
 <p>This section sets up defaults that may be useful if you want to use Google Base. Anything entered here is applied to <em>all</em> products. You don't have to enter anything but the more information you supply the better. You are able to override these settings per product via the eShop - Base page.</p>
 <p><strong>Brand</strong> - if you sell one particular brand, set it here.</p>
@@ -261,6 +266,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <h3>Bad Behaviour plugin</h3>
 <p>It is recommended that this plugin is not used with eShop. I am unable to test this plugin effectively as it slowed the test site down dramatically, causing it to become unusable.</p>
 <p>However for those that still wish to use it, so far as I can tell there are no conflicts. But you will have to visit the <a href="https://www.paypal.com/IntegrationCenter/ic_go-live.html">Paypal Go Live Checklist</a> and add all of the <abbr title="Internet protocol">IP</abbr> addresses to Bad Behaviour's whitelist.</p>
+<h3>Maintenance Mode plugin</h3>
+<p>Maintenance Mode would have to be deactivated when testing eShop, otherwise paypal can not interact with the site.</p>
 </div>
 
 <div class="wrap">
