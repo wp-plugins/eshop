@@ -95,7 +95,7 @@ eshop_base_expiry,eshop_base_ptype,eshop_base_payment" />
 </div>
 <div class="wrap">
 <h2><?php _e('Reset eShop Base','eshop'); ?></h2>
-<p><?php _e('This resets all product data entered on the <a href="?page=eshop_base.php">eShop Base Products</a> page.','eshop'); ?></p>
+<p><?php _e('This resets all product data entered on the <a href="admin.php?page=eshop_base.php">eShop Base Products</a> page.','eshop'); ?></p>
 <p class="ebox"><a class="ebox" href="?page=eshop_base_settings.php&amp;reset=yes"><?php _e('Reset Now','eshop'); ?></a></p>
 </div>
 

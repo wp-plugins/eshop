@@ -26,6 +26,7 @@ if(isset($_POST['submit'])){
 	update_option('eshop_currency',$wpdb->escape($_POST['eshop_currency']));
 	update_option('eshop_location',$wpdb->escape($_POST['eshop_location']));
 	update_option('eshop_business',$wpdb->escape($_POST['eshop_business']));
+	update_option('eshop_cron_email',$wpdb->escape($_POST['eshop_cron_email']));
 	update_option('eshop_sysemails',$wpdb->escape($_POST['eshop_sysemails']));
 	update_option('eshop_currency_symbol',$wpdb->escape($_POST['eshop_currency_symbol']));
 	update_option('eshop_cart_nostock',$wpdb->escape($_POST['eshop_cart_nostock']));
@@ -266,11 +267,15 @@ echo $result;
 <label for="eshop_xtra_help"><?php _e('Help - page id number','eshop'); ?></label><input id="eshop_xtra_help" name="eshop_xtra_help" type="text" value="<?php echo get_option('eshop_xtra_help'); ?>" size="5" /><br />
 </fieldset>
 
+<fieldset><legend><?php _e('Cron','eshop'); ?></legend>
+<label for="eshop_cron_email"><?php _e('Cron Email address','eshop'); ?></label><input id="eshop_cron_email" name="eshop_cron_email" type="text" value="<?php echo get_option('eshop_cron_email'); ?>" size="30" /><br />
+</fieldset>
+
 <input type="hidden" name="page_options" value="eshop_method,
 eshop_status,eshop_currency,eshop_location,eshop_business,
 eshop_sysemails,eshop_records,eshop_options_num,eshop_currency_symbol,
 eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,
-eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock" />
+eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email" />
 
 <p class="submit">
 <input type="submit" name="submit" value="<?php _e('Update Options &#187;') ?>" />

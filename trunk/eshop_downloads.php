@@ -359,13 +359,15 @@ function eshop_downloads_manager() {
 			</div>'."\n";
 		}else{
 		// only displayed if the directory is writable to.
+		$eshopmaxupload=ini_get("upload_max_filesize")*1048576;
+
 		?>
 			<div class="wrap">
 			<h2><?php _e('Upload a File','eshop'); ?></h2>
-			<p><?php _e('Use this to upload your local file. Max file size is 2Mb.','eshop'); ?></p>
+			<p><?php _e('Use this to upload your local file. Max file size is ','eshop'); echo ini_get("upload_max_filesize"); ?></p>
 			<form action="" method="post" id="eshopup" enctype="multipart/form-data">
 			<fieldset><legend><?php _e('Upload','eshop'); ?></legend>
-				<input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
+				<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $eshopmaxupload; ?>" />
 				<label for="filetitle" class="lab"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo $atitle; ?>" /><br />
 			   <label for="upfile" class="lab"><?php _e('Local File','eshop'); ?></label>
 				 <input name="upfile" type="file" id="upfile" size="45" />
