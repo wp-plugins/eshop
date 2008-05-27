@@ -972,6 +972,7 @@ if (!function_exists('eshop_files_directory')) {
 */
 if (!function_exists('eshop_get_images')) {
 	function eshop_get_images($pID){
+		$echo=array();
 		$attargs = array(
 			'post_type' => 'attachment',
 			'numberposts' => null,
@@ -983,13 +984,15 @@ if (!function_exists('eshop_get_images')) {
 			$x=0;
 			foreach ($attachments as $attachment) {
 				$img_url= wp_get_attachment_thumb_url($attachment->ID);
-
+				/*
+				//this section has been removed - its causing problems with wp2.5+ and hopefully is no longer required.
 				$chkimg=wp_get_attachment_url($attachment->ID);
 				if($img_url==$chkimg){
 					$img_url = preg_replace('!(\.[^.]+)?$!', __('.thumbnail') . '$1', $img_url, 1);
 				}else{
 					$img_url = wp_get_attachment_thumb_url($attachment->ID);
 				}
+				*/
 				@list($width, $height) = getimagesize($img_url);
 				$echo[$x]['url']=$img_url;
 				$echo[$x]['alt']=apply_filters('the_title', $attachment->post_title);
