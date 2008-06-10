@@ -205,14 +205,14 @@ echo $result;
 <label for="eshop_currency"><?php _e('Code','eshop'); ?></label>
 	<select name="eshop_currency" id="eshop_currency">
 	<?php
-	$currencycodes=array('GBP','USD','JPY', 'CAD', 'EUR');
-	foreach($currencycodes as $code){
+	$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso');
+	foreach($currencycodes as $code=>$codename){
 		if($code == get_option('eshop_currency')){
 			$sel=' selected="selected"';
 		}else{
 			$sel='';
 		}
-		echo '<option value="'. $code .'"'. $sel .'>'. $code .'</option>';
+		echo '<option value="'. $code .'"'. $sel .'>'. $codename.' ('.$code.')' .'</option>';
 	}
 	?>
 	</select><br />
