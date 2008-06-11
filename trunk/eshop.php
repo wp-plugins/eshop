@@ -1,12 +1,12 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.6.2');
+define('ESHOP_VERSION', '2.6.3');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.6.2
+Version: 2.6.3
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -295,13 +295,15 @@ function eshop_show_success(){
 			$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
 		}
 		$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-		if($checkid!=''){
+		$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+
+		if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
 			$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
 			if($row->email!='' && $row->code!=''){
 				//display form only if there are downloads!
 					$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
-				<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /><br />
-				<input name="code" type="hidden" value="'.$row->code.'" /><br />
+				<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+				<input name="code" type="hidden" value="'.$row->code.'" /> 
 				<input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></p>
 				</form>';
 			}
