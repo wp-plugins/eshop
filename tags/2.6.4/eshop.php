@@ -6,7 +6,7 @@ define('ESHOP_VERSION', '2.6.4');
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.6.3
+Version: 2.6.4
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
