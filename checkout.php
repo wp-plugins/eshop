@@ -20,75 +20,82 @@ if (!function_exists('eshopShowform')) {
 $echo = '
 <div class="hr"></div>
 <div class="custdetails">
-<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field - ','eshop').'
+<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
 '.$xtralinks.'</small></p>
 <form action="" method="post" class="eshopform">
 <fieldset><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'<br />
-</legend><fieldset>
-<legend>'.__('Mailing Address','eshop').'</legend>
- <label for="first_name">'.__('First Name','eshop').' <span class="reqd">*</span><br />
+</legend><fieldset>';
+if('no' == get_option('eshop_downloads_only')){
+	$echo .='<legend>'.__('Mailing Address','eshop').'</legend>';
+}else{
+	$echo .='<legend>'.__('Contact Details','eshop').'</legend>';
+}
+$echo .='<label for="first_name">'.__('First Name','eshop').' <span class="reqd">*</span><br />
   <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="40" size="40" /></label><br />
  <label for="last_name">'.__('Last Name','eshop').' <span class="reqd">*</span><br />
-  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /></label><br />
- <label for="company">'.__('Company','eshop').'<br />
-  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" /></label><br />
- <label for="email">'.__('Email','eshop').' <span class="reqd">*</span><br />
-  <input class="med" type="text" name="email" value="'.$email.'" id="email" maxlength="40" size="40" /></label><br />
- <label for="phone">'.__('Phone','eshop').' <span class="reqd">*</span><br />
-  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /></label><br />
- <label for="address1">'.__('Address','eshop').' <span class="reqd">*</span><br />
-  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /></label><br />
- <label for="address2">'.__('Address','eshop').' (continued)<br />
-  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /></label><br />
- <label for="city">'.__('City or town','eshop').' <span class="reqd">*</span><br />
-  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /></label><br />
- <label for="state">'.__('<abbr title="United States">US</abbr> State','eshop').' '.$sreqd.'<br />
-  <select class="med pointer" name="state" id="state">
-';
-// state list from db
-$table=$wpdb->prefix.'eshop_states';
-$List=$wpdb->get_results("SELECT code,stateName FROM $table ORDER BY stateName",ARRAY_A);
-foreach($List as $key=>$value){
-	$k=$value['code'];
-	$v=$value['stateName'];
-	$stateList[$k]=$v;
+  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /></label><br />';
+if('no' == get_option('eshop_downloads_only')){
+$echo .='<label for="company">'.__('Company','eshop').'<br />
+  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" /></label><br />';
 }
-$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
-$echo .='<option value="">'.__('not applicable','eshop').'</option>';
-
-foreach($stateList as $code => $label)	{
-	if (isset($state) && $state == $code){
-		$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-	}else{
-		$echo.="<option value=\"$code\">$label</option>";
+$echo .='<label for="email">'.__('Email','eshop').' <span class="reqd">*</span><br />
+  <input class="med" type="text" name="email" value="'.$email.'" id="email" maxlength="40" size="40" /></label><br />';
+if('no' == get_option('eshop_downloads_only')){
+	$echo .='<label for="phone">'.__('Phone','eshop').' <span class="reqd">*</span><br />
+	  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /></label><br />
+	 <label for="address1">'.__('Address','eshop').' <span class="reqd">*</span><br />
+	  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /></label><br />
+	 <label for="address2">'.__('Address','eshop').' (continued)<br />
+	  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /></label><br />
+	 <label for="city">'.__('City or town','eshop').' <span class="reqd">*</span><br />
+	  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /></label><br />
+	 <label for="state">'.__('<abbr title="United States">US</abbr> State','eshop').' '.$sreqd.'<br />
+	  <select class="med pointer" name="state" id="state">
+	';
+	// state list from db
+	$table=$wpdb->prefix.'eshop_states';
+	$List=$wpdb->get_results("SELECT code,stateName FROM $table ORDER BY stateName",ARRAY_A);
+	foreach($List as $key=>$value){
+		$k=$value['code'];
+		$v=$value['stateName'];
+		$stateList[$k]=$v;
 	}
-}
-$echo.= "</select></label><br />";
+	$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
+	$echo .='<option value="">'.__('not applicable','eshop').'</option>';
 
-$echo .= '
- <label for="zip">'.__('Zip/Post code','eshop').' <span class="reqd">*</span><br />
-  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /></label><br />
- <label for="country">'.__('Country','eshop').' '.$creqd.'<br />
-  <select class="med pointer" name="country" id="country">
-';
-// country list from db
-$tablec=$wpdb->prefix.'eshop_countries';
-$List=$wpdb->get_results("SELECT code,country FROM $tablec ORDER BY country",ARRAY_A);
-foreach($List as $key=>$value){
-	$k=$value['code'];
-	$v=$value['country'];
-	$countryList[$k]=$v;
-}
-$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-foreach($countryList as $code => $label)	{
-	if (isset($country) && $country == $code){
-		$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-	}else{
-		$echo.="<option value=\"$code\">$label</option>";
+	foreach($stateList as $code => $label)	{
+		if (isset($state) && $state == $code){
+			$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
+		}else{
+			$echo.="<option value=\"$code\">$label</option>";
+		}
 	}
-}
-$echo.= "</select></label></fieldset>";
+	$echo.= "</select></label><br />";
 
+	$echo .= '
+	 <label for="zip">'.__('Zip/Post code','eshop').' <span class="reqd">*</span><br />
+	  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /></label><br />
+	 <label for="country">'.__('Country','eshop').' '.$creqd.'<br />
+	  <select class="med pointer" name="country" id="country">
+	';
+	// country list from db
+	$tablec=$wpdb->prefix.'eshop_countries';
+	$List=$wpdb->get_results("SELECT code,country FROM $tablec ORDER BY country",ARRAY_A);
+	foreach($List as $key=>$value){
+		$k=$value['code'];
+		$v=$value['country'];
+		$countryList[$k]=$v;
+	}
+	$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
+	foreach($countryList as $code => $label)	{
+		if (isset($country) && $country == $code){
+			$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
+		}else{
+			$echo.="<option value=\"$code\">$label</option>";
+		}
+	}
+	$echo.= "</select></label></fieldset>";
+}
 $echo .= '
 
 <fieldset>
@@ -96,53 +103,54 @@ $echo .= '
  <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
   <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
  <label for="eshop-comments">'.__('Comments or special instructions','eshop').'<br />
-  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>
+  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';
 
-<fieldset>
-<legend>'.__('Shipping address (if different)','eshop').'</legend>
- <label for="ship_name">'.__('Name','eshop').'<br />
-  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
- <label for="ship_company">'.__('Company','eshop').'<br />
-  <input class="med" type="text" name="ship_company" value="'.$ship_company.'" id="ship_company" size="40" /></label><br />
- <label for="ship_phone">'.__('Phone','eshop').'<br />
-  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
- <label for="ship_address">'.__('Address','eshop').'<br />
-  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
- <label for="ship_city">'.__('City or town','eshop').'<br />
-  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />
- <label for="shipstate">'.__('<abbr title="United States">US</abbr> State','eshop').'<br />
-  <select class="med pointer" name="ship_state" id="shipstate">
-';
-//state list from db, as above
-$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
-$echo .='<option value="">'.__('not applicable','eshop').'</option>';
-foreach($stateList as $code => $label){
-	if (isset($ship_state) && $ship_state == $code){
-		$echo.="<option value=\"$code\" selected=\"selected\">$label</option>";
-	}else{
-		$echo.="<option value=\"$code\">$label</option>";
+if('no' == get_option('eshop_downloads_only')){
+	$echo .='<fieldset>
+	<legend>'.__('Shipping address (if different)','eshop').'</legend>
+	 <label for="ship_name">'.__('Name','eshop').'<br />
+	  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
+	 <label for="ship_company">'.__('Company','eshop').'<br />
+	  <input class="med" type="text" name="ship_company" value="'.$ship_company.'" id="ship_company" size="40" /></label><br />
+	 <label for="ship_phone">'.__('Phone','eshop').'<br />
+	  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
+	 <label for="ship_address">'.__('Address','eshop').'<br />
+	  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
+	 <label for="ship_city">'.__('City or town','eshop').'<br />
+	  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />
+	 <label for="shipstate">'.__('<abbr title="United States">US</abbr> State','eshop').'<br />
+	  <select class="med pointer" name="ship_state" id="shipstate">
+	';
+	//state list from db, as above
+	$echo .='<option value="" selected="selected">'.__('Select your state','eshop').'</option>';
+	$echo .='<option value="">'.__('not applicable','eshop').'</option>';
+	foreach($stateList as $code => $label){
+		if (isset($ship_state) && $ship_state == $code){
+			$echo.="<option value=\"$code\" selected=\"selected\">$label</option>";
+		}else{
+			$echo.="<option value=\"$code\">$label</option>";
+		}
 	}
-}
-$final_price=number_format($_SESSION['final_price'], 2);
-$echo .= '
-</select></label><br />
- <label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
-  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
-  <br />
-  <input type="hidden" name="amount" value="'.$final_price.'" />
-<label for="shipcountry">'.__('Country','eshop').'<br />
-  <select class="med pointer" name="ship_country" id="shipcountry">
-';
-$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-foreach($countryList as $code => $label)	{
-	if (isset($ship_country) && $ship_country == $code){
-		$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-	}else{
-		$echo.="<option value=\"$code\">$label</option>";
+	$final_price=number_format($_SESSION['final_price'], 2);
+	$echo .= '
+	</select></label><br />
+	 <label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
+	  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
+	  <br />
+	  <input type="hidden" name="amount" value="'.$final_price.'" />
+	<label for="shipcountry">'.__('Country','eshop').'<br />
+	  <select class="med pointer" name="ship_country" id="shipcountry">
+	';
+	$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
+	foreach($countryList as $code => $label)	{
+		if (isset($ship_country) && $ship_country == $code){
+			$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
+		}else{
+			$echo.="<option value=\"$code\">$label</option>";
+		}
 	}
+	$echo.= "</select></label>";
 }
-$echo.= "</select></label>";
-
 $x=0;
 foreach ($_SESSION['shopcart'] as $productid => $opt){
 	$x++;
@@ -156,11 +164,11 @@ foreach ($_SESSION['shopcart'] as $productid => $opt){
 
 }
 
-$echo .= '
-</fieldset>
-<label for="submitit">
-  <small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small><br />
-   <input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" /></label>
+$echo .= '</fieldset>';
+if('no' == get_option('eshop_downloads_only')){
+	$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
+}
+$echo .='<input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" />
 </fieldset>
 </form>
 </div>
@@ -174,7 +182,7 @@ $echo .= '
 if (!function_exists('eshop_checkout')) {
  function eshop_checkout($_POST){
 	$echoit='';
-	include_once('wp-includes/wp-db.php');
+	include_once(ABSPATH.'wp-includes/wp-db.php');
 	include_once "cart-functions.php";
 	$paymentmethod=get_option('eshop_method');
 
@@ -496,25 +504,30 @@ if (!function_exists('eshop_checkout')) {
 				$_POST['shipping_1']=$shipping;
 				$ctable=$wpdb->prefix.'eshop_countries';
 				$stable=$wpdb->prefix.'eshop_states';
-				$echoit.='
-				<h4>'.__('Mailing Address','eshop').'</h4>
-				 <ul>';
-				$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['first_name']." ".$_POST['last_name']."</li>\n";
-				$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['company']."</li>\n";
-				$echoit.= "<li><span class=\"items\">".__('Email:','eshop')."</span> ".$_POST['email']."</li>\n";
-				$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['phone']."</li>\n";
-				$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['address1']." ".$_POST['address2']."</li>\n";
-				$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['city']."</li>\n";
-				if($_POST['country']=='US'){
-					$qcode=$wpdb->escape($_POST['state']);
-					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-					$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
+				if('no' == get_option('eshop_downloads_only')){
+					$echoit.='<h4>'.__('Mailing Address','eshop').'</h4><ul>';
+				}else{
+					$echoit.='<h4>'.__('Contact Details','eshop').'</h4><ul>';
 				}
-				$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['zip']."</li>\n";
-				$qccode=$wpdb->escape($_POST['country']);
-				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
-				$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
-				
+				$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['first_name']." ".$_POST['last_name']."</li>\n";
+				if('no' == get_option('eshop_downloads_only')){
+					$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['company']."</li>\n";
+				}
+				$echoit.= "<li><span class=\"items\">".__('Email:','eshop')."</span> ".$_POST['email']."</li>\n";
+				if('no' == get_option('eshop_downloads_only')){
+					$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['phone']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['address1']." ".$_POST['address2']."</li>\n";
+					$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['city']."</li>\n";
+					if($_POST['country']=='US'){
+						$qcode=$wpdb->escape($_POST['state']);
+						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+						$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
+					}
+					$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['zip']."</li>\n";
+					$qccode=$wpdb->escape($_POST['country']);
+					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
+					$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
+				}
 				$echoit.= "</ul>\n";
 
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])==''){
@@ -533,24 +546,25 @@ if (!function_exists('eshop_checkout')) {
 					$echoit.= '<li><span class="items">'.__('Comments or instructions:','eshop').'</span> '.$_POST['comments'].'</li>'."\n";
 					$echoit.= '</ul>'."\n";
 				}
-
-				if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
-					$echoit.= "<h4>".__('Shipping Address','eshop')."</h4>\n<ul>\n";
-					$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
-					$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
-					$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
-					$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
-					$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
-					if($_POST['ship_country']=='US'){
-						$qcode=$wpdb->escape($_POST['ship_state']);
-						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-						$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
+				if('no' == get_option('eshop_downloads_only')){
+					if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
+						$echoit.= "<h4>".__('Shipping Address','eshop')."</h4>\n<ul>\n";
+						$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
+						$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
+						$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
+						$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
+						$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
+						if($_POST['ship_country']=='US'){
+							$qcode=$wpdb->escape($_POST['ship_state']);
+							$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+							$echoit.= "<li><span class=\"items\">".__('State:','eshop')."</span> ".$qstate."</li>\n";
+						}
+						$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
+						$qccode=$wpdb->escape($_POST['ship_country']);
+						$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
+						$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
+						$echoit.= "</ul>\n";
 					}
-					$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
-					$qccode=$wpdb->escape($_POST['ship_country']);
-					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
-					$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
-					$echoit.= "</ul>\n";
 				}
 				$echoit.= "\n";
 			}

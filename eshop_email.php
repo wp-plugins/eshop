@@ -14,14 +14,14 @@ else {
 }
 global $wpdb;
 
-// I had to add this because the WP 2.0.11 version has no pluggable file :(
+/*
 $the_pluggable_file = ABSPATH . 'wp-includes/pluggable-functions.php';
 if (file_exists($the_pluggable_file)) {
     require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
 } else {
     require_once(ABSPATH . 'wp-includes/pluggable.php');
 }
-
+*/
 include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
 
 // Back to our regularly scheduled script :)

@@ -1,7 +1,7 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.6.3');
+define('ESHOP_VERSION', '2.6.4');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
@@ -26,13 +26,14 @@ Author URI: http://cms.elfden.co.uk/
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+/*
 if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
     require_once(ABSPATH . 'wp-includes/pluggable.php');
 }
 else {
     require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
 }
-
+*/
 load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
 ob_start();
 if((!is_array($_SESSION)) xor (!isset($_SESSION['shopcart'])) xor (!$_SESSION)) {
@@ -405,7 +406,12 @@ include_once ('cart-functions.php');
 add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 //fold the page menu as it is likely to get long...
 //this can be removed in a theme by using remove_filter...
-add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
+//add option to make it settable
+add_option('eshop_fold_menu', 'yes');
+
+if(get_option('eshop_fold_menu') == 'yes'){
+	add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
+}
 
 
 
@@ -456,26 +462,12 @@ add_option('eshop_credits', 'yes');
 add_option('eshop_stock_control','no');
 add_option('eshop_show_stock','no');
 add_option('eshop_first_time', 'yes');
+add_option('eshop_downloads_only', 'no');
 
-/**************************************************************************************
-* PLUGIN Plugins!
-* code by other people adapted and modified for use in the eshop plugin
-*/
-///////////////////////////------------------------------////////////////////////////
-include_once( 'eshop-plugins/eshop-custom-field-gui.class.php' );
-//adds the custom fields to the page edit
-//Pages:
-add_action( 'edit_page_form', array( 'eshop_custom_field_gui', 'eshop_insert_gui' ) );
-add_action( 'edit_post', array( 'eshop_custom_field_gui', 'eshop_edit_meta_value' ) );
-add_action( 'save_post', array( 'eshop_custom_field_gui', 'eshop_edit_meta_value' ) );
-add_action( 'publish_post', array( 'eshop_custom_field_gui', 'eshop_edit_meta_value' ) );
-///////////////////////////------------------------------////////////////////////////
+//add eshop product entry onto the post and page edit pages.
+include_once( 'eshop-custom-fields.php' );
 
-
-///////////////////////////------------------------------////////////////////////////
 //displays the add to cart form
-include_once( 'eshop-plugins/get-custom.php' );
+include_once( 'eshop-get-custom.php' );
 add_filter('the_content', 'eshop_boing');
-///////////////////////////------------------------------////////////////////////////
-
 ?>

@@ -161,11 +161,15 @@ if(!isset($_GET['change'])){
 
 					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
 				}
+				if($ptitle->post_title=='')
+					$posttitle=__('(no title)');
+				else
+					$posttitle=$ptitle->post_title;
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('change details','eshop').'">'.$grabit['Sku'].'</a></td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
+				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.$grabit['Product Description'].'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				if($pdown=='No'){

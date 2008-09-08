@@ -112,7 +112,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 
 <h3>Merchant Gateway</h3>
 <p><strong>Payment method:</strong> only paypal is available at present.</p>
-<p><strong>Email address:</strong> this is your paypal business accounts email address.</p>
+<p><strong>Email address:</strong> this is your paypal business accounts email address, and it must be exactly the same!</p>
 
 <h3>Business Details </h3>
 <p><strong>Available business email addresses:</strong> when sending an email to a customer via their order details you can add in here extra email addresses you wish to make available to 'send from'.</p>
