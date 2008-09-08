@@ -298,7 +298,12 @@ if (!function_exists('displaystats')) {
 		<ul class="eshop-stats">
 		<li><strong><?php echo $total; ?></strong> <?php _e('Total Download','eshop'); ?>s</li>
 		<li><strong><?php echo $purchased; ?></strong> <?php _e('Total Purchases','eshop'); ?></li>
-		</ul>  
+		</ul> 
+		<h3><?php _e('Download Data','eshop'); ?><h3>
+		<ul>
+		<li><a href="../wp-content/plugins/eshop/eshop-all-data.php?dl=yes"><?php _e('Download all transactions','eshop'); ?></a></li>
+		<li><a href="../wp-content/plugins/eshop/eshop-all-data.php?dl=yes&os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
+		</ul>
 		<?php
 		
 	}

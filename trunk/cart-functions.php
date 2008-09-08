@@ -299,7 +299,7 @@ if (!function_exists('orderhandle')) {
 				'$item_amt','$optname','$post_id');");
 			$i++;
 			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='".__('Product Download','eshop')."' AND post_id='$post_id'");
+			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
 			if($dlchk!=''){
 				//order contains downloads
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
@@ -329,7 +329,7 @@ if (!function_exists('orderhandle')) {
 				);
 			}
 		}
-		$postage=$_POST['shipping_1'];
+		$postage=$wpdb->escape($_POST['shipping_1']);
 		$querypostage=$wpdb->query("INSERT INTO  $itemstable 
 				(checkid, item_id,item_qty,item_amt)values(
 				'$checkid',
@@ -996,7 +996,11 @@ if (!function_exists('eshop_get_images')) {
 				@list($width, $height) = getimagesize($img_url);
 				$echo[$x]['url']=$img_url;
 				$echo[$x]['alt']=apply_filters('the_title', $attachment->post_title);
-				$echo[$x]['size']='height="'.$height.'" width="'.$width.'"';
+				//if there was an error we still want to show the picture!
+				if($height=='' || $width=='')
+				    $echo[$x]['size']='';
+				else
+    				$echo[$x]['size']='height="'.$height.'"width="'.$width.'"';
 				$x++;
 			}
 		}

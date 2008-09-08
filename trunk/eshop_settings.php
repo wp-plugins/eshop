@@ -32,9 +32,10 @@ if(isset($_POST['submit'])){
 	update_option('eshop_cart_nostock',$wpdb->escape($_POST['eshop_cart_nostock']));
 	update_option('eshop_sudo_cat',$wpdb->escape($_POST['eshop_sudo_cat']));
 	update_option('eshop_credits',$wpdb->escape($_POST['eshop_credits']));
-	
+	update_option('eshop_fold_menu',$wpdb->escape($_POST['eshop_fold_menu']));
 	update_option('eshop_stock_control',$wpdb->escape($_POST['eshop_stock_control']));
 	update_option('eshop_show_stock',$wpdb->escape($_POST['eshop_show_stock']));
+	update_option('eshop_downloads_only',$wpdb->escape($_POST['eshop_downloads_only']));
 
 	//error grabbing
 	if(is_numeric($_POST['eshop_records'])){
@@ -78,6 +79,7 @@ if(isset($_POST['submit'])){
 		}
 	}elseif($_POST['eshop_xtra_privacy']!=''){
 		$err.='<li>'.__('The Privacy Policy page needs to be a page id number.','eshop').'</li>';
+	}else{
 		update_option('eshop_xtra_privacy','');
 	}
 	if(is_numeric($_POST['eshop_xtra_help'])){
@@ -86,19 +88,85 @@ if(isset($_POST['submit'])){
 			update_option('eshop_xtra_help',$wpdb->escape($_POST['eshop_xtra_help']));
 		}else{
 			$err.='<li>'.__('Help page id chosen','eshop').' ('.$_POST['eshop_xtra_help'].') '.__('is invalid.','eshop').'</li>';
-			update_option('eshop_xtra_help','');
 		}	
 	}elseif($_POST['eshop_xtra_help']!=''){
 		$err.='<li>'.__('The help page needs to be a page id number.','eshop').'</li>';
+	}else{
 		update_option('eshop_xtra_help','');
 	}
+	if(is_numeric($_POST['eshop_cart_shipping'])){
+		$ptitle=get_post($_POST['eshop_cart_shipping']);
+		if($ptitle->post_title!=''){
+			update_option('eshop_cart_shipping',$wpdb->escape($_POST['eshop_cart_shipping']));
+		}else{
+			$err.='<li>'.__('The Shipping rates page id chosen','eshop').' ('.$_POST['eshop_cart_shipping'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}elseif(trim($_POST['eshop_cart_shipping'])!=''){
+			$err.='<li>'.__('The Shipping rates page needs to be a page id number.','eshop').'</li>';
+	}else{
+		update_option('eshop_cart_shipping','');
+	}
+	if(is_numeric($_POST['eshop_cart'])){
+		$ptitle=get_post($_POST['eshop_cart']);
+		if($ptitle->post_title!=''){
+			update_option('eshop_cart',$wpdb->escape($_POST['eshop_cart']));
+		}else{
+			$err.='<li>'.__('The Cart page id chosen','eshop').' ('.$_POST['eshop_cart'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}else{
+		$err.='<li>'.__('The Cart page needs to be a page id number.','eshop').'</li>';
+	}
 
+	if(is_numeric($_POST['eshop_cart_cancel'])){
+		$ptitle=get_post($_POST['eshop_cart_cancel']);
+		if($ptitle->post_title!=''){
+			update_option('eshop_cart_cancel',$wpdb->escape($_POST['eshop_cart_cancel']));
+		}else{
+			$err.='<li>'.__('The Cancelled payment page id chosen','eshop').' ('.$_POST['eshop_cart_cancel'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}else{
+		$err.='<li>'.__('The Cancelled payment page needs to be a page id number.','eshop').'</li>';
+	}
+
+	if(is_numeric($_POST['eshop_checkout'])){
+		$ptitle=get_post($_POST['eshop_checkout']);
+		if($ptitle->post_title!=''){
+		update_option('eshop_checkout',$wpdb->escape($_POST['eshop_checkout']));
+		}else{
+		$err.='<li>'.__('The Checkout page id chosen','eshop').' ('.$_POST['eshop_checkout'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}else{
+		$err.='<li>'.__('The Checkout page needs to be a page id number.','eshop').'</li>';
+	}
+
+	if(is_numeric($_POST['eshop_cart_success'])){
+		$ptitle=get_post($_POST['eshop_cart_success']);
+		if($ptitle->post_title!=''){
+			update_option('eshop_cart_success',$wpdb->escape($_POST['eshop_cart_success']));
+		}else{
+			$err.='<li>'.__('The Successful payment page id chosen','eshop').' ('.$_POST['eshop_cart_success'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}else{
+		$err.='<li>'.__('The Successful payment page needs to be a page id number.','eshop').'</li>';
+	}
+
+
+	if(is_numeric($_POST['eshop_show_downloads'])){
+		$ptitle=get_post($_POST['eshop_show_downloads']);
+		if($ptitle->post_title!=''){
+			update_option('eshop_show_downloads',$wpdb->escape($_POST['eshop_show_downloads']));
+		}else{
+			$err.='<li>'.__('The Downloads page id chosen','eshop').' ('.$_POST['eshop_show_downloads'].') '.__('is invalid.','eshop').'</li>';
+		}	
+	}else{
+		$err.='<li>'.__('The Downloads page needs to be a page id number.','eshop').'</li>';
+	}
 
 	if($_POST['eshop_currency_symbol']==''){
 		$err.='<li>'.__('Currency Symbol was missing, the default $ has been applied.','eshop').'</li>';
 		update_option('eshop_currency_symbol','$');
 	}
-	
+
 }
 if($err!=''){
 	echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'</p><ul>'.$err.'</ul></div>'."\n";
@@ -247,6 +315,7 @@ echo $result;
 	<label for="eshop_pagelist_num"><?php _e('Department Products to display','eshop'); ?></label><input id="eshop_pagelist_num" name="eshop_pagelist_num" type="text" value="<?php echo get_option('eshop_pagelist_num'); ?>" size="5" /><br />
 
 </fieldset>
+
 <fieldset><legend><?php _e('Credits','eshop'); ?></legend>
 <label for="eshop_credits"><?php _e('Display eShop credits','eshop'); ?></label>
 	<select name="eshop_credits" id="eshop_credits">
@@ -261,10 +330,50 @@ echo $result;
 	?>
 	</select><br />
 </fieldset>
+<fieldset><legend><?php _e('Automatically created pages','eshop'); ?></legend>
+<p class="warn"><?php _e('<strong>Warning:</strong> Changes made here amend the page id of the automatically created pages - change with extreme care.','eshop'); ?></p>
+<label for="eshop_cart"><?php _e('Cart - page id number','eshop'); ?></label><input id="eshop_cart" name="eshop_cart" type="text" value="<?php echo get_option('eshop_cart'); ?>" size="5" /><br />
+<label for="eshop_checkout"><?php _e('Checkout - page id number','eshop'); ?></label><input id="eshop_checkout" name="eshop_checkout" type="text" value="<?php echo get_option('eshop_checkout'); ?>" size="5" /><br />
+<label for="eshop_cart_success"><?php _e('Successful payment  - page id number','eshop'); ?></label><input id="eshop_cart_success" name="eshop_cart_success" type="text" value="<?php echo get_option('eshop_cart_success'); ?>" size="5" /><br />
+<label for="eshop_cart_cancel"><?php _e('Cancelled payment - page id number','eshop'); ?></label><input id="eshop_cart_cancel" name="eshop_cart_cancel" type="text" value="<?php echo get_option('eshop_cart_cancel'); ?>" size="5" /><br />
+<label for="eshop_show_downloads"><?php _e('Downloads - page id number','eshop'); ?></label><input id="eshop_show_downloads" name="eshop_show_downloads" type="text" value="<?php echo get_option('eshop_show_downloads'); ?>" size="5" /><br />
+</fieldset>
 
+<fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
+<label for="eshop_fold_menu"><?php _e('Hide sub pages from menu until top level page is visited.','eshop'); ?></label>
+	<select name="eshop_fold_menu" id="eshop_fold_menu">
+	<?php
+	if('yes' == get_option('eshop_fold_menu')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
+</fieldset>
 <fieldset><legend><?php _e('Link to extra pages','eshop'); ?></legend>
+<p><?php _e('These links automatically appear on the checkout page.','eshop'); ?></p>
+<label for="eshop_cart_shipping"><?php _e('Shipping rates - page id number','eshop'); ?></label><input id="eshop_cart_shipping" name="eshop_cart_shipping" type="text" value="<?php echo get_option('eshop_cart_shipping'); ?>" size="5" /><br />
 <label for="eshop_xtra_privacy"><?php _e('Privacy Policy - page id number','eshop'); ?></label><input id="eshop_xtra_privacy" name="eshop_xtra_privacy" type="text" value="<?php echo get_option('eshop_xtra_privacy'); ?>" size="5" /><br />
 <label for="eshop_xtra_help"><?php _e('Help - page id number','eshop'); ?></label><input id="eshop_xtra_help" name="eshop_xtra_help" type="text" value="<?php echo get_option('eshop_xtra_help'); ?>" size="5" /><br />
+</fieldset>
+
+<fieldset><legend><?php _e('Downloads Only','eshop'); ?></legend>
+<p><?php _e('Change this setting only if you are using eShop for downloadable sales only.','eshop'); ?></p>
+<label for="eshop_downloads_only"><?php _e('Downloads Only','eshop'); ?></label>
+	<select name="eshop_downloads_only" id="eshop_downloads_only">
+	<?php
+	if('yes' == get_option('eshop_downloads_only')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
 </fieldset>
 
 <fieldset><legend><?php _e('Cron','eshop'); ?></legend>
@@ -274,8 +383,9 @@ echo $result;
 <input type="hidden" name="page_options" value="eshop_method,
 eshop_status,eshop_currency,eshop_location,eshop_business,
 eshop_sysemails,eshop_records,eshop_options_num,eshop_currency_symbol,
-eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,
-eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email" />
+eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,eshop_fold_menu,
+eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email,eshop_cart,
+eshop_cart_cancel,eshop_cart_shipping,eshop_cart_success,eshop_checkout,eshop_show_downloads,eshop_downloads_only" />
 
 <p class="submit">
 <input type="submit" name="submit" value="<?php _e('Update Options &#187;') ?>" />

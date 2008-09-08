@@ -3,8 +3,8 @@ Contributors: Rich Pedley
 Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop
 Requires at least: 2.5
-Tested up to: 2.5.1
-Stable tag: 2.6.3
+Tested up to: 2.6.1
+Stable tag: 2.6.4
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -12,11 +12,12 @@ An accessible Paypal Shopping Cart plugin.
 
 eShop has many features, these include:
 
-* 1 product per page
+* 1 product per page or post
 * Products entered via page editing
 * Products can have multiple options
 * Upload downloadable products
 * Basic Statistics
+* Download sales data
 * 3 methods for calculating shipping charges, plus various zone settings via Country or US State
 * Parent pages can list random products, featured products, or sub product pages (just like categories with posts)
 * Admin has access to an Order handling section
@@ -29,6 +30,25 @@ eShop has many features, these include:
 
 Latest version now has an uninstall, allowing all eShop data to be removed from the database, and files deleted where necessary.
 
+== Latest Update ==
+
+Latest version, 2.6.4, added new functionality and fixed a few bugs.
+
+ = Added =
+ 
+* CSV download for all sales.
+* Ability to 'fold menus' (hide sub pages)
+* Added a download only site option - this changes the checkout form to bare minimum.
+* Added ability to hide shipping links
+* Added ability to change automaticlly created page ids
+* Products can now be added to pages or *posts*
+
+= Fixed =
+
+* Temporary fixed issue with image heights and widths (will not add to img tag if the image can't be found)
+* bug in eshop_products/eshop_base for pages with no title.
+* removed references to pluggable.php
+* various minor bugs
 
 == Installation ==
 

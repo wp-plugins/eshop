@@ -21,13 +21,13 @@ if(isset($_GET['action']) && $_GET['action'] == 'ipn'){
 }
 include_once(ABSPATH .'wp-includes/wp-db.php');
 //lets make sure this is here and available
-//and maybe this as well:
+/*
 if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
     require_once(ABSPATH . 'wp-includes/pluggable.php');
 }else {
     require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
 }
-
+*/
 global $wpdb;
 $detailstable=$wpdb->prefix.'eshop_orders';
 
