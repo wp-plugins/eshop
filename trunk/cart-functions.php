@@ -854,122 +854,64 @@ if (!function_exists('eshop_show_extra_links')) {
 }
 if (!function_exists('eshop_download_directory')) {
     function eshop_download_directory(){
-        $dir_upload='downloads';
-        if ( ini_get('safe_mode') ) {
-            $dir_path='wp-content/plugins/eshop/';
-        } else { 
-            $dir_path=get_option('upload_path').'/../eshop_';
-        }
-
-        $dirpath=ABSPATH.$dir_path.$dir_upload.'/';
-      //  if(is_writable($dir_path)){
-			wp_mkdir_p( $dirpath );
-			if(!file_exists($dirpath.'.htaccess')){
-				$eshoppath=ABSPATH.'wp-content/plugins/eshop/downloads/';
-				if ($handle = opendir($eshoppath)) {
-					/* This is the correct way to loop over the directory. */
-					while (false !== ($file = readdir($handle))) {
-						if($file!='' && $file!='.' && $file!='..'){
-							copy($eshoppath.$file,$dirpath.$file);
-						}
+		$dirs=wp_upload_dir();
+		$upload_dir= substr_replace($dirs['path'], '', -(strlen($dirs['subdir'])));
+		$url_dir=substr_replace($dirs['url'], '', -(strlen($dirs['subdir'])));
+		$plugin_dir=ABSPATH.PLUGINDIR;
+		$eshop_goto=$upload_dir.'/../eshop_downloads';
+		$eshop_from=$plugin_dir.'/eshop/downloads';
+		if(!file_exists($eshop_goto.'/.htaccess')){
+			wp_mkdir_p( $upload_dir );
+			wp_mkdir_p( $eshop_goto );
+			if ($handle = opendir($eshop_from)) {
+				/* This is the correct way to loop over the directory. */
+				while (false !== ($file = readdir($handle))) {
+					if($file!='' && $file!='.' && $file!='..'){
+						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+						chmod($eshop_goto.'/'.$file,0666);
 					}
-					closedir($handle);
 				}
+				closedir($handle);
 			}
-			return $dirpath;
-		//}else{
-		//	return 0;
-		//}
-		//return 0;
-		//commented lines are a quick fix - need feedback
+		}
+		return $eshop_goto.'/';
     }
 }
-
 if (!function_exists('eshop_files_directory')) {
     function eshop_files_directory(){
-        $dir_upload='files';
-        if ( ini_get('safe_mode') ) {
-            $dir_path='wp-content/plugins/eshop/';
-        } else { 
-            $dir_path=get_option('upload_path').'/eshop_';
-        }
-        $dirpath=ABSPATH.$dir_path.$dir_upload.'/';
-       // if(is_writable($dir_path)){
-       	if(!file_exists($dirpath.'eshop.css')){
-
-			wp_mkdir_p( $dirpath );
-			if(!file_exists($dirpath.'eshop.css')){
-				$eshoppath=ABSPATH.'wp-content/plugins/eshop/files/';
-				if ($handle = opendir($eshoppath)) {
-					/* This is the correct way to loop over the directory. */
-					while (false !== ($file = readdir($handle))) {
-						if($file!='' && $file!='.' && $file!='..'){
-							copy($eshoppath.$file,$dirpath.$file);
-							chmod($dirpath.$file,0666);
-						}
+        $dirs=wp_upload_dir();
+        $upload_dir= substr_replace($dirs['path'], '', -(strlen($dirs['subdir'])));
+        $url_dir=substr_replace($dirs['url'], '', -(strlen($dirs['subdir'])));
+       	$plugin_dir=ABSPATH.PLUGINDIR;
+       	$eshop_goto=$upload_dir.'/eshop_files';
+       	$eshop_from=$plugin_dir.'/eshop/files';
+       	if(!file_exists($eshop_goto.'/eshop.css')){
+			wp_mkdir_p( $upload_dir );
+			wp_mkdir_p( $eshop_goto );
+			if ($handle = opendir($eshop_from)) {
+				/* This is the correct way to loop over the directory. */
+				while (false !== ($file = readdir($handle))) {
+					if($file!='' && $file!='.' && $file!='..'){
+						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+						chmod($eshop_goto.'/'.$file,0666);
 					}
-					closedir($handle);
 				}
+				closedir($handle);
 			}
-			$urlpath=get_bloginfo('url').'/'.$dir_path.$dir_upload.'/';
+			$urlpath=$url_dir.'/eshop_files/';
 			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
-			$rtn=array(0=>$dirpath,1=>$urlpath);
-
+			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
 			return $rtn;
 		}else{
-			$urlpath=get_bloginfo('url').'/'.$dir_path.$dir_upload.'/';
+			$urlpath=$url_dir.'/eshop_files/';
 			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
-			$rtn=array(0=>$dirpath,1=>$urlpath);
+			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
 			return $rtn;
 		}
 		return 0;
     }
 }
-/* leaving in for now- must delete at some point.
-if (!function_exists('eshop_download_directory')) {
-	function eshop_download_directory(){
-		$dir_upload='eshop_downloads';
-		$dirpath=ABSPATH.get_option('upload_path').'/'.$dir_upload.'/';
-		wp_mkdir_p( $dirpath );
-		if(!file_exists($dirpath.'.htaccess')){
-			$eshoppath=ABSPATH.'wp-content/plugins/eshop/downloads/';
-			if ($handle = opendir($eshoppath)) {
-				// This is the correct way to loop over the directory. 
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshoppath.$file,$dirpath.$file);
-					}
-				}
-				closedir($handle);
-			}
-		}
-		return $dirpath;
-	}
-}
-if (!function_exists('eshop_files_directory')) {
-	function eshop_files_directory(){
-		$dir_upload='eshop_files';
-		$dirpath=ABSPATH.get_option('upload_path').'/'.$dir_upload.'/';
-		wp_mkdir_p( $dirpath );
-		if(!file_exists($dirpath.'eshop.css')){
-			$eshoppath=ABSPATH.'wp-content/plugins/eshop/files/';
-			if ($handle = opendir($eshoppath)) {
-				// This is the correct way to loop over the directory. 
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshoppath.$file,$dirpath.$file);
-						chmod($dirpath.$file,0666);
-					}
-				}
-				closedir($handle);
-			}
-		}
-		$urlpath=get_bloginfo('url').'/'.get_option('upload_path').'/'.$dir_upload.'/';
-		$rtn=array(0=>$dirpath,1=>$urlpath);
-		return $rtn;
-	}
-}
-*/
+
 if (!function_exists('eshop_get_images')) {
 	function eshop_get_images($pID){
 		$echo=array();
