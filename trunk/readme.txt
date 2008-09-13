@@ -1,7 +1,7 @@
 === eShop ===
 Contributors: Rich Pedley
 Donate link: http://www.quirm.net/page.php?id=39
-Tags: eshop, ecommerce, shop
+Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
 Stable tag: 2.6.6
