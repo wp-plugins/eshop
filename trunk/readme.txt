@@ -4,7 +4,7 @@ Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.6.5
+Stable tag: 2.6.6
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -32,10 +32,11 @@ Latest version now has an uninstall, allowing all eShop data to be removed from 
 
 == Latest Update ==
 
-Latest Version, 2.6.5, attempts to fix the directory creation issue.
+Version 2.6.6 fixes uninstall routines.
 
+Version 2.6.5 attempts to fix the directory creation issue.
 
-Version, 2.6.4, added new functionality and fixed a few bugs.
+Version 2.6.4 added new functionality and fixed a few bugs.
 
  = Added =
  
