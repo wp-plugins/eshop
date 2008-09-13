@@ -28,6 +28,7 @@ if(isset($_POST['delete'])){
 	//required for deleting meta - grab bfore its deleted
 	$numoptions=get_option('eshop_options_num');
 	echo '<ul>';
+
 	//tables
 	$etable[] = $wpdb->prefix . "eshop_states";
 	$etable[] = $wpdb->prefix . "eshop_shipping_rates";
@@ -41,10 +42,11 @@ if(isset($_POST['delete'])){
 	foreach($etable as $table){
 		if ($wpdb->get_var("show tables like '$table'") == $table) {
 			//delete it
-			$wpdb->query("DROP TABLE '$table'");
+			$wpdb->query("DROP TABLE IF EXISTS $table");
 		}
 	}
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
+
 	//options
 	$epages[] = 'eshop_business';
 	$epages[] = 'eshop_cart';
@@ -77,10 +79,13 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_sysemails'; 
 	$epages[] = 'eshop_xtra_help'; 
 	$epages[] = 'eshop_xtra_privacy'; 
+	$epages[] = 'eshop_downloads_only';
+	$epages[] = 'eshop_fold_menu';
 	foreach($epages as $epage){
-		delete_option($epages);
+		delete_option($epage);
 	}
 	echo '<li>'.__('Options - deleted','eshop').'</li>';
+
 	//meta values
 	$allposts = get_pages();
 	foreach( $allposts as $postinfo) {
@@ -97,6 +102,7 @@ if(isset($_POST['delete'])){
 		}
 	}
 	echo '<li>'.__('Product Information - deleted','eshop').'</li>';
+
 	//delete files
 	$dloaddir=eshop_download_directory();
 	if ($handle = opendir($dloaddir)) {
@@ -122,6 +128,7 @@ if(isset($_POST['delete'])){
 		rmdir ($filedir[0]);
 		echo '<li>'.__('eShop files deleted','eshop').'</li>';
 	}
+
 	//clear the cron
 	wp_clear_scheduled_hook('eshop_event');
 	//and finally deactivate the plugin - might cause the page to go walkabout - may need to redirect to plugins page
@@ -129,6 +136,7 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('Plugin deactivated','eshop').'</li>';
 	echo '</ul>';
 	echo '<p><strong>'.__('eShop uninstalled.','eshop').'</strong></>';
+
 }else{
 	echo '<p>'.__('Uninstalling eShop will result in the following:','eshop').'</p>';
 	echo '<ul>';
