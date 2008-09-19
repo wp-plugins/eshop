@@ -52,6 +52,9 @@ if (!function_exists('eshop_cart')) {
 
 
 		//unique identifier
+		if(!isset($pid)) $pid='';
+		if(!isset($option)) $option='';
+
 		$identifier=$pid.'-'.$option;
 		if(isset($_SESSION['shopcart'][$identifier])){
 			$_SESSION['shopcart'][$identifier]['qty']+=1;
@@ -109,7 +112,7 @@ if (!function_exists('eshop_cart')) {
 		if($error!='') $echo.= $error;
 
 		if(isset($_SESSION['shopcart'])){
-			if($_GET['action']=='cancel' && !isset($_POST['save'])){
+			if((isset($_GET['acgtion']) && $_GET['action']=='cancel') && !isset($_POST['save'])){
 				$echo.= "<h3>".__('The order was canceled at','eshop')." ".get_option('eshop_method').".</h3>"; 
 				$echo.= '<p>'.__('We have not deleted the contents of your shopping cart in case you may want to edit its content.','eshop').'</p>';
 			}

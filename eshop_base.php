@@ -68,6 +68,7 @@ if(!isset($_GET['change'])){
 		}
 	}else{
 		$csf=' class="current"';
+		$sortby='id';
 	}
 	
 	
@@ -268,7 +269,11 @@ if(!isset($_GET['change'])){
 			}
 			$_POST=sanitise_array($_POST);
 			$err='';
-			$baseimg=$wpdb->escape($_POST['baseimg']);
+			if(isset($_POST['baseimg'])){
+				$baseimg=$wpdb->escape($_POST['baseimg']);
+			}else{
+				$baseimg='';
+			}
 			$basebrand=$wpdb->escape($_POST['basebrand']);
 			$baseean=$wpdb->escape($_POST['baseean']);
 			$baseisbn=$wpdb->escape($_POST['baseisbn']);
@@ -303,6 +308,11 @@ if(!isset($_GET['change'])){
 			}
 		}
 		$basedata=$wpdb->get_row("SELECT * FROM $basetable WHERE post_id = $change");
+		
+		if($basedata==''){
+				$basedata->post_id=$basedata->img=$basedata->brand=$basedata->ptype=$basedata->thecondition=$basedata->expiry=$basedata->ean=$basedata->isbn=$basedata->mpn=$basedata->qty='';
+		}
+		
 	?>
 		<div class="wrap">
 		<h2><?php _e('Products','eshop'); ?></h2>
@@ -407,6 +417,8 @@ if(!isset($_GET['change'])){
 
 				$imgs= eshop_get_images($change);
 				$x=1;
+				
+	
 				if(is_array($imgs)){
 					if($basedata->img==''){
 						foreach($imgs as $k=>$v){

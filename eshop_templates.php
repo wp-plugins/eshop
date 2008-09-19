@@ -24,7 +24,7 @@ function eshop_template_email(){
 	$file1='order-recieved-email.tpl';
 	$file2='customer-response-email.tpl';
 	if(isset($_POST['choose'])||isset($_POST['edit'])){
-		if($_POST['template']==1 || $_POST['edit']==$file1){
+		if((isset($_POST['template']) && $_POST['template']==1 )|| (isset($_POST['edit']) && $_POST['edit']==$file1)){
 			$templateFile.=$file1;
 			$editthis=$file1;
 			$oemail=' selected="selected"';
@@ -87,7 +87,7 @@ function eshop_template_email(){
 	if(!is_file($templateFile))
 		$error = 1;
 
-	if(!$error && filesize($templateFile) > 0) {
+	if(!isset($error) && filesize($templateFile) > 0) {
 		$f="";
 		$f = fopen($templateFile, 'r');
 		$file = fread($f, filesize($templateFile));
@@ -98,7 +98,7 @@ function eshop_template_email(){
 		?>
 	</textarea>
 	<input type="hidden" name="edit" value="<?php echo $editthis;?>" />
-   <p class="submit eshop"><input type="submit" value="<?php _e('Update Templat','eshop'); ?>e" name="submit" /></p>
+   <p class="submit eshop"><input type="submit" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
 </div>

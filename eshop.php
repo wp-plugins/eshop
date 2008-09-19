@@ -1,12 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.6.6');
+define('ESHOP_VERSION', '2.6.7');
+
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.6.6
+Version: 2.6.7
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -36,12 +37,11 @@ else {
 */
 load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
 ob_start();
-if((!is_array($_SESSION)) xor (!isset($_SESSION['shopcart'])) xor (!$_SESSION)) {
+if(!isset($_SESSION['shopcart'])) {
   session_start();
+  session_register('shopcart');
 }
-if(!session_is_registered('shopcart')){
-	$shopcart=$_SESSION['shopcart'];
-}
+
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook

@@ -155,7 +155,8 @@ $x=0;
 foreach ($_SESSION['shopcart'] as $productid => $opt){
 	$x++;
 	$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
-	$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
+	$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
+	//$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
 	$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 	$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".number_format($opt["price"], 2)."\" />";
 	$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
@@ -225,6 +226,7 @@ if (!function_exists('eshop_checkout')) {
 		$productidkeys=implode(",", $keys);
 		$productidkeys=trim($productidkeys);
 		//reqd for shipping - finds the correct state for working out shipping, and set things up for later usage.
+if(isset($_POST['ship_name'])){
 		if($_POST['ship_name']!='' || $_POST['ship_address']!='' 
 		|| $_POST['ship_city']!='' || $_POST['ship_postcode']!=''
 		|| $_POST['ship_company']!='' || $_POST['ship_phone']!=''
@@ -285,7 +287,9 @@ if (!function_exists('eshop_checkout')) {
 				$pzone=$_POST['state'];
 			}
 		}
-
+}else{
+	$pzone='';
+}
 		//
 		$shiparray=array();
 		foreach ($_SESSION['shopcart'] as $productid => $opt){
@@ -461,6 +465,7 @@ if (!function_exists('eshop_checkout')) {
 				}
 				$table2=$wpdb->prefix.'eshop_shipping_rates';
 				$tempshiparray=array();
+				$shipping=0;
 				switch(get_option('eshop_shipping')){
 					case '1'://( per quantity of 1, prices reduced for additional items )
 						foreach ($shiparray as $nowt => $shipclass){
@@ -625,33 +630,32 @@ if (!function_exists('eshop_checkout')) {
 			$ship_postcode=$_SESSION['addy']['ship_postcode'];
 			$comments=$_SESSION['addy']['comments'];
 		}else{
+			$first_name='';
+			$last_name='';
+			$company='';
+			$phone='';
+			$reference='';
+			$email='';
+			$address1='';
+			$address2='';
+			$city='';
+			$country='';
+			$state='';
+			$zip='';
+			$ship_name='';
+			$ship_company='';
+			$ship_phone='';
+			$ship_address='';
+			$ship_city='';
+			$ship_postcode='';
+			$ship_country='';
+			$ship_state='';
+			$comments='';
 			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0){
 			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
 					$$k=$v;
 				}
-			}else{
-				$first_name='';
-				$last_name='';
-				$company='';
-				$phone='';
-				$reference='';
-				$email='';
-				$address1='';
-				$address2='';
-				$city='';
-				$country='';
-				$state='';
-				$zip='';
-				$ship_name='';
-				$ship_company='';
-				$ship_phone='';
-				$ship_address='';
-				$ship_city='';
-				$ship_postcode='';
-				$ship_country='';
-				$ship_state='';
-				$comments='';
 			}
 		}
 	}

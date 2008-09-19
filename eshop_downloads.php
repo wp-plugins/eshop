@@ -149,7 +149,6 @@ function eshop_downloads_manager() {
 				$filepath=eshop_download_directory().$row->files;
 			   $size = @filesize($filepath);
 			   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
-			   $calt++;
 			   echo "<tr>\n";
 			   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
 			   echo '<td headers="edtitle redid'.$row->id.'">'.$label."</td>\n";
@@ -164,9 +163,9 @@ function eshop_downloads_manager() {
 			</table>
 			<?php
 			$metatable=$wpdb->prefix ."postmeta";
-			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE meta_key='Product Download'");
+			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE meta_key='Product Download' AND meta_value!=''");
 			if($checkproduct>0){
-				$myrows=$wpdb->get_results("Select post_id FROM $metatable WHERE meta_key='Product Download'");
+				$myrows=$wpdb->get_results("Select post_id FROM $metatable WHERE meta_key='Product Download' AND meta_value!=''");
 				echo '<p class="productassociation">'.__('This file is associated with the following product pages:','eshop').'</p>';
 				echo '<ul class="productpages">';
 				foreach($myrows as $myrow){
@@ -238,6 +237,7 @@ function eshop_downloads_manager() {
 			}
 		}else{
 			$cia=' class="current"';
+			$sortby='ORDER BY id ASC';
 		}
 		$range=10;
 		$max = $wpdb->get_var("SELECT COUNT(id) FROM $table WHERE id > 0");

@@ -13,6 +13,7 @@ else {
 }
 $result='';
 global $wpdb;
+	$err='';
 
 if(isset($_POST['submit'])){
 	include 'cart-functions.php';
@@ -20,7 +21,6 @@ if(isset($_POST['submit'])){
 		$_POST = stripslashes_array($_POST);
 	}
 	$_POST=sanitise_array($_POST);
-	$err='';
 	update_option('eshop_method',$wpdb->escape($_POST['eshop_method']));
 	update_option('eshop_status',$wpdb->escape($_POST['eshop_status']));
 	update_option('eshop_currency',$wpdb->escape($_POST['eshop_currency']));

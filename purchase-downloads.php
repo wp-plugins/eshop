@@ -72,7 +72,7 @@ if (!function_exists('eshop_downloads')) {
 				$echo .= eshop_dloadform($email,$code,$error);
 			}
 		}else{
-			$echo .= eshop_dloadform($email,$code);
+			$echo .= eshop_dloadform('','');
 		}
 		return $echo;
 	}

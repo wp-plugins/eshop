@@ -14,6 +14,8 @@ else {
 include 'eshop-base-functions.php';
 $result='';
 global $wpdb;
+	$err='';
+
 if(isset($_GET['reset']) && $_GET['reset']=='yes'){
 	$table=$wpdb->prefix.'eshop_base_products';
 	$wpdb->query("TRUNCATE TABLE $table"); 
@@ -25,7 +27,6 @@ if(isset($_POST['submit'])){
 		$_POST = stripslashes_array($_POST);
 	}
 	$_POST=sanitise_array($_POST);
-	$err='';
 	update_option('eshop_base_brand',$wpdb->escape($_POST['eshop_base_brand']));
 	update_option('eshop_base_condition',$wpdb->escape($_POST['eshop_base_condition']));
 	update_option('eshop_base_expiry',$wpdb->escape($_POST['eshop_base_expiry']));
