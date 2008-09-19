@@ -68,6 +68,7 @@ if (!function_exists('displayorders')) {
 			}
 		}else{
 			$cda=' class="current"';
+			$sortby='ORDER BY custom_field ASC';
 		}
 		
 		$range=10;
@@ -91,7 +92,6 @@ if (!function_exists('displayorders')) {
 			$c=$pager->get_limit_offset();
 			//
 			$myrowres=$wpdb->get_results("Select * From $dtable where status='$type' $sortby LIMIT $thispage");
-			
 			$calt=0;
 			$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'];
 			echo '<ul id="eshopsubmenu">';

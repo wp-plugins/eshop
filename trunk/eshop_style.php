@@ -73,7 +73,7 @@ function eshop_form_admin_style(){
 	if(!is_file($styleFile))
 		$error = 1;
 
-	if(!$error && filesize($styleFile) > 0) {
+	if(!isset($error) && filesize($styleFile) > 0) {
 		$f="";
 		$f = fopen($styleFile, 'r');
 		$file = fread($f, filesize($styleFile));

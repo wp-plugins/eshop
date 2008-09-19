@@ -72,6 +72,7 @@ function eshop_products_manager() {
 		}
 	}else{
 		$csf=' class="current"';
+		$sortby='id';
 	}
 	
 	

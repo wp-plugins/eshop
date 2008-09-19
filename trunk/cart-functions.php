@@ -125,6 +125,7 @@ if (!function_exists('display_cart')) {
 				$echo.='</th>
 				<td headers="cartItem scharge" class="amts lb" colspan="2">'.$currsymbol.number_format($shipping,2).'</td>
 				</tr>';
+				$_SESSION['shipping']=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price']=$final_price;
 				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".$currsymbol.number_format($final_price, 2)."</strong></td></tr>";
@@ -245,7 +246,7 @@ if (!function_exists('orderhandle')) {
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
 		$processing=__('Processing&#8230;','eshop');
-		$query1=$wpdb->query("INSERT INTO  $detailstable
+		$query1=$wpdb->query("INSERT INTO $detailstable
 			(checkid, first_name, last_name,company,email,phone, address1, address2, city,
 			state, zip, country, reference, ship_name,ship_company,ship_phone, 
 			ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
@@ -352,6 +353,7 @@ if (!function_exists('sanitise_array')) {
 }
 if(!function_exists('eshop_build_cookie')) {
 	function eshop_build_cookie($var_array) {
+		$out='';
 	  if (is_array($var_array)) {
 		foreach ($var_array as $index => $data) {
 		  $out.= ($data!="") ? $index."=".$data."|" : "";
@@ -401,7 +403,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		}
 		if($status=='Completed'){$status=__('Order Recieved','eshop');}
 		if($status=='Pending'){$status=__('Pending Payment','eshop');}
-		$cart=$address=$extras= '';
+		$contact=$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 		$total=0;
 		$currsymbol=get_option('eshop_currency_symbol');

@@ -86,12 +86,12 @@ foreach($array as $foo=>$grabit){
 	$attachment = $wpdb->get_var("SELECT ID FROM $wpdb->posts where post_parent= ".$rid." and post_type = 'attachment' limit 1");
 	$baseimg=wp_get_attachment_url($attachment);
 	$basedescription=get_the_excerpt();
-	 
+	 $basecondition=$basebrand=$baseptype=$basedate=$baseimg=$baseean=$baseisbn=$basempn=$baseqty='';
 	//individual set product data
 	$basetable=$wpdb->prefix ."eshop_base_products";
 	$basedata=$wpdb->get_row("SELECT * FROM $basetable WHERE post_id = $rid");
 	//if this exists overwrite defaults
-	if($basedata->post_id!=''){
+	if(is_array($basedata) && $basedata->post_id!=''){
 			$basecondition=$basedata->thecondition;
 			$basebrand=$basedata->brand;
 			$baseptype=$basedata->ptype;
