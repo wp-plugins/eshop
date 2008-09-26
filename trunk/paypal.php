@@ -16,18 +16,6 @@
  *  I possibly could.  Please email me with questions, comments, and suggestions.
  *  See the header of paypal.class.php for additional resources and information.
 */
-if(isset($_GET['action']) && $_GET['action'] == 'ipn'){
-	include_once('../../../wp-config.php');
-}
-include_once(ABSPATH .'wp-includes/wp-db.php');
-//lets make sure this is here and available
-/*
-if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
-    require_once(ABSPATH . 'wp-includes/pluggable.php');
-}else {
-    require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
-}
-*/
 global $wpdb;
 $detailstable=$wpdb->prefix.'eshop_orders';
 
@@ -133,7 +121,18 @@ switch ($_GET['action']) {
 		$p->add_field('return', $slink);
 		$p->add_field('cancel_return', $clink);
 		//goes direct to this script as nothing needs showing on screen.
-		$p->add_field('notify_url', $this_script.'/wp-content/plugins/eshop/paypal.php?action=ipn');
+		if(get_option('eshop_cart_success')!=''){
+			if( $wp_rewrite->using_permalinks()){
+				$ilink=get_permalink(get_option('eshop_cart_success')).'?action=ipn';
+			}else{
+				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;action=ipn';
+			}
+		}else{
+			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=ipn';
+		}
+		$p->add_field('notify_url', $ilink);
+
+	//	$p->add_field('notify_url', $this_script.'/wp-content/plugins/eshop/paypal.php?action=ipn');
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'],2));
 		foreach($_POST as $name=>$value){

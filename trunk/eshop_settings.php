@@ -262,6 +262,7 @@ echo $result;
 	?>
 	</select><br />
 
+
 <fieldset><legend><?php _e('Downloadables','eshop'); ?></legend>
 <label for="eshop_downloads_num"><?php _e('Download attempts','eshop'); ?></label><input id="eshop_downloads_num" name="eshop_downloads_num" type="text" value="<?php echo get_option('eshop_downloads_num'); ?>" size="5" /><br />
 </fieldset>
@@ -313,7 +314,6 @@ echo $result;
 	</select><br />
 	<label for="eshop_random_num"><?php _e('Random products to display','eshop'); ?></label><input id="eshop_random_num" name="eshop_random_num" type="text" value="<?php echo get_option('eshop_random_num'); ?>" size="5" /><br />
 	<label for="eshop_pagelist_num"><?php _e('Department Products to display','eshop'); ?></label><input id="eshop_pagelist_num" name="eshop_pagelist_num" type="text" value="<?php echo get_option('eshop_pagelist_num'); ?>" size="5" /><br />
-
 </fieldset>
 
 <fieldset><legend><?php _e('Credits','eshop'); ?></legend>

@@ -4,7 +4,7 @@ Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.6.7
+Stable tag: 2.7.0
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -13,6 +13,7 @@ An accessible Paypal Shopping Cart plugin.
 eShop has many features, these include:
 
 * 1 product per page or post
+* Listing pages can have an add to cart form per item
 * Products entered via page editing
 * Products can have multiple options
 * Upload downloadable products
@@ -30,7 +31,21 @@ eShop has many features, these include:
 
 Latest version now has an uninstall, allowing all eShop data to be removed from the database, and files deleted where necessary.
 
+
 == Latest Updates ==
+
+Version 2.7.0 New features including:
+
+* Widget basic Cart (number of items, plus links to cart and checkout)
+* Ability to increase a orders download allowance
+* Improved paypal ipn - now integrated with the pages of wordpress
+* added ability to show add to cart form on listing pages...
+* Ability to amend the image shown on the listing pages 
+
+Bug Fixes 
+
+* deleting product info now deletes correctly!
+
 
 Version 2.6.7 small fixes only - many files affected.
 
@@ -40,21 +55,6 @@ Version 2.6.5 attempts to fix the directory creation issue.
 
 Version 2.6.4 added new functionality and fixed a few bugs.
 
- = Added =
- 
-* CSV download for all sales.
-* Ability to 'fold menus' (hide sub pages)
-* Added a download only site option - this changes the checkout form to bare minimum.
-* Added ability to hide shipping links
-* Added ability to change automaticlly created page ids
-* Products can now be added to pages or *posts*
-
-= Fixed =
-
-* Temporary fixed issue with image heights and widths (will not add to img tag if the image can't be found)
-* bug in eshop_products/eshop_base for pages with no title.
-* removed references to pluggable.php
-* various minor bugs
 
 == Installation ==
 
@@ -102,4 +102,4 @@ adjust other pages that use the code:
 
 = Is eShop translatable =
 
-Yes! the po file is available via quirm.net
+Yes! the po file is available

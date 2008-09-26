@@ -81,6 +81,7 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_xtra_privacy'; 
 	$epages[] = 'eshop_downloads_only';
 	$epages[] = 'eshop_fold_menu';
+	$epages[] = 'eshop_widget';
 	foreach($epages as $epage){
 		delete_option($epage);
 	}
@@ -96,6 +97,8 @@ if(isset($_POST['delete'])){
 		delete_post_meta($postinfo->ID, 'Featured Product');
 		delete_post_meta($postinfo->ID, 'Stock Available');
 		delete_post_meta($postinfo->ID, 'Stock Quantity');
+		delete_post_meta($postinfo->ID, '_eshop_prod_img');
+
 		for($i=1;$i<=$numoptions;$i++){
 			delete_post_meta($postinfo->ID,'Option '.$i);
 			delete_post_meta($postinfo->ID,'Price '.$i);

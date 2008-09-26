@@ -82,7 +82,7 @@ a.itemref {
 
 /* more link */
 a.eshopmore {
-clear:right;
+	clear:right;
 	display:block;
 	text-align:right;
 }
@@ -190,7 +190,7 @@ table.cart tr.stotal {
 }
 #eshopshiprates td, #zonelist td {
 	padding:5px 8px;
-background:#FDF7F1;
+	background:#FDF7F1;
 }
 #eshopshiprates tr.alt td, #zonelist tr.alt td {
 	background:#FAECDE;
@@ -289,6 +289,9 @@ div.paginate ul li{
 div.paginate ul li a{
 	display:block;
 }
+.pagfoot{
+	clear:left;
+}	
 /* eshop panel listings */
 ul.eshoppanels{
 	list-style:none;
@@ -298,10 +301,10 @@ ul.eshoppanels{
 ul.eshoppanels li{
 	list-style:none;
 	float:left;
-	border:1px solid #ca9;
 	margin:0 5px 5px 0;
 	text-align:center;
-	min-height:175px;
+/* you may need to adjust this figure - currently set to include the add to cart form */
+	min-height:275px;
 }
 #content ul.eshoppanels li a{
 	text-decoration:none;
@@ -312,6 +315,25 @@ ul.eshoppanels li{
 	float:none;
 	margin:0;
 }
-.pagfoot{
-	clear:left;
+/* section for eshop panels with form */
+ul.eshoppanels li form select,ul.eshoppanels li form.input{
+	display:block;
+	width:auto;
+	margin:2px auto;
+}
+ul.eshoppanels li form.addtocart {
+	width:auto;
+	margin-top:0;
+	padding:0;
+	background:transparent;
+	color:#404040;
+	border:0;
+}
+ul.eshoppanels li form.addtocart fieldset{
+	background:transparent;
+}
+
+/* eshop widget */
+p.eshopwidget span{
+	font-size:2em;
 }

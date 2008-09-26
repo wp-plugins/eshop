@@ -1,7 +1,7 @@
 <?php 
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no'), $atts));
 
 	switch (get_option('eshop_sudo_cat')){
 		case '1'://newest
@@ -83,10 +83,10 @@ function eshop_list_subpages($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class);
+			$echo .= eshop_listpages($pages,$class,$form);
 		}else{
 			if($class='eshopsubpages') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class);
+			$echo .= eshop_listpanels($pages,$class,$form);
 		}
 		
 		if(isset($eecho)){
@@ -98,7 +98,7 @@ function eshop_list_subpages($atts){
 }
 function eshop_list_new($atts){
 	global $wpdb, $post;
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','show'=>'6','records'=>'6'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'6','records'=>'6'), $atts));
 
 	//my pager
 	include_once ("pager-class.php");
@@ -127,20 +127,6 @@ function eshop_list_new($atts){
 			$records=$show % $records;
 
 	}
-	/*
-	unable to use this due to eshop products in meta table
-	$args = array(
-	'post_type' => 'page',
-	'post_status' => 'publish',
-	'post_parent' => $post->ID, // any parent
-	'orderby'=> 'post_date',
-	'order'=> 'DESC',
-	'numberposts' => $records, 
-	'offset' => $offset,
-	); 
-
-	$pages = get_posts($args);
-	*/
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
 
 	if($pages) {
@@ -172,10 +158,10 @@ function eshop_list_new($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class);
+			$echo .= eshop_listpages($pages,$class,$form);
 		}else{
 			if($class='eshopsubpages') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class);
+			$echo .= eshop_listpanels($pages,$class,$form);
 		}
 
 		if(isset($eecho)){
@@ -188,7 +174,7 @@ function eshop_list_new($atts){
 function eshop_list_featured($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no'), $atts));
 
 	switch (get_option('eshop_sudo_cat')){
 		case '1'://newest
@@ -209,10 +195,10 @@ function eshop_list_featured($atts){
 	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='Featured Product' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order");
 	if($pages) {
 		if($panels=='no'){
-			$echo = eshop_listpages($pages,$class);
+			$echo = eshop_listpages($pages,$class,$form);
 		}else{
 			if($class='eshopfeatured') $class='eshoppanels';
-			$echo = eshop_listpanels($pages,$class);
+			$echo = eshop_listpanels($pages,$class,$form);
 		}
 		$post=$paged;
 		return $echo;
@@ -223,7 +209,7 @@ function eshop_list_featured($atts){
 function eshop_list_random($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no'), $atts));
+	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
 		$class='eshoprandomproduct';
 	}
@@ -235,10 +221,10 @@ function eshop_list_random($atts){
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by rand() limit $elimit");
 	if($pages) {
 		if($panels=='no'){
-			$echo = eshop_listpages($pages,$class);
+			$echo = eshop_listpages($pages,$class,$form);
 		}else{
 			if($class='eshoprandomlist') $class='eshoppanels';
-				$echo = eshop_listpanels($pages,$class);
+				$echo = eshop_listpanels($pages,$class,$form);
 		}
 		$post=$paged;
 		return $echo;
@@ -247,23 +233,21 @@ function eshop_list_random($atts){
 	return;
 }
 
-function eshop_listpages($subpages,$eshopclass){
+function eshop_listpages($subpages,$eshopclass,$form){
 	global $wpdb, $post;
 	$paged=$post;
-	
+	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="'.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
 
 		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.$post->post_title.'</a>';
-		//grab image used in the base feed, or choose first image uploaded for that page
-		$basetable=$wpdb->prefix ."eshop_base_products";
-		$basedimg=$wpdb->get_var("SELECT img FROM $basetable WHERE post_id = $post->ID");
-				
+		//grab image or choose first image uploaded for that page
+		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
 		$imgs= eshop_get_images($post->ID);
 		$x=1;
 		if(is_array($imgs)){
-			if($basedimg==''){
+			if($proddataimg==''){
 				foreach($imgs as $k=>$v){
 					$x++;
 					$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>';
@@ -271,7 +255,7 @@ function eshop_listpages($subpages,$eshopclass){
 				}
 			}else{
 				foreach($imgs as $k=>$v){
-					if($basedimg==$v['url']){
+					if($proddataimg==$v['url']){
 						$x++;
 						$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>';
 						break;
@@ -282,29 +266,36 @@ function eshop_listpages($subpages,$eshopclass){
 		//this line stops the addtocart form appearing.
 		remove_filter('the_content', 'eshop_boing');
 		$echo .= apply_filters('the_excerpt', get_the_excerpt());
+		if($form=='yes'){
+			$short='yes';
+			$echo =eshop_boing($echo,$short);
+		}else
+			$short='no';
 		$echo .= '</li>';
+		//and then we re-add it
+		add_filter('the_content', 'eshop_boing');
 	}
 	$echo .= '</ul>';
 	$post=$paged;
 	return $echo;
 }
 
-function eshop_listpanels($subpages,$eshopclass){
+function eshop_listpanels($subpages,$eshopclass,$form){
 	global $wpdb, $post;
-
+	$paged=$post;
+	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="'.$eshopclass.'">';
-	foreach ($subpages as $paged) {
-		setup_postdata($paged);
+	foreach ($subpages as $post) {
+		setup_postdata($post);
 
-		$echo .= '<li><a href="'.get_permalink($paged->ID).'">';
-		//grab image used in the base feed, or choose first image uploaded for that page
-		$basetable=$wpdb->prefix ."eshop_base_products";
-		$basedimg=$wpdb->get_var("SELECT img FROM $basetable WHERE post_id = $paged->ID");
-				
-		$imgs= eshop_get_images($paged->ID);
+		$echo .= '<li><a href="'.get_permalink($post->ID).'">';
+		//grab image  or choose first image uploaded for that page
+		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
+			
+		$imgs= eshop_get_images($post->ID);
 		$x=1;
 		if(is_array($imgs)){
-			if($basedimg==''){
+			if($proddataimg==''){
 				foreach($imgs as $k=>$v){
 					$x++;
 					$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /><br />';
@@ -312,7 +303,7 @@ function eshop_listpanels($subpages,$eshopclass){
 				}
 			}else{
 				foreach($imgs as $k=>$v){
-					if($basedimg==$v['url']){
+					if($proddataimg==$v['url']){
 						$x++;
 						$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /><br />';
 						break;
@@ -320,11 +311,19 @@ function eshop_listpanels($subpages,$eshopclass){
 				}
 			}
 		}
-		$echo .= $paged->post_title.'</a></li>';
-		//this line stops the addtocart form appearing, but is not used- very very weird.
-		apply_filters('the_excerpt', get_the_excerpt());
+		$echo .= $post->post_title.'</a>';
+		
+		//		$echo .= apply_filters('the_excerpt', get_the_excerpt());
+		include_once( 'eshop-get-custom.php' );
+		if($form=='yes'){
+			$short='yes';
+			$echo =eshop_boing($echo,$short);
+		}else
+			$short='no';
+		$echo .= '</li>';
 	}
 	$echo .= '</ul>';
+	$post=$paged;
 	return $echo;
 }
 ?>

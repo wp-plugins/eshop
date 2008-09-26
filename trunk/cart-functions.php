@@ -43,7 +43,7 @@ if (!function_exists('display_cart')) {
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$echo.= "\n<tr".$alt.">";
-					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$opt["pname"].' ('.$opt['pid'].' : '.$opt['item'].')</td>'."\n";
+					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.stripslashes($opt["pname"]).' ('.$opt['pid'].' : '.stripslashes($opt['item']).')</td>'."\n";
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod$calt\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
@@ -916,7 +916,6 @@ if (!function_exists('eshop_files_directory')) {
 
 if (!function_exists('eshop_get_images')) {
 	function eshop_get_images($pID){
-		$echo=array();
 		$attargs = array(
 			'post_type' => 'attachment',
 			'numberposts' => null,
@@ -924,7 +923,9 @@ if (!function_exists('eshop_get_images')) {
 			'post_parent' => $pID
 			); 
 		$attachments = get_posts($attargs);
+		$echo='';
 		if ($attachments) {
+			$echo=array();
 			$x=0;
 			foreach ($attachments as $attachment) {
 				$img_url= wp_get_attachment_thumb_url($attachment->ID);
