@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.6.7');
+define('ESHOP_VERSION', '2.7.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://www.quirm.net/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.6.7
+Version: 2.7.0
 Author: Rich Pedley 
 Author URI: http://cms.elfden.co.uk/
 
@@ -27,45 +27,46 @@ Author URI: http://cms.elfden.co.uk/
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-/*
-if (file_exists(ABSPATH . 'wp-includes/pluggable.php')) {
-    require_once(ABSPATH . 'wp-includes/pluggable.php');
-}
-else {
-    require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
-}
-*/
+
 load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
 ob_start();
 if(!isset($_SESSION['shopcart'])) {
   session_start();
-  session_register('shopcart');
-}
+  $setsession=$_SESSION['shopcart'];
 
+}
+//if(!session_is_registered('shopcart')){
+//	$set=$_SESSION['shopcart'];
+//}
+/*access level : default of 7 is for editors, change to 8 for administrators.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ DO NOT UPDATE TO NEW SETTINGS UNLESS YOU ALSO UPDATE ESHOPDATE FUNCTION +
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*/
+$eshoplevel=7;
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook
      */
     function eshop_admin() {    
         if (function_exists('add_menu_page')) {
-        	//access level : default of 7 is for editors, change to 8 for administrators.
-        	$alevel=7;
+        	global $eshoplevel;
         	//goto stats page
-            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), $alevel, __FILE__, 'eshop_admin_orders_stats');
-            add_submenu_page(__FILE__,__('eShop Orders','eshop'), __('Orders','eshop'),$alevel, basename('eshop_orders.php'),'eshop_admin_orders');
-      	    add_submenu_page(__FILE__,__('eShop Shipping','eshop'), __('Shipping','eshop'),$alevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
-      	    add_submenu_page(__FILE__,__('eShop Products','eshop'),__('Products','eshop'), $alevel, basename('eshop_products.php'), 'eshop_admin_products');
-      	    add_submenu_page(__FILE__,__('eShop Downloads','eshop'),__('Downloads','eshop'), $alevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
-      	    add_submenu_page(__FILE__,__('eShop Base','eshop'),__('Base','eshop'), $alevel, basename('eshop_base.php'), 'eshop_admin_base');
-      	    add_submenu_page(__FILE__,__('eShop Style','eshop'), __('Style','eshop'),$alevel, basename('eshop_style.php'),'eshop_admin_style');
-			add_submenu_page(__FILE__,__('eShop Email Templates','eshop'), __('Templates','eshop'),$alevel, basename('eshop_templates.php'),'eshop_admin_templates');
-      	    add_submenu_page(__FILE__,__('eShop About','eshop'),__('About','eshop'), $alevel, basename('eshop_about.php'), 'eshop_admin_about');
-      	    add_submenu_page(__FILE__,__('eShop Help','eshop'),__('Help','eshop'), $alevel, basename('eshop_help.php'), 'eshop_admin_help');
-			add_options_page(__('eShop Base Settings','eshop'), __('eShop Base','eshop'),$alevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
-			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$alevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
-			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$alevel, basename('eshop_settings.php'),'eshop_admin_settings');
+            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), $eshoplevel, __FILE__, 'eshop_admin_orders_stats');
+            add_submenu_page(__FILE__,__('eShop Orders','eshop'), __('Orders','eshop'),$eshoplevel, basename('eshop_orders.php'),'eshop_admin_orders');
+      	    add_submenu_page(__FILE__,__('eShop Shipping','eshop'), __('Shipping','eshop'),$eshoplevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
+      	    add_submenu_page(__FILE__,__('eShop Products','eshop'),__('Products','eshop'), $eshoplevel, basename('eshop_products.php'), 'eshop_admin_products');
+      	    add_submenu_page(__FILE__,__('eShop Downloads','eshop'),__('Downloads','eshop'), $eshoplevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
+      	    add_submenu_page(__FILE__,__('eShop Base','eshop'),__('Base','eshop'), $eshoplevel, basename('eshop_base.php'), 'eshop_admin_base');
+      	    add_submenu_page(__FILE__,__('eShop Style','eshop'), __('Style','eshop'),$eshoplevel, basename('eshop_style.php'),'eshop_admin_style');
+			add_submenu_page(__FILE__,__('eShop Email Templates','eshop'), __('Templates','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
+      	    add_submenu_page(__FILE__,__('eShop About','eshop'),__('About','eshop'), $eshoplevel, basename('eshop_about.php'), 'eshop_admin_about');
+      	    add_submenu_page(__FILE__,__('eShop Help','eshop'),__('Help','eshop'), $eshoplevel, basename('eshop_help.php'), 'eshop_admin_help');
+			add_options_page(__('eShop Base Settings','eshop'), __('eShop Base','eshop'),$eshoplevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
+			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$eshoplevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
+			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$eshoplevel, basename('eshop_settings.php'),'eshop_admin_settings');
       	//test
-      		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),$alevel, basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+      		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),$eshoplevel, basename('eshop_uninstall.php'),'eshop_admin_uninstall');
 		//
       	}        
     }
@@ -258,71 +259,82 @@ if (!function_exists('eshop_deactivate')) {
 }
 //cron
 add_action('eshop_event', 'eshop_cron');
-function eshop_cron(){
-	global $wpdb;
-	if(get_option('eshop_cron_email')!=''){
-		$dtable=$wpdb->prefix.'eshop_orders';
-		$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Pending'");
-		if($max>0){
-			$to = get_option('eshop_cron_email');    //  your email
-			$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
-			$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
-			if(get_option('eshop_business')!=''){
-				$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
+if (!function_exists('eshop_cron')) {
+	function eshop_cron(){
+		global $wpdb;
+		if(get_option('eshop_cron_email')!=''){
+			$dtable=$wpdb->prefix.'eshop_orders';
+			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Pending'");
+			if($max>0){
+				$to = get_option('eshop_cron_email');    //  your email
+				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
+				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
+				if(get_option('eshop_business')!=''){
+					$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
+				}else{
+					$headers='';
+				}
+				$subject=get_bloginfo('name').__(": outstanding orders");
+				wp_mail($to, $subject, $body, $headers);
+			}
+		}
+	}
+}
+if (!function_exists('eshop_show_cancel')) {
+	function eshop_show_cancel(){
+		if(isset($_GET['action']) && $_GET['action']=='cancel'){
+			$echo ="<h3 class=\"error\">".__('The order was canceled at PayPal.','eshop')."</h3>";
+			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
+		}
+		return $echo;
+	}
+}
+if (!function_exists('eshop_show_success')) {
+	function eshop_show_success(){
+		global $wpdb;
+		if(isset($_GET['action']) && $_GET['action']=='success'){
+			$detailstable=$wpdb->prefix.'eshop_orders';
+			$dltable=$wpdb->prefix.'eshop_download_orders';
+			if(get_option('eshop_status')=='live'){
+				$txn_id = $wpdb->escape($_POST['txn_id']);
 			}else{
-				$headers='';
+				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
 			}
-			$subject=get_bloginfo('name').__(": outstanding orders");
-			wp_mail($to, $subject, $body, $headers);
-		}
-	}
-}
-function eshop_show_cancel(){
-	if(isset($_GET['action']) && $_GET['action']=='cancel'){
-		$echo ="<h3 class=\"error\">".__('The order was canceled at PayPal.','eshop')."</h3>";
-		$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
-	}
-	return $echo;
-}
+			$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+			$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
 
-function eshop_show_success(){
-	global $wpdb;
-	if(isset($_GET['action']) && $_GET['action']=='success'){
-		$detailstable=$wpdb->prefix.'eshop_orders';
-		$dltable=$wpdb->prefix.'eshop_download_orders';
-		if(get_option('eshop_status')=='live'){
-			$txn_id = $wpdb->escape($_POST['txn_id']);
-		}else{
-			$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
-		}
-		$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-		$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-
-		if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
-			$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
-			if($row->email!='' && $row->code!=''){
-				//display form only if there are downloads!
-					$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
-				<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
-				<input name="code" type="hidden" value="'.$row->code.'" /> 
-				<input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></p>
-				</form>';
+			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
+				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
+				if($row->email!='' && $row->code!=''){
+					//display form only if there are downloads!
+						$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
+					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+					<input name="code" type="hidden" value="'.$row->code.'" /> 
+					<input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></p>
+					</form>';
+				}
 			}
+			return $echo;  
 		}
-		return $echo;  
 	}
 }
-function eshop_show_cart() {
-	include_once 'cart.php';
-	return eshop_cart($_POST);
+if (!function_exists('eshop_show_cart')) {
+	function eshop_show_cart() {
+		include_once 'cart.php';
+		return eshop_cart($_POST);
+	}
 }
-function eshop_show_checkout(){
-	include_once 'checkout.php';
-	return eshop_checkout($_POST);
+if (!function_exists('eshop_show_checkout')) {
+	function eshop_show_checkout(){
+		include_once 'checkout.php';
+		return eshop_checkout($_POST);
+	}
 }
-function eshop_show_downloads(){
-	include_once 'purchase-downloads.php';
-	return eshop_downloads($_POST);
+if (!function_exists('eshop_show_downloads')) {
+	function eshop_show_downloads(){
+		include_once 'purchase-downloads.php';
+		return eshop_downloads($_POST);
+	}
 }
 include_once 'cart-functions.php';
 include_once( 'eshop-shortcodes.php' );
@@ -383,10 +395,12 @@ if (!function_exists('eshop_wp_head')) {
      */
     function eshop_wp_head() {
     	$eshopurl=eshop_files_directory();
+    	
     	if(get_option('eshop_style')=='yes'){
         	echo '<link rel="stylesheet" href="' . $eshopurl['1'] . 'eshop.css" type="text/css" media="screen" />'."\n";
         }
-        if(isset($_GET['action']) && $_GET['action']=='redirect'){
+       /*
+       if(isset($_GET['action']) && $_GET['action']=='redirect'){
         	//only add necessary javascript if on the correct page
         	//this automatically submit the redirect form
         	//wish it was a bit quicker, but that is paypals fault.
@@ -394,6 +408,7 @@ if (!function_exists('eshop_wp_head')) {
         		echo '<script src="'.$eshopurl['1'].'eshop-onload.js" type="text/javascript"></script>';
         	}
 		}
+		*/
 		if(isset($_GET['action']) && $_GET['action']=='success'){
 			$_SESSION = array();
 			session_destroy();
@@ -470,4 +485,39 @@ include_once( 'eshop-custom-fields.php' );
 //displays the add to cart form
 include_once( 'eshop-get-custom.php' );
 add_filter('the_content', 'eshop_boing');
+
+
+add_action('init','eshopdata');
+function eshopdata(){
+	global $current_user, $wp_roles;
+	//when using this code block use if($role
+	if( $current_user->id )  {
+		foreach($wp_roles->role_names as $role => $Role) {
+			if (array_key_exists($role, $current_user->caps))
+				break;
+		}
+	}
+	get_currentuserinfo() ;
+	global $user_level;
+	global $eshoplevel;
+	//for now use this - will need to check what will break on updating older plugins before implementing change
+	if ($user_level >= $eshoplevel) {
+	//if($role=='administrator' || $role=='editor'){
+	//when we change $eshoplevel to tie it to an permission use this one
+	//if(current_user_can('manage_options')){
+		//this block is used solely for back end downloads *ONLY*
+		if(isset($_GET['eshopdl'])){
+			include 'eshop-all-data.php';
+		}
+		if(isset($_GET['eshopbasedl'])){
+			include 'eshop_base_feed.php';
+		}
+	}
+	if(isset($_GET['action']) && $_GET['action']=='ipn'){
+		include_once 'paypal.php';
+		exit;
+	}
+}
+/* the widget */
+include 'eshop_widget.php';
 ?>

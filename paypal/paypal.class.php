@@ -166,9 +166,9 @@ class paypal_class {
          <form method="post" id="eshopgateway" action="<?php echo $this->paypal_url; ?>">
           <p><?php
 		  foreach ($_POST as $name => $value) {
-			if($name!='submit' && $name!='ppsubmit'){
+			if($name!='submit' && $name!='ppsubmit'){			
 				if($name!='return' && $name!='cancel_return' && $name!='notify_url'){
-					$replace = array("&#039;","'", "\"", "&amp;", "&");
+					$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 					$value = str_replace($replace, " ", $value);
 				}
 				echo "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";

@@ -64,11 +64,11 @@ if (!function_exists('eshop_cart')) {
 			$table=$wpdb->prefix.'postmeta';
 			$item= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$option' AND post_id='$postid'");
 			$_SESSION['shopcart'][$identifier]['item']=$item;
-			$_SESSION['shopcart'][$identifier]['option']=$option;
+			$_SESSION['shopcart'][$identifier]['option']=stripslashes($option);
 			$_SESSION['shopcart'][$identifier]['qty']=$qty;
-			$_SESSION['shopcart'][$identifier]['pclas']=$pclas;
+			$_SESSION['shopcart'][$identifier]['pclas']=stripslashes($pclas);
 			$_SESSION['shopcart'][$identifier]['pid']=$pid;
-			$_SESSION['shopcart'][$identifier]['pname']=$pname;
+			$_SESSION['shopcart'][$identifier]['pname']=stripslashes($pname);
 			$_SESSION['shopcart'][$identifier]['price']=$iprice;
 			$_SESSION['shopcart'][$identifier]['postid']=$postid;
 		}
@@ -112,7 +112,7 @@ if (!function_exists('eshop_cart')) {
 		if($error!='') $echo.= $error;
 
 		if(isset($_SESSION['shopcart'])){
-			if((isset($_GET['acgtion']) && $_GET['action']=='cancel') && !isset($_POST['save'])){
+			if((isset($_GET['action']) && $_GET['action']=='cancel') && !isset($_POST['save'])){
 				$echo.= "<h3>".__('The order was canceled at','eshop')." ".get_option('eshop_method').".</h3>"; 
 				$echo.= '<p>'.__('We have not deleted the contents of your shopping cart in case you may want to edit its content.','eshop').'</p>';
 			}

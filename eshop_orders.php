@@ -301,8 +301,11 @@ if (!function_exists('displaystats')) {
 		</ul> 
 		<h3><?php _e('Download Data','eshop'); ?></h3>
 		<ul>
-		<li><a href="../wp-content/plugins/eshop/eshop-all-data.php?dl=yes"><?php _e('Download all transactions','eshop'); ?></a></li>
-		<li><a href="../wp-content/plugins/eshop/eshop-all-data.php?dl=yes&os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
+		<?php
+			$dlpage=$PHP_SELF.'?page='.$_GET['page'].'&amp;eshopdl=yes';
+		?>
+		<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
+		<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
 		</ul>
 		<?php
 		
@@ -447,8 +450,15 @@ if(isset($_POST['mark']) && !isset($_POST['change'])){
 	$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$checkid'");
 	echo '<p class="success">'.__('Order status changed successfully.','eshop').'</p>';
 }
-if (isset($_GET['view'])){
+if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	$view=$_GET['view'];
+	if (isset($_GET['adddown']) && is_numeric($_GET['adddown'])){
+		$dordtable=$wpdb->prefix.'eshop_download_orders';
+		$adddown=$_GET['adddown'];
+		$wpdb->query("UPDATE $dordtable SET downloads=downloads+1 where id='$adddown' limit 1");
+		echo '<p class="success">'.__('Download allowance increased.','eshop').'</p>';
+	}
+	
 	$dquery=$wpdb->get_results("Select * From $dtable where id='$view'");
 	foreach($dquery as $drow){
 		$status=$drow->status;
@@ -507,7 +517,12 @@ if (isset($_GET['view'])){
 		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
 		if($dlchk!='' && $dlchk!='0'){
 			//item is a download
-			$downloadable='<span class="downprod">'.__('Yes','eshop').'</span>';
+			$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
+			$dltable=$wpdb->prefix.'eshop_downloads';
+			$dordtable=$wpdb->prefix.'eshop_download_orders';
+			$dlinfo=$wpdb->get_row("Select dord.id,dord.downloads From $dltable as dl,$dordtable as dord where dord.checkid='$checkid' && dl.id='$dlchk' && dord.title=dl.title limit 1");
+			$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
+		
 		}else{
 			$downloadable='<span class="offlineprod">'.__('No','eshop').'</span>';
 		}
@@ -529,6 +544,7 @@ if (isset($_GET['view'])){
 	}
 	echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".$currsymbol.number_format($total, 2)."</td></tr>\n";
 	echo "</tbody></table>\n";
+			
 	$cyear=substr($custom, 0, 4);
 	$cmonth=substr($custom, 4, 2);
 	$cday=substr($custom, 6, 2);

@@ -32,6 +32,173 @@ class eshop_multi_sort {
 function eshop_products_manager() {
 	global $wpdb;
 	include_once ("pager-class.php");
+	$eshopprodimg='_eshop_prod_img';
+	///images
+	if(isset($_GET['change']) && is_numeric($_GET['change'])){
+		$change=$_GET['change'];
+		if(isset($_POST['submit']) && $_POST['submit']==__('Update','eshop')){
+			//include 'cart-functions.php';
+			$_POST=sanitise_array($_POST);
+			if(isset($_POST['prodimg'])){
+				$prodimg=$wpdb->escape($_POST['prodimg']);
+			}else{
+				$prodimg='';
+			}
+
+			//enter in db - delete old record first, 
+			delete_post_meta( $change, $eshopprodimg );
+			add_post_meta( $change, $eshopprodimg, $prodimg);
+			//so will always be successful!
+			echo'<div id="message" class="updated fade"><p>'.__('The Listing Image for this product has been updated.','eshop').'</p></div>'."\n";
+		}
+		$proddataimg=get_post_meta($change,$eshopprodimg,true);
+		?>
+		<div class="wrap">
+		<h2><?php _e('Products','eshop'); ?></h2>
+		<p><?php _e('A reference table for identifying products.','eshop'); ?></p>
+		<?php
+
+		//sort by switch statement
+		$sortby='id';
+		$csf=' class="current"';
+
+		$numoptions=get_option('eshop_options_num');
+		$metatable=$wpdb->prefix.'postmeta';
+
+		$calt=0;
+		$currsymbol=get_option('eshop_currency_symbol');
+		$x=0;
+		//add in post id( doh! )
+		$grabit[$x]=get_post_custom($change);
+		$grabit[$x]['id']=array($change);
+		$x++;
+
+		/*
+		* remove the bottom array to try and flatten
+		* could be rather slow, but easier than trying to create
+		* a different method, at least for now!
+		*/
+		foreach($grabit as $foo=>$k){
+			foreach($k as $bar=>$v){
+				foreach($v as $nowt=>$val){
+					$grab[$foo][$bar]=$val;
+				}
+			}
+		}
+		?>	
+		<table id="listing" summary="<?php _e('product listin','eshop'); ?>g">
+		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
+		<thead>
+		<tr>
+		<th id="sku"><?php _e('Sku','eshop'); ?></th>
+		<th id="page"><?php _e('Page','eshop'); ?></th>
+		<th id="desc"><?php _e('Description','eshop'); ?></th>
+		<th id="down"><?php _e('Download','eshop'); ?></th>
+		<th id="feat"><?php _e('Featured','eshop'); ?></th>
+		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<th id="imga"><?php _e('Current Image','eshop'); ?></th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php
+		foreach($grab as $foo=>$grabit){
+			if($grabit['Price 1']!=''){
+				//get page title
+				$ptitle=get_post($grabit['id']);
+				//get download file title
+				if($grabit['Product Download']==''){
+					$pdown='No';
+				}else{
+					$id=$grabit['Product Download'];
+					$dltable = $wpdb->prefix ."eshop_downloads";
+					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
+
+					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
+				}
+				$calt++;
+				$alt = ($calt % 2) ? '' : ' class="alt"';
+				echo '<tr'.$alt.'>';
+				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['Sku'].'</td>';
+				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
+				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['Product Description'])).'</td>';
+				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
+				echo '<td headers="feat sku'.$calt.'">'.$grabit['Featured Product'].'</td>';
+
+				echo '<td headers="opt sku'.$calt.'">';
+				for($i=1;$i<=$numoptions;$i++){
+					if($grabit['Option '.$i]!=''){
+						echo stripslashes(attribute_escape($grabit['Option '.$i]));
+						echo ' @ '.$currsymbol.$grabit['Price '.$i].'<br />';
+					}
+				}
+				echo '</td>';
+				echo '<td>';
+				$imgs= eshop_get_images($change);
+				$x=1;
+				if(is_array($imgs)){
+					if($proddataimg==''){
+						foreach($imgs as $k=>$v){
+							$x++;
+							echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
+							break;
+						}
+					}else{
+						foreach($imgs as $k=>$v){
+							if($proddataimg==$v['url']){
+								$x++;
+								echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
+								break;
+							}
+						}
+					}
+				}
+				if($x==1){
+					echo '<p>'.__('Not available.','eshop').'</p>';
+				}
+
+				echo '</td>'."\n";
+
+
+				echo '</tr>'."\n";
+			}
+
+
+			?>
+		</tbody>
+		</table>
+		<?php
+		}
+		echo '<h3>'.__('Associated Images','eshop').'</h3>'."\n";
+
+		$id=$grabit['id'];
+		echo '<form method="post" action="" id="eshop-gbase-alt">'."\n";
+		echo '<fieldset><legend>'.__('Choose Image','eshop').'</legend>'."\n";
+
+		$imgs= eshop_get_images($change);
+		$x=1;
+		if(is_array($imgs)){
+			foreach($imgs as $k=>$v){
+				if($proddataimg==$v['url']){
+					$selected=' checked="checked"';
+				}else{
+					$selected='';
+				}
+				echo '<p class="ebaseimg"><input type="radio" value="'.$v['url'].'" name="prodimg" id="prodimg'.$x.'"'.$selected.' /><label for="prodimg'.$x.'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></label></p>'."\n"; 
+				$x++;
+			}
+		}
+		if($x==1){//in theory will never show - but just in case...
+			echo '<p>'.__('No images found that were associated with this page, and hence cannot be associated with the product.','eshop').'</p>';
+		}
+		?>
+		</fieldset>
+		<p class="submit"><input type="submit" name="submit" value="<?php _e('Update') ?>" /></p>
+		<?php
+		echo '</form></div>';
+	}else{
+			
+	///images end
+	
 	
 	?>
 	<div class="wrap">
@@ -145,12 +312,13 @@ function eshop_products_manager() {
 		<th id="sku"><?php _e('Sku','eshop'); ?></th>
 		<th id="page"><?php _e('Page','eshop'); ?></th>
 		<th id="desc"><?php _e('Description','eshop'); ?></th>
-		<th id="down"><?php _e('Download','eshop'); ?></th>
-		<th id="ship"><?php _e('Shipping','eshop'); ?></th>
-		<th id="stk"><?php _e('Stock','eshop'); ?></th>
-		<th id="purc"><?php _e('Purchases','eshop'); ?></th>
-		<th id="ftrd"><?php _e('Featured','eshop'); ?></th>
+		<th id="down"><abbr title="<?php _e('Downloads','eshop'); ?>"><?php _e('DL','eshop'); ?></abbr></th>
+		<th id="ship"><abbr title="<?php _e('Shipping Rate','eshop'); ?>"><?php _e('S/R','eshop'); ?></abbr></th>
+		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
+		<th id="purc"><abbr title="<?php _e('Number of Purchase','eshop'); ?>s"><?php _e('Purc.','eshop'); ?></abbr></th>
+		<th id="ftrd"><abbr title="<?php _e('Marked as Featured','eshop'); ?>"><?php _e('Feat.','eshop'); ?></abbr></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<th id="associmg"><?php _e('Listing Images','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -178,7 +346,7 @@ function eshop_products_manager() {
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['Sku'].'</td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
-				echo '<td headers="desc sku'.$calt.'">'.$grabit['Product Description'].'</td>';
+				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$grabit['Shipping Rate'].'</td>';
 				if($pdown=='No'){
@@ -211,9 +379,39 @@ function eshop_products_manager() {
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
 					if($grabit['Option '.$i]!=''){
-						echo $grabit['Option '.$i];
+						echo stripslashes(attribute_escape($grabit['Option '.$i]));
 						echo ' @ '.$currsymbol.$grabit['Price '.$i].'<br />';
 					}
+				}
+				echo '</td>';
+				echo '<td headers="associmg sku'.$calt.'">';
+				$getid=$grabit['id'];
+				$proddataimg=get_post_meta($getid,$eshopprodimg,true);
+
+				$imgs= eshop_get_images($getid);
+				$x=1;
+
+				if(is_array($imgs)){
+					echo '<a href="admin.php?page=eshop_products.php&amp;change='.$grabit['id'].'" title="'.__('Change image for','eshop').' '.$grabit['Sku'].'">';
+					if($proddataimg==''){
+						foreach($imgs as $k=>$v){
+							$x++;
+							echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
+							break;
+						}
+					}else{
+						foreach($imgs as $k=>$v){
+							if($proddataimg==$v['url']){
+								$x++;
+								echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
+								break;
+							}
+						}
+					}
+					echo '</a>';
+				}
+				if($x==1){
+					echo '<p>'.__('Not available.','eshop').'</p>';
 				}
 				echo '</td>';
 				echo '</tr>';
@@ -242,6 +440,7 @@ function eshop_products_manager() {
 		echo '<p>'.__('There are no products available.','eshop').'</p>';
 	}
 	echo '</div>';
+}
 	eshop_show_credits();
 }
 ?>

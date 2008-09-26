@@ -22,6 +22,8 @@ function eshop_inner_custom_box() {
 	echo '<input type="hidden" name="eshop_noncename" id="eshop_noncename" value="' . 
 	wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
 	// The actual fields for data entry
+	$sku=$prod=$shiprate=$stkqty='';
+	$stkav=$featured='No';
 	if( isset( $_REQUEST[ 'post' ] ) ) {
 		$sku = get_post_meta( $_REQUEST[ 'post' ], 'Sku' );
 	    $sku = stripslashes(attribute_escape($sku[ 0 ]));
@@ -41,9 +43,9 @@ function eshop_inner_custom_box() {
 		$stkqty = get_post_meta( $_REQUEST[ 'post' ], 'Stock Quantity' );
 		$stkqty = attribute_escape($stkqty[ 0 ]);
 		
-    }else{
-	    $sku=$prod=$shiprate=$stkqty='';
-	    $stkav=$featured='No';
+    }
+    if($stkav=='' && $featured==''){
+    	$stkav=$featured='No';
     }
 	?>
 	<p><label for="eshop_sku"><?php _e('Sku','eshop'); ?> </label><input id="eshop_sku" name="eshop_sku" value="<?php echo $sku; ?>" type="text" size="20" /></p>
@@ -191,26 +193,32 @@ function eshop_save_postdata( $post_id ) {
 		}
 
 	}
-	
-	foreach($mydata as $title=>$meta_value){
-		delete_post_meta( $id, $title );
-		add_post_meta( $id, $title, $meta_value);
-	}
-	$numboptions=get_option('eshop_options_num');
-	for($i=1;$i<=$numboptions;$i++){
-		$otitle='Option '.$i;
-		$ometa_value = $_POST['eshop_option_'.$i];
-		$ptitle='Price '.$i;
-		$pmeta_value = $_POST['eshop_price_'.$i];
-		if($ometa_value!='' && $pmeta_value!=''){
-			$temp_price=$pmeta_value;
-		}elseif($ometa_value!='' && $pmeta_value==''){
-			add_post_meta( $id, $ptitle, $temp_price );
-		}elseif($ometa_value=='' && $pmeta_value!=''){
-			delete_post_meta( $id, $ptitle );
+	if($mydata['Sku']=='' && $mydata['Option 1']=='' &&	$mydata['Price 1']=='' && $mydata['Product Description']=='' 
+	&& $mydata['Product Download']=='' && $mydata['Shipping Rate']=='' && $mydata['Stock Quantity']==''){
+		//delete all
+		foreach($mydata as $title=>$meta_value){
+			delete_post_meta( $id, $title );
+		}
+	}else{
+		foreach($mydata as $title=>$meta_value){
+			delete_post_meta( $id, $title );
+			add_post_meta( $id, $title, $meta_value);
+		}
+		$numboptions=get_option('eshop_options_num');
+		for($i=1;$i<=$numboptions;$i++){
+			$otitle='Option '.$i;
+			$ometa_value = $_POST['eshop_option_'.$i];
+			$ptitle='Price '.$i;
+			$pmeta_value = $_POST['eshop_price_'.$i];
+			if($ometa_value!='' && $pmeta_value!=''){
+				$temp_price=$pmeta_value;
+			}elseif($ometa_value!='' && $pmeta_value==''){
+				add_post_meta( $id, $ptitle, $temp_price );
+			}elseif($ometa_value=='' && $pmeta_value!=''){
+				delete_post_meta( $id, $ptitle );
+			}
 		}
 	}
-	
    return $mydata;
 }
 ?>

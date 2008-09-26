@@ -81,7 +81,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p>To change the class add <em>class="myclass"</em> to the shortcode eg.<code>[eshop_list_subpages class="myclass"]</code>. To change to a grid layout then add <em>panels="yes"</em> eg.<code>[eshop_list_subpages panels="yes"]</code>. You can of course use them together eg. <code>[eshop_list_subpages panels="yes" class="myclass"]</code></p>
 <p>The random products has one additional option <em>list="no"</em> which can be added to show just one random product.</p>
 <p>The 'list new' has two additional options <em>show="6"</em> which sets how many to show, and <em>records="6"</em> sets how many to display on a page.</p>
-
+<p>All of these codes now have the ability to show a shortened version of the <strong>add to cart</strong> Form, these can be added by adding the following option: <em>form="yes"</em>.</p>
 </div>
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
