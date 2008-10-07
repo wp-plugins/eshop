@@ -412,6 +412,7 @@ if(isset($_POST['ship_name'])){
 				$ship_state=$_POST['ship_state'];
 				$ship_postcode=$_POST['ship_postcode'];
 				$comments=$_POST['comments'];
+				$chkerror='1';
 		}else{
 			if(!isset($_GET['action'])){
 				$echoit.= "<div class=\"hr\"></div><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
