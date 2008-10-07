@@ -1,15 +1,15 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.7.0');
+define('ESHOP_VERSION', '2.7.1');
 
 /*
 Plugin Name: eShop for Wordpress
-Plugin URI: http://www.quirm.net/
+Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.7.0
+Version: 2.7.1
 Author: Rich Pedley 
-Author URI: http://cms.elfden.co.uk/
+Author URI: http://quirm.net/
 
     Copyright 2007  R PEDLEY  (email : rich@quirm.net)
 
