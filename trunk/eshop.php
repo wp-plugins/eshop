@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.7.2');
+define('ESHOP_VERSION', '2.7.3');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.7.2
+Version: 2.7.3
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -488,36 +488,38 @@ add_filter('the_content', 'eshop_boing');
 
 
 add_action('init','eshopdata');
-function eshopdata(){
-	global $current_user, $wp_roles;
-	//when using this code block use if($role
-	if( $current_user->id )  {
-		foreach($wp_roles->role_names as $role => $Role) {
-			if (array_key_exists($role, $current_user->caps))
-				break;
+if (!function_exists('eshopdata')) {
+	function eshopdata(){
+		global $current_user, $wp_roles;
+		//when using this code block use if($role
+		if( $current_user->id )  {
+			foreach($wp_roles->role_names as $role => $Role) {
+				if (array_key_exists($role, $current_user->caps))
+					break;
+			}
 		}
-	}
-	get_currentuserinfo() ;
-	global $user_level;
-	global $eshoplevel;
-	//for now use this - will need to check what will break on updating older plugins before implementing change
-	if ($user_level >= $eshoplevel) {
-	//if($role=='administrator' || $role=='editor'){
-	//when we change $eshoplevel to tie it to an permission use this one
-	//if(current_user_can('manage_options')){
-		//this block is used solely for back end downloads *ONLY*
-		if(isset($_GET['eshopdl'])){
-			include 'eshop-all-data.php';
+		get_currentuserinfo() ;
+		global $user_level;
+		global $eshoplevel;
+		//for now use this - will need to check what will break on updating older plugins before implementing change
+		if ($user_level >= $eshoplevel) {
+		//if($role=='administrator' || $role=='editor'){
+		//when we change $eshoplevel to tie it to an permission use this one
+		//if(current_user_can('manage_options')){
+			//this block is used solely for back end downloads *ONLY*
+			if(isset($_GET['eshopdl'])){
+				include 'eshop-all-data.php';
+			}
+			if(isset($_GET['eshopbasedl'])){
+				include 'eshop_base_feed.php';
+			}
 		}
-		if(isset($_GET['eshopbasedl'])){
-			include 'eshop_base_feed.php';
+		if(isset($_GET['action']) && $_GET['action']=='ipn'){
+			include_once 'paypal.php';
+			exit;
 		}
-	}
-	if(isset($_GET['action']) && $_GET['action']=='ipn'){
-		include_once 'paypal.php';
-		exit;
 	}
 }
 /* the widget */
-include 'eshop_widget.php';
+include_once 'eshop_widget.php';
 ?>
