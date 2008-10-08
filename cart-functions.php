@@ -857,8 +857,8 @@ if (!function_exists('eshop_show_extra_links')) {
 if (!function_exists('eshop_download_directory')) {
     function eshop_download_directory(){
 		$dirs=wp_upload_dir();
-		$upload_dir= substr_replace($dirs['path'], '', -(strlen($dirs['subdir'])));
-		$url_dir=substr_replace($dirs['url'], '', -(strlen($dirs['subdir'])));
+        $upload_dir=$dirs['basedir'];
+        $url_dir=$dirs['baseurl'];
 		$plugin_dir=ABSPATH.PLUGINDIR;
 		$eshop_goto=$upload_dir.'/../eshop_downloads';
 		$eshop_from=$plugin_dir.'/eshop/downloads';
@@ -882,8 +882,8 @@ if (!function_exists('eshop_download_directory')) {
 if (!function_exists('eshop_files_directory')) {
     function eshop_files_directory(){
         $dirs=wp_upload_dir();
-        $upload_dir= substr_replace($dirs['path'], '', -(strlen($dirs['subdir'])));
-        $url_dir=substr_replace($dirs['url'], '', -(strlen($dirs['subdir'])));
+        $upload_dir=$dirs['basedir'];
+        $url_dir=$dirs['baseurl'];
        	$plugin_dir=ABSPATH.PLUGINDIR;
        	$eshop_goto=$upload_dir.'/eshop_files';
        	$eshop_from=$plugin_dir.'/eshop/files';
