@@ -13,7 +13,16 @@ xmlns:c="http://base.google.com/cns/1.0">
 
 global $wpdb;
 $metatable=$wpdb->prefix.'postmeta';
-$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id");
+$poststable=$wpdb->prefix.'posts';
+
+$myrowres=$wpdb->get_results("
+		SELECT DISTINCT meta.post_id
+		FROM $metatable as meta, $poststable as posts
+		WHERE meta.meta_key = 'Option 1'
+		AND meta.meta_value != ''
+		AND posts.ID = meta.post_id
+		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		ORDER BY meta.post_id");
 $x=0;
 foreach($myrowres as $row){
 	$grabit[$x]=get_post_custom($row->post_id);
