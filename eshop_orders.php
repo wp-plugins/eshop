@@ -252,8 +252,17 @@ if (!function_exists('displaystats')) {
 		echo '</ul>';
 		
 		$metatable=$wpdb->prefix.'postmeta';
-		$count = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable where meta_key='Option 1' AND meta_value!=''");
-		$stocked = $wpdb->get_results("SELECT post_id FROM $metatable where meta_key='Option 1' AND meta_value!=''");
+		$poststable=$wpdb->prefix.'posts';
+		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
+		$stocked = $wpdb->get_results("
+		SELECT DISTINCT meta.post_id
+		FROM $metatable as meta, $poststable as posts
+		WHERE meta.meta_key = 'Option 1'
+		AND meta.meta_value != ''
+		AND posts.ID = meta.post_id
+		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		ORDER BY meta.post_id");
+
 		$countprod=$countfeat=0;
 		foreach($stocked as $stock){
 			$fcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='Featured Product'");
