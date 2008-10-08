@@ -4,7 +4,7 @@ Donate link: http://www.quirm.net/page.php?id=39
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.7.3
+Stable tag: 2.7.4
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -33,6 +33,10 @@ Latest version now has an uninstall, allowing all eShop data to be removed from 
 
 
 == Latest Updates ==
+
+Version 2.7.4
+
+Correcting fault in stats page
 
 Version 2.7.3
 
