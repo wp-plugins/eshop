@@ -245,8 +245,9 @@ function eshop_products_manager() {
 	
 	$numoptions=get_option('eshop_options_num');
 	$metatable=$wpdb->prefix.'postmeta';
+	$poststable=$wpdb->prefix.'posts';
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable where meta_key='Option 1' AND meta_value!=''");
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
 	if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
 		$records=get_option('eshop_records');
 	}else{
@@ -276,7 +277,16 @@ function eshop_products_manager() {
 		echo '<li><a href="'.$apge.'&amp;by=se"'.$cse.'>'.__('Featured','eshop').'</a></li>';
 		echo '</ul>';
 		
-		$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id LIMIT $thispage");
+		//$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id LIMIT $thispage");
+		$myrowres=$wpdb->get_results("
+		SELECT DISTINCT meta.post_id
+		FROM $metatable as meta, $poststable as posts
+		WHERE meta.meta_key = 'Option 1'
+		AND meta.meta_value != ''
+		AND posts.ID = meta.post_id
+		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		ORDER BY meta.post_id  LIMIT $thispage");
+
 		$calt=0;
 		$currsymbol=get_option('eshop_currency_symbol');
 		$x=0;
