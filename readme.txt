@@ -1,10 +1,10 @@
 === eShop ===
 Contributors: Rich Pedley
-Donate link: http://www.quirm.net/page.php?id=39
-Tags: eshop, ecommerce, shop
+Donate link: http://quirm.net/download/
+Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
-Tested up to: 2.5
-Stable tag: 2.5.0
+Tested up to: 2.6.2
+Stable tag: 2.7.4
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -12,11 +12,13 @@ An accessible Paypal Shopping Cart plugin.
 
 eShop has many features, these include:
 
-* 1 product per page
+* 1 product per page or post
+* Listing pages can have an add to cart form per item
 * Products entered via page editing
 * Products can have multiple options
 * Upload downloadable products
 * Basic Statistics
+* Download sales data
 * 3 methods for calculating shipping charges, plus various zone settings via Country or US State
 * Parent pages can list random products, featured products, or sub product pages (just like categories with posts)
 * Admin has access to an Order handling section
@@ -26,6 +28,50 @@ eShop has many features, these include:
 * Basic Stock Control
 * Google Base Data creation
 * and more
+
+Latest version now has an uninstall, allowing all eShop data to be removed from the database, and files deleted where necessary.
+
+
+== Latest Updates ==
+
+Version 2.7.4
+
+Correcting fault in stats page
+
+Version 2.7.3
+
+Fixed a major bug on installation - changed file cart-functions.php
+
+Version 2.7.2
+
+Fixed bugs in the product listing in the admin, where multiple product entries were occassionly showing
+
+
+Version 2.7.1
+
+minor bug fix in checkout.php
+
+
+Version 2.7.0 New features including:
+
+* Widget basic Cart (number of items, plus links to cart and checkout)
+* Ability to increase a orders download allowance
+* Improved paypal ipn - now integrated with the pages of wordpress
+* added ability to show add to cart form on listing pages...
+* Ability to amend the image shown on the listing pages 
+
+Bug Fixes 
+
+* deleting product info now deletes correctly!
+
+
+Version 2.6.7 small fixes only - many files affected.
+
+Version 2.6.6 fixes uninstall routines.
+
+Version 2.6.5 attempts to fix the directory creation issue.
+
+Version 2.6.4 added new functionality and fixed a few bugs.
 
 
 == Installation ==
@@ -71,3 +117,7 @@ adjust other pages that use the code:
 * `<!--eshop_random_product-->` becomes `[eshop_random_products list='no']`
 * `<!--eshop_list_featured-->` becomes `[eshop_list_featured]`
 * `<!--eshop_list_subpages-->` becomes `[eshop_list_subpages]`
+
+= Is eShop translatable =
+
+Yes! the po file is available upon request
