@@ -1,6 +1,6 @@
 === eShop ===
 Contributors: Rich Pedley
-Donate link: http://www.quirm.net/page.php?id=39
+Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
@@ -120,4 +120,4 @@ adjust other pages that use the code:
 
 = Is eShop translatable =
 
-Yes! the po file is available
+Yes! the po file is available upon request
