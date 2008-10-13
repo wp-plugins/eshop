@@ -147,7 +147,6 @@ header("Expires: 0");
 header('Content-Type: text/xml; charset=' . get_option('blog_charset'), true);
 }		
 echo $data;
-ob_flush();
 exit;
 if (!function_exists('eshopcleanit')) {
 	function eshopcleanit($data){

@@ -1,5 +1,4 @@
 <?php
-ob_start();
 session_start();
 global $wpdb;
 //tables used
@@ -140,7 +139,6 @@ header("Content-Disposition: attachment; filename=$downloadFilename");
 header("Pragma: no-cache");
 header("Expires: 0");		
 echo $data;
-ob_flush();
 exit;
 function eshopcleanit($data){
 	$toreps='"';
