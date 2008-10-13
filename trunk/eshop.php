@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.7.4');
+define('ESHOP_VERSION', '2.7.5');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.7.4
+Version: 2.7.5
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -29,7 +29,6 @@ Author URI: http://quirm.net/
 */
 
 load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
-ob_start();
 if(!isset($_SESSION['shopcart'])) {
   session_start();
   $setsession=$_SESSION['shopcart'];
@@ -399,16 +398,16 @@ if (!function_exists('eshop_wp_head')) {
     	if(get_option('eshop_style')=='yes'){
         	echo '<link rel="stylesheet" href="' . $eshopurl['1'] . 'eshop.css" type="text/css" media="screen" />'."\n";
         }
-       /*
+       
        if(isset($_GET['action']) && $_GET['action']=='redirect'){
         	//only add necessary javascript if on the correct page
         	//this automatically submit the redirect form
         	//wish it was a bit quicker, but that is paypals fault.
-        	if(get_option('eshop_status')!='live'){
+        	if(get_option('eshop_status')=='live'){
         		echo '<script src="'.$eshopurl['1'].'eshop-onload.js" type="text/javascript"></script>';
         	}
 		}
-		*/
+		
 		if(isset($_GET['action']) && $_GET['action']=='success'){
 			$_SESSION = array();
 			session_destroy();
@@ -449,9 +448,7 @@ register_deactivation_hook( __FILE__, 'eshop_deactivate' );
 */
 if (isset($_POST['eshoplongdownloadname'])){
 //long silly name to ensure it isn't used elsewhere!
-	ob_start();
 	eshop_download_the_product($_POST); 
-	ob_flush();
 }
 
 /***
@@ -490,7 +487,7 @@ add_filter('the_content', 'eshop_boing');
 add_action('init','eshopdata');
 if (!function_exists('eshopdata')) {
 	function eshopdata(){
-		global $current_user, $wp_roles;
+		global $current_user, $wp_roles, $post;
 		//when using this code block use if($role
 		if( $current_user->id )  {
 			foreach($wp_roles->role_names as $role => $Role) {
@@ -517,6 +514,10 @@ if (!function_exists('eshopdata')) {
 		if(isset($_GET['action']) && $_GET['action']=='ipn'){
 			include_once 'paypal.php';
 			exit;
+		}
+		//we need to buffer output on a few pages
+		if((isset($_GET['action']) && $_GET['action']=='redirect')||(isset($_POST['postid_1']))){
+			ob_start();
 		}
 	}
 }
