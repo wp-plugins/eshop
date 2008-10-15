@@ -20,6 +20,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <ul>
 <li><a href="#crpr">Creating Products</a></li>
 <li><a href="#dept">Creating Departments</a></li>
+<li><a href="#short">Shortcodes</a></li>
 <li><a href="#test">eShop testing</a></li>
 <li><a href="#glive">Going Live with eShop</a></li>
 <li><a href="#bover">Configuration</a></li>
@@ -68,20 +69,32 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 </ul>
 </li>
 </ul>
+</div>
+<div class="wrap">
+<h2 id="short">Shortcodes</h2>
 <p>To then list the products on the Online Shop and Department pages there are various options available. You will need to add to those pages one of the following codes:</p>
-
 <ol>
-<li><code>[eshop_list_subpages]</code> This displays a list of pages with products and is ideal for use on a Department page.</li>
-<li><code>[eshop_list_featured]</code> This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</li>
-<li><code>[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
-<li><code>[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on othe rpages within your site.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_subpages]</code> This displays a list of pages with products and is ideal for use on a Department page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_featured]</code> This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on othe rpages within your site.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_product]</code> Can be used to display a specific product, or products.</li>
 </ol>
-
-<p>However there are a few optional extras for those codes. You can amend the CSS class, which is useful if you want to tailor the style for a specific page. You can also show items in a grid view.</p>
-<p>To change the class add <em>class="myclass"</em> to the shortcode eg.<code>[eshop_list_subpages class="myclass"]</code>. To change to a grid layout then add <em>panels="yes"</em> eg.<code>[eshop_list_subpages panels="yes"]</code>. You can of course use them together eg. <code>[eshop_list_subpages panels="yes" class="myclass"]</code></p>
-<p>The random products has one additional option <em>list="no"</em> which can be added to show just one random product.</p>
-<p>The 'list new' has two additional options <em>show="6"</em> which sets how many to show, and <em>records="6"</em> sets how many to display on a page.</p>
-<p>All of these codes now have the ability to show a shortened version of the <strong>add to cart</strong> Form, these can be added by adding the following option: <em>form="yes"</em>.</p>
+<p>All of the above can have the following attributes, except where mentioned</p>
+<ul>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">class</code> example: <em>class="myclass"</em> to change the default class.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">panels</code> example: <em>panels="yes"</em> to show 'panels'</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">form</code> example: <em>forms="yes"</em> to add the shortened add to cart form.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">show</code> (<em>eshop_list_new</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">records</code> (<em>eshop_list_new</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">id</code> (<em>eshop_show_product</em> only) example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_subpages class="myclass"]</code> hcnages the default class to 'myclass'</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_product id='9' class='hilite' panels='yes' form='yes']</code> shows product '9' only, changes the default class to 'hilite', shows the product as a panel and the add to cart form is shown.</li>
+</ul>
 </div>
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
