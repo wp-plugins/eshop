@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.7.5');
+define('ESHOP_VERSION', '2.7.6');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.7.5
+Version: 2.7.6
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -347,7 +347,7 @@ add_shortcode('eshop_show_shipping', 'eshop_get_shipping');
 add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
 add_shortcode('eshop_show_success', 'eshop_show_success');
 add_shortcode('eshop_list_new', 'eshop_list_new');
-
+add_shortcode('eshop_show_product','eshop_show_product');
 //add credits
 add_action('wp_footer', 'eshop_visible_credits');
 

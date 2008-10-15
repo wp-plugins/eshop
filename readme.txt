@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.7.5
+Stable tag: 2.7.6
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -12,9 +12,8 @@ An accessible Paypal Shopping Cart plugin.
 
 eShop has many features, these include:
 
-* 1 product per page or post
-* Listing pages can have an add to cart form per item
-* Products entered via page editing
+* Use Wordpress pages, or posts, to create products
+* Various methods now available for listing multiple products, with add to cart form,  on a single page
 * Products can have multiple options
 * Upload downloadable products
 * Basic Statistics
@@ -27,12 +26,16 @@ eShop has many features, these include:
 * Configurable Out of Stock message.
 * Basic Stock Control
 * Google Base Data creation
+* Uninstall available within the plugin
 * and more
-
-Latest version now has an uninstall, allowing all eShop data to be removed from the database, and files deleted where necessary.
 
 
 == Latest Updates ==
+
+Version 2.7.6
+
+New shortcode added to show a single product, or products. Fixed error in the add to cart form.
+
 
 Version 2.7.5
 

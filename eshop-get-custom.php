@@ -37,7 +37,7 @@ function eshop_boing($pee,$short='no'){
 				$theid=sanitize_file_name(eshop_get_custom('Sku'));
 				if(get_option('eshop_options_num')>1){
 					$opt=get_option('eshop_options_num');
-					$replace.="\n".'<label for="'.$theid.'"><select id="'.$theid.'" name="option">';
+					$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
 					for($i=1;$i<=$opt;$i++){
 						if(eshop_get_custom('Option '.$i)!=''){
 							$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).' @ '.$currsymbol.eshop_get_custom('Price '.$i).'</option>'."\n";
@@ -53,8 +53,8 @@ function eshop_boing($pee,$short='no'){
 				if($short=='yes'){
 					$replace .='<input type="hidden" name="qty" value="1" />';
 				}else{
-					$replace .='<label for="'.$theid.'qty" class="qty">'.__('<dfn title="Quantity">Qty</dfn>:','eshop').'</label>
-					<input type="text" value="1" id="'.$theid.'qty" maxlength="3" size="3" name="qty" class="iqty" />';
+					$replace .='<label for="qty'.$theid.'" class="qty">'.__('<dfn title="Quantity">Qty</dfn>:','eshop').'</label>
+					<input type="text" value="1" id="qty'.$theid.'" maxlength="3" size="3" name="qty" class="iqty" />';
 				}
 				
 				$replace .='

@@ -232,7 +232,31 @@ function eshop_list_random($atts){
 	$post=$paged;
 	return;
 }
-
+function eshop_show_product($atts){
+	global $wpdb, $post;
+	$paged=$post;
+	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no'), $atts));
+	if($id!=0){
+		$pages=array();
+		$theids = explode(",", $id);
+		foreach($theids as $thisid){
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			if(sizeof($thispage)>0)//only add if it exists
+				array_push($pages,$thispage['0']);
+		}
+		if(sizeof($pages)>0){//if nothing found - don't do this
+			if($panels=='no'){
+				$echo = eshop_listpages($pages,$class,$form);
+			}else{
+				$echo = eshop_listpanels($pages,$class,$form);
+			}
+			$post=$paged;
+			return $echo;
+		}
+		$post=$paged;
+	}
+	return;
+}
 function eshop_listpages($subpages,$eshopclass,$form){
 	global $wpdb, $post;
 	$paged=$post;
