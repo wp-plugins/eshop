@@ -4,11 +4,13 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.7.6
+Stable tag: 2.8.0
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
+
+Upgrading to 2.8.0? please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
 
 eShop has many features, these include:
 
@@ -31,6 +33,11 @@ eShop has many features, these include:
 
 
 == Latest Updates ==
+
+Version 2.8.0
+
+Back end change - all users should deactivate and then re- activate. 
+
 
 Version 2.7.6
 
@@ -101,7 +108,11 @@ You then need to create a top level shop page, and start creating departments an
 
 When WordpressMU utilises WP2.5, then hopefully yes.
 
-= I'm upgrading from an earlier version of eShop =
+= Upgrading to 2.8.0 (and above) from earlier versions =
+
+You need to deactivate, and then reactivate the plugin. Product data won't be lost, but will be un-usable unless you do this.
+
+= Upgrading from eShop 2.5 and below =
 
 For versions prior to eShop 2.5 follow these steps:
 
@@ -127,4 +138,4 @@ adjust other pages that use the code:
 
 = Is eShop translatable =
 
-Yes! the po file is available upon request
+Yes! the po file is available from quirm.net

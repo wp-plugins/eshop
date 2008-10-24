@@ -2,7 +2,7 @@
 
 function eshop_get_custom ($field) {
 	global $post;
-	return get_post_meta($post->ID, $field, true);
+	return get_post_meta($post->ID, '_'.$field, true);
 } 
 
 function eshop_boing($pee,$short='no'){
@@ -19,7 +19,7 @@ function eshop_boing($pee,$short='no'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$post->ID");
 					if($currst<=0){
-						update_post_meta( $post->ID, 'Stock Available', 'No' );
+						update_post_meta( $post->ID, '_Stock Available', 'No' );
 					}
 				}
 			}

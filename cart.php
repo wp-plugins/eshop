@@ -29,12 +29,12 @@ if (!function_exists('eshop_cart')) {
 			$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 		}
 		if(isset($_POST['option']) && !isset($_POST['save'])){
-			$option=$_POST['option'];
+			$option='_'.$_POST['option'];
 			$qty=$_POST['qty'];
 			$pclas=$_POST['pclas'];
 			$productid=$pid=$_POST['pid'];
 			$pname=$_POST['pname'];
-			$getprice=__('Price','eshop').' '.ltrim($option,__('Option','eshop').' ');
+			$getprice='_Price '.ltrim($option,'_Option ');
 			//////////////////////////////
 			$postid=$wpdb->escape($_POST['postid']);
 			$table=$wpdb->prefix.'postmeta';
@@ -72,7 +72,6 @@ if (!function_exists('eshop_cart')) {
 			$_SESSION['shopcart'][$identifier]['price']=$iprice;
 			$_SESSION['shopcart'][$identifier]['postid']=$postid;
 		}
-
 		//save? not sure why I used that, but its working so why make trouble for myself.
 		if(isset($_POST['save'])){
 			$save=$_POST['save'];

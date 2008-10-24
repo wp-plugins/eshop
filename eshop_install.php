@@ -441,7 +441,34 @@ foreach($tablefields as $tablefield) {
 		$wpdb->query($sql);
 	}
 }
-/* test page insertion */
+/*update all post meta to new post meta */
+$eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
+//add on options and prices into the mix
+
+$numoptions=get_option('eshop_options_num');
+if(!is_numeric($numoptions)) $numoptions='3';
+for($i=1;$i<=$numoptions;$i++){
+	$eshop_old_postmeta[]='Option '.$i;
+	$eshop_old_postmeta[]='Price '.$i;
+}
+//ggo through every page and post
+$args = array(
+	'post_type' => 'any',
+	'numberposts' => -1,
+	); 
+
+$allposts = get_posts($args);
+foreach( $allposts as $postinfo) {
+	foreach($eshop_old_postmeta as $field){
+		$eshopvalue=get_post_meta($postinfo->ID, $field,true);
+		if($eshopvalue!='')
+			add_post_meta( $postinfo->ID, '_'.$field, $eshopvalue);
+	    delete_post_meta($postinfo->ID, $field);
+	 }
+}
+/* post meta end */
+
+/* page insertion */
 /*
  * This part creates the pages and automatically puts their URLs into the options page.
  * As you can probably see, it is very easily extendable, just pop in your page and the deafult content in the array and you are good to go.
