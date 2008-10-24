@@ -272,7 +272,7 @@ switch ($_GET['action']) {
 					$pid=$row->post_id;
 					$uqty=$row->item_qty;
 					////test downloads
-					$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$pid'");
+					$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$pid'");
 					if($dlchk!=''){
 						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$dlchk'");
 						//add 1 to number of purchases here (duplication but left in)

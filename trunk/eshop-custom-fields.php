@@ -25,22 +25,22 @@ function eshop_inner_custom_box() {
 	$sku=$prod=$shiprate=$stkqty='';
 	$stkav=$featured='No';
 	if( isset( $_REQUEST[ 'post' ] ) ) {
-		$sku = get_post_meta( $_REQUEST[ 'post' ], 'Sku' );
+		$sku = get_post_meta( $_REQUEST[ 'post' ], '_Sku' );
 	    $sku = stripslashes(attribute_escape($sku[ 0 ]));
 	    
-	    $prod=get_post_meta( $_REQUEST[ 'post' ], 'Product Description' );
+	    $prod=get_post_meta( $_REQUEST[ 'post' ], '_Product Description' );
 	    $prod=stripslashes(attribute_escape($prod[ 0 ]));
 	    
-	    $shiprate = get_post_meta( $_REQUEST[ 'post' ], 'Shipping Rate' );
+	    $shiprate = get_post_meta( $_REQUEST[ 'post' ], '_Shipping Rate' );
 		$shiprate = attribute_escape($shiprate[ 0 ]);
 		
-		$featured = get_post_meta( $_REQUEST[ 'post' ], 'Featured Product' );
+		$featured = get_post_meta( $_REQUEST[ 'post' ], '_Featured Product' );
 		$featured = attribute_escape($featured[ 0 ]);
 		
-		$stkav = get_post_meta( $_REQUEST[ 'post' ], 'Stock Available' );
+		$stkav = get_post_meta( $_REQUEST[ 'post' ], '_Stock Available' );
 		$stkav = attribute_escape($stkav[ 0 ]);
 		
-		$stkqty = get_post_meta( $_REQUEST[ 'post' ], 'Stock Quantity' );
+		$stkqty = get_post_meta( $_REQUEST[ 'post' ], '_Stock Quantity' );
 		$stkqty = attribute_escape($stkqty[ 0 ]);
 		
     }
@@ -55,10 +55,10 @@ function eshop_inner_custom_box() {
 	$numoptions=get_option('eshop_options_num');
 	for($i=1;$i<=$numoptions;$i++){
 		if( isset( $_REQUEST[ 'post' ] ) ) {
-			$opt = get_post_meta( $_REQUEST[ 'post' ], 'Option '.$i );
+			$opt = get_post_meta( $_REQUEST[ 'post' ], '_Option '.$i );
 			$opt = stripslashes(attribute_escape($opt[ 0 ]));
 
-			$price=get_post_meta( $_REQUEST[ 'post' ], 'Price '.$i );
+			$price=get_post_meta( $_REQUEST[ 'post' ], '_Price '.$i );
 			$price=stripslashes(attribute_escape($price[ 0 ]));
    		}else{
    			$opt=$price='';
@@ -77,7 +77,7 @@ function eshop_inner_custom_box() {
 	if($max>0){ // only show if downloads available!
 		$myrowres=$wpdb->get_results("Select * From $producttable");
 		if( isset( $_REQUEST[ 'post' ] ) ) {
-			$downl = get_post_meta( $_REQUEST[ 'post' ], 'Product Download' );
+			$downl = get_post_meta( $_REQUEST[ 'post' ], '_Product Download' );
 			$downl = attribute_escape($downl[ 0 ]);
 			if($downl!=''){
 				$selected = $downl;
@@ -161,20 +161,20 @@ function eshop_save_postdata( $post_id ) {
 		$id = $post_id;
   // OK, we're authenticated: we need to find and save the data
 
-	$mydata['Sku']=$_POST['eshop_sku'];
+	$mydata['_Sku']=$_POST['eshop_sku'];
 	$numoptions=get_option('eshop_options_num');
 	for($i=1;$i<=$numoptions;$i++){
-		$mydata['Option '.$i]=$_POST['eshop_option_'.$i];
-		$mydata['Price '.$i]=$_POST['eshop_price_'.$i];
+		$mydata['_Option '.$i]=$_POST['eshop_option_'.$i];
+		$mydata['_Price '.$i]=$_POST['eshop_price_'.$i];
 	}
-	$mydata['Product Description']=$_POST['eshop_product_description'];
-	$mydata['Product Download']=$_POST['eshop_product_download'];
-	$mydata['Shipping Rate']=$_POST['eshop_shipping_rate'];
-	$mydata['Featured Product']=$_POST['eshop_featured_product'];
-	$mydata['Stock Available']=$_POST['eshop_stock_available'];
-	$mydata['Stock Quantity']=$_POST['eshop_stock_quantity'];
-	if($mydata['Stock Quantity']!='' && is_numeric($mydata['Stock Quantity'])){
-		$meta_value=$mydata['Stock Quantity'];
+	$mydata['_Product Description']=$_POST['eshop_product_description'];
+	$mydata['_Product Download']=$_POST['eshop_product_download'];
+	$mydata['_Shipping Rate']=$_POST['eshop_shipping_rate'];
+	$mydata['_Featured Product']=$_POST['eshop_featured_product'];
+	$mydata['_Stock Available']=$_POST['eshop_stock_available'];
+	$mydata['_Stock Quantity']=$_POST['eshop_stock_quantity'];
+	if($mydata['_Stock Quantity']!='' && is_numeric($mydata['_Stock Quantity'])){
+		$meta_value=$mydata['_Stock Quantity'];
 		$stocktable=$wpdb->prefix ."eshop_stock";
 		$results=$wpdb->get_results("select post_id from $stocktable");
 		if(!empty($results)){
@@ -193,8 +193,8 @@ function eshop_save_postdata( $post_id ) {
 		}
 
 	}
-	if($mydata['Sku']=='' && $mydata['Option 1']=='' &&	$mydata['Price 1']=='' && $mydata['Product Description']=='' 
-	&& $mydata['Product Download']=='' && $mydata['Shipping Rate']=='' && $mydata['Stock Quantity']==''){
+	if($mydata['_Sku']=='' && $mydata['_Option 1']=='' &&	$mydata['_Price 1']=='' && $mydata['_Product Description']=='' 
+	&& $mydata['_Product Download']=='' && $mydata['_Shipping Rate']=='' && $mydata['_Stock Quantity']==''){
 		//delete all
 		foreach($mydata as $title=>$meta_value){
 			delete_post_meta( $id, $title );
@@ -206,9 +206,9 @@ function eshop_save_postdata( $post_id ) {
 		}
 		$numboptions=get_option('eshop_options_num');
 		for($i=1;$i<=$numboptions;$i++){
-			$otitle='Option '.$i;
+			$otitle='_Option '.$i;
 			$ometa_value = $_POST['eshop_option_'.$i];
-			$ptitle='Price '.$i;
+			$ptitle='_Price '.$i;
 			$pmeta_value = $_POST['eshop_price_'.$i];
 			if($ometa_value!='' && $pmeta_value!=''){
 				$temp_price=$pmeta_value;

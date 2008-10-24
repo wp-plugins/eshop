@@ -163,9 +163,9 @@ function eshop_downloads_manager() {
 			</table>
 			<?php
 			$metatable=$wpdb->prefix ."postmeta";
-			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE meta_key='Product Download' AND meta_value='$id'");
+			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE meta_key='_Product Download' AND meta_value='$id'");
 			if($checkproduct>0){
-				$myrows=$wpdb->get_results("Select post_id FROM $metatable WHERE meta_key='Product Download' AND meta_value='$id'");
+				$myrows=$wpdb->get_results("Select post_id FROM $metatable WHERE meta_key='_Product Download' AND meta_value='$id'");
 				echo '<p class="productassociation">'.__('This file is associated with the following product pages:','eshop').'</p>';
 				echo '<ul class="productpages">';
 				foreach($myrows as $myrow){

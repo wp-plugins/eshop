@@ -18,7 +18,7 @@ $poststable=$wpdb->prefix.'posts';
 $myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = 'Option 1'
+		WHERE meta.meta_key = '_Option 1'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
 		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')

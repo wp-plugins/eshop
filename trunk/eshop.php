@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.7.6');
+define('ESHOP_VERSION', '2.8.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.7.6
+Version: 2.8.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -235,12 +235,12 @@ if (!function_exists('eshop_install')) {
         global $wpdb, $user_level, $wp_rewrite, $wp_version;
         include_once ('cart-functions.php');
         if( eshop_files_directory()!=0 ){
+        	include 'eshop_install.php';
        		eshop_download_directory();
        		eshop_files_directory();
        		//mdy
        		$eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
        		wp_schedule_event($eshoptime, 'daily', 'eshop_event');
-       		include 'eshop_install.php';
        	}else{
        		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 			wp_die(__('ERROR! This plugin requires that the wp_content directory is writable.','eshop')); //add a more descriptive message of course.

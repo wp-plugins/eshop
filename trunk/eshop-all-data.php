@@ -52,7 +52,7 @@ foreach($dquery as $drow){
 		//check if downloadable product
 		$post_id=$myrow->post_id;
 		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
+		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
 		if($dlchk!='' && $dlchk!='0'){
 			//item is a download
 			$downloadable=__('Yes','eshop');

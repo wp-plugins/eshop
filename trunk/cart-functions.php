@@ -300,7 +300,7 @@ if (!function_exists('orderhandle')) {
 				'$item_amt','$optname','$post_id');");
 			$i++;
 			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
+			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
 			if($dlchk!=''){
 				//order contains downloads
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
@@ -420,7 +420,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".$currsymbol.number_format($value, 2)."\n\n";
 			}
 			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='".__('Product Download','eshop')."' AND post_id='$myrow->post_id'");
+			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$myrow->post_id'");
 			if($dlchk!=''){
 				$containsdownloads++;
 			}

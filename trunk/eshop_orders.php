@@ -253,11 +253,11 @@ if (!function_exists('displaystats')) {
 		
 		$metatable=$wpdb->prefix.'postmeta';
 		$poststable=$wpdb->prefix.'posts';
-		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
+		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
 		$stocked = $wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = 'Option 1'
+		WHERE meta.meta_key = '_Option 1'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
 		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
@@ -265,11 +265,11 @@ if (!function_exists('displaystats')) {
 
 		$countprod=$countfeat=0;
 		foreach($stocked as $stock){
-			$fcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='Featured Product'");
+			$fcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='_Featured Product'");
 			if($fcount=='Yes'){
 				$countfeat++;
 			}
-			$pcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='Stock Available'");
+			$pcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='_Stock Available'");
 			if($pcount=='Yes'){
 				$countprod++;
 			}
@@ -362,7 +362,7 @@ foreach($moveit as $mrow){
 	foreach($result as $crow){
 		$post_id=$crow->post_id;
 		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
+		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
 		if($dlchk!='' && $dlchk!='0'){
 			//item is a download
 			$pdownload++;
@@ -523,7 +523,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		//check if downloadable product
 		$post_id=$myrow->post_id;
 		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='Product Download' AND post_id='$post_id'");
+		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
 		if($dlchk!='' && $dlchk!='0'){
 			//item is a download
 			$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
