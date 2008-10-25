@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.8.0');
+define('ESHOP_VERSION', '2.8.1');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.8.0
+Version: 2.8.1
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -499,8 +499,8 @@ if (!function_exists('eshopdata')) {
 		global $user_level;
 		global $eshoplevel;
 		//for now use this - will need to check what will break on updating older plugins before implementing change
-		if ($user_level >= $eshoplevel) {
-		//if($role=='administrator' || $role=='editor'){
+		//if ($user_level >= $eshoplevel) {
+		if($role=='administrator' || $role=='editor'){
 		//when we change $eshoplevel to tie it to an permission use this one
 		//if(current_user_can('manage_options')){
 			//this block is used solely for back end downloads *ONLY*

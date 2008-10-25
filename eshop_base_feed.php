@@ -66,7 +66,7 @@ foreach($array as $foo=>$grabit){
 	//automatic data
 	$baselink=get_permalink($rid);
 	$baseid=$rid;
-	$baseprice=$grabit['Price 1'];
+	$baseprice=$grabit['_Price 1'];
 	$attachment = $wpdb->get_var("SELECT ID FROM $wpdb->posts where post_parent= ".$rid." and post_type = 'attachment' limit 1");
 	$baseimg=wp_get_attachment_url($attachment);
 	$basedescription=get_the_excerpt();
