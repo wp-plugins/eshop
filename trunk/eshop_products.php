@@ -102,14 +102,14 @@ function eshop_products_manager() {
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
-			if($grabit['Price 1']!=''){
+			if($grabit['_Price 1']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				//get download file title
-				if($grabit['Product Download']==''){
+				if($grabit['_Product Download']==''){
 					$pdown='No';
 				}else{
-					$id=$grabit['Product Download'];
+					$id=$grabit['_Product Download'];
 					$dltable = $wpdb->prefix ."eshop_downloads";
 					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
 
@@ -118,17 +118,17 @@ function eshop_products_manager() {
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['Sku'].'</td>';
+				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
-				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['Product Description'])).'</td>';
+				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
-				echo '<td headers="feat sku'.$calt.'">'.$grabit['Featured Product'].'</td>';
+				echo '<td headers="feat sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
 
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
-					if($grabit['Option '.$i]!=''){
-						echo stripslashes(attribute_escape($grabit['Option '.$i]));
-						echo ' @ '.$currsymbol.$grabit['Price '.$i].'<br />';
+					if($grabit['_Option '.$i]!=''){
+						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
+						echo ' @ '.$currsymbol.$grabit['_Price '.$i].'<br />';
 					}
 				}
 				echo '</td>';
@@ -211,25 +211,25 @@ function eshop_products_manager() {
 	if(isset($_GET['by'])){
 		switch ($_GET['by']) {
 			case'sa'://date descending
-				$sortby='Sku';
+				$sortby='_Sku';
 				$csa=' class="current"';
 				break;
 			case'sb'://company name alphabetically
-				$sortby='Product Description';
+				$sortby='_Product Description';
 				$csb=' class="current"';
 				break;
 			case'sc'://name alphabetically (last name)
-				$sortby='Shipping Rate';
+				$sortby='_Shipping Rate';
 				$csc=' class="current"';
 				break;
 			
 			case'sd'://stock availability no longer works
-				$sortby='Stock Available';
+				$sortby='_Stock Available';
 				$csd=' class="current"';
 				break;
 		
 			case'se'://transaction id numerically
-				$sortby='Featured Product';
+				$sortby='_Featured Product';
 				$cse=' class="current"';
 				break;
 			case'sf'://date ascending
@@ -334,14 +334,14 @@ function eshop_products_manager() {
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
-			if($grabit['Price 1']!=''){
+			if($grabit['_Price 1']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				//get download file title
-				if($grabit['Product Download']==''){
+				if($grabit['_Product Download']==''){
 					$pdown='No';
 				}else{
-					$id=$grabit['Product Download'];
+					$id=$grabit['_Product Download'];
 					$dltable = $wpdb->prefix ."eshop_downloads";
 					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
 
@@ -354,18 +354,18 @@ function eshop_products_manager() {
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['Sku'].'</td>';
+				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
-				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['Product Description'])).'</td>';
+				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
-				echo '<td headers="ship sku'.$calt.'">'.$grabit['Shipping Rate'].'</td>';
+				echo '<td headers="ship sku'.$calt.'">'.$grabit['_Shipping Rate'].'</td>';
 				if($pdown=='No'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$pid=$grabit['id'];
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
-					if($grabit['Stock Available']=='No'){
+					if($grabit['_Stock Available']=='No'){
 						$available='No';
-					}elseif($grabit['Stock Available']=='Yes' && $available==''){
+					}elseif($grabit['_Stock Available']=='Yes' && $available==''){
 						$available=__('not set','eshop');
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
@@ -384,13 +384,13 @@ function eshop_products_manager() {
 					echo '<td headers="purc sku'.$calt.'">'.$row->purchases.'</td>';
 				}
 				
-				echo '<td headers="ftrd sku'.$calt.'">'.$grabit['Featured Product'].'</td>';
+				echo '<td headers="ftrd sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
 
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
-					if($grabit['Option '.$i]!=''){
-						echo stripslashes(attribute_escape($grabit['Option '.$i]));
-						echo ' @ '.$currsymbol.$grabit['Price '.$i].'<br />';
+					if($grabit['_Option '.$i]!=''){
+						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
+						echo ' @ '.$currsymbol.$grabit['_Price '.$i].'<br />';
 					}
 				}
 				echo '</td>';
@@ -402,7 +402,7 @@ function eshop_products_manager() {
 				$x=1;
 
 				if(is_array($imgs)){
-					echo '<a href="admin.php?page=eshop_products.php&amp;change='.$grabit['id'].'" title="'.__('Change image for','eshop').' '.$grabit['Sku'].'">';
+					echo '<a href="admin.php?page=eshop_products.php&amp;change='.$grabit['id'].'" title="'.__('Change image for','eshop').' '.$grabit['_Sku'].'">';
 					if($proddataimg==''){
 						foreach($imgs as $k=>$v){
 							$x++;
