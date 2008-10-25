@@ -4,13 +4,13 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-Upgrading to 2.8.0? please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
+Upgrading to 2.8. * ? please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
 
 eShop has many features, these include:
 
@@ -33,6 +33,10 @@ eShop has many features, these include:
 
 
 == Latest Updates ==
+
+Version 2.8.2
+
+Fix for the Google bse feed download only.
 
 Version 2.8.1
 

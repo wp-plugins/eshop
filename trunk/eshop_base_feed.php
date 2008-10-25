@@ -18,8 +18,8 @@ $poststable=$wpdb->prefix.'posts';
 $myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = '_Option 1'
-		AND meta.meta_value != ''
+		WHERE meta.meta_key = '_Stock Available'
+		AND meta.meta_value != 'No'
 		AND posts.ID = meta.post_id
 		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
 		ORDER BY meta.post_id");
@@ -70,12 +70,12 @@ foreach($array as $foo=>$grabit){
 	$attachment = $wpdb->get_var("SELECT ID FROM $wpdb->posts where post_parent= ".$rid." and post_type = 'attachment' limit 1");
 	$baseimg=wp_get_attachment_url($attachment);
 	$basedescription=get_the_excerpt();
-	$basecondition=$basebrand=$baseptype=$basedate=$baseimg=$baseean=$baseisbn=$basempn=$baseqty='';
+	//$basecondition=$basebrand=$baseptype=$basedate=$baseimg=$baseean=$baseisbn=$basempn=$baseqty='';
 	//individual set product data
 	$basetable=$wpdb->prefix ."eshop_base_products";
 	$basedata=$wpdb->get_row("SELECT * FROM $basetable WHERE post_id = $rid");
 	//if this exists overwrite defaults
-	if(is_array($basedata) && $basedata->post_id!=''){
+	if(isset($basedata->post_id)){
 		$basecondition=$basedata->thecondition;
 		$basebrand=$basedata->brand;
 		$baseptype=$basedata->ptype;
