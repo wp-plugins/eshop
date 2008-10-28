@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.8.2');
+define('ESHOP_VERSION', '2.8.3');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.8.2
+Version: 2.8.3
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -523,4 +523,20 @@ if (!function_exists('eshopdata')) {
 }
 /* the widget */
 include_once 'eshop_widget.php';
+
+//this checks images upon deletion, if eshop is using them - it deletes the reference - cool huh!
+add_filter('wp_delete_file','eshop_delete_img');
+function eshop_delete_img($rootimg){
+	global $wpdb;
+	$pieces = explode("/", $rootimg);
+	$eshopprodimg='_eshop_prod_img';
+	$chkeshop = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '$eshopprodimg'"));
+	foreach($chkeshop as $row){
+		$bits = explode("/", $row->meta_value);
+		if(end($pieces) == end($bits)){
+			delete_post_meta( $row->post_id, $eshopprodimg );
+		}
+	}
+	return($postid);
+}
 ?>
