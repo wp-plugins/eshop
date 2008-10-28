@@ -274,14 +274,14 @@ function eshop_listpages($subpages,$eshopclass,$form){
 			if($proddataimg==''){
 				foreach($imgs as $k=>$v){
 					$x++;
-					$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>';
+					$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>'."\n";
 					break;
 				}
 			}else{
 				foreach($imgs as $k=>$v){
 					if($proddataimg==$v['url']){
 						$x++;
-						$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>';
+						$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>'."\n";
 						break;
 					}
 				}
@@ -295,7 +295,7 @@ function eshop_listpages($subpages,$eshopclass,$form){
 			$echo =eshop_boing($echo,$short);
 		}else
 			$short='no';
-		$echo .= '</li>';
+		$echo .= '</li>'."\n";
 		//and then we re-add it
 		add_filter('the_content', 'eshop_boing');
 	}
@@ -335,7 +335,7 @@ function eshop_listpanels($subpages,$eshopclass,$form){
 				}
 			}
 		}
-		$echo .= $post->post_title.'</a>';
+		$echo .= $post->post_title.'</a>'."\n";
 		
 		//		$echo .= apply_filters('the_excerpt', get_the_excerpt());
 		include_once( 'eshop-get-custom.php' );
@@ -344,7 +344,7 @@ function eshop_listpanels($subpages,$eshopclass,$form){
 			$echo =eshop_boing($echo,$short);
 		}else
 			$short='no';
-		$echo .= '</li>';
+		$echo .= '</li>'."\n";
 	}
 	$echo .= '</ul>';
 	$post=$paged;

@@ -84,7 +84,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <ul>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">class</code> example: <em>class="myclass"</em> to change the default class.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">panels</code> example: <em>panels="yes"</em> to show 'panels'</li>
-<li><code style="font-weight:bold;font-size:1.2em;color:#000;">form</code> example: <em>forms="yes"</em> to add the shortened add to cart form.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">form</code> example: <em>form="yes"</em> to add the shortened add to cart form.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">show</code> (<em>eshop_list_new</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">records</code> (<em>eshop_list_new</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
