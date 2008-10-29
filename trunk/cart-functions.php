@@ -681,34 +681,35 @@ if (!function_exists('fold_page_menus')) {
 if (!function_exists('eshop_fold_menus')) {
 	function eshop_fold_menus($exclusions = "") {
 		global $post, $wpdb;
-		//code taken from fold page menu plugin and adpated
-		if (isset($post->ID)) {
+		//code taken from fold page menu plugin and adapted
+		if (isset($post->ID))
 			$id=$post->ID;
-			$x = $id;
-			$inclusions = "(post_parent <> " . strval($x) . ")";
-			do {
-				$include = $wpdb->get_results("SELECT post_parent " .
-				"FROM $wpdb->posts " .
-				"WHERE ID = " . $x . " " .
-				"LIMIT 1",ARRAY_N);
-				$x = $include[0][0];
-				$inclusions .= " AND (post_parent <> " . $x . ")";
-			} while ($x <> 0);
-
-			$rows = $wpdb->get_results("SELECT ID " .
+		else
+			$id=get_option('eshop_cart');//fix to hide menus on other pages
+		$x = $id;
+		$inclusions = "(post_parent <> " . strval($x) . ")";
+		do {
+			$include = $wpdb->get_results("SELECT post_parent " .
 			"FROM $wpdb->posts " .
-			"WHERE (post_type = 'page') AND " .
-			$inclusions, ARRAY_N);
-			if ( count($rows) ) {
-				foreach ( $rows as $row ) {
-					foreach ( $row as $ro ) {
-						if ($exclusions <> "")
-							//$exclusions .= ",";
+			"WHERE ID = " . $x . " " .
+			"LIMIT 1",ARRAY_N);
+			$x = $include[0][0];
+			$inclusions .= " AND (post_parent <> " . $x . ")";
+		} while ($x <> 0);
+
+		$rows = $wpdb->get_results("SELECT ID " .
+		"FROM $wpdb->posts " .
+		"WHERE (post_type = 'page') AND " .
+		$inclusions, ARRAY_N);
+		if ( count($rows) ) {
+			foreach ( $rows as $row ) {
+				foreach ( $row as $ro ) {
+					if ($exclusions <> "")
+						//$exclusions .= ",";
 						$exclusions[]= strval($ro);
-					}
 				}
 			}
-		} 
+		}
 		return $exclusions;
 	}
 }
