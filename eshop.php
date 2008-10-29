@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.8.4');
+define('ESHOP_VERSION', '2.9.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.8.4
+Version: 2.9.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -475,7 +475,7 @@ add_option('eshop_stock_control','no');
 add_option('eshop_show_stock','no');
 add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
-
+add_option('eshop_search_img', 'no');
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-custom-fields.php' );
 
@@ -539,4 +539,37 @@ function eshop_delete_img($rootimg){
 	}
 	return($postid);
 }
+//add images to the search page if set
+if('no' != get_option('eshop_search_img'))
+	add_filter('get_the_excerpt','eshop_excerpt_img');
+function eshop_excerpt_img($output){
+	global $post;
+	$echo='';
+	if(is_search()){
+		$eshopprodimg='_eshop_prod_img';
+		//grab image or choose first image uploaded for that page
+		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
+		$imgs= eshop_get_images($post->ID);
+		$x=1;
+		if(is_array($imgs)){
+			if($proddataimg=='' && get_option('eshop_search_img') == 'all'){
+				foreach($imgs as $k=>$v){
+					$x++;
+					$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+					break;
+				}
+			}else{
+				foreach($imgs as $k=>$v){
+					if($proddataimg==$v['url']){
+						$x++;
+						$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+						break;
+					}
+				}
+			}
+		}
+	}
+	return $echo.$output;
+}
+
 ?>

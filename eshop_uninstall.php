@@ -82,6 +82,7 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_downloads_only';
 	$epages[] = 'eshop_fold_menu';
 	$epages[] = 'eshop_widget';
+	$epages[] = 'eshop_search_img';
 	foreach($epages as $epage){
 		delete_option($epage);
 	}
