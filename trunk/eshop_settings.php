@@ -36,7 +36,7 @@ if(isset($_POST['submit'])){
 	update_option('eshop_stock_control',$wpdb->escape($_POST['eshop_stock_control']));
 	update_option('eshop_show_stock',$wpdb->escape($_POST['eshop_show_stock']));
 	update_option('eshop_downloads_only',$wpdb->escape($_POST['eshop_downloads_only']));
-
+	update_option('eshop_search_img',$wpdb->escape($_POST['eshop_search_img']));
 	//error grabbing
 	if(is_numeric($_POST['eshop_records'])){
 		update_option('eshop_records',$wpdb->escape($_POST['eshop_records']));
@@ -316,29 +316,6 @@ echo $result;
 	<label for="eshop_pagelist_num"><?php _e('Department Products to display','eshop'); ?></label><input id="eshop_pagelist_num" name="eshop_pagelist_num" type="text" value="<?php echo get_option('eshop_pagelist_num'); ?>" size="5" /><br />
 </fieldset>
 
-<fieldset><legend><?php _e('Credits','eshop'); ?></legend>
-<label for="eshop_credits"><?php _e('Display eShop credits','eshop'); ?></label>
-	<select name="eshop_credits" id="eshop_credits">
-	<?php
-	if('yes' == get_option('eshop_credits')){
-		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
-		echo '<option value="no">'.__('No','eshop').'</option>';
-	}else{
-		echo '<option value="yes">'.__('Yes','eshop').'</option>';
-		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
-	}
-	?>
-	</select><br />
-</fieldset>
-<fieldset><legend><?php _e('Automatically created pages','eshop'); ?></legend>
-<p class="warn"><?php _e('<strong>Warning:</strong> Changes made here amend the page id of the automatically created pages - change with extreme care.','eshop'); ?></p>
-<label for="eshop_cart"><?php _e('Cart - page id number','eshop'); ?></label><input id="eshop_cart" name="eshop_cart" type="text" value="<?php echo get_option('eshop_cart'); ?>" size="5" /><br />
-<label for="eshop_checkout"><?php _e('Checkout - page id number','eshop'); ?></label><input id="eshop_checkout" name="eshop_checkout" type="text" value="<?php echo get_option('eshop_checkout'); ?>" size="5" /><br />
-<label for="eshop_cart_success"><?php _e('Successful payment  - page id number','eshop'); ?></label><input id="eshop_cart_success" name="eshop_cart_success" type="text" value="<?php echo get_option('eshop_cart_success'); ?>" size="5" /><br />
-<label for="eshop_cart_cancel"><?php _e('Cancelled payment - page id number','eshop'); ?></label><input id="eshop_cart_cancel" name="eshop_cart_cancel" type="text" value="<?php echo get_option('eshop_cart_cancel'); ?>" size="5" /><br />
-<label for="eshop_show_downloads"><?php _e('Downloads - page id number','eshop'); ?></label><input id="eshop_show_downloads" name="eshop_show_downloads" type="text" value="<?php echo get_option('eshop_show_downloads'); ?>" size="5" /><br />
-</fieldset>
-
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
 <label for="eshop_fold_menu"><?php _e('Hide sub pages from menu until top level page is visited.','eshop'); ?></label>
 	<select name="eshop_fold_menu" id="eshop_fold_menu">
@@ -353,6 +330,43 @@ echo $result;
 	?>
 	</select><br />
 </fieldset>
+
+<fieldset><legend><?php _e('Search Results','eshop'); ?></legend>
+<label for="eshop_search_img"><?php _e('Add image to search results','eshop'); ?></label>
+	<select name="eshop_search_img" id="eshop_search_img">
+	<?php
+	if('yes' == get_option('eshop_search_img')){
+		echo '<option value="no">'.__('No','eshop').'</option>';
+		echo '<option value="all">'.__('All pages and posts','eshop').'</option>';
+		echo '<option value="yes" selected="selected">'.__('eShop products pages and posts only','eshop').'</option>';
+	}elseif('all' == get_option('eshop_search_img')){
+		echo '<option value="no">'.__('No','eshop').'</option>';
+		echo '<option value="all" selected="selected">'.__('All pages and posts','eshop').'</option>';
+		echo '<option value="yes">'.__('eShop products pages and posts only','eshop').'</option>';
+	}else{
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+		echo '<option value="all">'.__('All pages and posts','eshop').'</option>';
+		echo '<option value="yes">'.__('eShop products pages and posts only','eshop').'</option>';
+	}
+	?>
+	</select><br />
+</fieldset>
+
+<fieldset><legend><?php _e('Credits','eshop'); ?></legend>
+<label for="eshop_credits"><?php _e('Display eShop credits','eshop'); ?></label>
+	<select name="eshop_credits" id="eshop_credits">
+	<?php
+	if('yes' == get_option('eshop_credits')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
+</fieldset>
+
 <fieldset><legend><?php _e('Link to extra pages','eshop'); ?></legend>
 <p><?php _e('These links automatically appear on the checkout page.','eshop'); ?></p>
 <label for="eshop_cart_shipping"><?php _e('Shipping rates - page id number','eshop'); ?></label><input id="eshop_cart_shipping" name="eshop_cart_shipping" type="text" value="<?php echo get_option('eshop_cart_shipping'); ?>" size="5" /><br />
@@ -380,11 +394,22 @@ echo $result;
 <label for="eshop_cron_email"><?php _e('Cron Email address','eshop'); ?></label><input id="eshop_cron_email" name="eshop_cron_email" type="text" value="<?php echo get_option('eshop_cron_email'); ?>" size="30" /><br />
 </fieldset>
 
+<fieldset><legend><?php _e('Automatically created pages','eshop'); ?></legend>
+<p class="warn"><?php _e('<strong>Warning:</strong> Changes made here amend the page id of the automatically created pages - change with extreme care.','eshop'); ?></p>
+<label for="eshop_cart"><?php _e('Cart - page id number','eshop'); ?></label><input id="eshop_cart" name="eshop_cart" type="text" value="<?php echo get_option('eshop_cart'); ?>" size="5" /><br />
+<label for="eshop_checkout"><?php _e('Checkout - page id number','eshop'); ?></label><input id="eshop_checkout" name="eshop_checkout" type="text" value="<?php echo get_option('eshop_checkout'); ?>" size="5" /><br />
+<label for="eshop_cart_success"><?php _e('Successful payment  - page id number','eshop'); ?></label><input id="eshop_cart_success" name="eshop_cart_success" type="text" value="<?php echo get_option('eshop_cart_success'); ?>" size="5" /><br />
+<label for="eshop_cart_cancel"><?php _e('Cancelled payment - page id number','eshop'); ?></label><input id="eshop_cart_cancel" name="eshop_cart_cancel" type="text" value="<?php echo get_option('eshop_cart_cancel'); ?>" size="5" /><br />
+<label for="eshop_show_downloads"><?php _e('Downloads - page id number','eshop'); ?></label><input id="eshop_show_downloads" name="eshop_show_downloads" type="text" value="<?php echo get_option('eshop_show_downloads'); ?>" size="5" /><br />
+</fieldset>
+
+
+
 <input type="hidden" name="page_options" value="eshop_method,
 eshop_status,eshop_currency,eshop_location,eshop_business,
 eshop_sysemails,eshop_records,eshop_options_num,eshop_currency_symbol,
 eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,eshop_fold_menu,
-eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email,eshop_cart,
+eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email,eshop_cart,eshop_search_img,
 eshop_cart_cancel,eshop_cart_shipping,eshop_cart_success,eshop_checkout,eshop_show_downloads,eshop_downloads_only" />
 
 <p class="submit">

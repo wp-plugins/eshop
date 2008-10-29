@@ -143,24 +143,37 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 
 <h3>Product Listings</h3>
 <p><strong>Featured and department product sort order</strong> - newest, oldest, alphabetically - these are the values available to sort products when they are listed on a parent page.</p>
-
 <p><strong>Random products to display</strong> - this is the number of random products to display if you utilise the <code>[eshop_random_products]</code> shortcode.</p>
 <p><strong>Department Products to display</strong> - this sets the number of producs to appear per page when you use the <code>[eshop_list_subpages]</code> shortcode.</p>
 
+<h3>Sub Pages</h3>
+<p>This option, sometimes refferred to as fold menus, can automatically hide sub page until their parent page is viewed. (hides links to shop pages until you go into the shop).</p>
+
+<h3>Search Results</h3>
+<p><strong>Add image to search results</strong> - if used eShop will add an image to the search results page for any post or page or product pages only.</p>
 
 <h3>Credits</h3> 
 <p><strong>Display eShop credit</strong> allows you to hide the 'Powered by eShop' credit that appears on various pages in your shop. Disabling this will still add a hidden <abbr title="Hypertext MarkUp Language">HTML</abbr> comment to the page.</p>
+
 <h3>Link to extra pages</h3>
 <p>Here you can add 2 extra links to appear in various places in the cart/checkout procedure that link to a <strong>Privacy Policy</strong>, or <strong>Help page</strong>. The page id number should be used.</p>
 
-<h3>Other Settings</h3>	
-<p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by <abbr title="United States">US</abbr> States. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
-<p>The eShop <strong>Style</strong> page allows you to amend the default style, or disable it completely.</p>
+<h3>Downloads Only</h3>
+<p>If using eShop for a downloads only store, then setting this to yes will hide the shipping rates link, and provide a shorter checkout form.</p>
 
 <h3>Cron</h3>
 <p>Cron automatically sends out a daily email to the specified address if there are any outstanding, or pending, orders.
 This is only triggered when someone visits the site.</p>
 <p>To stop this feature, simply delete the Cron Email address.</p>
+
+<h3>Automatically created pages</h3>
+<p>These are automatically generated when eShop is first activated. Changing these could affect how eShop works, but are available for amendment should you delete a page in error. All of these pages require shortcodes to work correctly.</p>
+
+<h3>Other Settings</h3>	
+<p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by <abbr title="United States">US</abbr> States. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
+<p>The eShop <strong>Style</strong> page allows you to amend the default style, or disable it completely.</p>
+
+
 <h3>Settings - eShop Base</h3>
 <p>This section sets up defaults that may be useful if you want to use Google Base. Anything entered here is applied to <em>all</em> products. You don't have to enter anything but the more information you supply the better. You are able to override these settings per product via the eShop - Base page.</p>
 <p><strong>Brand</strong> - if you sell one particular brand, set it here.</p>

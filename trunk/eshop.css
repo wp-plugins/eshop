@@ -274,6 +274,25 @@ fieldset#changestat {
   border : 1px solid #fefefe;
   background:#F5FAFF;
 }
+
+#eshop-settings legend, #template_form legend, #edit_box legend, #style_form legend, 
+#eshopformleft legend,#orderstatus legend, #emailer legend,#shipformmethod legend,#zoneform legend,
+#filterzones legend,#eshopup legend,#downloadedit legend,#eshop-gbase-alt legend{
+	font-size:1.2em;
+	color:#666;
+	background:#E4F2FD;
+	border-bottom:1px solid #999;
+	border-right:1px solid #999;
+	padding:0 5px 5px 5px;
+	margin-bottom:5px;
+}
+
+p.submit.eshop,#filterzones p.submit{
+	border:0;
+	padding:0;
+}
+
+
 #eshopup fieldset fieldset,#eshop-gbase-alt fieldset fieldset{
 	background: #fefefe;
 }
@@ -398,12 +417,13 @@ div.paginate p.checkers a {
 /* settings page */
 
 #eshop-settings fieldset{
-	border:1px solid #fefefe;
 	margin-top:10px;
 	padding-left:20px;
 	padding-bottom:5px;
 	background: #f5faff;
 }
+
+
 #eshop-settings fieldset fieldset{
 	background: #fefefe;
 }

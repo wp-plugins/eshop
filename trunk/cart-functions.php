@@ -946,7 +946,7 @@ if (!function_exists('eshop_get_images')) {
 				if($height=='' || $width=='')
 				    $echo[$x]['size']='';
 				else
-    				$echo[$x]['size']='height="'.$height.'"width="'.$width.'"';
+    				$echo[$x]['size']='height="'.$height.'" width="'.$width.'"';
 				$x++;
 			}
 		}
