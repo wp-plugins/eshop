@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.9.0');
+define('ESHOP_VERSION', '2.9.1');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.9.0
+Version: 2.9.1
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -541,7 +541,7 @@ function eshop_delete_img($rootimg){
 }
 //add images to the search page if set
 if('no' != get_option('eshop_search_img'))
-	add_filter('get_the_excerpt','eshop_excerpt_img');
+	add_filter('the_excerpt','eshop_excerpt_img');
 function eshop_excerpt_img($output){
 	global $post;
 	$echo='';
@@ -549,20 +549,27 @@ function eshop_excerpt_img($output){
 		$eshopprodimg='_eshop_prod_img';
 		//grab image or choose first image uploaded for that page
 		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
+		$isaproduct=get_post_meta($post->ID,'_Price 1',true);
 		$imgs= eshop_get_images($post->ID);
 		$x=1;
 		if(is_array($imgs)){
 			if($proddataimg=='' && get_option('eshop_search_img') == 'all'){
 				foreach($imgs as $k=>$v){
 					$x++;
-					$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+					$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+					break;
+				}
+			}elseif($proddataimg=='' && get_option('eshop_search_img') == 'yes' && $isaproduct!=''){
+				foreach($imgs as $k=>$v){
+					$x++;
+					$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
 					break;
 				}
 			}else{
 				foreach($imgs as $k=>$v){
 					if($proddataimg==$v['url']){
 						$x++;
-						$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
 						break;
 					}
 				}
