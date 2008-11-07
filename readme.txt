@@ -34,6 +34,10 @@ eShop has many features, these include:
 
 == Latest Updates ==
 
+Version 2.9.2
+
+Add to cart form was appearing for password protected posts now only appears once password has been entered.
+
 version 2.9.1
 
 Tweaking the image appearance on the search page, and adding a class 'eshop_search_img' for those that need it.

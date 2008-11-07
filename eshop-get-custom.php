@@ -8,7 +8,8 @@ function eshop_get_custom ($field) {
 function eshop_boing($pee,$short='no'){
 	global $wpdb,$post;
 	//if the search page we don't want the form!
-	if(is_single() || is_page()){
+
+	if((is_single() || is_page()) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		if(eshop_get_custom('Sku')!='' && eshop_get_custom('Product Description')!='' &&
 		eshop_get_custom('Option 1')!='' && eshop_get_custom('Price 1')!='' &&
 		eshop_get_custom('Shipping Rate')!='' && eshop_get_custom('Stock Available')=='Yes'){
