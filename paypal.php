@@ -256,7 +256,7 @@ switch ($_GET['action']) {
 			}
 			//add any memo from user at paypal here
 			$memo=$wpdb->escape($p->ipn_data['memo']);
-			$mquery=$wpdb->query("UPDATE $detailstable set memo='$memo' where checkid='$checked'");
+			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $_POST['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
@@ -300,7 +300,7 @@ switch ($_GET['action']) {
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = get_option('eshop_business');    //  your email
-			 $body =  __("An instant payment notification was recieved",'eshop')."\n";
+			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 //debug
@@ -370,7 +370,7 @@ switch ($_GET['action']) {
 			$astatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
 			//add any memo from user at paypal here
 			$memo=$wpdb->escape($p->ipn_data['memo']);
-			$mquery=$wpdb->query("UPDATE $detailstable set memo='$memo' where checkid='$checked'");
+			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
@@ -382,7 +382,7 @@ switch ($_GET['action']) {
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = get_option('eshop_business');    //  your email
-			 $body =  __("An instant payment notification was recieved",'eshop')."\n";
+			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__('from','eshop')." ".$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }

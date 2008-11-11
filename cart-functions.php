@@ -401,7 +401,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$custom=$drow->custom_field;
 			$transid=$drow->transid;
 		}
-		if($status=='Completed'){$status=__('Order Recieved','eshop');}
+		if($status=='Completed'){$status=__('Order Received','eshop');}
 		if($status=='Pending'){$status=__('Pending Payment','eshop');}
 		$contact=$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
@@ -464,8 +464,8 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$sqcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 				$address.= $sqcountry."\n";
 			}
-			if($drow->memo!=''){
-				$extras.= __('Paypal memo:','eshop')."\n".$drow->memo."\n";
+			if($drow->thememo!=''){
+				$extras.= __('Paypal memo:','eshop')."\n".$drow->thememo."\n";
 			}
 			if($drow->reference!=''){
 					$extras.= __('Reference/PO:','eshop')."\n".$drow->reference."\n";

@@ -83,7 +83,7 @@ function eshop_form_admin_style(){
 		_e('Sorry. The file you are looking for could not be found','eshop');
 		?>
 	</textarea>
-   <p class="submit eshop"><input type="submit" value="<?php _e('Update Style','eshop'); ?>" name="submit" /></p>
+   <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Style','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
 </div>

@@ -413,7 +413,7 @@ eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cr
 eshop_cart_cancel,eshop_cart_shipping,eshop_cart_success,eshop_checkout,eshop_show_downloads,eshop_downloads_only" />
 
 <p class="submit">
-<input type="submit" name="submit" value="<?php _e('Update Options &#187;') ?>" />
+<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
 </p>
 </form>
 

@@ -192,7 +192,7 @@ function eshop_products_manager() {
 		}
 		?>
 		</fieldset>
-		<p class="submit"><input type="submit" name="submit" value="<?php _e('Update') ?>" /></p>
+		<p class="submit"><input type="submit" class="button-primary" name="submit" value="<?php _e('Update') ?>" /></p>
 		<?php
 		echo '</form></div>';
 	}else{

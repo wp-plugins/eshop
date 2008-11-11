@@ -89,7 +89,7 @@ eshop_base_expiry,eshop_base_ptype,eshop_base_payment" />
 
 </fieldset>
 <p class="submit">
-<input type="submit" name="submit" value="<?php _e('Update Options &#187;') ?>" />
+<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
 </p>
 </form>
 
