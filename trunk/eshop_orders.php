@@ -96,10 +96,10 @@ if (!function_exists('displayorders')) {
 			$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'];
 			echo '<ul id="eshopsubmenu">';
 			echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
-			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascendin','eshop').'g</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascending','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=dd"'.$cdd.'>'.__('Date Descending','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=tn"'.$ctn.'>'.__('ID Number','eshop').'</a></li>';
-			echo '<li><a href="'.$apge.'&amp;by=ca"'.$cca.'>'.__('Compan','eshop').'y</a></li>';
+			echo '<li><a href="'.$apge.'&amp;by=ca"'.$cca.'>'.__('Company','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=na"'.$cna.'>'.__('Customer','eshop').'</a></li>';
 
 			echo '</ul>';
@@ -426,7 +426,7 @@ foreach ( $stati as $status => $label ) {
 	$status_links[] = "<li><a href=\"?page=eshop_orders.php&amp;action=$status\"$class>" . $label . '</a>';
 }
 echo implode(' | </li>', $status_links) . '</li>';
-echo '</ul>';
+echo '</ul><br class="clear" />';
 
 if(isset($_GET['delid']) && !isset($_GET['view'])){
 	deleteorder($_GET['delid']);
@@ -615,8 +615,8 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			}
 			echo __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p>\n";
 		}
-		if($drow->memo!=''){
-			echo '<p><strong>'.__('Customer paypal memo:','eshop').'</strong><br />'.$drow->memo.'</p>';
+		if($drow->thememo!=''){
+			echo '<p><strong>'.__('Customer paypal memo:','eshop').'</strong><br />'.$drow->thememo.'</p>';
 		}
 		if($drow->reference!=''){
 				echo '<p><strong>'.__('Customer reference:','eshop').'</strong><br />'.$drow->reference.'</p>';

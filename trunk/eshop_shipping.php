@@ -48,7 +48,7 @@ foreach ( $stati as $status => $label ) {
 	$status_links[] = "<li><a href=\"?page=eshop_shipping.php&amp;action=$status\"$class>" . $label . '</a>';
 }
 $echosub.= implode(' | </li>', $status_links) . '</li>';
-$echosub.= '</ul>';
+$echosub.= '</ul><br class="clear" />';
 
 
 
@@ -181,7 +181,7 @@ case ('countries'):
 	<?php
 	echo $hidden;
 	?>
-	<p class="submit eshop"><input type="submit" name="submit" id="submit" value="<?php _e('Update Shipping Zones','eshop'); ?>" /></p>
+	<p class="submit eshop"><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Zones','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
 
@@ -280,7 +280,7 @@ case ('states'):
 	</tbody>
 	</table>
 
-	<p class="submit eshop"><input type="submit" name="submit" id="submit" value="<?php _e('Update Shipping Zones','eshop'); ?>" /></p>
+	<p class="submit eshop"><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Zones','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
 
@@ -365,7 +365,7 @@ default:
 	}
 	?>
 	</select><br />
-	<p class="submit eshop"><input type="submit" name="shipmethod" id="submitit" value="<?php _e('Update Shipping rate calculation','eshop'); ?>" /></p>
+	<p class="submit eshop"><input type="submit" name="shipmethod" class="button-primary" id="submitit" value="<?php _e('Update Shipping rate calculation','eshop'); ?>" /></p>
 
 	</fieldset>
 	</form>
@@ -443,7 +443,7 @@ default:
 	}
 	?>
 	</table>
-	<p class="submit eshop"><input type="submit" name="submit" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
+	<p class="submit eshop"><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
 	</div>

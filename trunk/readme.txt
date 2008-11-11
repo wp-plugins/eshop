@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.6.2
-Stable tag: 2.9.2
+Stable tag: 2.9.3
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -33,6 +33,15 @@ eShop has many features, these include:
 
 
 == Latest Updates ==
+
+Version 2.9.3
+
+* _All_ users will need to deactivate and activate the plugin when upgrading.
+* Help file tweaked, and English corrected.
+* Conflict in MySQL table creation corrected.
+* Uninstall tweaks - now deletes the data it says it was!
+* Small updates for Wordpress 2.7 (not yet fully tested)
+* plus various minor tweaks
 
 Version 2.9.2
 

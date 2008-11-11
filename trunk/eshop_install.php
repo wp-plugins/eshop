@@ -147,7 +147,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	custom_field varchar(15) NOT NULL default '',
 	transid varchar(255) NOT NULL default '',
 	comments text NOT NULL,
-	memo text NOT NULL,
+	thememo text NOT NULL,
 	edited datetime NOT NULL default '0000-00-00 00:00:00',
 	downloads set('yes','no') NOT NULL default 'no',
 	  PRIMARY KEY  (id),
@@ -438,6 +438,15 @@ $tablefields = $wpdb->get_results("DESCRIBE {$table};");
 foreach($tablefields as $tablefield) {
 	if(strtolower($tablefield->Field)=='condition') {
 		$sql="ALTER TABLE ".$table." CHANGE `condition` thecondition VARCHAR(255) NOT NULL default ''";
+		$wpdb->query($sql);
+	}
+}
+/* db changes */
+$table = $wpdb->prefix . "eshop_orders";
+$tablefields = $wpdb->get_results("DESCRIBE {$table};");
+foreach($tablefields as $tablefield) {
+	if(strtolower($tablefield->Field)=='memo') {
+		$sql="ALTER TABLE ".$table." CHANGE `memo` thememo TEXT NOT NULL";
 		$wpdb->query($sql);
 	}
 }

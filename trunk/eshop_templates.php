@@ -39,7 +39,7 @@ function eshop_template_email(){
 		$oemail=' selected="selected"';
 	}
 	$name1=__('Automatic order email','eshop');
-	$name2=__('Customer responce email','eshop');
+	$name2=__('Customer response email','eshop');
     
     if(!is_writeable($templateFile) && (!isset($_POST['choose'])||!isset($_POST['edit']))) {
   			echo '<div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The template file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
@@ -98,7 +98,7 @@ function eshop_template_email(){
 		?>
 	</textarea>
 	<input type="hidden" name="edit" value="<?php echo $editthis;?>" />
-   <p class="submit eshop"><input type="submit" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
+   <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
 </div>

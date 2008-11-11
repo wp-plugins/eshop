@@ -124,7 +124,7 @@ foreach($dquery as $drow){
 		}
 		$data .=eshopcleanit($shipaddress).$delim.eshopcleanit($qzone).$delim;
 
-		$data.=eshopcleanit($drow->memo).$delim.eshopcleanit($drow->reference).$delim.eshopcleanit($drow->comments).$cr;
+		$data.=eshopcleanit($drow->thememo).$delim.eshopcleanit($drow->reference).$delim.eshopcleanit($drow->comments).$cr;
 
 	}
 

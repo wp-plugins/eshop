@@ -579,7 +579,7 @@ if(!isset($_GET['change'])){
 	  </fieldset>
 	  </fieldset>
 	  <p class="submit">
-	  <input type="submit" name="submit" value="<?php _e('Update') ?>" />
+	  <input type="submit" name="submit" class="button-primary" value="<?php _e('Update') ?>" />
 	</p>
 		<?php
 
