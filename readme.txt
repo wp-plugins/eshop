@@ -3,14 +3,15 @@ Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
-Tested up to: 2.6.2
-Stable tag: 2.9.3
+Tested up to: 2.7.RC1
+Stable tag: 2.11.0
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-Upgrading to 2.8+ from earlier versions please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
+Upgrading to 2.11+ from earlier versions please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
+
 
 eShop has many features, these include:
 
@@ -29,10 +30,28 @@ eShop has many features, these include:
 * Basic Stock Control
 * Google Base Data creation
 * Uninstall available within the plugin
+* NEW Discounts
+* NEW Shipping Rates page updates
+* NEW ability to change eShop From address for automated emails
+* NEW ability to add an admin note to an order.
 * and more
+
+Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.10.1 ((not a general release)
+
+* Added ability for discounts - see the help page for more information
+* Added ability to only show used shipping classes on the shipping rates page - see the help page for more information
+* Added ability to change eShop From address for automated emails
+* Added ability to add an admin note to an order.
+
+Version 2.10.x 
+
+* Not available - this release was not made available, but all features are in 2.11.x
+
 
 Version 2.9.3
 
@@ -149,6 +168,10 @@ You then need to create a top level shop page, and start creating departments an
 = Does this work with Wordpress MU =
 
 When WordpressMU utilises WP2.5, then hopefully yes.
+
+= Upgrading to 2.11.0 (and above) from earlier versions =
+
+You need to deactivate, and then reactivate the plugin. Product data won't be lost, there is a minor update to the database.
 
 = Upgrading to 2.8.0 (and above) from earlier versions =
 

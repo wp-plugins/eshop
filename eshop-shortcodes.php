@@ -350,4 +350,49 @@ function eshop_listpanels($subpages,$eshopclass,$form){
 	$post=$paged;
 	return $echo;
 }
+function eshop_show_discounts(){
+	$edisc=array();
+	$currsymbol=get_option('eshop_currency_symbol');
+	$shipdisc=get_option('eshop_discount_shipping');
+	for ($x=1;$x<=3;$x++){
+		if(get_option('eshop_discount_spend'.$x)!='')
+			$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
+	}
+	$discarray=sizeof($edisc);
+	if($discarray>0){
+		ksort($edisc);
+		?>
+		<table class="eshopdiscounts" summary="<?php _e('Discount for amount sold','eshop'); ?>">
+		<caption><?php _e('Discount for amount sold','eshop'); ?></caption>
+		<thead>
+		<tr>
+		<th id="elevel"><?php _e('Discounts','eshop'); ?></th>
+		<th id="espend"><?php _e('Spend','eshop'); ?></th>
+		<th id="ediscount"><?php _e('% Discount','eshop'); ?></th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php
+		$x=0;
+		foreach ($edisc as $amt => $percent) {
+		$x++;
+		?>
+		<tr>
+		<th headers="elevel"  id="row<?php echo $x ?>"><?php echo $x ?></th>
+		<td headers="elevel espend row<?php echo $x ?>" class="amts"><?php echo $currsymbol.$amt; ?></td>
+		<td headers="elevel ediscount row<?php echo $x ?>" class="disc"><?php echo $percent; ?></td>
+		</tr>
+		<?php
+
+		}
+		?>
+		</table>
+	<?php
+	}
+	if($shipdisc>0){
+	?>
+	<p class="shipdiscount"><?php _e('Free Shipping if you spend over','eshop'); ?> <span><?php echo $currsymbol.get_option('eshop_discount_shipping'); ?></span></p>
+<?php
+	}
+}
 ?>

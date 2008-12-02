@@ -20,6 +20,19 @@ else
 	$_GET['action']=$action_status = 'Pending';
 
 
+//admin note handling
+if(isset($_POST['eshop-adnote'])){
+	$dtable=$wpdb->prefix.'eshop_orders';
+	if (isset($_GET['view']) && is_numeric($_GET['view'])){
+		$view=$_GET['view'];
+		$admin_note=$wpdb->escape($_POST['eshop-adnote']);
+		$query2=$wpdb->get_results("UPDATE $dtable set admin_note='$admin_note' where id='$view'");
+		echo '<div class="updated fade"><p>'.__('Admin Note changed successfully.','eshop').'</p></div>';
+	}else{
+		echo '<div class="error fade"><p>'.__('Error: Admin Note was not changed.','eshop').'</p></div>';
+	}
+}
+
 if (!function_exists('displayorders')) {
 	function displayorders($type){
 		global $wpdb;
@@ -474,6 +487,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$checkid=$drow->checkid;
 		$custom=$drow->custom_field;
 		$transid=$drow->transid;
+		$admin_note=htmlspecialchars(stripslashes($drow->admin_note));
 	}
 	if($status=='Completed'){$status=__('Active','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
@@ -504,6 +518,16 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	?>
 	<div class="orders tablecontainer">
 	<p><?php _e('Transaction ID:','eshop'); ?> <strong><?php echo $transid; ?></strong></p>
+	<?php
+	if($admin_note!=''){
+		echo '<div id="eshop_admin_note"><h4>'.__('Admin Note:','eshop')."</h4>\n";
+		echo nl2br($admin_note).'</div>'."\n";
+		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Edit admin note','eshop').'</a></p>';
+	}else{
+		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Add admin note','eshop').'</a.</p>';
+	}
+	?>
+	
 	<table id="listing" summary="<?php _e('Table for order details','eshop'); ?>">
 	<caption><?php _e('Order Details','eshop'); ?></caption>
 	<thead>
@@ -625,6 +649,14 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				echo '<p><strong>'.__('Customer order comments:','eshop').'</strong><br />'.$drow->comments.'</p>';
 		}
 	}
+	//admin note form goes here
+	?>
+	<form method='post' action="" id="eshop-anote"><fieldset><legend><label for="eshop-adnote"><?php _e('Admin Note','eshop'); ?></label></legend>
+	<textarea rows="5" cols="80" id="eshop-adnote" name="eshop-adnote"><?php echo $admin_note; ?></textarea>
+	<p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Admin Note','eshop'); ?>" name="submit" /></p>
+	</fieldset>
+	</form>
+	<?php	
 	if($status=='Deleted'){$delete="<p class=\"delete\"><a href=\"".$phpself."&amp;delid=".$view."\">".__('Completely delete this order?','eshop')."</a><br />".__('<small><strong>Warning:</strong> this order will be completely deleted and cannot be recovered at a later date.</small>','eshop')."</p>";}else{$delete='';};
 	echo $delete;
 }else{

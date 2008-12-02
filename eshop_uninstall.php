@@ -49,6 +49,7 @@ if(isset($_POST['delete'])){
 
 	//options
 	$epages[] = 'eshop_business';
+	$epages[] = 'eshop_from_email';
 	$epages[] = 'eshop_cart';
 	$epages[] = 'eshop_cart_cancel';
 	$epages[] = 'eshop_cart_nostock';
@@ -83,6 +84,12 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_fold_menu';
 	$epages[] = 'eshop_widget';
 	$epages[] = 'eshop_search_img';
+	for ($x=1;$x<=3;$x++){
+		$epages[]='eshop_discount_spend'.$x;
+		$epages[]='eshop_discount_value'.$x;
+	}
+	$epages[]='eshop_discount_shipping';
+		
 	foreach($epages as $epage){
 		delete_option($epage);
 	}

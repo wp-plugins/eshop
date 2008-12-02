@@ -152,19 +152,24 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "</select></label>";
 	}
 	$x=0;
+	$discounttotal=0;
 	foreach ($_SESSION['shopcart'] as $productid => $opt){
 		$x++;
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
 	//	$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".number_format($opt["price"], 2)."\" />";
+		/* DISCOUNT */
+		$amt=number_format(round($opt["price"], 2),2);
+		if(is_discountable(calculate_total())!=0){
+			$discount=is_discountable(calculate_total())/100;
+			$amt = number_format(round($amt-($amt * $discount), 2),2);
+		}
+		$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".$amt."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
-
 		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
-
 	}
-
+	
 	$echo .= '</fieldset>';
 	if('no' == get_option('eshop_downloads_only')){
 		$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
@@ -493,6 +498,8 @@ if(isset($_POST['ship_name'])){
 						$shipping+=$shipcost;
 						break;
 				}
+				//discount shipping
+				if(is_shipfree(calculate_total())) $shipping=0;
 
 				//shipping
 				$_POST['shipping_1']=$shipping;

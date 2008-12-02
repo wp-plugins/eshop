@@ -55,14 +55,27 @@ if (!function_exists('display_cart')) {
 					}else{
 						$echo.= $opt["qty"];
 					}
+					/* DISCOUNT */
+					if(is_discountable(calculate_total())>0){
+						$discount=is_discountable(calculate_total())/100;
+						$disc_line= number_format(round($opt["price"]-($opt["price"] * $discount), 2),2);
+					}
 					$line_total=$opt["price"]*$opt["qty"];
 					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".$currsymbol.number_format($line_total,2)."</td></tr>\n";
-					$sub_total+=$line_total;
+					if(isset($disc_line))
+						$sub_total+=$disc_line*$opt["qty"];
+					else		
+						$sub_total+=$line_total;
 
 				}
 			}
 			// display subtotal row - total for products only
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop')."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($sub_total, 2)."</td></tr>\n";
+			$disc_applied='';
+			if(is_discountable(calculate_total())>0){
+				$discount=is_discountable(calculate_total());
+				$disc_applied='<small>('.__('Including Discount of','eshop').' <span>'.number_format(round($discount, 2),2).'%</span>)</small>';
+			}
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($sub_total, 2)."</td></tr>\n";
 				
 			// SHIPPING PRICE HERE
 			$shipping=0;
@@ -116,6 +129,9 @@ if (!function_exists('display_cart')) {
 				}
 
 				//display shipping cost
+				//discount shipping?
+				if(is_shipfree(calculate_total())) $shipping=0;
+				
 				$echo.= '<tr class="alt">
 				<th headers="cartItem" id="scharge" class="leftb">'.__('Shipping','eshop');
 				if(get_option('eshop_cart_shipping')!=''){
@@ -165,6 +181,20 @@ if (!function_exists('calculate_price')) {
 		return number_format($price, 2);
 	}
 }
+if (!function_exists('calculate_total')) {
+	function calculate_total(){
+
+		// sum total price for all items in shopping shopcart
+		$price = 0.0;
+
+		if(is_array($_SESSION['shopcart'])){
+			foreach ($_SESSION['shopcart'] as $productid => $opt){
+				$price+=($opt['price']*$opt['qty']);
+			}
+		}
+		return $price;
+	}
+}
 if (!function_exists('calculate_items')) {
 	function calculate_items(){
 		// sum total items in shopping shopcart
@@ -181,6 +211,37 @@ if (!function_exists('calculate_items')) {
 		return $items;
 	}
 }
+if (!function_exists('is_discountable')) {
+	function is_discountable($total){
+		$percent=0;
+		for ($x=1;$x<=3;$x++){
+			if(get_option('eshop_discount_spend'.$x)!='')
+				$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
+		}
+		if(is_array($edisc)){
+			krsort($edisc);
+			foreach ($edisc as $amt => $percent) {
+				if($amt <= $total)
+					return $percent;	
+			}
+			$percent=0;
+		}
+		return $percent;
+	}
+}
+
+if (!function_exists('is_shipfree')) {
+	function is_shipfree($total){
+		$amt=get_option('eshop_discount_shipping');
+		if($amt!='' && $amt <= $total)
+			return true;
+		
+		return false;
+
+	}
+}
+
+
 if (!function_exists('checkAlpha')) {
 	//check string is alpha only.
 	function checkAlpha($text){
@@ -497,17 +558,18 @@ if (!function_exists('eshop_get_shipping')) {
     /**
      * returns a table of the shipping rates
      */
-    function eshop_get_shipping() { 
+    function eshop_get_shipping($atts) { 
 		global $wpdb;
+		extract(shortcode_atts(array('shipclass'=>'A,B,C,D,E,F'), $atts));
+		$shipclasses = explode(",", $shipclass);
 		$dtable=$wpdb->prefix.'eshop_shipping_rates';
 		$query=$wpdb->get_results("SELECT * from $dtable");
 		$currsymbol=get_option('eshop_currency_symbol');
 
 		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'">';
-		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone','eshop').' <small>'.__('(subject to change)','eshop').'</small></span></caption>';
-		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>';
-		$x=1;
-		$eshopshiptable.='<tbody>';
+		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone','eshop').' <small>'.__('(subject to change)','eshop').'</small></span></caption>'."\n";
+		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
+		$eshopshiptable.='<tbody>'."\n";
 		$x=1;
 		$calt=0;
 		switch (get_option('eshop_shipping')){
@@ -516,66 +578,74 @@ if (!function_exists('eshop_get_shipping')) {
 				$query=$wpdb->get_results("SELECT * from $dtable ORDER BY class ASC, items ASC");
 		
 				foreach ($query as $row){
-					$calt++;
-					$alt = ($calt % 2) ? '' : ' class="alt"';
-					$eshopshiptable.= '<tr'.$alt.'>';
-					if($row->items==1){
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
-					}else{
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
+					if(in_array($row->class,$shipclasses)){
+						$calt++;
+						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$eshopshiptable.= '<tr'.$alt.'>';
+						if($row->items==1){
+							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
+						}else{
+							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
+						}
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
+						$eshopshiptable.= '</tr>';
+						$x++;
 					}
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
-					$eshopshiptable.= '</tr>';
-					$x++;
 				}
 				break;
 			case '2'://( once per shipping class no matter what quantity is ordered )
 				$query=$wpdb->get_results("SELECT * from $dtable where items='1' ORDER BY 'class'  ASC");
 				foreach ($query as $row){
-					$calt++;
-					$alt = ($calt % 2) ? '' : ' class="alt"';
-					$eshopshiptable.= '<tr'.$alt.'>';
-					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";	
-					$eshopshiptable.= '</tr>';
-					$x++;
+					if(in_array($row->class,$shipclasses)){
+						$calt++;
+						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$eshopshiptable.= '<tr'.$alt.'>';
+						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";	
+						$eshopshiptable.= '</tr>';
+						$x++;
+					}
 				}
 				break;
 			case '3'://( one overall charge no matter how many are ordered )
 
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='".__('A','eshop')." ORDER BY 'class'  ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='A' ORDER BY 'class'  ASC");
 		
 				foreach ($query as $row){
-					$calt++;
-					$alt = ($calt % 2) ? '' : ' class="alt"';
-					$eshopshiptable.= '<tr'.$alt.'>';
-					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
-					$eshopshiptable.= '</tr>';
-					$x++;
+					if(in_array($row->class,$shipclasses)){
+						$calt++;
+						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$eshopshiptable.= '<tr'.$alt.'>';
+						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
+						$eshopshiptable.= '</tr>';
+						$x++;
+					}
 				}
 				break;
 		}
-		$calt++;
-		$alt = ($calt % 2) ? '' : ' class="alt"';
-		$eshopshiptable.= '<tr'.$alt.'>';
-		$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.__('F','eshop').' <small>'.__('(Free)','eshop').'</small></th>'."\n";
-		$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.$currsymbol.'0.00</td>'."\n";
-		$eshopshiptable.= '</tr>';
-		$eshopshiptable.='</tbody>';
-		$eshopshiptable.='</table>';
+		if(in_array('F',$shipclasses)){
+			$calt++;
+			$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
+			$eshopshiptable.= '<tr'.$alt.'>';
+			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.__('F','eshop').' <small>'.__('(Free)','eshop').'</small></th>'."\n";
+			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.$currsymbol.'0.00</td>'."\n";
+			$eshopshiptable.= '</tr>';
+		}
+		$eshopshiptable.='</tbody>'."\n";
+		$eshopshiptable.='</table>'."\n";
 
 		if('yes' == get_option('eshop_show_zones')){
 			$eshopshiptable.=eshop_show_zones();
@@ -951,6 +1021,18 @@ if (!function_exists('eshop_get_images')) {
 			}
 		}
 		return $echo;
+	}
+}
+if (!function_exists('eshop_from_address')) {
+	function eshop_from_address(){
+		if(get_option('eshop_from_email')!=''){
+			$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_from_email').">\n";
+		}elseif(get_option('eshop_business')!=''){
+			$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
+		}else{
+			$headers='';
+		}
+		return $headers;
 	}
 }
 ?>
