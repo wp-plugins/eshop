@@ -75,7 +75,6 @@ switch ($_GET['action']) {
 		}
 		$p->eshop_submit_paypal_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
-
 		break;
         
    case 'process':      // Process and order...
@@ -309,13 +308,8 @@ switch ($_GET['action']) {
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
-			if(get_option('eshop_business')!=''){
-				$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
-			}else{
-				$headers='';
-			}
+			$headers=eshop_from_address();
 			wp_mail($to, $subject, $body, $headers);
-
 
 			if($ok=='yes'){
 				//only need to send out for the successes!
@@ -341,7 +335,6 @@ switch ($_GET['action']) {
 				$this_email = str_replace('{NAME}', $array['ename'], $this_email);
 				$this_email = str_replace('{EMAIL}', $array['eemail'], $this_email);
 				$this_email = str_replace('{CART}', $array['cart'], $this_email);
-				$this_email = str_replace('{CART}', $array['cart'], $this_email);
 				$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
 				$this_email = str_replace('{ADDRESS}', $array['address'], $this_email);
 				$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
@@ -350,11 +343,7 @@ switch ($_GET['action']) {
 				//try and decode various bits - may need tweaking Mike, we may have to write 
 				//a function to handle this depending on what you are using - but for now...
 				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				if(get_option('eshop_business')!=''){
-					$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
-				}else{
-					$headers='';
-				}
+				$headers=eshop_from_address();
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
 			}
       	}else{
@@ -387,13 +376,8 @@ switch ($_GET['action']) {
 			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
-			 if(get_option('eshop_business')!=''){
-			 	$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
-			 }else{
-			 	$headers='';
-			 }
-			wp_mail($to, $subject, $body, $headers);
-	
+			 $headers=eshop_from_address();
+			 wp_mail($to, $subject, $body, $headers);
 			}
       	break;
  }     

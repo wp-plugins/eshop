@@ -13,15 +13,6 @@ else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
 global $wpdb;
-
-/*
-$the_pluggable_file = ABSPATH . 'wp-includes/pluggable-functions.php';
-if (file_exists($the_pluggable_file)) {
-    require_once(ABSPATH . 'wp-includes/pluggable-functions.php');
-} else {
-    require_once(ABSPATH . 'wp-includes/pluggable.php');
-}
-*/
 include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
 
 // Back to our regularly scheduled script :)
@@ -41,10 +32,8 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	$to=$_POST['email'];
 	if(isset($from) && $from!=''){
 		$headers='From: '.get_bloginfo('name').' <'.$from.">\n";
-	}elseif(get_option('eshop_business')!=''){
-		$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
 	}else{
-		$headers='';
+		$headers=eshop_from_address();
 	}
 	wp_mail($to, $subject, $body, $headers);
 	$page='?page='.$_GET['page'].'&amp;view='.$_POST['id'];
@@ -87,6 +76,11 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
     <select class="pointer" name="from" id="from">
     <option value="<?php echo get_option('eshop_business'); ?>" selected="selected"><?php echo get_option('eshop_business'); ?></option>
 	<?php
+	if(get_option('eshop_from_email')!=''){
+	?>
+	<option value="<?php echo get_option('eshop_from_email'); ?>"><?php echo get_option('eshop_from_email'); ?></option>
+	<?php
+	}
     if(get_option('eshop_sysemails')!=''){
 		$sysmailex=explode("\n",get_option('eshop_sysemails'));
 		while (list(, $sysMail) = each($sysmailex)) {	

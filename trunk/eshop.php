@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.9.3');
+define('ESHOP_VERSION', '2.11.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.9.3
+Version: 2.11.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -266,11 +266,7 @@ if (!function_exists('eshop_cron')) {
 				$to = get_option('eshop_cron_email');    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
 				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
-				if(get_option('eshop_business')!=''){
-					$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
-				}else{
-					$headers='';
-				}
+				$headers=eshop_from_address();
 				$subject=get_bloginfo('name').__(": outstanding orders");
 				wp_mail($to, $subject, $body, $headers);
 			}
@@ -346,6 +342,8 @@ add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
 add_shortcode('eshop_show_success', 'eshop_show_success');
 add_shortcode('eshop_list_new', 'eshop_list_new');
 add_shortcode('eshop_show_product','eshop_show_product');
+add_shortcode('eshop_show_discounts','eshop_show_discounts');
+
 //add credits
 add_action('wp_footer', 'eshop_visible_credits');
 

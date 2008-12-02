@@ -83,24 +83,39 @@ function eshop_template_email(){
   <fieldset>
    <legend><?php _e('Template File Editor.','eshop'); ?></legend>
    <label for="stylebox"><?php _e('Edit Template','eshop'); ?></label><br />
-	<textarea rows="20" cols="80" id="stylebox" name="templateFile"><?php 
-	if(!is_file($templateFile))
-		$error = 1;
+<textarea rows="20" cols="80" id="stylebox" name="templateFile">
+<?php 
+if(!is_file($templateFile))
+	$error = 1;
 
-	if(!isset($error) && filesize($templateFile) > 0) {
-		$f="";
-		$f = fopen($templateFile, 'r');
-		$file = fread($f, filesize($templateFile));
-		echo $file;
-		fclose($f);
-	} else 
-		_e('Sorry. The file you are looking for could not be found','eshop');
-		?>
-	</textarea>
+if(!isset($error) && filesize($templateFile) > 0) {
+	$f="";
+	$f = fopen($templateFile, 'r');
+	$file = fread($f, filesize($templateFile));
+echo $file;
+	fclose($f);
+} else 
+	_e('Sorry. The file you are looking for could not be found','eshop');
+?>
+</textarea>
 	<input type="hidden" name="edit" value="<?php echo $editthis;?>" />
    <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
+</div>
+<div class="wrap">
+<h2>Template tags</h2>
+<ul>
+<li><strong>{STATUS}</strong> - <?php _e('the status of the order.','eshop'); ?></li>
+<li><strong>{FIRSTNAME}</strong> - <?php _e('Customers First Name.','eshop'); ?></li>
+<li><strong>{NAME}</strong> - <?php _e('Customers Full Name','eshop'); ?></li>
+<li><strong>{EMAIL}</strong> - <?php _e('Customers Email address','eshop'); ?></li>
+<li><strong>{CART}</strong> - <?php _e('The contents of the cusotmers order (i.e. their shopping cart)','eshop'); ?></li>
+<li><strong>{DOWNLOADS}</strong> - <?php _e('A Download link along with the customers email address and password. <em>Only used when an order contains downloads</em>','eshop'); ?></li>
+<li><strong>{ADDRESS}</strong> - <?php _e('Customers Address','eshop'); ?></li>
+<li><strong>{REFCOMM}</strong> - <?php _e('The reference and other messages provided by the customer.','eshop'); ?></li>
+<li><strong>{CONTACT}</strong> - <?php _e('Customers shipping address phone number.','eshop'); ?></li>
+</ul>
 </div>
 	<?php 
 	//end custom styling

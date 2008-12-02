@@ -89,12 +89,18 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">records</code> (<em>eshop_list_new</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">id</code> (<em>eshop_show_product</em> only) example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">shipclass</code> (<em>eshop_show_shipping</em> only) example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
 </ul>
 <h3>Examples</h3>
 <ul>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_subpages class="myclass"]</code> changes the default class to 'myclass'</li>
 <li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_product id='9' class='hilite' panels='yes' form='yes']</code> shows product '9' only. Changes the default class to 'hilite', shows the product as a panel and the add to cart form is shown.</li>
 </ul>
+<h3>Extra</h3>
+<ol>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the above attribute (<code style="font-weight:bold;font-size:1.2em;color:#000;">shipclass</code>).</li>
+</ol>
 </div>
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
@@ -127,6 +133,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p><strong>Email address:</strong> the email address associated with your Paypal business account. Ensure that you enter it correctly!</p>
 
 <h3>Business Details </h3>
+<p><strong>eShop from email address</strong> - eShop will use this as the 'From' address in the automated emails. If it is not set, eShop will use the Merchant Gateway email address.</p>
 <p><strong>Available business email addresses</strong> - extra business email addresses for use when contacting customers via their order details.</p>
 <p><strong>Business Location</strong> - which country you are in, or registered as being in when setting up your Paypal account.</p>
 
@@ -136,6 +143,12 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p><strong>Stock Control</strong> - If checked, when a product's stock level falls to 0 or below, the product will automatically be marked as 'not available' However stock levels are <strong>not</strong> checked during the order process, and stock reduction is only processed <strong>after</strong> a successful purchase. Therefore it is possible to sell more items than you have in stock.</p>
 <p><strong>Show stock available</strong> - if using stock control this allows you to display the stock avaialble.</p>
 <p><strong>Download attempts</strong> - the number of download attempts that you will allow per purchase, per file. If set to 0 you will stop all downloads! The default value is 3.</p>
+
+<h3>Discounts</h3>
+<p><strong>Spend</strong> - how much needs to be spent before <strong>% Discount</strong> is applied.</p>
+<p><strong>Spend over to get free shipping</strong> - how much needs to be spent before the order qualifies for free shipping.</p>
+<p>In both cases deleting the amount will cancel the discount.</p>
+
 <h3>Currency</h3> 
 <p><strong>Symbol</strong> - whether it be $, &pound;, etc.</p>
 <p><strong>Code</strong> -  a 3 letter currency code that matches your country.</p>

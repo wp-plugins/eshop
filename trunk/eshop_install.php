@@ -150,6 +150,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	thememo text NOT NULL,
 	edited datetime NOT NULL default '0000-00-00 00:00:00',
 	downloads set('yes','no') NOT NULL default 'no',
+	admin_note TEXT NOT NULL,
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
@@ -450,6 +451,17 @@ foreach($tablefields as $tablefield) {
 		$wpdb->query($sql);
 	}
 }
+
+/* db changes 2.10.1 */
+$table = $wpdb->prefix . "eshop_orders";
+$tablefields = $wpdb->get_results("DESCRIBE {$table};");
+$new_field='admin_note';
+if(!in_array($new_field,$tablefields)){
+	$sql="ALTER TABLE ".$table." ADD admin_note TEXT NOT NULL";
+	$wpdb->query($sql);
+}
+
+
 /*update all post meta to new post meta */
 $eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
 //add on options and prices into the mix

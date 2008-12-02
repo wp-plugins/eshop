@@ -25,7 +25,8 @@ if(isset($_POST['submit'])){
 	update_option('eshop_status',$wpdb->escape($_POST['eshop_status']));
 	update_option('eshop_currency',$wpdb->escape($_POST['eshop_currency']));
 	update_option('eshop_location',$wpdb->escape($_POST['eshop_location']));
-	update_option('eshop_business',$wpdb->escape($_POST['eshop_business']));
+	update_option('eshop_business',$wpdb->escape(trim($_POST['eshop_business'])));
+	update_option('eshop_from_email',$wpdb->escape($_POST['eshop_from_email']));
 	update_option('eshop_cron_email',$wpdb->escape($_POST['eshop_cron_email']));
 	update_option('eshop_sysemails',$wpdb->escape($_POST['eshop_sysemails']));
 	update_option('eshop_currency_symbol',$wpdb->escape($_POST['eshop_currency_symbol']));
@@ -166,6 +167,34 @@ if(isset($_POST['submit'])){
 		$err.='<li>'.__('Currency Symbol was missing, the default $ has been applied.','eshop').'</li>';
 		update_option('eshop_currency_symbol','$');
 	}
+	/* discount error checking */
+	//shipping is the easiest
+	if(is_numeric($_POST['eshop_discount_shipping'])){
+		update_option('eshop_discount_shipping',$wpdb->escape($_POST['eshop_discount_shipping']));
+	}elseif($_POST['eshop_discount_shipping']!=''){
+		$err.='<li>'.__('"Spend over to get free shipping" must be numeric!','eshop').'</li>';
+		update_option('eshop_discount_shipping','');
+	}else{
+		update_option('eshop_discount_shipping','');
+	}
+
+	for ($x=1;$x<=3;$x++){
+		if(is_numeric($_POST['eshop_discount_spend'.$x]) && is_numeric($_POST['eshop_discount_value'.$x])){
+			update_option('eshop_discount_spend'.$x,$wpdb->escape($_POST['eshop_discount_spend'.$x]));
+			update_option('eshop_discount_value'.$x,$wpdb->escape($_POST['eshop_discount_value'.$x]));
+		}elseif($_POST['eshop_discount_spend'.$x]=='' || $_POST['eshop_discount_value'.$x]=='') {
+			update_option('eshop_discount_spend'.$x,'');
+			update_option('eshop_discount_value'.$x,'');
+			if(($_POST['eshop_discount_spend'.$x]!='' && $_POST['eshop_discount_value'.$x]=='') || ($_POST['eshop_discount_spend'.$x]=='' && $_POST['eshop_discount_value'.$x]!='')){
+				$err.='<li>'.__('Discount','eshop').' ' .$x.' '.__('Either "Spend" or "% Discount" was empty so both values were unset!','eshop').'</li>';
+			}
+		}else{
+			$err.='<li>'.__('Discount','eshop').' ' .$x.' '.__('"Spend" and "% Discount" must be numeric!','eshop').'</li>';
+		}
+		if($_POST['eshop_discount_value'.$x]>=100) {
+			$err.='<li>'.__('Discount','eshop').' ' .$x.' '.__('<strong>Warning</strong> % Discount is equal to or over 100%!','eshop').'</li>';
+		}
+	}
 
 }
 if($err!=''){
@@ -179,6 +208,7 @@ echo '<h2>'.__('eShop Settings','eshop').'</h2>'."\n";
 echo $result;
 ?>
 <form method="post" action="" id="eshop-settings">
+<input type='hidden' name='option_page' value='eshop_settings' />
 <?php wp_nonce_field('update-options') ?>
 <fieldset><legend><?php _e('eShop Admin','eshop'); ?></legend>
 <label for="eshop_status"><?php _e('eShop status','eshop'); ?></label>
@@ -210,8 +240,9 @@ echo $result;
 <label for="eshop_business"><?php _e('Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo get_option('eshop_business'); ?>" size="30" /><br />
 </fieldset>
 <fieldset><legend><?php _e('Business Details','eshop'); ?></legend>
+<label for="eshop_from_email"><?php _e('eShop from email address','eshop'); ?></label><input id="eshop_from_email" name="eshop_from_email" type="text" value="<?php echo get_option('eshop_from_email'); ?>" size="30" /><br />
 <label for="eshop_sysemails"><?php _e('Available business email addresses','eshop'); ?></label>
-<textarea id="eshop_sysemails" name="eshop_sysemails" rows="10" cols="50">
+<textarea id="eshop_sysemails" name="eshop_sysemails" rows="5" cols="50">
 <?php echo get_option('eshop_sysemails'); ?>
 </textarea>
 <br />
@@ -233,7 +264,7 @@ echo $result;
 </select><br />
 </fieldset>
 
-<fieldset><legend><?php _e('Product options','eshop'); ?></legend>
+<fieldset><legend><?php _e('Product Options','eshop'); ?></legend>
 <label for="eshop_options_num"><?php _e('Options per product','eshop'); ?></label><input id="eshop_options_num" name="eshop_options_num" type="text" value="<?php echo get_option('eshop_options_num'); ?>" size="5" /><br />
 <label for="eshop_cart_nostock"><?php _e('Out of Stock message','eshop'); ?></label><input id="eshop_cart_nostock" name="eshop_cart_nostock" type="text" value="<?php echo get_option('eshop_cart_nostock'); ?>" size="30" /><br />
 <label for="eshop_stock_control"><?php _e('Stock Control','eshop'); ?></label>
@@ -267,6 +298,36 @@ echo $result;
 <label for="eshop_downloads_num"><?php _e('Download attempts','eshop'); ?></label><input id="eshop_downloads_num" name="eshop_downloads_num" type="text" value="<?php echo get_option('eshop_downloads_num'); ?>" size="5" /><br />
 </fieldset>
 </fieldset>
+
+
+<fieldset><legend><?php _e('Discounts','eshop'); ?></legend>
+<p>In all cases deleting the entry will disable the discount.</p>
+<table class="hidealllabels widefat eshopdisc" summary="<?php _e('Discount for amount sold','eshop'); ?>">
+	<caption><?php _e('Discount for amount sold','eshop'); ?></caption>
+	<thead>
+	<tr>
+	<th id="elevel"><?php _e('Discounts','eshop'); ?></th>
+	<th id="espend"><?php _e('Spend','eshop'); ?></th>
+	<th id="ediscount"><?php _e('% Discount','eshop'); ?></th>
+	</tr>
+	</thead>
+	<tbody>
+	<?php
+	for ($x=1;$x<=3;$x++){
+	?>
+	<tr>
+	<th headers="elevel"  id="row<?php echo $x ?>"><?php echo $x ?></th>
+	<td headers="elevel espend row<?php echo $x ?>"><label for="eshop_discount_spend<?php echo $x ?>"><?php _e('Spend','eshop'); ?></label><input id="eshop_discount_spend<?php echo $x ?>" name="eshop_discount_spend<?php echo $x ?>" type="text" value="<?php echo get_option("eshop_discount_spend$x"); ?>" size="5" /></td>
+	<td headers="elevel ediscount row<?php echo $x ?>"><label for="eshop_discount_value<?php echo $x ?>"><?php _e('Discount','eshop'); ?></label><input id="eshop_discount_value<?php echo $x ?>" name="eshop_discount_value<?php echo $x ?>" type="text" value="<?php echo get_option("eshop_discount_value$x"); ?>" size="5" maxlength="4" /></td>
+	</tr>
+	<?php
+	}
+	?>
+	</tbody>
+	</table>
+<p><label for="eshop_discount_shipping"><?php _e('Spend over to get free shipping','eshop'); ?></label><input id="eshop_discount_shipping" name="eshop_discount_shipping" type="text" value="<?php echo get_option('eshop_discount_shipping'); ?>" size="5" /></p>
+</fieldset>
+
 <fieldset><legend><?php _e('Currency','eshop'); ?></legend>
 
 <label for="eshop_currency_symbol"><?php _e('Symbol','eshop'); ?></label><input id="eshop_currency_symbol" name="eshop_currency_symbol" type="text" value="<?php echo get_option('eshop_currency_symbol'); ?>" size="10" /><br />
@@ -406,7 +467,7 @@ echo $result;
 
 
 <input type="hidden" name="page_options" value="eshop_method,
-eshop_status,eshop_currency,eshop_location,eshop_business,
+eshop_status,eshop_currency,eshop_location,eshop_business,eshop_from_email,
 eshop_sysemails,eshop_records,eshop_options_num,eshop_currency_symbol,
 eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,eshop_fold_menu,
 eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email,eshop_cart,eshop_search_img,
