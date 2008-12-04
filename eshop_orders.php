@@ -524,7 +524,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		echo nl2br($admin_note).'</div>'."\n";
 		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Edit admin note','eshop').'</a></p>';
 	}else{
-		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Add admin note','eshop').'</a.</p>';
+		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Add admin note','eshop').'</a></p>';
 	}
 	?>
 	

@@ -3,8 +3,8 @@ Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
-Tested up to: 2.7.RC1
-Stable tag: 2.11.0
+Tested up to: 2.7
+Stable tag: 2.11.1
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -40,6 +40,15 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.11.1
+
+* fixed error in orders page.
+* renamed submenu item from eshop to 'stats'.
+
+Version 2.11.0 
+
+all the fetaures of the unreleased version 2.10
 
 Version 2.10.1 ((not a general release)
 

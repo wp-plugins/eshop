@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.11.0');
+define('ESHOP_VERSION', '2.11.1');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.11.0
+Version: 2.11.1
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -51,15 +51,16 @@ if (!function_exists('eshop_admin')) {
         if (function_exists('add_menu_page')) {
         	global $eshoplevel,$wp_version;
         	//goto stats page
-            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), $eshoplevel, __FILE__, 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
-            add_submenu_page(__FILE__,__('eShop Orders','eshop'), __('Orders','eshop'),$eshoplevel, basename('eshop_orders.php'),'eshop_admin_orders');
-      	    add_submenu_page(__FILE__,__('eShop Shipping','eshop'), __('Shipping','eshop'),$eshoplevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
-      	    add_submenu_page(__FILE__,__('eShop Products','eshop'),__('Products','eshop'), $eshoplevel, basename('eshop_products.php'), 'eshop_admin_products');
-      	    add_submenu_page(__FILE__,__('eShop Downloads','eshop'),__('Downloads','eshop'), $eshoplevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
-      	    add_submenu_page(__FILE__,__('eShop Base','eshop'),__('Base','eshop'), $eshoplevel, basename('eshop_base.php'), 'eshop_admin_base');
-			add_submenu_page(__FILE__,__('eShop Email Templates','eshop'), __('Templates','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
-      	    add_submenu_page(__FILE__,__('eShop About','eshop'),__('About','eshop'), $eshoplevel, basename('eshop_about.php'), 'eshop_admin_about');
-      	    add_submenu_page(__FILE__,__('eShop Help','eshop'),__('Help','eshop'), $eshoplevel, basename('eshop_help.php'), 'eshop_admin_help');
+            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), $eshoplevel, 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
+            add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),$eshoplevel, 'eshop.php','eshop_admin_orders_stats');
+            add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),$eshoplevel, basename('eshop_orders.php'),'eshop_admin_orders');
+      	   	add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),$eshoplevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
+      	    add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), $eshoplevel, basename('eshop_products.php'), 'eshop_admin_products');
+      	    add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), $eshoplevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
+      	    add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), $eshoplevel, basename('eshop_base.php'), 'eshop_admin_base');
+			add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Templates','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
+      	    add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), $eshoplevel, basename('eshop_about.php'), 'eshop_admin_about');
+      	    add_submenu_page('eshop.php',__('eShop Help','eshop'),__('Help','eshop'), $eshoplevel, basename('eshop_help.php'), 'eshop_admin_help');
 			add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),$eshoplevel, basename('eshop_style.php'),'eshop_admin_style');
 			add_options_page(__('eShop Base Settings','eshop'), __('eShop Base','eshop'),$eshoplevel, basename('eshop_base_settings.php'),'eshop_admin_base_settings');
 			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$eshoplevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
