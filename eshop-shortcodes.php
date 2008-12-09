@@ -379,7 +379,7 @@ function eshop_show_discounts(){
 		?>
 		<tr>
 		<th headers="elevel"  id="row<?php echo $x ?>"><?php echo $x ?></th>
-		<td headers="elevel espend row<?php echo $x ?>" class="amts"><?php echo $currsymbol.$amt; ?></td>
+		<td headers="elevel espend row<?php echo $x ?>" class="amts"><?php echo sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($amt,2)); ?></td>
 		<td headers="elevel ediscount row<?php echo $x ?>" class="disc"><?php echo $percent; ?></td>
 		</tr>
 		<?php
@@ -391,7 +391,7 @@ function eshop_show_discounts(){
 	}
 	if($shipdisc>0){
 	?>
-	<p class="shipdiscount"><?php _e('Free Shipping if you spend over','eshop'); ?> <span><?php echo $currsymbol.get_option('eshop_discount_shipping'); ?></span></p>
+	<p class="shipdiscount"><?php _e('Free Shipping if you spend over','eshop'); ?> <span><?php echo sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(get_option('eshop_discount_shipping'),2)); ?></span></p>
 <?php
 	}
 }

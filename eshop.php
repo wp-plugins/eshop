@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.11.1');
+define('ESHOP_VERSION', '2.11.2');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.11.1
+Version: 2.11.2
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -473,6 +473,7 @@ add_option('eshop_show_stock','no');
 add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
+
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-custom-fields.php' );
 
@@ -575,5 +576,16 @@ function eshop_excerpt_img($output){
 	}
 	return $echo.$output;
 }
+function eshop_update_nag() {
+	if ( get_option('eshop_version')!='' && get_option('eshop_version') >= ESHOP_VERSION )
+		return false;
 
+	if ( current_user_can('manage_options') )
+		$msg = sprintf( __('<strong>eShop %1$s</strong> is installed, however you still need to <a href="%2$s">deactivate and re-activate the plugin</a>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
+	else
+		$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
+
+	echo "<div id='eshop-update-nag'>$msg</div>";
+}
+add_action( 'admin_notices', 'eshop_update_nag');
 ?>

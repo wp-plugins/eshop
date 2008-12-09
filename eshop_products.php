@@ -128,7 +128,7 @@ function eshop_products_manager() {
 				for($i=1;$i<=$numoptions;$i++){
 					if($grabit['_Option '.$i]!=''){
 						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
-						echo ' @ '.$currsymbol.$grabit['_Price '.$i].'<br />';
+						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($grabit['_Price '.$i],2)).'<br />';
 					}
 				}
 				echo '</td>';
@@ -390,7 +390,7 @@ function eshop_products_manager() {
 				for($i=1;$i<=$numoptions;$i++){
 					if($grabit['_Option '.$i]!=''){
 						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
-						echo ' @ '.$currsymbol.$grabit['_Price '.$i].'<br />';
+						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($grabit['_Price '.$i],2)).'<br />';
 					}
 				}
 				echo '</td>';

@@ -433,6 +433,12 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	//$wpdb->query($sql);
 	dbDelta($sql);
 }
+
+/* version number store - add/update */
+
+update_option('eshop_version', ESHOP_VERSION);
+
+
 /* db changes */
 $table = $wpdb->prefix ."eshop_base_products";
 $tablefields = $wpdb->get_results("DESCRIBE {$table};");

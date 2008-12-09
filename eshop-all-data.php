@@ -42,7 +42,6 @@ foreach($dquery as $drow){
 	$checkid=$drow->checkid;
 	$custom=$drow->custom_field;
 	$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
-	$currsymbol=get_option('eshop_currency_symbol');
 	$total=0;
 
 	foreach($result as $myrow){

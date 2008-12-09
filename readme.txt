@@ -4,14 +4,11 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.11.1
+Stable tag: 2.11.2
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
-
-Upgrading to 2.11+ from earlier versions please see the <a href="http://wordpress.org/extend/plugins/eshop/faq/">FAQ</a>
-
 
 eShop has many features, these include:
 
@@ -40,6 +37,11 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.11.2
+
+* Added an auto check to ensure plugin is deactivated/reactivated (useful for MU users as well)
+* Changes for printing number currency, can now be localised.
 
 Version 2.11.1
 
