@@ -61,7 +61,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= number_format(round($opt["price"]-($opt["price"] * $discount), 2),2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".$currsymbol.number_format($line_total,2)."</td></tr>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
@@ -75,7 +75,7 @@ if (!function_exists('display_cart')) {
 				$discount=is_discountable(calculate_total());
 				$disc_applied='<small>('.__('Including Discount of','eshop').' <span>'.number_format(round($discount, 2),2).'%</span>)</small>';
 			}
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".$currsymbol.number_format($sub_total, 2)."</td></tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 				
 			// SHIPPING PRICE HERE
 			$shipping=0;
@@ -139,12 +139,12 @@ if (!function_exists('display_cart')) {
 					$echo.=' <small>(<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.$ptitle->post_title.'</a>)</small>';
 				}
 				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.$currsymbol.number_format($shipping,2).'</td>
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
 				</tr>';
 				$_SESSION['shipping']=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price']=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".$currsymbol.number_format($final_price, 2)."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
 			}
 			$echo.= "</tbody></table>\n";
 			// display unset/update buttons
@@ -476,9 +476,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$itemid=$myrow->item_id;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
-				$cart.= __('Shipping Charge:','eshop').' '.$currsymbol.number_format($value, 2)."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
 			}else{
-				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".$currsymbol.number_format($value, 2)."\n\n";
+				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
 			}
 			$mtable=$wpdb->prefix.'postmeta';
 			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$myrow->post_id'");
@@ -487,7 +487,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}
 		}
 		
-		$cart.= __('Total','eshop').' '.$currsymbol.number_format($total, 2)."\n";
+		$cart.= __('Total','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);
@@ -587,11 +587,11 @@ if (!function_exists('eshop_get_shipping')) {
 						}else{
 							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 						}
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -605,11 +605,11 @@ if (!function_exists('eshop_get_shipping')) {
 						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";	
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -625,11 +625,11 @@ if (!function_exists('eshop_get_shipping')) {
 						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.$currsymbol.$row->zone1.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.$currsymbol.$row->zone2.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.$currsymbol.$row->zone3.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.$currsymbol.$row->zone4.'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.$currsymbol.$row->zone5.'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -641,7 +641,7 @@ if (!function_exists('eshop_get_shipping')) {
 			$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
 			$eshopshiptable.= '<tr'.$alt.'>';
 			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.__('F','eshop').' <small>'.__('(Free)','eshop').'</small></th>'."\n";
-			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.$currsymbol.'0.00</td>'."\n";
+			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format('0',2)).'</td>'."\n";
 			$eshopshiptable.= '</tr>';
 		}
 		$eshopshiptable.='</tbody>'."\n";

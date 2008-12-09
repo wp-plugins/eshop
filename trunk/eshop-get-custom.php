@@ -41,14 +41,14 @@ function eshop_boing($pee,$short='no'){
 					$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
 					for($i=1;$i<=$opt;$i++){
 						if(eshop_get_custom('Option '.$i)!=''){
-							$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).' @ '.$currsymbol.eshop_get_custom('Price '.$i).'</option>'."\n";
+							$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price '.$i),2)).'</option>'."\n";
 						}
 					}
 					$replace.='</select></label>';
 				}else{
 					$replace.='
 					<input type="hidden" name="option" value="Option 1" />
-					<span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ '.$currsymbol.'<span class="sglprice">'.eshop_get_custom('Price 1').'</span>
+					<span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ '.$currsymbol.'<span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price 1'),2)).'</span>
 					';
 				}
 				if($short=='yes'){

@@ -543,3 +543,19 @@ fieldset#baseothers fieldset{
 	margin:0;
 }
 /* end eShop CSS */
+
+/* upgrade nag */
+
+#eshop-update-nag{
+	background-color: #fffeeb;
+	border-bottom-color: #ccc;
+	border-top-color: #ccc;
+	color: #555;
+	line-height: 29px;
+	font-size: 12px;
+	text-align: center;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-top-width: 1px;
+	border-top-style: solid;
+}

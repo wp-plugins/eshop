@@ -84,6 +84,8 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_fold_menu';
 	$epages[] = 'eshop_widget';
 	$epages[] = 'eshop_search_img';
+	$epages[] = 'eshop_version';
+
 	for ($x=1;$x<=3;$x++){
 		$epages[]='eshop_discount_spend'.$x;
 		$epages[]='eshop_discount_value'.$x;
