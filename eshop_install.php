@@ -459,13 +459,20 @@ foreach($tablefields as $tablefield) {
 }
 
 /* db changes 2.10.1 */
+
 $table = $wpdb->prefix . "eshop_orders";
-$tablefields = $wpdb->get_results("DESCRIBE {$table};");
-$new_field='admin_note';
-if(!in_array($new_field,$tablefields)){
-	$sql="ALTER TABLE ".$table." ADD admin_note TEXT NOT NULL";
-	$wpdb->query($sql);
+$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+$add_field = TRUE;
+foreach ($tablefields as $tablefield) {
+    if(strtolower($tablefield->Field)=='admin_note') {
+        $add_field = FALSE;
+    }
 }
+if ($add_field) {
+    $sql="ALTER TABLE `".$table."` ADD `admin_note` TEXT NOT NULL";
+    $wpdb->query($sql);
+}
+
 
 
 /*update all post meta to new post meta */
