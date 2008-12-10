@@ -48,7 +48,7 @@ function eshop_boing($pee,$short='no'){
 				}else{
 					$replace.='
 					<input type="hidden" name="option" value="Option 1" />
-					<span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ '.$currsymbol.'<span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price 1'),2)).'</span>
+					<span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price 1'),2)).'</span>
 					';
 				}
 				if($short=='yes'){
