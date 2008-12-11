@@ -54,12 +54,15 @@ if (!function_exists('eshop_cart')) {
 		//unique identifier
 		if(!isset($pid)) $pid='';
 		if(!isset($option)) $option='';
-
-		$identifier=$pid.'-'.$option;
+		if(!isset($postid)) $postid='';
+		$identifier=$pid.$option.$postid;
+		$needle=array(" ",".","-","_");
+		$identifier=str_replace($needle,"",$identifier);
+		
 		if(isset($_SESSION['shopcart'][$identifier])){
-			$_SESSION['shopcart'][$identifier]['qty']+=1;
+			$_SESSION['shopcart'][$identifier]['qty']+=$qty;
 
-		}elseif($identifier!='-'){
+		}elseif($identifier!=''){
 			$postid=$wpdb->escape($_POST['postid']);
 			$table=$wpdb->prefix.'postmeta';
 			$item= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$option' AND post_id='$postid'");
@@ -126,7 +129,6 @@ if (!function_exists('eshop_cart')) {
 			//can be altered as desired.
 			$echo.= '<p><strong class="error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';
 		}
-		
 		return $echo;
 	}
 }

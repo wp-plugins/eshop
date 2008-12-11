@@ -901,7 +901,7 @@ if (!function_exists('eshop_visible_credits')) {
 if (!function_exists('eshop_show_extra_links')) {
 	function eshop_show_extra_links(){
 		$xtralinks='';
-		if(get_option('eshop_cart_shipping')!=''){
+		if(get_option('eshop_cart_shipping')!='' && get_option('eshop_downloads_only')!='yes'){
 			$ptitle=get_post(get_option('eshop_cart_shipping'));
 			$xtralinks.='<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.$ptitle->post_title.'</a>, ';
 		}
