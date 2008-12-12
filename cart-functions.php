@@ -60,13 +60,14 @@ if (!function_exists('display_cart')) {
 						$discount=is_discountable(calculate_total())/100;
 						$disc_line= number_format(round($opt["price"]-($opt["price"] * $discount), 2),2);
 					}
+					
 					$line_total=$opt["price"]*$opt["qty"];
 					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
 						$sub_total+=$line_total;
-
+					
 				}
 			}
 			// display subtotal row - total for products only
@@ -169,12 +170,12 @@ if (!function_exists('display_cart')) {
 }
 if (!function_exists('calculate_price')) {
 	function calculate_price(){
-
+		$thecart=$_SESSION['shopcart'];
 		// sum total price for all items in shopping shopcart
 		$price = 0.0;
 
-		if(is_array($_SESSION['shopcart'])){
-			foreach ($_SESSION['shopcart'] as $productid => $opt){
+		if(is_array($thecart)){
+			foreach ($thecart as $productid => $opt){
 				$price+=$opt['price'];
 			}
 		}
@@ -183,12 +184,11 @@ if (!function_exists('calculate_price')) {
 }
 if (!function_exists('calculate_total')) {
 	function calculate_total(){
-
+		$thecart=$_SESSION['shopcart'];
 		// sum total price for all items in shopping shopcart
-		$price = 0.0;
-
-		if(is_array($_SESSION['shopcart'])){
-			foreach ($_SESSION['shopcart'] as $productid => $opt){
+		$price = 0;
+		if(is_array($thecart)){
+			foreach ($thecart as $productid => $opt){
 				$price+=($opt['price']*$opt['qty']);
 			}
 		}
@@ -197,10 +197,11 @@ if (!function_exists('calculate_total')) {
 }
 if (!function_exists('calculate_items')) {
 	function calculate_items(){
+		$thecart=$_SESSION['shopcart'];
 		// sum total items in shopping shopcart
 		$items = 0;
-		if(is_array($_SESSION['shopcart']))	{
-			foreach ($_SESSION['shopcart'] as $productid => $opt){
+		if(is_array($thecart))	{
+			foreach ($thecart as $productid => $opt){
 				if(is_array($opt)){
 					foreach($opt as $option=>$qty){
 						$items += $qty;

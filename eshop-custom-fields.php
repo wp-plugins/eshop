@@ -99,6 +99,7 @@ function eshop_inner_custom_box() {
 		</select></p>
 		<?php
 	}
+	if(get_option('eshop_downloads_only') !='yes'){
 	?>
 	<p><label for="eshop_shipping_rate"><?php _e('Shipping Rate','eshop'); ?> </label><select name="eshop_shipping_rate" id="eshop_shipping_rate">
 	<option value="">Select</option>
@@ -120,6 +121,14 @@ function eshop_inner_custom_box() {
 	}
 	?>
 	</select></p>
+	<?php
+	}else{
+	?>
+	<input type="hidden" name="eshop_shipping_rate" value="F" />
+	<?php
+	}
+	?>
+	
 	<h4><?php _e('Featured Product','eshop'); ?></h4>
 	<p>
 	<input id="eshop_featured_product_yes" name="eshop_featured_product" value="Yes"<?php echo $featured=='Yes' ? 'checked="checked"' : ''; ?> type="radio" /> <label for="eshop_featured_product_yes" class="selectit"><?php _e('Yes','eshop'); ?></label>

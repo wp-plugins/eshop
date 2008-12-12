@@ -8,6 +8,32 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
 
+/***
+* default options(mainly for settings) go here
+*/
+add_option('eshop_style', 'yes');
+add_option('eshop_method','paypal');
+add_option('eshop_records','10');
+add_option('eshop_options_num','3');
+add_option('eshop_downloads_num','3');
+add_option('eshop_random_num','5');
+add_option('eshop_pagelist_num','5');
+add_option('eshop_cart_nostock','Out of Stock');
+add_option('eshop_status', 'testing');
+add_option('eshop_currency_symbol','&pound;');
+add_option('eshop_currency','GBP');
+add_option('eshop_location','GB');
+add_option('eshop_sudo_cat','1');
+add_option('eshop_shipping', '1');
+add_option('eshop_shipping_zone', 'country');
+add_option('eshop_show_zones','no');
+add_option('eshop_credits', 'yes');
+add_option('eshop_stock_control','no');
+add_option('eshop_show_stock','no');
+add_option('eshop_first_time', 'yes');
+add_option('eshop_downloads_only', 'no');
+add_option('eshop_search_img', 'no');
+
 $table = $wpdb->prefix . "eshop_states";
 if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
