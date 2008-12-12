@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.11.4');
+define('ESHOP_VERSION', '2.11.5');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.11.4
+Version: 2.11.5
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -134,14 +134,7 @@ if (!function_exists('eshop_admin_shipping')) {
          include 'eshop_shipping.php';
      }
 }
-if (!function_exists('eshop_admin_shipping')) {
-    /**
-     * display the shipping.
-     */
-     function eshop_admin_shipping() {
-         include 'eshop_shipping.php';
-     }
-}
+
 if (!function_exists('eshop_admin_states')) {
     /**
      * display the states.
@@ -236,7 +229,6 @@ if (!function_exists('eshop_install')) {
         if( eshop_files_directory()!=0 ){
         	include 'eshop_install.php';
        		eshop_download_directory();
-       		eshop_files_directory();
        		//mdy
        		$eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
        		wp_schedule_event($eshoptime, 'daily', 'eshop_event');
@@ -332,19 +324,7 @@ if (!function_exists('eshop_show_downloads')) {
 }
 include_once 'cart-functions.php';
 include_once( 'eshop-shortcodes.php' );
-add_shortcode('eshop_show_downloads', 'eshop_show_downloads');
-add_shortcode('eshop_random_products', 'eshop_list_random');
-add_shortcode('eshop_list_featured', 'eshop_list_featured');
-add_shortcode('eshop_list_subpages', 'eshop_list_subpages');
-add_shortcode('eshop_show_checkout', 'eshop_show_checkout');
-add_shortcode('eshop_show_cart', 'eshop_show_cart');
-add_shortcode('eshop_show_shipping', 'eshop_get_shipping');
-add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
-add_shortcode('eshop_show_success', 'eshop_show_success');
-add_shortcode('eshop_list_new', 'eshop_list_new');
-add_shortcode('eshop_show_product','eshop_show_product');
-add_shortcode('eshop_show_discounts','eshop_show_discounts');
-
+// shortcodes now defined in that file
 //add credits
 add_action('wp_footer', 'eshop_visible_credits');
 
@@ -424,8 +404,6 @@ if(get_option('eshop_fold_menu') == 'yes'){
 	add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
 }
 
-
-
 /**
  * eshop wordpress actions
  */
@@ -448,31 +426,6 @@ if (isset($_POST['eshoplongdownloadname'])){
 	eshop_download_the_product($_POST); 
 }
 
-/***
-* default options(mainly for settings) go here
-*/
-add_option('eshop_style', 'yes');
-add_option('eshop_method','paypal');
-add_option('eshop_records','10');
-add_option('eshop_options_num','3');
-add_option('eshop_downloads_num','3');
-add_option('eshop_random_num','5');
-add_option('eshop_pagelist_num','5');
-add_option('eshop_cart_nostock','Out of Stock');
-add_option('eshop_status', 'testing');
-add_option('eshop_currency_symbol','&pound;');
-add_option('eshop_currency','GBP');
-add_option('eshop_location','GB');
-add_option('eshop_sudo_cat','1');
-add_option('eshop_shipping', '1');
-add_option('eshop_shipping_zone', 'country');
-add_option('eshop_show_zones','no');
-add_option('eshop_credits', 'yes');
-add_option('eshop_stock_control','no');
-add_option('eshop_show_stock','no');
-add_option('eshop_first_time', 'yes');
-add_option('eshop_downloads_only', 'no');
-add_option('eshop_search_img', 'no');
 
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-custom-fields.php' );

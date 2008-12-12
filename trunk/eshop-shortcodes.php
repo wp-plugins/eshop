@@ -1,4 +1,16 @@
 <?php 
+add_shortcode('eshop_show_downloads', 'eshop_show_downloads');
+add_shortcode('eshop_random_products', 'eshop_list_random');
+add_shortcode('eshop_list_featured', 'eshop_list_featured');
+add_shortcode('eshop_list_subpages', 'eshop_list_subpages');
+add_shortcode('eshop_show_checkout', 'eshop_show_checkout');
+add_shortcode('eshop_show_cart', 'eshop_show_cart');
+add_shortcode('eshop_show_shipping', 'eshop_get_shipping');
+add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
+add_shortcode('eshop_show_success', 'eshop_show_success');
+add_shortcode('eshop_list_new', 'eshop_list_new');
+add_shortcode('eshop_show_product','eshop_show_product');
+add_shortcode('eshop_show_discounts','eshop_show_discounts');
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no'), $atts));

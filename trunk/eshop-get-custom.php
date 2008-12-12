@@ -68,7 +68,7 @@ function eshop_boing($pee,$short='no'){
 				<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />
 				</fieldset>
 				</form>';
-				if($short=='no'){
+				if($short=='no' && get_option('eshop_downloads_only') !='yes'){
 					if(get_option('eshop_cart_shipping')!=''){
 						$replace .='
 						<p class="eshopshipping">
