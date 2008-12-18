@@ -53,6 +53,13 @@
 /* headers */
 
 /* product form */
+
+table.eshoppopt caption{
+	font-weight:bold;
+	padding-bottom:10px;
+	text-align:left;
+}
+
 #eshopcustom h3{
 	font-weight:normal;
 	padding-left:2px;
@@ -279,7 +286,8 @@ fieldset#changestat {
 
 #eshop-settings legend, #template_form legend, #edit_box legend, #style_form legend, 
 #eshopformleft legend,#orderstatus legend, #emailer legend,#shipformmethod legend,#zoneform legend,
-#filterzones legend,#eshopup legend,#downloadedit legend,#eshop-gbase-alt legend{
+#filterzones legend,#eshopup legend,#downloadedit legend,#eshop-gbase-alt legend,
+#eshopdisccodes legend{
 	font-size:1.2em;
 	color:#666;
 	background:#E4F2FD;
@@ -289,13 +297,17 @@ fieldset#changestat {
 	margin-bottom:5px;
 }
 
-p.submit.eshop,#filterzones p.submit{
-	border:0;
-	padding:0;
+#eshop-settings fieldset,#eshopdisccodes fieldset{
+	margin-top:10px;
+	padding-left:20px;
+	padding-bottom:5px;
+	background: #f5f5f5;
+	padding-right:5px;
 }
 
 
-#eshopup fieldset fieldset,#eshop-gbase-alt fieldset fieldset{
+#eshop-settings fieldset fieldset,#eshopdisccodes fieldset fieldset,
+#eshopup fieldset fieldset,#eshop-gbase-alt fieldset fieldset,#eshopdisccodes fieldset fieldset{
 	background: #fefefe;
 }
 fieldset#eshopcustom{
@@ -305,6 +317,10 @@ fieldset#eshopcustom fieldset{
   background:#F5FAFF;
   border:0;
 
+}
+p.submit.eshop,#filterzones p.submit{
+	border:0;
+	padding:0;
 }
 /* end */
 p.thanks {
@@ -418,17 +434,6 @@ div.paginate p.checkers a {
 
 /* settings page */
 
-#eshop-settings fieldset{
-	margin-top:10px;
-	padding-left:20px;
-	padding-bottom:5px;
-	background: #f5f5f5;
-}
-
-
-#eshop-settings fieldset fieldset{
-	background: #fefefe;
-}
 
 #eshop-settings label{
 	font-weight:bold;
@@ -558,4 +563,44 @@ fieldset#baseothers fieldset{
 	border-bottom-style: solid;
 	border-top-width: 1px;
 	border-top-style: solid;
+}
+
+/* order details page tidy up */
+.orderaddress, .paypalmemo{
+	border-right:1px solid #e5e5e5;
+	margin-right:2%;
+}
+.orderaddress, .shippingaddress,.paypalmemo, .eshopmemo{
+	float:left;
+	width:45%;
+}
+.orderaddress h4, .shippingaddress h4, .paypalmemo h4, .eshopmemo h4{
+	font-size:1.2em;
+	font-style:italic;
+	letter-spacing:1px;
+}
+.orderaddress h4, .shippingaddress h4, .paypalmemo h4, .eshopmemo h4, .orderaddress h5, .shippingaddress h5{
+	margin:0;
+}
+
+.eshopclear{
+	clear:left;
+	border:0;
+}
+.paypalmemo, .eshopmemo{
+	min-height:3em;
+}
+/* stats page */
+.eshop-stats-box.odd{
+	border-right:1px solid #e5e5e5;
+	margin-right:2%;
+}
+.eshop-stats-box{
+	float:left;
+	width:45%;
+}
+.eshop-stats-box h3{
+	font-size:1.2em;
+	font-style:italic;
+	letter-spacing:1px;
 }

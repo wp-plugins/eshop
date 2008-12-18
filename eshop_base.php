@@ -160,16 +160,22 @@ if(!isset($_GET['change'])){
 			if($grabit['_Price 1']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
-				//get download file title
-				if($grabit['_Product Download']==''){
-					$pdown='No';
-				}else{
-					$id=$grabit['_Product Download'];
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
-
-					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
+				$pdown='';
+				//check if downloadable product
+				for($i=1;$i<=get_option('eshop_options_num');$i++){
+					$dls[$i]="_Download ".$i;
 				}
+				if(is_array($dls)){
+					foreach($dls as $fbar=>$downs){
+						if($grabit[$downs]!=''){
+							$dltable=$wpdb->prefix.'eshop_downloads';
+							$fileid=$grabit[$downs];
+							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
+							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a> ';
+						}
+					}
+				}
+				if($pdown=='') $pdown='No';
 				if($ptitle->post_title=='')
 					$posttitle=__('(no title)');
 				else
@@ -177,7 +183,7 @@ if(!isset($_GET['change'])){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('change details','eshop').'">'.$grabit['_Sku'].'</a></td>';
+				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('Change details','eshop').'">'.$grabit['_Sku'].'</a></td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
@@ -355,7 +361,7 @@ if(!isset($_GET['change'])){
 			}
 		}
 		?>	
-		<table id="listing" summary="<?php _e('product listin','eshop'); ?>g">
+		<table id="listing" summary="<?php _e('product listing','eshop'); ?>">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -374,16 +380,22 @@ if(!isset($_GET['change'])){
 			if($grabit['_Price 1']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
-				//get download file title
-				if($grabit['_Product Download']==''){
-					$pdown='No';
-				}else{
-					$id=$grabit['_Product Download'];
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
-
-					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
+				$pdown='';
+				//check if downloadable product
+				for($i=1;$i<=get_option('eshop_options_num');$i++){
+					$dls[$i]="_Download ".$i;
 				}
+				if(is_array($dls)){
+					foreach($dls as $fbar=>$downs){
+						if($grabit[$downs]!=''){
+							$dltable=$wpdb->prefix.'eshop_downloads';
+							$fileid=$grabit[$downs];
+							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
+							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a> ';
+						}
+					}
+				}
+				if($pdown=='') $pdown='No';
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';

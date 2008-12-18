@@ -249,7 +249,7 @@ if (!function_exists('displaystats')) {
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$array=array('Pending','Completed','Sent','Failed','Deleted');
-		echo '<h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
+		echo '<div class="eshop-stats-box odd"><h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
 		foreach($array as $k=>$type){
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
 			switch($type){
@@ -262,7 +262,7 @@ if (!function_exists('displaystats')) {
 			}			
 			echo '<li><strong>'.$max.'</strong> '.$type.' orders</li>';
 		}
-		echo '</ul>';
+		echo '</ul></div>';
 		
 		$metatable=$wpdb->prefix.'postmeta';
 		$poststable=$wpdb->prefix.'posts';
@@ -295,14 +295,15 @@ if (!function_exists('displaystats')) {
 		}
 
 		?>
-		<h3><?php _e('Product stats','eshop'); ?></h3>
+		<div class="eshop-stats-box"><h3><?php _e('Product stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
-		<li><strong><?php echo $count; ?></strong> <?php _e('products.','eshop'); ?></li>
-		<li><strong><?php echo $countprod; ?></strong> <?php _e('products in stock.','eshop'); ?></li>
-		<li><strong><?php echo $countfeat; ?></strong> <?php _e('featured products.','eshop'); ?></li>
-		<li><strong><?php echo $stkpurc; ?></strong> <?php _e('purchases','eshop'); ?>.</li>
-
-		</ul>	
+		<li><strong><?php echo $count; ?></strong> <?php _e('Products.','eshop'); ?></li>
+		<li><strong><?php echo $countprod; ?></strong> <?php _e('Products in stock.','eshop'); ?></li>
+		<li><strong><?php echo $countfeat; ?></strong> <?php _e('Featured products.','eshop'); ?></li>
+		<li><strong><?php echo $stkpurc; ?></strong> <?php _e('Purchases','eshop'); ?>.</li>
+		</ul>
+		</div>
+		<hr class="eshopclear" />
 		<?php
 		//work out totals for quick stats
 		$dltable = $wpdb->prefix ."eshop_downloads";
@@ -316,11 +317,31 @@ if (!function_exists('displaystats')) {
 			$purchased=0;
 		}
 		?>
+		<div class="eshop-stats-box odd">
 		<h3><?php _e('Product Download Stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
-		<li><strong><?php echo $total; ?></strong> <?php _e('Total Download','eshop'); ?>s</li>
+		<li><strong><?php echo $total; ?></strong> <?php _e('Total Downloads','eshop'); ?></li>
 		<li><strong><?php echo $purchased; ?></strong> <?php _e('Total Purchases','eshop'); ?></li>
-		</ul> 
+		</ul>
+		</div>
+		<?php
+		$disctable=$wpdb->prefix.'eshop_discount_codes';
+		$row=$wpdb->get_row("SELECT COUNT(id) as ids, SUM(IF(live='yes',1,0)) as live, SUM(USED) as total FROM $disctable WHERE id>0");
+		if($row->ids>0){
+		?>
+		<div class="eshop-stats-box">
+			<h3><?php _e('Discount Codes','eshop'); ?></h3>
+			<ul class="eshop-stats">
+			<li><strong><?php echo $row->ids; ?></strong> <?php _e('Total Available','eshop'); ?></li>
+			<li><strong><?php echo $row->live; ?></strong> <?php _e('Active','eshop'); ?></li>
+			<li><strong><?php echo $row->total; ?></strong> <?php _e('Total codes used','eshop'); ?></li>
+			</ul>
+		</div>
+		<?php
+		}
+		?>
+		<hr class="eshopclear" />
+		<div class="eshop-stats-box">
 		<h3><?php _e('Download Data','eshop'); ?></h3>
 		<ul>
 		<?php
@@ -329,6 +350,7 @@ if (!function_exists('displaystats')) {
 		<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
 		<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
 		</ul>
+		</div>
 		<?php
 		
 	}
@@ -366,20 +388,17 @@ if(isset($_GET['viewemail']) || isset($_POST['thisemail'])){
 $delit=4;
 $wpdb->query("UPDATE $dtable set status='Deleted' where status='Pending' && edited < DATE_SUB(NOW(), INTERVAL $delit DAY)");
 
-//try and remove all orders that only have downloadable products
+//try and move all orders that only have downloadable products
 $moveit=$wpdb->get_results("Select checkid From $dtable where downloads='yes'");
 
 foreach($moveit as $mrow){
 	$pdownload=$numbrows=0;
-	$result=$wpdb->get_results("Select post_id From $itable where checkid='$mrow->checkid' AND item_id!='postage'");
+	$result=$wpdb->get_results("Select down_id From $itable where checkid='$mrow->checkid' AND item_id!='postage'");
 	foreach($result as $crow){
-		$post_id=$crow->post_id;
-		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
-		if($dlchk!='' && $dlchk!='0'){
-			//item is a download
+		//check if downloadable product
+		if($crow->down_id != '0')
 			$pdownload++;
-		}
+
 		$numbrows++;
 	}
 	if($pdownload==$numbrows){
@@ -520,11 +539,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	<p><?php _e('Transaction ID:','eshop'); ?> <strong><?php echo $transid; ?></strong></p>
 	<?php
 	if($admin_note!=''){
-		echo '<div id="eshop_admin_note"><h4>'.__('Admin Note:','eshop')."</h4>\n";
+		echo '<div id="eshop_admin_note" class="noprint"><h4>'.__('Admin Note:','eshop')."</h4>\n";
 		echo nl2br($admin_note).'</div>'."\n";
-		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Edit admin note','eshop').'</a></p>';
+		echo '<p class="eshop_edit_note noprint"><a href="#eshop-anote">'.__('Edit admin note','eshop').'</a></p>';
 	}else{
-		echo '<p class="eshop_edit_note"><a href="#eshop-anote">'.__('Add admin note','eshop').'</a></p>';
+		echo '<p class="eshop_edit_note noprint"><a href="#eshop-anote">'.__('Add admin note','eshop').'</a></p>';
 	}
 	?>
 	
@@ -545,20 +564,18 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$total=$total+$value;
 		$itemid=$myrow->item_id;
 		//check if downloadable product
-		$post_id=$myrow->post_id;
-		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
-		if($dlchk!='' && $dlchk!='0'){
+		$dordtable=$wpdb->prefix.'eshop_download_orders';
+		$downstable=$wpdb->prefix.'eshop_downloads';
+		if($myrow->down_id!='0'){
 			//item is a download
 			$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
 			$dltable=$wpdb->prefix.'eshop_downloads';
-			$dordtable=$wpdb->prefix.'eshop_download_orders';
-			$dlinfo=$wpdb->get_row("Select dord.id,dord.downloads From $dltable as dl,$dordtable as dord where dord.checkid='$checkid' && dl.id='$dlchk' && dord.title=dl.title limit 1");
+			$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
 			$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
-		
 		}else{
 			$downloadable='<span class="offlineprod">'.__('No','eshop').'</span>';
 		}
+	
 		// add in a check if postage here as well as a link to the product
 		if($itemid=='postage'){
 			$showit=__('Shipping','eshop');
@@ -587,66 +604,84 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.</p>\n";
 	
 	echo "</div>\n";
-	echo "<p class=\"orderaddress\">\n";
+	if($drow->reference!=''){
+		echo '<p><strong>'.__('Customer reference:','eshop').'</strong> '.$drow->reference.'</p>';
+	}
+	echo "<div class=\"orderaddress\"><h4>".__('Invoice','eshop')."</h4>";
 	foreach($dquery as $drow){
 
-		echo __("Name: ",'eshop').$drow->first_name." ".$drow->last_name."<br />\n";
-		echo __("Company: ",'eshop').$drow->company."<br />\n";
-		echo __("Phone: ",'eshop').$drow->phone."<br />\n";
-		echo __('Email:','eshop')." <a href=\"".$phpself."&amp;viewemail=".$view."\">".$drow->email."</a><br />\n";
+		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name."<br />\n";
+		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
+		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\">".$drow->email."</a><br />\n";
+		if('no' == get_option('eshop_downloads_only')){
+			echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->phone."</p>\n";
 
-		echo __("Address: ",'eshop').$drow->address1.", ".$drow->address2."<br />\n";
-		echo __("City: ",'eshop').$drow->city."<br />\n";
-		echo __("Zip/Post code: ",'eshop').$drow->zip."<br />\n";
-		if($drow->country=='US'){
-			$qcode=$wpdb->escape($drow->state);
-			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
-			echo __("State: ",'eshop').$qstate."<br />";
-		}
-		$qcode=$wpdb->escape($drow->country);
-		$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
-		$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-		echo __("Country: ",'eshop').$qcountry."<br />";
-		if(get_option('eshop_shipping_zone')=='country'){
-			$qzone=$countryzone;
-		}else{
-			$qzone=$statezone;
-		}
-		echo __('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p>\n";
-		if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
-			echo "<p class=\"shippingaddress\"><strong>".__('Shipping Address','eshop')."</strong><br />";
-			echo __("Name: ",'eshop').$drow->ship_name."<br />\n";
-			echo __("Company: ",'eshop').$drow->ship_company."<br />\n";
-			echo __("Phone: ",'eshop').$drow->ship_phone."<br />\n";
-			echo __("Address: ",'eshop').$drow->ship_address."<br />\n";
-			echo __("City: ",'eshop').$drow->ship_city."<br />\n";
-			echo __("Zip/Post code: ",'eshop').$drow->ship_postcode."<br />\n";
-			if($drow->ship_country=='US'){
-				$qcode=$wpdb->escape($drow->ship_state);
+			echo '<h5>'.__('Address','eshop').'</h5>';
+			$address=$drow->address1;
+			if($drow->address2!='') $address.= ', '.$drow->address2;
+
+			echo '<p><address>'.$drow->first_name." ".$drow->last_name."<br />\n";
+			if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
+			echo $address."<br />\n";
+			echo $drow->city."<br />\n";
+			echo $drow->zip."<br />\n";
+			if($drow->country=='US'){
+				$qcode=$wpdb->escape($drow->state);
 				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 				$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
-				echo __("State: ",'eshop').$qstate."<br />";
+				echo $qstate."<br />";
 			}
-			$qcode=$wpdb->escape($drow->ship_country);
+			$qcode=$wpdb->escape($drow->country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-			echo __("Country: ",'eshop').$qcountry."<br />";
+			echo $qcountry."</address></p>";
 			if(get_option('eshop_shipping_zone')=='country'){
 				$qzone=$countryzone;
 			}else{
 				$qzone=$statezone;
 			}
-			echo __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p>\n";
+			echo '<p>'.__('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p></div>\n";
+			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
+				echo "<div class=\"shippingaddress\"><h4>".__('Shipping','eshop')."</h4>";
+				echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->ship_name."<br />\n";
+				if($drow->ship_company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->ship_company."<br />\n";
+				echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->ship_phone."</p>\n";
+				echo '<h5>'.__('Address','eshop').'</h5>';
+				echo '<p><address>'.$drow->ship_name.'<br />'."\n";
+				if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
+				echo $drow->ship_address."<br />\n";
+				echo $drow->ship_city."<br />\n";
+				echo $drow->ship_postcode."<br />\n";
+				if($drow->ship_country=='US'){
+					$qcode=$wpdb->escape($drow->ship_state);
+					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+					$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+					echo $qstate."<br />";
+				}
+				$qcode=$wpdb->escape($drow->ship_country);
+				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
+				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
+				echo $qcountry."</address></p>";
+				if(get_option('eshop_shipping_zone')=='country'){
+					$qzone=$countryzone;
+				}else{
+					$qzone=$statezone;
+				}
+				echo '<p>'. __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p></div>\n";
+			}
+		}else{
+			echo '</p></div>';
 		}
+		echo '<hr class="eshopclear" />';
 		if($drow->thememo!=''){
-			echo '<p><strong>'.__('Customer paypal memo:','eshop').'</strong><br />'.$drow->thememo.'</p>';
+			echo '<div class="paypalmemo"><h4>'.__('Customer paypal memo:','eshop').'</h4><p>'.nl2br($drow->thememo).'</p></div>';
 		}
-		if($drow->reference!=''){
-				echo '<p><strong>'.__('Customer reference:','eshop').'</strong><br />'.$drow->reference.'</p>';
-		}
+		
 		if($drow->comments!=''){
-				echo '<p><strong>'.__('Customer order comments:','eshop').'</strong><br />'.$drow->comments.'</p>';
+			echo '<div class="eshopmemo"><h4>'.__('Customer order comments:','eshop').'</h4><p>'.nl2br($drow->comments).'</p></div>';
+		}
+		if($drow->thememo!='' || $drow->comments!=''){
+			echo '<hr class="eshopclear" />';
 		}
 	}
 	//admin note form goes here
@@ -657,7 +692,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	</fieldset>
 	</form>
 	<?php	
-	if($status=='Deleted'){$delete="<p class=\"delete\"><a href=\"".$phpself."&amp;delid=".$view."\">".__('Completely delete this order?','eshop')."</a><br />".__('<small><strong>Warning:</strong> this order will be completely deleted and cannot be recovered at a later date.</small>','eshop')."</p>";}else{$delete='';};
+	if($status=='Deleted'){$delete="<p class=\"delete noprint\"><a href=\"".$phpself."&amp;delid=".$view."\">".__('Completely delete this order?','eshop')."</a><br />".__('<small><strong>Warning:</strong> this order will be completely deleted and cannot be recovered at a later date.</small>','eshop')."</p>";}else{$delete='';};
 	echo $delete;
 }else{
 

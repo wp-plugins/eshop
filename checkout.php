@@ -156,7 +156,6 @@ if (!function_exists('eshopShowform')) {
 	foreach ($_SESSION['shopcart'] as $productid => $opt){
 		$x++;
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
 	//	$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 		/* DISCOUNT */
@@ -169,11 +168,19 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
 	}
-	
+	$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
 	$echo .= '</fieldset>';
 	if('no' == get_option('eshop_downloads_only')){
 		$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
 	}
+	
+	if(eshop_discount_codes_check()){
+		if(!isset($eshop_discount)) $eshop_discount='';
+		$echo .='<p><label for="eshop_discount">'.__('Discount Code (case sensitive)','eshop').'</label><br />
+	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></p>'."\n";
+	}
+	
+	
 	$echo .='<input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" />
 	</fieldset>
 	</form>
@@ -186,115 +193,115 @@ if (!function_exists('eshopShowform')) {
 	}
 }
 if (!function_exists('eshop_checkout')) {
- function eshop_checkout($_POST){
-	$echoit='';
-	include_once(ABSPATH.'wp-includes/wp-db.php');
-	include_once ABSPATH.PLUGINDIR."/eshop/cart-functions.php";
-	$paymentmethod=get_option('eshop_method');
+ 	function eshop_checkout($_POST){
+		$echoit='';
+		include_once(ABSPATH.'wp-includes/wp-db.php');
+		include_once ABSPATH.PLUGINDIR."/eshop/cart-functions.php";
+		$paymentmethod=get_option('eshop_method');
 
-	global $wpdb;
+		global $wpdb;
 
-	//left over from previous script, leaving in just in case another payment method is used.
-	$chkerror=0;
-	$numberofproducts=0;
+		//left over from previous script, leaving in just in case another payment method is used.
+		$chkerror=0;
+		$numberofproducts=0;
 
-	//on windows this check isn't working correctly, so I've added ==0 
-	if (get_magic_quotes_gpc()) {
-		$_COOKIE = stripslashes_array($_COOKIE);
-		$_FILES = stripslashes_array($_FILES);
-		$_GET = stripslashes_array($_GET);
-		$_POST = stripslashes_array($_POST);
-		$_REQUEST = stripslashes_array($_REQUEST);
-	}
-
-	//sanitise, ie encode all special entities - neat huh! - but possibly messing up paypal
-	//$_POST=sanitise_array($_POST);
-
-	// if everything went ok do the following, hopefully the rest won't happen!
-	if(isset($_GET['action'])){
-		if($_GET['action']=='success'){
-			include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'.php');
+		//on windows this check isn't working correctly, so I've added ==0 
+		if (get_magic_quotes_gpc()) {
+			$_COOKIE = stripslashes_array($_COOKIE);
+			$_FILES = stripslashes_array($_FILES);
+			$_GET = stripslashes_array($_GET);
+			$_POST = stripslashes_array($_POST);
+			$_REQUEST = stripslashes_array($_REQUEST);
 		}
-	}
-		
-	include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'/index.php');
 
-	if(isset($_SESSION['shopcart'])){
-		$shopcart=$_SESSION['shopcart'];
-		$numberofproducts=sizeof($_SESSION['shopcart']);
-		$productsandqty='';
-		while (list ($product, $amount) = each ($_SESSION['shopcart'])){
-			$productsandqty.=" $product-$amount";
-			$productsandqty=trim($productsandqty);
+		//sanitise, ie encode all special entities - neat huh! - but possibly messing up paypal
+		//$_POST=sanitise_array($_POST);
+
+		// if everything went ok do the following, hopefully the rest won't happen!
+		if(isset($_GET['action'])){
+			if($_GET['action']=='success'){
+				include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'.php');
+			}
 		}
-		$keys = array_keys($_SESSION['shopcart']);
-		$productidkeys=implode(",", $keys);
-		$productidkeys=trim($productidkeys);
-		//reqd for shipping - finds the correct state for working out shipping, and set things up for later usage.
-if(isset($_POST['ship_name'])){
-		if($_POST['ship_name']!='' || $_POST['ship_address']!='' 
-		|| $_POST['ship_city']!='' || $_POST['ship_postcode']!=''
-		|| $_POST['ship_company']!='' || $_POST['ship_phone']!=''
-		|| $_POST['ship_country']!='' || $_POST['ship_state']!=''){
-			if($_POST['ship_name']==''){
-				$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
+
+		include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'/index.php');
+
+		if(isset($_SESSION['shopcart'])){
+			$shopcart=$_SESSION['shopcart'];
+			$numberofproducts=sizeof($_SESSION['shopcart']);
+			$productsandqty='';
+			while (list ($product, $amount) = each ($_SESSION['shopcart'])){
+				$productsandqty.=" $product-$amount";
+				$productsandqty=trim($productsandqty);
 			}
-			if($_POST['ship_company']==''){
-				$_POST['ship_company']=$_POST['company'];
-			}
-			if($_POST['ship_phone']==''){
-				$_POST['ship_phone']=$_POST['phone'];
-			}
-			if($_POST['ship_address']==''){
-				$_POST['ship_address']=$_POST['address1'];
-				if($_POST['address2']!=''){
-					$_POST['ship_address'].=", ".$_POST['address2'];
+			$keys = array_keys($_SESSION['shopcart']);
+			$productidkeys=implode(",", $keys);
+			$productidkeys=trim($productidkeys);
+			//reqd for shipping - finds the correct state for working out shipping, and set things up for later usage.
+			if(isset($_POST['ship_name'])){
+				if($_POST['ship_name']!='' || $_POST['ship_address']!='' 
+				|| $_POST['ship_city']!='' || $_POST['ship_postcode']!=''
+				|| $_POST['ship_company']!='' || $_POST['ship_phone']!=''
+				|| $_POST['ship_country']!='' || $_POST['ship_state']!=''){
+					if($_POST['ship_name']==''){
+						$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
+					}
+					if($_POST['ship_company']==''){
+						$_POST['ship_company']=$_POST['company'];
+					}
+					if($_POST['ship_phone']==''){
+						$_POST['ship_phone']=$_POST['phone'];
+					}
+					if($_POST['ship_address']==''){
+						$_POST['ship_address']=$_POST['address1'];
+						if($_POST['address2']!=''){
+							$_POST['ship_address'].=", ".$_POST['address2'];
+						}
+					}
+					if($_POST['ship_city']==''){
+						$_POST['ship_city']=$_POST['city'];
+					}
+					if($_POST['ship_postcode']==''){
+						$_POST['ship_postcode']=$_POST['zip'];
+					}
+					if($_POST['ship_country']==''){
+						$_POST['ship_country']=$_POST['country'];
+					}
+					if($_POST['ship_state']==''){
+						$_POST['ship_state']=$_POST['state'];
+					}
+				}else{
+					$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
+					$_POST['ship_company']=$_POST['company'];
+					$_POST['ship_phone']=$_POST['phone'];
+					if($_POST['ship_address']==''){
+						$_POST['ship_address']=$_POST['address1'];
+						if($_POST['address2']!=''){
+							$_POST['ship_address'].=", ".$_POST['address2'];
+						}
+					}
+					$_POST['ship_city']=$_POST['city'];
+					$_POST['ship_postcode']=$_POST['zip'];
+					$_POST['ship_country']=$_POST['country'];
+					$_POST['ship_state']=$_POST['state'];
 				}
-			}
-			if($_POST['ship_city']==''){
-				$_POST['ship_city']=$_POST['city'];
-			}
-			if($_POST['ship_postcode']==''){
-				$_POST['ship_postcode']=$_POST['zip'];
-			}
-			if($_POST['ship_country']==''){
-				$_POST['ship_country']=$_POST['country'];
-			}
-			if($_POST['ship_state']==''){
-				$_POST['ship_state']=$_POST['state'];
-			}
-		}else{
-			$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
-			$_POST['ship_company']=$_POST['company'];
-			$_POST['ship_phone']=$_POST['phone'];
-			if($_POST['ship_address']==''){
-				$_POST['ship_address']=$_POST['address1'];
-				if($_POST['address2']!=''){
-					$_POST['ship_address'].=", ".$_POST['address2'];
+
+				if(get_option('eshop_shipping_zone')=='country'){
+					if($_POST['ship_country']!=''){
+						$pzone=$_POST['ship_country'];
+					}else{
+						$pzone=$_POST['country'];
+					}
+				}else{
+					if($_POST['ship_state']!=''){
+						$pzone=$_POST['ship_state'];
+					}else{
+						$pzone=$_POST['state'];
+					}
 				}
-			}
-			$_POST['ship_city']=$_POST['city'];
-			$_POST['ship_postcode']=$_POST['zip'];
-			$_POST['ship_country']=$_POST['country'];
-			$_POST['ship_state']=$_POST['state'];
-		}
-		
-		if(get_option('eshop_shipping_zone')=='country'){
-			if($_POST['ship_country']!=''){
-				$pzone=$_POST['ship_country'];
-			}else{
-				$pzone=$_POST['country'];
-			}
 		}else{
-			if($_POST['ship_state']!=''){
-				$pzone=$_POST['ship_state'];
-			}else{
-				$pzone=$_POST['state'];
-			}
+			$pzone='';
 		}
-}else{
-	$pzone='';
-}
 		//
 		$shiparray=array();
 		foreach ($_SESSION['shopcart'] as $productid => $opt){
@@ -312,10 +319,20 @@ if(isset($_POST['ship_name'])){
 					break;
 				case '3'://( one overall charge no matter how many are ordered )
 					if(!in_array($opt["pclas"], $shiparray)) {
-						array_push($shiparray, __('A','eshop'));
+						array_push($shiparray, 'A');
 					}
 					break;
 				}
+			}
+		}
+		//need to check the discount codes here as well:
+		if(eshop_discount_codes_check()){
+			$_SESSION['eshop_discount']='';
+			unset($_SESSION['eshop_discount']);
+			if(isset($_POST['eshop_discount']) && $_POST['eshop_discount']!=''){
+				$chkcode=valid_eshop_discount_code($_POST['eshop_discount']);
+				if($chkcode)
+					$_SESSION['eshop_discount']=$_POST['eshop_discount'];
 			}
 		}
 		//show the cart
@@ -393,6 +410,17 @@ if(isset($_POST['ship_name'])){
 					$error.= '<li>'.__('<strong>Zip/Post code</strong> - missing or incorrect.','eshop').'</li>';
 				}
 		}
+		if(eshop_discount_codes_check()){
+			$_SESSION['eshop_discount']='';
+			unset($_SESSION['eshop_discount']);
+			if(isset($_POST['eshop_discount']) && $_POST['eshop_discount']!=''){
+				$chkcode=valid_eshop_discount_code($_POST['eshop_discount']);
+				if(!$chkcode)
+					$error.= '<li>'.__('<strong>Discount Code</strong> - is not valid.','eshop').'</li>';
+				else
+					$_SESSION['eshop_discount']=$_POST['eshop_discount'];
+			}
+		}
 
 		if($error!=''){
 				$echoit.= "<p><strong class=\"error\">".__('There were some errors with the details you entered&#8230;','eshop')."</strong></p><ul class=\"errors\">".$error.'</ul>';
@@ -465,14 +493,14 @@ if(isset($_POST['ship_name'])){
 						foreach ($shiparray as $nowt => $shipclass){
 							//add to temp array for shipping
 							if(!in_array($shipclass, $tempshiparray)) {
-								if($shipclass!=__('F','eshop')){
+								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
 							}else{
-								if($shipclass!=__('F','eshop')){
+								if($shipclass!='F'){
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
 									$shipping+=$shipcost;
@@ -484,7 +512,7 @@ if(isset($_POST['ship_name'])){
 						foreach ($shiparray as $nowt => $shipclass){
 							if(!in_array($shipclass, $tempshiparray)) {
 								array_push($tempshiparray, $shipclass);
-								if($shipclass!=__('F','eshop')){
+								if($shipclass!='F'){
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
@@ -494,7 +522,7 @@ if(isset($_POST['ship_name'])){
 						break;
 					case '3'://( one overall charge no matter how many are ordered )
 						$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='".__('A','eshop')."' and items='1' limit 1");
+						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
 						$shipping+=$shipcost;
 						break;
 				}

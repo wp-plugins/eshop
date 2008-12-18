@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.11.5');
+define('ESHOP_VERSION', '2.12.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.11.5
+Version: 2.12.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -57,6 +57,8 @@ if (!function_exists('eshop_admin')) {
       	   	add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),$eshoplevel, basename('eshop_shipping.php'),'eshop_admin_shipping');
       	    add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), $eshoplevel, basename('eshop_products.php'), 'eshop_admin_products');
       	    add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), $eshoplevel, basename('eshop_downloads.php'), 'eshop_admin_downloads');
+      	    add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), $eshoplevel, basename('eshop_discount_codes.php'), 'eshop_discount_codes');
+
       	    add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), $eshoplevel, basename('eshop_base.php'), 'eshop_admin_base');
 			add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Templates','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
       	    add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), $eshoplevel, basename('eshop_about.php'), 'eshop_admin_about');
@@ -185,6 +187,15 @@ if (!function_exists('eshop_admin_products')) {
      function eshop_admin_products() {
          include 'eshop_products.php';
          eshop_products_manager();
+     }
+}
+if (!function_exists('eshop_discount_codes')) {
+    /**
+     * discount codes.
+     */
+     function eshop_discount_codes() {
+         include 'eshop_discount_codes.php';
+         eshop_discounts_manager();
      }
 }
 ////////////////eshop base test////////////
@@ -371,8 +382,9 @@ if (!function_exists('eshop_wp_head')) {
      */
     function eshop_wp_head() {
     	$eshopurl=eshop_files_directory();
-    	
-    	if(get_option('eshop_style')=='yes'){
+    	if(@file_exists(TEMPLATEPATH.'/eshop.css')) {
+			echo '<link rel="stylesheet" href="'.get_stylesheet_directory_uri().'/eshop.css" type="text/css" media="screen" />'."\n";	
+		}elseif(get_option('eshop_style')=='yes'){
         	echo '<link rel="stylesheet" href="' . $eshopurl['1'] . 'eshop.css" type="text/css" media="screen" />'."\n";
         }
        
@@ -477,68 +489,11 @@ include_once 'eshop_widget.php';
 
 //this checks images upon deletion, if eshop is using them - it deletes the reference - cool huh!
 add_filter('wp_delete_file','eshop_delete_img');
-function eshop_delete_img($rootimg){
-	global $wpdb;
-	$pieces = explode("/", $rootimg);
-	$eshopprodimg='_eshop_prod_img';
-	$chkeshop = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '$eshopprodimg'"));
-	foreach($chkeshop as $row){
-		$bits = explode("/", $row->meta_value);
-		if(end($pieces) == end($bits)){
-			delete_post_meta( $row->post_id, $eshopprodimg );
-		}
-	}
-	return($postid);
-}
+
 //add images to the search page if set
 if('no' != get_option('eshop_search_img'))
 	add_filter('the_excerpt','eshop_excerpt_img');
-function eshop_excerpt_img($output){
-	global $post;
-	$echo='';
-	if(is_search()){
-		$eshopprodimg='_eshop_prod_img';
-		//grab image or choose first image uploaded for that page
-		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
-		$isaproduct=get_post_meta($post->ID,'_Price 1',true);
-		$imgs= eshop_get_images($post->ID);
-		$x=1;
-		if(is_array($imgs)){
-			if($proddataimg=='' && get_option('eshop_search_img') == 'all'){
-				foreach($imgs as $k=>$v){
-					$x++;
-					$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-					break;
-				}
-			}elseif($proddataimg=='' && get_option('eshop_search_img') == 'yes' && $isaproduct!=''){
-				foreach($imgs as $k=>$v){
-					$x++;
-					$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-					break;
-				}
-			}else{
-				foreach($imgs as $k=>$v){
-					if($proddataimg==$v['url']){
-						$x++;
-						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-						break;
-					}
-				}
-			}
-		}
-	}
-	return $echo.$output;
-}
-function eshop_update_nag() {
-	if ( get_option('eshop_version')!='' && get_option('eshop_version') >= ESHOP_VERSION )
-		return false;
 
-	if ( current_user_can('manage_options') )
-		$msg = sprintf( __('<strong>eShop %1$s</strong> is installed, however you still need to <a href="%2$s">deactivate and re-activate the plugin</a>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
-	else
-		$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
 
-	echo "<div id='eshop-update-nag'>$msg</div>";
-}
 add_action( 'admin_notices', 'eshop_update_nag');
 ?>

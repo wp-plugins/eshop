@@ -30,7 +30,7 @@ if (!function_exists('display_cart')) {
 			<thead>
 			<tr class="thead">
 			<th id="cartItem" class="nb">'.__('Item Description','eshop').'</th>
-			<th id="cartQty" class="bt"><dfn title="'.__('Quantity','eshop').'">'.__('Qty','eshop').'</dfn></th>
+			<th id="cartQty" class="bt">'.__('<dfn title="Quantity">Qty</dfn>','eshop').'</th>
 			<th id="cartTotal" class="btbr">'.__('Total','eshop').'</th>
 			</tr></thead><tbody>';
 			//display each item as a table row
@@ -74,7 +74,7 @@ if (!function_exists('display_cart')) {
 			$disc_applied='';
 			if(is_discountable(calculate_total())>0){
 				$discount=is_discountable(calculate_total());
-				$disc_applied='<small>('.__('Including Discount of','eshop').' <span>'.number_format(round($discount, 2),2).'%</span>)</small>';
+				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
 			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 				
@@ -165,6 +165,9 @@ if (!function_exists('display_cart')) {
 		if(get_option('eshop_status')!='live'){
 			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
 		}
+		if(valid_eshop_discount_code($_SESSION['eshop_discount'])){
+			$echo .= '<p class="eshop_dcode">'.sprintf(__('Discount Code <span>%s</span> has been applied to your cart.','eshop'),$_SESSION['eshop_discount']).'</p>'."\n";
+		}
 		return $echo;
 	}
 }
@@ -215,6 +218,13 @@ if (!function_exists('calculate_items')) {
 if (!function_exists('is_discountable')) {
 	function is_discountable($total){
 		$percent=0;
+		//check for 
+		if(eshop_discount_codes_check()){
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			if($chkcode && apply_eshop_discount_code('discount')>0)
+				return apply_eshop_discount_code('discount');
+			
+		}
 		for ($x=1;$x<=3;$x++){
 			if(get_option('eshop_discount_spend'.$x)!='')
 				$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
@@ -233,6 +243,11 @@ if (!function_exists('is_discountable')) {
 
 if (!function_exists('is_shipfree')) {
 	function is_shipfree($total){
+		if(eshop_discount_codes_check()){
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			if($chkcode && apply_eshop_discount_code('shipping'))
+				return true;
+		}
 		$amt=get_option('eshop_discount_shipping');
 		if($amt!='' && $amt <= $total)
 			return true;
@@ -242,6 +257,103 @@ if (!function_exists('is_shipfree')) {
 	}
 }
 
+// discount/promotional codes
+if (!function_exists('apply_eshop_discount_code')) {
+	function apply_eshop_discount_code($disc){
+		global $wpdb;
+		$now=date('Y-m-d');
+		$disctable=$wpdb->prefix.'eshop_discount_codes';
+		if(eshop_discount_codes_check()){
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			if(!$chkcode)
+				return false;
+			$grabthis=$wpdb->escape($_SESSION['eshop_discount']);
+			$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$grabthis'");
+			if($disc=='shipping'){
+				switch($row->dtype){
+					case '4':
+						if($row->remain=='' || $row->remain>0) return true;
+						break;
+					case '5':
+						if($row->enddate>=$now) return true;
+						break;
+					case '6':
+						if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now)) return true;
+						break;
+					default:
+						return false;
+				}
+			}
+
+			if($disc=='discount'){
+				switch($row->dtype){
+					case '1':
+						if($row->remain=='' || $row->remain>0) 
+							return $row->percent;
+						break;
+					case '2':
+						if($row->enddate>=$now) 
+							return $row->percent;
+						break;
+					case '3':
+						if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now))
+							return $row->percent;
+						break;
+					default:
+						return false;
+				}
+			}
+		}
+		//and just in case
+		return false;
+
+	}
+}
+if (!function_exists('eshop_discount_codes_check')) {
+	function eshop_discount_codes_check(){
+		global $wpdb;
+		$disctable=$wpdb->prefix.'eshop_discount_codes';
+		$max = $wpdb->get_var("SELECT COUNT(id) FROM $disctable WHERE id > 0 && live='yes'");
+		if($max>0)
+			return true;
+		return false;
+	}
+}
+if (!function_exists('valid_eshop_discount_code')) {
+	function valid_eshop_discount_code($code){
+		global $wpdb;
+		$now=date('Y-m-d');
+		$code=$wpdb->escape($code);
+		$disctable=$wpdb->prefix.'eshop_discount_codes';
+		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && binary disccode='$code'");
+		switch ($row->dtype){
+			case '1':
+				if($row->remain=='' || $row->remain>0) 
+					return true;
+				break;
+			case '2':
+				if($row->enddate>=$now) 
+					return true;
+				break;
+			case '3':
+				if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now))
+					return true;
+				break;
+			case '4':
+				if($row->remain=='' || $row->remain>0) return true;
+				break;
+			case '5':
+				if($row->enddate>=$now) return true;
+				break;
+			case '6':
+				if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now)) return true;
+				break;
+			default:
+				return false;
+		}
+		return false;
+	}
+}
 
 if (!function_exists('checkAlpha')) {
 	//check string is alpha only.
@@ -361,25 +473,21 @@ if (!function_exists('orderhandle')) {
 				'$item_qty',
 				'$item_amt','$optname','$post_id');");
 			$i++;
-			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
+		}
+		//are there any downloads?
+		$chkdownloads=$_SESSION['shopcart'];
+		foreach ($chkdownloads as $productid => $opt){
+			$edown=split(' ',$opt['option']);
+			$dlchk=get_post_meta($opt['postid'],'_Download '.$edown[1], true);
 			if($dlchk!=''){
 				//order contains downloads
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
 				//add to download orders table
-				
 				$dloadtable=$wpdb->prefix.'eshop_download_orders';
 				//$email,$checkid already set
-				
 				$producttable=$wpdb->prefix.'eshop_downloads';
-				$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$dlchk'");
-				/*
-				//add 1 to number of purchases - can't achieve this for ordinary products very easily 
-				$prodtable = $wpdb->prefix ."eshop_downloads";
-				$wpdb->query("UPDATE $prodtable SET purchases=purchases+1 where title='$grabit->title' && files='$grabit->files' limit 1");
-				*/
+				$grabit=$wpdb->get_row("SELECT id,title, files FROM $producttable where id='$dlchk'");
 				$downloads = get_option('eshop_downloads_num');
-
 				$wpdb->query("INSERT INTO $dloadtable
 				(checkid, title,purchased,files,downloads,code,email)values(
 				'$checkid',
@@ -390,7 +498,17 @@ if (!function_exists('orderhandle')) {
 				'$code',
 				'$email');"
 				);
+				//then update the items table - this works, but isn't pretty *sigh*
+				$postid=$opt['postid'];
+				$checkit=$wpdb->get_results("SELECT id,item_id FROM $itemstable where checkid='$checkid' && post_id='$postid'");
+				foreach($checkit as $crow){
+					$filetitlearr=split(' : ', $crow->item_id);
+					$option=trim($filetitlearr[sizeof($filetitlearr)-1]);
+					if(get_post_meta($opt['postid'],$opt['option'], true)==$option)
+						$wpdb->query("UPDATE $itemstable set down_id='$grabit->id' where checkid='$checkid' && id='$crow->id'");
+				}
 			}
+			
 		}
 		$postage=$wpdb->escape($_POST['shipping_1']);
 		$querypostage=$wpdb->query("INSERT INTO  $itemstable 
@@ -399,6 +517,19 @@ if (!function_exists('orderhandle')) {
 				'postage',
 				'1',
 				'$postage');");
+		//update the discount codes used, and remove from remaining
+		$disctable=$wpdb->prefix.'eshop_discount_codes';
+		if(eshop_discount_codes_check()){
+			if(valid_eshop_discount_code($_SESSION['eshop_discount'])){
+				$discvalid=$wpdb->escape($_SESSION['eshop_discount']);
+				$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
+				
+				$remaining=$wpdb->get_var("SELECT remain FROM $disctable where disccode='$discvalid' && dtype!='2' && dtype!='5' limit 1");
+				//reduce remaining
+				if(is_numeric($remaining) && $remaining!='')			
+					$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
+			}
+		}
 	}
 }
 if (!function_exists('stripslashes_array')) {
@@ -481,9 +612,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}else{
 				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
 			}
-			$mtable=$wpdb->prefix.'postmeta';
-			$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$myrow->post_id'");
-			if($dlchk!=''){
+		
+			//check if downloadable product
+			if($myrow->down_id!='0'){
 				$containsdownloads++;
 			}
 		}
@@ -568,7 +699,7 @@ if (!function_exists('eshop_get_shipping')) {
 		$currsymbol=get_option('eshop_currency_symbol');
 
 		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'">';
-		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone','eshop').' <small>'.__('(subject to change)','eshop').'</small></span></caption>'."\n";
+		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
 		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
 		$eshopshiptable.='<tbody>'."\n";
 		$x=1;
@@ -641,7 +772,7 @@ if (!function_exists('eshop_get_shipping')) {
 			$calt++;
 			$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
 			$eshopshiptable.= '<tr'.$alt.'>';
-			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.__('F','eshop').' <small>'.__('(Free)','eshop').'</small></th>'."\n";
+			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">F <small>'.__('(Free)','eshop').'</small></th>'."\n";
 			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format('0',2)).'</td>'."\n";
 			$eshopshiptable.= '</tr>';
 		}
@@ -690,7 +821,7 @@ if (!function_exists('eshop_show_zones')) {
 			if(isset($_POST) && $_POST['country']!=''){
 				$qccode=$wpdb->escape($_POST['country']);
 				$qcountry = $wpdb->get_row("SELECT country,zone FROM $tablec WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.$qcountry['country'].' '.__('is in Zone','eshop').' '.$qcountry['zone'].'.</p>';
+				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qcountry['country'],$qcountry['zone']).'.</p>';
 			}
 
 		}else{
@@ -722,7 +853,7 @@ if (!function_exists('eshop_show_zones')) {
 			if(isset($_POST) && $_POST['state']!=''){
 				$qccode=$wpdb->escape($_POST['state']);
 				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $dtable WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.$qstate['stateName'].' '.__('is in Zone','eshop').' '.$qstate['zone'].'.</p>';
+				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qstate['stateName'],$qstate['zone']).'.</p>';
 			}
 		}
 		if(get_bloginfo('version')<'2.5.1')
@@ -826,8 +957,7 @@ if (!function_exists('eshop_download_the_product')) {
 						$item=$chkrow->files;
 						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$id' limit 1");
 						//update product with number of downloads made
-						$prodtable = $wpdb->prefix ."eshop_downloads";
-						$wpdb->query("UPDATE $prodtable SET downloads=downloads+1 where title='$chkrow->title' && files='$item' limit 1");
+						$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$chkrow->title' && files='$item' limit 1");
 						//force download - should bring up save box, but it doesn't!
 						$dload=$dir_upload.$item;
 						header("Pragma: public"); // required
@@ -861,12 +991,15 @@ if (!function_exists('eshop_download_the_product')) {
 
 				$test->set_options(array('inmemory' => 1, 'recurse' => 0, 'storepaths' => 0,'prepend' => 'downloads'));
 				$chkcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
-				$chkresult = $wpdb->get_results("Select files from $ordertable where email='$email' && code='$code' && downloads!='0'");
+				$chkresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
 				if($chkcount>0){
 					foreach($chkresult as $drow){
 						$item=$drow->files;
 						$dload=$dir_upload.$drow->files;
 						$test->add_files(array($dload));
+						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$drow->id'");
+						//update product with number of downloads made
+						$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$drow->title' && files='$item' limit 1");
 					}
 				}	
 				// Create archive in memory
@@ -1034,6 +1167,73 @@ if (!function_exists('eshop_from_address')) {
 			$headers='';
 		}
 		return $headers;
+	}
+}
+if (!function_exists('eshop_delete_img')) {
+	function eshop_delete_img($rootimg){
+		global $wpdb;
+		$pieces = explode("/", $rootimg);
+		$eshopprodimg='_eshop_prod_img';
+		$chkeshop = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '$eshopprodimg'"));
+		foreach($chkeshop as $row){
+			$bits = explode("/", $row->meta_value);
+			if(end($pieces) == end($bits)){
+				delete_post_meta( $row->post_id, $eshopprodimg );
+			}
+		}
+		return($postid);
+	}
+}
+if (!function_exists('eshop_excerpt_img')) {
+	function eshop_excerpt_img($output){
+		global $post;
+		$echo='';
+		if(is_search()){
+			$eshopprodimg='_eshop_prod_img';
+			//grab image or choose first image uploaded for that page
+			$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
+			$isaproduct=get_post_meta($post->ID,'_Price 1',true);
+			$imgs= eshop_get_images($post->ID);
+			$x=1;
+			if(is_array($imgs)){
+				if($proddataimg=='' && get_option('eshop_search_img') == 'all'){
+					foreach($imgs as $k=>$v){
+						$x++;
+						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+						break;
+					}
+				}elseif($proddataimg=='' && get_option('eshop_search_img') == 'yes' && $isaproduct!=''){
+					foreach($imgs as $k=>$v){
+						$x++;
+						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+						break;
+					}
+				}else{
+					foreach($imgs as $k=>$v){
+						if($proddataimg==$v['url']){
+							$x++;
+							$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
+							break;
+						}
+					}
+				}
+			}
+		}
+		return $echo.$output;
+	}
+}
+
+if (!function_exists('eshop_update_nag')) {
+	function eshop_update_nag() {
+		if ( get_option('eshop_version')!='' && get_option('eshop_version') >= ESHOP_VERSION )
+			return false;
+
+		if ( current_user_can('manage_options') )
+			$msg = sprintf( __('<strong>eShop %1$s</strong> is installed, however you still need to <a href="%2$s">deactivate and re-activate the plugin</a>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
+		else
+			$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
+
+		echo "<div id='eshop-update-nag'>$msg</div>";
 	}
 }
 ?>

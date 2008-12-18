@@ -45,7 +45,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 			);";
 	error_log("creating table $table");
 	dbDelta($sql);
-	//$wpdb->query($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone) VALUES  ('AL', 'Alabama', 2),
 	('AZ', 'Arizona', 4),
 	('AR', 'Arkansas', 3),
@@ -111,7 +110,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	);";
 	error_log("creating table $table");
 	dbDelta($sql);
-	//$wpdb->query($sql);
 
 	$wpdb->query("INSERT INTO ".$table."(class,items,zone1,zone2,zone3,zone4,zone5) VALUES 
 	('A',1, 10.00, 15.00, 20.00, 25.00, 30.00),
@@ -136,11 +134,11 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	item_amt float(8,2) NOT NULL default '0.00',
 	optname varchar(255) NOT NULL default '',
 	post_id int(11) NOT NULL default '0',
+	down_id int(11) NOT NULL default '0',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid)
 	);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
 
@@ -182,7 +180,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	KEY status (status)
 	);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
 
@@ -197,7 +194,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  KEY post_id (post_id,available,purchases)
 	);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
 
@@ -213,7 +209,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	    PRIMARY KEY  (id)
 			);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
 $table = $wpdb->prefix ."eshop_download_orders";
@@ -231,7 +226,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		KEY code (code,email)
 		);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
 
@@ -245,7 +239,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		KEY zone (zone)
 		);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,country,zone) VALUES  
 		('AD', 'Andorra', 1),
@@ -456,9 +449,26 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  PRIMARY KEY  (post_id)
 	);";
 	error_log("creating table $table");
-	//$wpdb->query($sql);
 	dbDelta($sql);
 }
+$table = $wpdb->prefix ."eshop_discount_codes";
+if ($wpdb->get_var("show tables like '$table'") != $table) {
+	$sql = "CREATE TABLE ".$table." (
+	  id int(11) NOT NULL auto_increment,
+	  dtype tinyint(1) NOT NULL default '0',
+	  disccode varchar(255) NOT NULL default '',
+	  percent mediumint(5) NOT NULL default '0',
+	  remain varchar(11) NOT NULL default '',
+	  used int(11) NOT NULL default '0',
+	  enddate date NOT NULL default '0000-00-00',
+	  live char(3) NOT NULL default 'no',
+	  PRIMARY KEY  (id),
+	  UNIQUE KEY disccode (disccode)
+	);";
+	error_log("creating table $table");
+	dbDelta($sql);
+}
+
 
 /* version number store - add/update */
 
@@ -499,7 +509,20 @@ if ($add_field) {
     $wpdb->query($sql);
 }
 
+/* db change 2.11.7 (2.12 release) */
 
+$table = $wpdb->prefix . "eshop_order_items";
+$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+$add_field = TRUE;
+foreach ($tablefields as $tablefield) {
+    if(strtolower($tablefield->Field)=='down-id') {
+        $add_field = FALSE;
+    }
+}
+if ($add_field) {
+    $sql="ALTER TABLE `".$table."` ADD `down_id` int(11) NOT NULL default '0'";
+    $wpdb->query($sql);
+}
 
 /*update all post meta to new post meta */
 $eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
@@ -511,21 +534,30 @@ for($i=1;$i<=$numoptions;$i++){
 	$eshop_old_postmeta[]='Option '.$i;
 	$eshop_old_postmeta[]='Price '.$i;
 }
-//ggo through every page and post
+//go through every page and post
 $args = array(
 	'post_type' => 'any',
 	'numberposts' => -1,
 	); 
-
+//add in transfer from prod download to _download here
 $allposts = get_posts($args);
 foreach( $allposts as $postinfo) {
 	foreach($eshop_old_postmeta as $field){
 		$eshopvalue=get_post_meta($postinfo->ID, $field,true);
-		if($eshopvalue!='')
+		if($eshopvalue!=''){
 			add_post_meta( $postinfo->ID, '_'.$field, $eshopvalue);
-	    delete_post_meta($postinfo->ID, $field);
+	    	delete_post_meta($postinfo->ID, $field);
+	 	}
 	 }
+	if(get_post_meta($postinfo->ID, '_Product Download',true)!=''){
+		$eshopvalue=get_post_meta($postinfo->ID, '_Product Download',true);
+		add_post_meta( $postinfo->ID, '_Download 1', $eshopvalue);
+	}
+	delete_post_meta($postinfo->ID, '_Product Download');
 }
+
+
+
 /* post meta end */
 
 /* page insertion */

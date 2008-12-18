@@ -135,9 +135,20 @@ switch ($_GET['action']) {
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'],2));
 		foreach($_POST as $name=>$value){
+			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
+			if(strstr($name,'amount_')){
+				if(eshop_discount_codes_check()){
+					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+					if($chkcode && apply_eshop_discount_code('discount')>0){
+						$discount=apply_eshop_discount_code('discount')/100;
+						$value = number_format(round($value-($value * $discount), 2),2);
+					}
+				}
+			}
+			
 			$p->add_field($name, $value);
 		}
-
+		
 	//	$p->add_field('return_method','2'); //1=GET 2=POST
 	// was return method now rm - go figure.
 		$p->add_field('rm','2'); //1=GET 2=POST
@@ -266,14 +277,15 @@ switch ($_GET['action']) {
 				$stocktable=$wpdb->prefix ."eshop_stock";
 				$mtable=$wpdb->prefix.'postmeta';
 				$producttable=$wpdb->prefix.'eshop_downloads';
-				$query=$wpdb->get_results("SELECT item_qty,post_id FROM $itemstable WHERE checkid='$checked' AND item_id!='postage'");
+				$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND item_id!='postage'");
 				foreach($query as $row){
 					$pid=$row->post_id;
 					$uqty=$row->item_qty;
 					////test downloads
-					$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$pid'");
-					if($dlchk!=''){
-						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$dlchk'");
+					//check if downloadable product
+					$fileid=$row->down_id;
+					if($fileid!=0){
+						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
 						//add 1 to number of purchases here (duplication but left in)
 						$wpdb->query("UPDATE $producttable SET purchases=purchases+1 where title='$grabit->title' && files='$grabit->files' limit 1");
 						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
@@ -290,6 +302,7 @@ switch ($_GET['action']) {
 							$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
 						}
 					}
+					
 				}
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");

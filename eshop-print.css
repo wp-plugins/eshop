@@ -4,15 +4,16 @@
 
 body {
   background-color : #fff;
-  padding : 10px 40px;
   font : 95% 'courier new', courier, monospace;
 }
 
-.wrap {
+div.wrap {
   background-color : #fff;
 }
-
-#wphead, #user_info, #adminmenu, #submenu, .wrap h2, form, #footer {
+#wpbody{
+margin-left:0;
+}
+#wphead, #user_info, #adminmenu, #submenu, .wrap h2, form, #footer, .subsubsub, .noprint {
   display : none;
 }
 
@@ -21,7 +22,7 @@ table, th, td {
 }
 
 th, td {
-  padding : 5px;
+  padding: 2px;
 }
 
 table {
@@ -44,9 +45,38 @@ h3.status {
   font-size : 120%;
   color : #666;
 }
-
+h4, h5{
+	margin:0
+}
 .right, .total, .totalr {
   text-align : right;
+}
+.orderaddress, .paypalmemo{
+	border-right:1px solid #e5e5e5;
+	margin-right:2%;
+}
+.orderaddress, .shippingaddress,.paypalmemo, .eshopmemo{
+	float:left;
+	width:45%;
+}
+.orderaddress h4, .shippingaddress h4, .paypalmemo h4, .eshopmemo h4{
+	font-size:1.2em;
+	font-style:italic;
+	letter-spacing:1px;
+}
+.orderaddress h4, .shippingaddress h4, .paypalmemo h4, .eshopmemo h4, .orderaddress h5, .shippingaddress h5{
+	margin:0;
+}
+
+.eshopclear{
+	clear:left;
+	border:0;
+}
+.paypalmemo, .eshopmemo{
+	min-height:3em;
+}
+.creditline{
+	text-align:center;
 }
 
 /* end eShop Print CSS */
