@@ -42,6 +42,13 @@ function eshop_form_admin_style(){
 </div>
 <div class="wrap">
 <h2><?php _e('Default Style','eshop'); ?></h2>
+<?php
+if(@file_exists(TEMPLATEPATH.'/eshop.css')) {
+echo '<p>';
+_e('Your active theme has an eshop style sheet, eshop.css, and will be used in preference to the default style below. Therefore changes made via the style editor below will not show on your site.','eshop');
+echo '</p>';
+}else{
+?>
 <p><?php _e('Default style is used by default. You can edit this via the editor below, or choose not to use it.','eshop'); ?></p>
 <form action="" method="post" id="style_form" name="style">
  <fieldset>
@@ -61,6 +68,9 @@ function eshop_form_admin_style(){
 
 </fieldset>
 </form>
+<?php
+}
+?>
 </div>
 <div class="wrap">
 <h2><?php _e('Style Editor','eshop'); ?></h2>

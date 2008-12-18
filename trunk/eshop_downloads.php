@@ -56,9 +56,9 @@ function eshop_downloads_manager() {
 				if(@is_uploaded_file($_FILES["upfile"]["tmp_name"])) {
 					
 					if(move_uploaded_file($_FILES["upfile"]["tmp_name"], $dir_upload.$file_name)){
-						$success='<p>'.__('I moved it','eshop').'</p>';
+						$success='<p>'.__('File moved','eshop').'</p>';
 					}else{
-						$error.='<p>'.__('failed to move','eshop').'</p>';
+						$error.='<p>'.__('Failed to move file','eshop').'</p>';
 					}
 
 				} else {
@@ -163,9 +163,17 @@ function eshop_downloads_manager() {
 			</table>
 			<?php
 			$metatable=$wpdb->prefix ."postmeta";
-			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE meta_key='_Product Download' AND meta_value='$id'");
+			for($x=1;$x<=get_option('eshop_options_num');$x++){
+				$metakeys[]="meta_key='_Download ".$x."'";
+			}
+			if(sizeof($metakeys)>0)
+				$meta_keys=implode(' OR ',$metakeys). 'AND';
+			else
+				$meta_keys='';
+			
+			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE ".$meta_keys." meta_value='$id'");
 			if($checkproduct>0){
-				$myrows=$wpdb->get_results("Select post_id FROM $metatable WHERE meta_key='_Product Download' AND meta_value='$id'");
+				$myrows=$wpdb->get_results("SELECT DISTINCT post_id FROM $metatable WHERE ".$meta_keys." meta_value='$id'");
 				echo '<p class="productassociation">'.__('This file is associated with the following product pages:','eshop').'</p>';
 				echo '<ul class="productpages">';
 				foreach($myrows as $myrow){

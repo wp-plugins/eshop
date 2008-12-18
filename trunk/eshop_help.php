@@ -32,6 +32,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#extr">Cart Operations</a></li>
 <li><a href="#conf">Conflicting plugins</a></li>
 <li><a href="#comp">Compatability</a></li>
+<li><a href="#actnote">Notes on activation</a></li>
 <li><a href="#del">Deactivating and Uninstalling</a></li>
 
 </ul>
@@ -41,11 +42,11 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p>Adding a product is as easy as creating a page. Just fill in the required fields within the <strong>Product Entry</strong> section when creating or editing a page.</p>
 <p>The <strong>Sku</strong> should be a unique identification reference for your product eg.abc001.</p>
 <p>The <strong>Product Description</strong> is a short description of the product. This is used in the customers cart, and will appear on their invoice from Paypal.</p>
-<p><strong>Option x</strong> and <strong>Price x</strong>, are the individual item and price, thus allowing several options for each product eg. Small, Medium, Large. If there is only 1 option for a product, then please use the <strong>Option 1</strong> and <strong>Price 1</strong> input fields.</p>
-<p>The <strong>Product Download</strong> selection box only appears if you have uploaded a file via eShop for download. To link to a file, select it from the dropdown list.</p>
+<p><strong>Option x</strong>, <strong>Price x</strong> and <strong>Download x</strong> are the individual item and price, thus allowing several options for each product eg. Small, Medium, Large. If there is only 1 option for a product, then please use the <strong>Option 1</strong> and <strong>Price 1</strong> input fields.</p>
+<p>The <strong>Download</strong> selection boxes only appear if you have uploaded a file via eShop for download. To link to a file, select it from the dropdown list.</p>
 <p>Choose your <strong>Shipping Rate</strong> carefully, <strong>F</strong> is set aside for any Free shipping (obviously downloadable products should use this).</p>
 <p>The <strong>Featured Product</strong> product selection chooses whether that product can be listed as a featured product.</p>
-<p>A product is unavailble for sale until <strong>Stock Available</strong> is set to <em>Yes</em>.</p>
+<p>A product is unavailble for sale until <strong>Stock Available</strong> is set.</p>
 <p><strong>Stock Quantity</strong> - sets the quantity available for this product. A quantity needs to be entered for download products. I suggest you enter a 1.</p>
 
 </div>
@@ -178,12 +179,12 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 This is only triggered when someone visits the site.</p>
 <p>To stop this feature, simply delete the Cron Email address.</p>
 
-<h3>Automatically created pages</h3>
+<h3 id="auotp">Automatically created pages</h3>
 <p>These are automatically generated when eShop is first activated. Changing these could affect how eShop works, but are available for amendment should you delete a page in error. All of these pages require shortcodes to work correctly.</p>
 
 <h3>Other Settings</h3>	
 <p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by <abbr title="United States">US</abbr> States. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
-<p>The eShop <strong>Style</strong> page allows you to amend the default style, or disable it completely.</p>
+<p>The eShop <strong>appearance</strong> page allows you to amend the default style, or disable it completely.</p>
 
 
 <h3>Settings - eShop Base</h3>
@@ -195,6 +196,11 @@ This is only triggered when someone visits the site.</p>
 <p><strong>Payment Accepted</strong> - comma delimited list of payment methods available in addition to Paypal.</p>
 <h4>Reset eShop Base</h4>
 <p>This resets all data that has been set using the eShop - Base page.</p>
+
+<h3>Appearance - eShop</h3>
+<p>Some default style has been included with the eShop plugin to allow you to get up and running as quickly as possible. On this page you are able to disable the default styling if you would rather use style associated with a particular theme. If the CSS file is editable you can also edit it directly via this page.</p>
+<p>Should your theme already have an eshop.css file then it will be used by default.</p>
+
 </div>
 
 <div class="wrap">
@@ -241,14 +247,13 @@ This is only triggered when someone visits the site.</p>
 <p>Providing the downloads directory is writable, you can upload files here. These will become available for sale within your eShop.The page lists all available downloadable products (that you have previously uploaded), along with a few statistics.</p>
 <p>As a security measure you are not able to delete a file that is currently available for sale within your eShop.</p>
 
+<h3>Discount Codes</h3>
+<p>Various options have been created to give a wide variety of discount codes, from single use to unlimited. This can be a set discount, or for free shipping.</p>
+
 <h3>Base</h3>
 <p>Manage your products for Google Base.</p>
 <p>The details for each product can be tweaked by following the <em>Sku</em> link.</p>
 <p>For images to be used they <strong>must</strong> be uploaded via the page the product is allied to.</p>
-
-<h3>Style</h3>
-<p>Some default style has been included with the eShop plugin to allow you to get up and running as quickly as possible. On this page you are able to disable the default styling if you would rather use style associated with a particular theme. If the CSS file is editable you can also edit it directly via this page.</p>
-
 
 <h3>Templates</h3>
 <p>This allows you to edit 2 email templates:</p>
@@ -309,6 +314,17 @@ This is only triggered when someone visits the site.</p>
 <div class="wrap">
 <h2 id="comp">Compatability</h2>
 <p>eShop has been written for Wordpress 2.5 and up, and is not compatible with earlier versions.</p>
+</div>
+
+<div class="wrap">
+<h2 id="actnote">Notes on activation</h2>
+<p>When eShop is actiavted it adds database tables, and adds data where necessary to those, and native wordpress, tables. Additionally there are some <a href="#autop">automatically created pages</a>.</p>
+<p>To ensure updates to the plugin don't over write changes you have made ceratin directories and files are copied to new locations <strong>on the first activation only</strong>.</p>
+<ul>
+<li><strong>wp-content/eshop_downloads</strong> is created from plugins/eshop/downloads</li>
+<li><strong>wp-content/uploads/eshop_files</strong> is created from plugins/eshop/files</li>
+</ul>
+<p>So, for example, when you edit your style, the actual eshop.css file that is being amended is located in <strong>wp-content/uploads/eshop_files</strong>.</p>
 </div>
 
 <div class="wrap">

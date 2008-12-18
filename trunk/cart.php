@@ -115,7 +115,7 @@ if (!function_exists('eshop_cart')) {
 
 		if(isset($_SESSION['shopcart'])){
 			if((isset($_GET['action']) && $_GET['action']=='cancel') && !isset($_POST['save'])){
-				$echo.= "<h3>".__('The order was canceled at','eshop')." ".get_option('eshop_method').".</h3>"; 
+				$echo.= "<h3>".__('The order was cancelled at','eshop')." ".get_option('eshop_method').".</h3>"; 
 				$echo.= '<p>'.__('We have not deleted the contents of your shopping cart in case you may want to edit its content.','eshop').'</p>';
 			}
 			if(isset($_POST['purl'])){

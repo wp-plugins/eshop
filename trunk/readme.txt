@@ -4,13 +4,21 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.11.5
+Stable tag: 2.12.0
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-eShop has many features, these include:
+= New features for 2.12.0 =
+
+Discount codes can be offered, offering a percentage discount, or free shipping. They can be limited by date, or by number of uses.
+
+Downloadable product options per product (e.g. all tracks off one album, or the same track in different formats).
+
+eShop Stats and Order pages tidied up.
+
+eShop features include:
 
 * Use Wordpress pages, or posts, to create products
 * Various methods now available for listing multiple products, with add to cart form,  on a single page
@@ -27,16 +35,23 @@ eShop has many features, these include:
 * Basic Stock Control
 * Google Base Data creation
 * Uninstall available within the plugin
-* NEW Discounts
-* NEW Shipping Rates page updates
-* NEW ability to change eShop From address for automated emails
-* NEW ability to add an admin note to an order.
+* Shop Wide Discounts
+* Public Shipping Rates page configuration
+* Ability to change eShop From address for automated emails
+* Ability to add an admin note to an order.
 * and more
 
 Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.12.0
+
+* Discount codes can be offered, offering a percentage discount, or free shipping.
+* Downloadable product options per product (e.g. all tracks off one album, or the same track in different formats).
+* eShop Stats and Order pages tidied up.
+* many many tweaks to various pages
 
 Version 2.11.5
 

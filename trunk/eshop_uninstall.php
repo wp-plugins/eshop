@@ -39,6 +39,7 @@ if(isset($_POST['delete'])){
 	$etable[] = $wpdb->prefix ."eshop_download_orders";
 	$etable[] = $wpdb->prefix . "eshop_countries";
 	$etable[] = $wpdb->prefix ."eshop_base_products";
+	$etable[] = $wpdb->prefix ."eshop_discount_codes";
 	foreach($etable as $table){
 		if ($wpdb->get_var("show tables like '$table'") == $table) {
 			//delete it
@@ -102,7 +103,6 @@ if(isset($_POST['delete'])){
 	foreach( $allposts as $postinfo) {
 		delete_post_meta($postinfo->ID, '_Sku');
 		delete_post_meta($postinfo->ID, '_Product Description');
-		delete_post_meta($postinfo->ID, '_Product Download');
 		delete_post_meta($postinfo->ID, '_Shipping Rate');
 		delete_post_meta($postinfo->ID, '_Featured Product');
 		delete_post_meta($postinfo->ID, '_Stock Available');
@@ -112,13 +112,13 @@ if(isset($_POST['delete'])){
 		for($i=1;$i<=$numoptions;$i++){
 			delete_post_meta($postinfo->ID,'_Option '.$i);
 			delete_post_meta($postinfo->ID,'_Price '.$i);
+			delete_post_meta($postinfo->ID,'_Download '.$i);
 		}
 	}
 	$allposts = get_posts();
 		foreach( $allposts as $postinfo) {
 			delete_post_meta($postinfo->ID, '_Sku');
 			delete_post_meta($postinfo->ID, '_Product Description');
-			delete_post_meta($postinfo->ID, '_Product Download');
 			delete_post_meta($postinfo->ID, '_Shipping Rate');
 			delete_post_meta($postinfo->ID, '_Featured Product');
 			delete_post_meta($postinfo->ID, '_Stock Available');
@@ -128,6 +128,7 @@ if(isset($_POST['delete'])){
 			for($i=1;$i<=$numoptions;$i++){
 				delete_post_meta($postinfo->ID,'_Option '.$i);
 				delete_post_meta($postinfo->ID,'_Price '.$i);
+				delete_post_meta($postinfo->ID,'_Download '.$i);
 			}
 	}
 	echo '<li>'.__('Product Information - deleted','eshop').'</li>';

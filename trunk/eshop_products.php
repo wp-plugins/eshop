@@ -86,7 +86,7 @@ function eshop_products_manager() {
 			}
 		}
 		?>	
-		<table id="listing" summary="<?php _e('product listin','eshop'); ?>g">
+		<table id="listing" summary="<?php _e('Product listing','eshop'); ?>">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -106,15 +106,17 @@ function eshop_products_manager() {
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				//get download file title
-				if($grabit['_Product Download']==''){
-					$pdown='No';
-				}else{
-					$id=$grabit['_Product Download'];
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
-
-					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
+				$pdown='';
+				//check if downloadable product
+				for($i=1;$i<=get_option('eshop_options_num');$i++){
+					if($grabit["_Download ".$i]!=''){
+						$dltable=$wpdb->prefix.'eshop_downloads';
+						$fileid=$grabit["_Download ".$i];
+						$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
+						$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+					}
 				}
+				if($pdown=='') $pdown='No';
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
@@ -155,14 +157,9 @@ function eshop_products_manager() {
 				if($x==1){
 					echo '<p>'.__('Not available.','eshop').'</p>';
 				}
-
 				echo '</td>'."\n";
-
-
 				echo '</tr>'."\n";
 			}
-
-
 			?>
 		</tbody>
 		</table>
@@ -337,16 +334,19 @@ function eshop_products_manager() {
 			if($grabit['_Price 1']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
+				$getid=$grabit['id'];
 				//get download file title
-				if($grabit['_Product Download']==''){
-					$pdown='No';
-				}else{
-					$id=$grabit['_Product Download'];
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$dlname=$wpdb->get_var("Select title From $dltable where id='$id' limit 1");
-
-					$pdown='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$id.'">'.$dlname.'</a>';
+				$pdown='';
+				//check if downloadable product
+				for($i=1;$i<=get_option('eshop_options_num');$i++){
+					if($grabit["_Download ".$i]!=''){
+						$dltable=$wpdb->prefix.'eshop_downloads';
+						$fileid=$grabit["_Download ".$i];
+						$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
+						$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+					}
 				}
+				if($pdown=='') $pdown='No';
 				if($ptitle->post_title=='')
 					$posttitle=__('(no title)');
 				else
@@ -355,28 +355,27 @@ function eshop_products_manager() {
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
+				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$getid.'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$grabit['_Shipping Rate'].'</td>';
 				if($pdown=='No'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
-					$pid=$grabit['id'];
-					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
+					$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
 					if($grabit['_Stock Available']=='No'){
 						$available='No';
 					}elseif($grabit['_Stock Available']=='Yes' && $available==''){
 						$available=__('not set','eshop');
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
-					$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$pid limit 1");
+					$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
 					if($purchases==''){
 						$purchases='0';
 					}
 					echo '<td headers="purc sku'.$calt.'">'.$purchases.'</td>';
 				}else{
 					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$id");
+					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$getid");
 					echo '<td headers="stk sku'.$calt.'">n/a</td>';
 					if($row->purchases==''){
 						$row->purchases='0';
@@ -395,7 +394,7 @@ function eshop_products_manager() {
 				}
 				echo '</td>';
 				echo '<td headers="associmg sku'.$calt.'">';
-				$getid=$grabit['id'];
+				
 				$proddataimg=get_post_meta($getid,$eshopprodimg,true);
 
 				$imgs= eshop_get_images($getid);
@@ -424,7 +423,7 @@ function eshop_products_manager() {
 					echo '<p>'.__('Not available.','eshop').'</p>';
 				}
 				echo '</td>';
-				echo '</tr>';
+				echo '</tr>'."\n";
 			}
 		}
 

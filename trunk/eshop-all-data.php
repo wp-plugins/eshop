@@ -48,16 +48,15 @@ foreach($dquery as $drow){
 		$value=$myrow->item_qty * $myrow->item_amt;
 		$total=$total+$value;
 		$itemid=$myrow->item_id;
+		//get download file title
 		//check if downloadable product
-		$post_id=$myrow->post_id;
-		$mtable=$wpdb->prefix.'postmeta';
-		$dlchk= $wpdb->get_var("SELECT meta_value FROM $mtable WHERE meta_key='_Product Download' AND post_id='$post_id'");
-		if($dlchk!='' && $dlchk!='0'){
-			//item is a download
-			$downloadable=__('Yes','eshop');
-		}else{
+		$fileid=$myrow->down_id;
+		if($fileid!=0){
+			$dltable=$wpdb->prefix.'eshop_downloads';
+			$downloadable=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");
+		}else
 			$downloadable=__('No','eshop');
-		}
+		
 		// add in a check if postage here as well as a link to the product
 		if($itemid=='postage'){
 			$showit=__('Shipping','eshop');

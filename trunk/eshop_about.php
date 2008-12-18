@@ -98,7 +98,7 @@ update_option('eshop_first_time','no');
   <li><a href="http://www.mealldubh.org">John McCreesh</a> - for the additional page lisitng enhancement.</li>
   <li><a href="http://green-beast.com/">Mike Cherim</a> - design and layout, plus the style and templates pages.</li>
   <li><a href="http://www.blackwidows.co.uk/">Mel Pedley</a> - design and layout, and proof reading at various stages.</li>
-
+  <li><a href="http://4visions.nl/">Allard van Hagen</a> (aka RavanH) - help with Wordpress MU coding and general bug hunting. </li>
   </ul>
 </div>
 </div>
