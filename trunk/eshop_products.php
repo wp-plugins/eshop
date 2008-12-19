@@ -317,6 +317,7 @@ function eshop_products_manager() {
 		<thead>
 		<tr>
 		<th id="sku"><?php _e('Sku','eshop'); ?></th>
+		<th id="ids"><?php _e('ID','eshop'); ?></th>
 		<th id="page"><?php _e('Page','eshop'); ?></th>
 		<th id="desc"><?php _e('Description','eshop'); ?></th>
 		<th id="down"><abbr title="<?php _e('Downloads','eshop'); ?>"><?php _e('DL','eshop'); ?></abbr></th>
@@ -355,7 +356,8 @@ function eshop_products_manager() {
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$getid.'">'.$posttitle.'</a></td>';
+				echo '<td headers="ids sku'.$calt.'">'.$getid.'</td>';
+				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$getid.'" title="id: '.$getid.'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$grabit['_Shipping Rate'].'</td>';

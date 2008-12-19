@@ -513,13 +513,10 @@ if ($add_field) {
 
 $table = $wpdb->prefix . "eshop_order_items";
 $tablefields = $wpdb->get_results("DESCRIBE {$table}");
-$add_field = TRUE;
 foreach ($tablefields as $tablefield) {
-    if(strtolower($tablefield->Field)=='down-id') {
-        $add_field = FALSE;
-    }
+     $add_field[]= $tablefield->Field;
 }
-if ($add_field) {
+if(!in_array('down_id',$add_field)) {
     $sql="ALTER TABLE `".$table."` ADD `down_id` int(11) NOT NULL default '0'";
     $wpdb->query($sql);
 }
