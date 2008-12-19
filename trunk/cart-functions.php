@@ -74,7 +74,7 @@ if (!function_exists('display_cart')) {
 			$disc_applied='';
 			if(is_discountable(calculate_total())>0){
 				$discount=is_discountable(calculate_total());
-				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
+				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
 			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 				

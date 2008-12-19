@@ -10,7 +10,7 @@ An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-= New features for 2.12.0 =
+= New features for 2.12.x =
 
 Discount codes can be offered, offering a percentage discount, or free shipping. They can be limited by date, or by number of uses.
 
@@ -45,6 +45,10 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.12.1
+
+* fixes bug in cart when shop wide discount was set.
 
 Version 2.12.0
 
