@@ -1,0 +1,4 @@
+AuthUserFile .htpasswd
+AuthName "eShop Downloads"
+AuthType Basic
+require valid-user
