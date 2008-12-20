@@ -4,11 +4,14 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.12.2
+Stable tag: 2.12.3
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
+= New for 2.12.3 =
+
+eShop download products are now checked against allowed quota in WPMU
 
 = New features for 2.12.x =
 
@@ -45,6 +48,10 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 2.12.2
+
+* downloads are now part of WPMU quota settings.
 
 Version 2.12.2
 
