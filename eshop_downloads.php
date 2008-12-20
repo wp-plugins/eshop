@@ -48,6 +48,10 @@ function eshop_downloads_manager() {
 		$error='';
 		$new_name = "";
 		if($_POST['title']!=''){
+			if(function_exists('check_upload_size')){
+				//for MU
+				check_upload_size($_FILES["upfile"]);
+			}
 			$file_name = $_FILES["upfile"]["name"];
 			if(trim($_FILES["upfile"]["name"]) == "") {
 				$error.="<p>".__('No file indicated','eshop')."</p>";
@@ -372,7 +376,13 @@ function eshop_downloads_manager() {
 		?>
 			<div class="wrap">
 			<h2><?php _e('Upload a File','eshop'); ?></h2>
-			<p><?php _e('Use this to upload your local file. Max file size is ','eshop'); echo ini_get("upload_max_filesize"); ?></p>
+			<?php
+			$eshopmaxfilesize=ini_get("upload_max_filesize");
+			//if mu use this
+			if(function_exists('check_upload_size'))
+				$eshopmaxfilesize=eshop_read_filesize(1024 * get_site_option( 'fileupload_maxk', 1500 ));
+			?>
+			<p><?php _e('Use this to upload your local file. Max file size is ','eshop'); echo $eshopmaxfilesize; ?></p>
 			<form action="" method="post" id="eshopup" enctype="multipart/form-data">
 			<fieldset><legend><?php _e('Upload','eshop'); ?></legend>
 				<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $eshopmaxupload; ?>" />
