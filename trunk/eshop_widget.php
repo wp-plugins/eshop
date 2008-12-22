@@ -1,5 +1,6 @@
 <?php
 function eshop_widget($args) {
+	global $blog_id;
 	extract($args);
 	$options = get_option("eshop_widget");
 	if (!is_array( $options )){
@@ -8,11 +9,11 @@ function eshop_widget($args) {
 	echo $before_widget;
 	echo $before_title.$options['title'].$after_title;
 	$eshopsize=0;
-	if(isset($_SESSION['shopcart'])){
-		$eshopsize=sizeof($_SESSION['shopcart']);
+	if(isset($_SESSION['shopcart'.$blog_id])){
+		$eshopsize=sizeof($_SESSION['shopcart'.$blog_id]);
 	}
 	echo '<p class="eshopwidget"><span>'.$eshopsize.'</span> ',plural($eshopsize, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
-	if(isset($_SESSION['shopcart'])){
+	if(isset($_SESSION['shopcart'.$blog_id])){
 		echo '<br /><a href="'.get_permalink(get_option('eshop_cart')).'">'.__('View Cart','eshop').'</a>';
 		echo '<br /><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('Checkout','eshop').'</a>';
 	}

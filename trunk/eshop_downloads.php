@@ -28,7 +28,24 @@ function eshop_check_brokenlink($file){
 	fclose($file_exists);
 	return false;
 }
-
+function eshop_contains_files(){
+	global $wpdb;
+	$contains='';
+	$table = $wpdb->prefix ."eshop_downloads";
+	$rows=$wpdb->get_results("SELECT files FROM $table");
+	foreach($rows as $row){
+		$indir[]=$row->files;
+	}
+	if ($handle = opendir(eshop_download_directory())) {
+		while (false !== ($file = readdir($handle))) {
+			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != ".htpasswd" && !in_array($file,$indir)) {
+				$contains[]=$file;
+			}
+		}
+		closedir($handle);
+	}
+	return $contains;
+}
 
 function eshop_downloads_manager() {
 	global $wpdb;
@@ -124,6 +141,16 @@ function eshop_downloads_manager() {
 		}
 	}
 	
+	if(isset($_GET['eshop_orphan'])){
+		if(is_array(eshop_contains_files())){
+			foreach(eshop_contains_files() as $filename){
+				$file=$wpdb->escape($filename);
+				list($title, $ext) = split('[.]', $filename);
+				$title=$wpdb->escape($filename);
+				$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$title',NOW(),'$file')");
+			}
+		}
+	}
 	
 	if(isset($_GET['edit'])){
 		$id=$wpdb->escape($_GET['edit']);
@@ -335,6 +362,24 @@ function eshop_downloads_manager() {
 		 </tbody>
 		</table>
 	<?php
+	//check for downloads that were uploaded via FTP.
+	if(is_array(eshop_contains_files())){
+		?>
+		<div class="wrap">
+		<h2><?php _e('Unknown Download Files','eshop'); ?></h2>
+		<ul>
+		<?php
+		foreach(eshop_contains_files() as $contains){
+			echo '<li>'.$contains.'</li>';
+		}
+		?>
+		</ul>
+		<p><a href="<?php echo wp_specialchars($_SERVER['REQUEST_URI']).'&amp;eshop_orphan'; ?>"><?php _e('Add all unknown download files','eshop'); ?></a></p>
+		</div>
+		<?php
+	}
+	
+	
 	//fix the uri for pagination?
 	//$_SERVER['REQUEST_URI']= preg_replace('/&edit=.*/','',$_SERVER['REQUEST_URI']);
 	   //paginate
@@ -372,7 +417,6 @@ function eshop_downloads_manager() {
 		}else{
 		// only displayed if the directory is writable to.
 		$eshopmaxupload=ini_get("upload_max_filesize")*1048576;
-
 		?>
 			<div class="wrap">
 			<h2><?php _e('Upload a File','eshop'); ?></h2>
@@ -398,7 +442,6 @@ function eshop_downloads_manager() {
 				  <p class="submit"><input type="submit" name="up" value="<?php _e('Upload File','eshop'); ?>" class="button" /></p>
 			</form>
 		</div>
-
 		<?php
 		}
 	}

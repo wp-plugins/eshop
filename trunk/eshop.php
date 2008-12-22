@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.12.3');
+define('ESHOP_VERSION', '2.12.4');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.12.3
+Version: 2.12.4
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -29,13 +29,13 @@ Author URI: http://quirm.net/
 */
 
 load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
-if(!isset($_SESSION['shopcart'])) {
+if(!isset($_SESSION['shopcart'.$blog_id])) {
   session_start();
-  $setsession=$_SESSION['shopcart'];
+  $setsession=$_SESSION['shopcart'.$blog_id];
 
 }
 //if(!session_is_registered('shopcart')){
-//	$set=$_SESSION['shopcart'];
+//	$set=$_SESSION['shopcart'.$blog_id];
 //}
 /*access level : default of 7 is for editors, change to 8 for administrators.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -68,18 +68,19 @@ if (!function_exists('eshop_admin')) {
 			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$eshoplevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
 			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$eshoplevel, basename('eshop_settings.php'),'eshop_admin_settings');
       		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),$eshoplevel, basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+      		add_action( "admin_print_scripts-$myeshopjs", 'eshop_js_admin_head' );
+
       	}        
     }
 }
-//test
-	if (!function_exists('eshop_admin_uninstall')) {
-		/**
-		 * display the uninstall page.
-		 */
-		 function eshop_admin_uninstall() {
-			 include 'eshop_uninstall.php';
-		 }
-	}
+if (!function_exists('eshop_admin_uninstall')) {
+	/**
+	 * display the uninstall page.
+	 */
+	 function eshop_admin_uninstall() {
+		 include 'eshop_uninstall.php';
+	 }
+}
 //
 if (!function_exists('eshop_admin_help')) {
     /**
@@ -362,8 +363,8 @@ if (!function_exists('eshop_admin_head')) {
      * javascript functions & stylesheet to be included in the ADMIN WP head
      */
     function eshop_admin_head() {
-        echo '   <link title="eShop Admin Styles" rel="stylesheet" href="' . get_bloginfo('url') . '/wp-content/plugins/eshop/eshop.css" type="text/css" media="screen" />'."\n";
-        echo '   <link title="eShop Print Styles" rel="stylesheet" href="' . get_bloginfo('url') . '/wp-content/plugins/eshop/eshop-print.css" type="text/css" media="print" />'."\n";
+        echo '   <link title="eShop Admin Styles" rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop.css" type="text/css" media="screen" />'."\n";
+        echo '   <link title="eShop Print Styles" rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop-print.css" type="text/css" media="print" />'."\n";
 		echo '   <script type="text/javascript">
      //<![CDATA[
       function checkedAll (id, checked) {
@@ -374,7 +375,7 @@ if (!function_exists('eshop_admin_head')) {
       }
     //]]> 
     </script>'."\n";
-    }
+	}
 }
 if (!function_exists('eshop_wp_head')) {
     /**

@@ -569,38 +569,38 @@ $post_date_gmt =gmdate("Y-m-d H:i:s");
 $num=0;
 $pages[$num]['name'] = 'shopping-cart';
 $pages[$num]['title'] = 'Shopping Cart';
-$pages[$num]['tag'] = '[eshop_show_cart]';
+$pages[$num]['tag'] = '[eshop_show_cart';
 $pages[$num]['option'] = 'eshop_cart';
 
 $num++;
 $pages[$num]['name'] = 'checkout';
 $pages[$num]['title'] = 'Checkout';
-$pages[$num]['tag'] = '[eshop_show_checkout]';
+$pages[$num]['tag'] = '[eshop_show_checkout';
 $pages[$num]['option'] = 'eshop_checkout';
 
 $num++;
 $pages[$num]['name'] = 'thank-you';
 $pages[$num]['title'] = 'Thank You for your order';
-$pages[$num]['tag'] = '[eshop_show_success]';
+$pages[$num]['tag'] = '[eshop_show_success';
 $pages[$num]['option'] = 'eshop_cart_success';
 
 $num++;
 $pages[$num]['name'] = 'cancelled-order';
 $pages[$num]['title'] = 'Cancelled Order';
-$pages[$num]['tag'] = '[eshop_show_cancel]';
+$pages[$num]['tag'] = '[eshop_show_cancel';
 $pages[$num]['option'] = 'eshop_cart_cancel';
 
 $num++;
 $pages[$num]['name'] = 'shipping-rates';
 $pages[$num]['title'] = 'Shipping Rates';
-$pages[$num]['tag'] = '[eshop_show_shipping]';
+$pages[$num]['tag'] = '[eshop_show_shipping';
 $pages[$num]['option'] = 'eshop_cart_shipping';
 $pages[$num]['top'] = 'yes';
 
 $num++;
 $pages[$num]['name'] = 'downloads';
 $pages[$num]['title'] = 'Downloads';
-$pages[$num]['tag'] = '[eshop_show_downloads]';
+$pages[$num]['tag'] = '[eshop_show_downloads';
 $pages[$num]['option'] = 'eshop_show_downloads';
 $pages[$num]['top'] = 'yes';
 
@@ -609,7 +609,7 @@ $i = 0;
 $post_parent = 0;
 $qtable=$wpdb->prefix . "posts";
 foreach($pages as $page) {
-	$check_page = $wpdb->get_row("SELECT * FROM $qtable WHERE `post_content` LIKE '%".$page['tag']."%' LIMIT 1",ARRAY_A);
+	$check_page = $wpdb->get_row("SELECT * FROM $qtable WHERE post_type='page' && `post_content` LIKE '%".$page['tag']."%' LIMIT 1",ARRAY_A);
 	if($check_page == null){
 		if($i == 0){
 			$post_parent = 0;
@@ -626,7 +626,7 @@ foreach($pages as $page) {
 		}else{
 			$pagepublish='static';
 		}
-
+		$page['tag']=$page['tag'].']';
 		$sql ="INSERT INTO $qtable
 		(post_author, post_date, post_date_gmt, post_content, post_content_filtered, post_title, post_excerpt,  post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_parent, menu_order, post_type)
 		VALUES
@@ -641,6 +641,8 @@ foreach($pages as $page) {
 		update_option($page['option'],  $post_id);
 		$newpages = true;
 		$i++;
+	}else{
+	  update_option($page['option'],  $check_page['ID']);
 	}
 }
 if($newpages == true){

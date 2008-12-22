@@ -4,24 +4,28 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.12.3
+Stable tag: 2.12.4
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
+= New for 2.12.4 =
+
+* Required upgrade for WPMU (fixes cross site cart bug)
+* for WP users uploading large files - upload via FTP to the correct directory with no need to upload a small file via eShop.
+
 = New for 2.12.3 =
 
-eShop download products are now checked against allowed quota in WPMU
+* eShop download products are now checked against allowed quota in WPMU
 
 = New features for 2.12.x =
 
-Discount codes can be offered, offering a percentage discount, or free shipping. They can be limited by date, or by number of uses.
+* Discount codes can be offered, offering a percentage discount, or free shipping. They can be limited by date, or by number of uses.
+* Downloadable product options per product (e.g. all tracks off one album, or the same track in different formats).
+* eShop Stats and Order pages tidied up.
 
-Downloadable product options per product (e.g. all tracks off one album, or the same track in different formats).
 
-eShop Stats and Order pages tidied up.
-
-eShop features include:
+= eShop features include: =
 
 * Use Wordpress pages, or posts, to create products
 * Various methods now available for listing multiple products, with add to cart form,  on a single page
