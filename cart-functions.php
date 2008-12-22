@@ -5,12 +5,12 @@ if ('cart-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
 if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
 		//The cart display.
-		global $wpdb;
+		global $wpdb, $blog_id;
 		$echo ='';
 		$check=0;
 		$tempshiparray=array();
 		//this checks for an empty cart, may not be required but leaving in just in case.
-		foreach ($_SESSION['shopcart'] as $productid => $opt){
+		foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 			//foreach($opt as $option=>$qty){
 			if(is_array($opt)){
 				foreach($opt as $qty){
@@ -37,7 +37,7 @@ if (!function_exists('display_cart')) {
 			$calt=0;
 			$shipping=0;
 			$currsymbol=get_option('eshop_currency_symbol');
-			foreach ($_SESSION['shopcart'] as $productid => $opt){
+			foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 				if(is_array($opt)){
 					$key=$opt['option'];
 					$calt++;
@@ -142,9 +142,9 @@ if (!function_exists('display_cart')) {
 				$echo.='</th>
 				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
 				</tr>';
-				$_SESSION['shipping']=$shipping;
+				$_SESSION['shipping'.$blog_id]=$shipping;
 				$final_price=$sub_total+$shipping;
-				$_SESSION['final_price']=$final_price;
+				$_SESSION['final_price'.$blog_id]=$final_price;
 				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
 			}
 			$echo.= "</tbody></table>\n";
@@ -165,15 +165,16 @@ if (!function_exists('display_cart')) {
 		if(get_option('eshop_status')!='live'){
 			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
 		}
-		if(valid_eshop_discount_code($_SESSION['eshop_discount'])){
-			$echo .= '<p class="eshop_dcode">'.sprintf(__('Discount Code <span>%s</span> has been applied to your cart.','eshop'),$_SESSION['eshop_discount']).'</p>'."\n";
+		if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
+			$echo .= '<p class="eshop_dcode">'.sprintf(__('Discount Code <span>%s</span> has been applied to your cart.','eshop'),$_SESSION['eshop_discount'.$blog_id]).'</p>'."\n";
 		}
 		return $echo;
 	}
 }
 if (!function_exists('calculate_price')) {
 	function calculate_price(){
-		$thecart=$_SESSION['shopcart'];
+		global $blog_id;
+		$thecart=$_SESSION['shopcart'.$blog_id];
 		// sum total price for all items in shopping shopcart
 		$price = 0.0;
 
@@ -187,7 +188,8 @@ if (!function_exists('calculate_price')) {
 }
 if (!function_exists('calculate_total')) {
 	function calculate_total(){
-		$thecart=$_SESSION['shopcart'];
+		global $blog_id;
+		$thecart=$_SESSION['shopcart'.$blog_id];
 		// sum total price for all items in shopping shopcart
 		$price = 0;
 		if(is_array($thecart)){
@@ -200,7 +202,8 @@ if (!function_exists('calculate_total')) {
 }
 if (!function_exists('calculate_items')) {
 	function calculate_items(){
-		$thecart=$_SESSION['shopcart'];
+		global $blog_id;
+		$thecart=$_SESSION['shopcart'.$blog_id];
 		// sum total items in shopping shopcart
 		$items = 0;
 		if(is_array($thecart))	{
@@ -217,10 +220,11 @@ if (!function_exists('calculate_items')) {
 }
 if (!function_exists('is_discountable')) {
 	function is_discountable($total){
+		global $blog_id;
 		$percent=0;
 		//check for 
 		if(eshop_discount_codes_check()){
-			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('discount')>0)
 				return apply_eshop_discount_code('discount');
 			
@@ -243,8 +247,9 @@ if (!function_exists('is_discountable')) {
 
 if (!function_exists('is_shipfree')) {
 	function is_shipfree($total){
+		global $blog_id;
 		if(eshop_discount_codes_check()){
-			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('shipping'))
 				return true;
 		}
@@ -260,14 +265,14 @@ if (!function_exists('is_shipfree')) {
 // discount/promotional codes
 if (!function_exists('apply_eshop_discount_code')) {
 	function apply_eshop_discount_code($disc){
-		global $wpdb;
+		global $wpdb, $blog_id;
 		$now=date('Y-m-d');
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		if(eshop_discount_codes_check()){
-			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if(!$chkcode)
 				return false;
-			$grabthis=$wpdb->escape($_SESSION['eshop_discount']);
+			$grabthis=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
 			$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$grabthis'");
 			if($disc=='shipping'){
 				switch($row->dtype){
@@ -387,9 +392,8 @@ if (!function_exists('checkPhone')) {
 if (!function_exists('orderhandle')) {
 	function orderhandle($_POST,$checkid){
 		//This function puts the order into the db.
-		global $wpdb;
+		global $wpdb, $blog_id;
 		//$wpdb->show_errors();
-
 		if (get_magic_quotes_gpc()) {
 			$_POST=stripslashes_array($_POST);
 		}
@@ -475,7 +479,7 @@ if (!function_exists('orderhandle')) {
 			$i++;
 		}
 		//are there any downloads?
-		$chkdownloads=$_SESSION['shopcart'];
+		$chkdownloads=$_SESSION['shopcart'.$blog_id];
 		foreach ($chkdownloads as $productid => $opt){
 			$edown=split(' ',$opt['option']);
 			$dlchk=get_post_meta($opt['postid'],'_Download '.$edown[1], true);
@@ -520,8 +524,8 @@ if (!function_exists('orderhandle')) {
 		//update the discount codes used, and remove from remaining
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		if(eshop_discount_codes_check()){
-			if(valid_eshop_discount_code($_SESSION['eshop_discount'])){
-				$discvalid=$wpdb->escape($_SESSION['eshop_discount']);
+			if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
+				$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
 				$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
 				
 				$remaining=$wpdb->get_var("SELECT remain FROM $disctable where disccode='$discvalid' && dtype!='2' && dtype!='5' limit 1");
@@ -865,7 +869,8 @@ if (!function_exists('eshop_show_zones')) {
 
 if (!function_exists('eshop_add_excludes')) {
 	function eshop_add_excludes($excludes) {
-		if(!isset($_SESSION['shopcart'])){
+		global $blog_id;
+		if(!isset($_SESSION['shopcart'.$blog_id])){
 			$excludes[]=get_option('eshop_cart');
 			$excludes[]=get_option('eshop_checkout');
 		}

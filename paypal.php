@@ -62,8 +62,8 @@ switch ($_GET['action']) {
 		header('Pragma: no-cache'); //HTTP/1.0
 
 		//enters all the data into the database
-		$token = uniqid(md5($_SESSION['date']), true);
-		$checkid=md5(get_option('eshop_business').$token.number_format($_SESSION['final_price'],2));
+		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
+		$checkid=md5(get_option('eshop_business').$token.number_format($_SESSION['final_price'.$blog_id],2));
 		//
 		orderhandle($_POST,$checkid);
 		$_POST['custom']=$token;
@@ -97,7 +97,7 @@ switch ($_GET['action']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite;
+		global $wp_rewrite,$blog_id;
 		$p->add_field('business', get_option('eshop_business'));
 		if(get_option('eshop_cart_success')!=''){
 			if( $wp_rewrite->using_permalinks()){
@@ -133,12 +133,12 @@ switch ($_GET['action']) {
 
 	//	$p->add_field('notify_url', $this_script.'/wp-content/plugins/eshop/paypal.php?action=ipn');
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'],2));
+		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(eshop_discount_codes_check()){
-					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount']);
+					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 					if($chkcode && apply_eshop_discount_code('discount')>0){
 						$discount=apply_eshop_discount_code('discount')/100;
 						$value = number_format(round($value-($value * $discount), 2),2);

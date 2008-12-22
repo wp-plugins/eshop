@@ -7,7 +7,7 @@ global $wpdb;
 
 if (!function_exists('eshopShowform')) {
 	function eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_country){
-	global $wpdb;
+	global $wpdb, $blog_id;
 	if(get_option('eshop_shipping_zone')=='country'){
 		$creqd='<span class="reqd">*</span>';
 		$sreqd='';
@@ -131,7 +131,7 @@ if (!function_exists('eshopShowform')) {
 				$echo.="<option value=\"$code\">$label</option>";
 			}
 		}
-		$final_price=number_format($_SESSION['final_price'], 2);
+		$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
 		$echo .= '
 		</select></label><br />
 		 <label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
@@ -153,7 +153,7 @@ if (!function_exists('eshopShowform')) {
 	}
 	$x=0;
 	$discounttotal=0;
-	foreach ($_SESSION['shopcart'] as $productid => $opt){
+	foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 		$x++;
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
 	//	$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
@@ -194,6 +194,7 @@ if (!function_exists('eshopShowform')) {
 }
 if (!function_exists('eshop_checkout')) {
  	function eshop_checkout($_POST){
+ 		global $blog_id;
 		$echoit='';
 		include_once(ABSPATH.'wp-includes/wp-db.php');
 		include_once ABSPATH.PLUGINDIR."/eshop/cart-functions.php";
@@ -226,15 +227,15 @@ if (!function_exists('eshop_checkout')) {
 
 		include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'/index.php');
 
-		if(isset($_SESSION['shopcart'])){
-			$shopcart=$_SESSION['shopcart'];
-			$numberofproducts=sizeof($_SESSION['shopcart']);
+		if(isset($_SESSION['shopcart'.$blog_id])){
+			$shopcart=$_SESSION['shopcart'.$blog_id];
+			$numberofproducts=sizeof($_SESSION['shopcart'.$blog_id]);
 			$productsandqty='';
-			while (list ($product, $amount) = each ($_SESSION['shopcart'])){
+			while (list ($product, $amount) = each ($_SESSION['shopcart'.$blog_id])){
 				$productsandqty.=" $product-$amount";
 				$productsandqty=trim($productsandqty);
 			}
-			$keys = array_keys($_SESSION['shopcart']);
+			$keys = array_keys($_SESSION['shopcart'.$blog_id]);
 			$productidkeys=implode(",", $keys);
 			$productidkeys=trim($productidkeys);
 			//reqd for shipping - finds the correct state for working out shipping, and set things up for later usage.
@@ -304,7 +305,7 @@ if (!function_exists('eshop_checkout')) {
 		}
 		//
 		$shiparray=array();
-		foreach ($_SESSION['shopcart'] as $productid => $opt){
+		foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 			if(is_array($opt)){
 				switch(get_option('eshop_shipping')){
 				case '1'://( per quantity of 1, prices reduced for additional items )
@@ -327,17 +328,17 @@ if (!function_exists('eshop_checkout')) {
 		}
 		//need to check the discount codes here as well:
 		if(eshop_discount_codes_check()){
-			$_SESSION['eshop_discount']='';
-			unset($_SESSION['eshop_discount']);
+			$_SESSION['eshop_discount'.$blog_id]='';
+			unset($_SESSION['eshop_discount'.$blog_id]);
 			if(isset($_POST['eshop_discount']) && $_POST['eshop_discount']!=''){
 				$chkcode=valid_eshop_discount_code($_POST['eshop_discount']);
 				if($chkcode)
-					$_SESSION['eshop_discount']=$_POST['eshop_discount'];
+					$_SESSION['eshop_discount'.$blog_id]=$_POST['eshop_discount'];
 			}
 		}
 		//show the cart
 		if((isset($_GET['action']) && $_GET['action']!='redirect')||!isset($_GET['action'])){
-			$echoit.= display_cart($_SESSION['shopcart'], false,get_option('eshop_checkout'),$pzone,$shiparray);
+			$echoit.= display_cart($_SESSION['shopcart'.$blog_id], false,get_option('eshop_checkout'),$pzone,$shiparray);
 		}
 	}
 
@@ -411,14 +412,14 @@ if (!function_exists('eshop_checkout')) {
 				}
 		}
 		if(eshop_discount_codes_check()){
-			$_SESSION['eshop_discount']='';
-			unset($_SESSION['eshop_discount']);
+			$_SESSION['eshop_discount'.$blog_id]='';
+			unset($_SESSION['eshop_discount'.$blog_id]);
 			if(isset($_POST['eshop_discount']) && $_POST['eshop_discount']!=''){
 				$chkcode=valid_eshop_discount_code($_POST['eshop_discount']);
 				if(!$chkcode)
 					$error.= '<li>'.__('<strong>Discount Code</strong> - is not valid.','eshop').'</li>';
 				else
-					$_SESSION['eshop_discount']=$_POST['eshop_discount'];
+					$_SESSION['eshop_discount'.$blog_id]=$_POST['eshop_discount'];
 			}
 		}
 
@@ -451,14 +452,14 @@ if (!function_exists('eshop_checkout')) {
 				$echoit.= "<div class=\"hr\"></div><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
 				// create a custom id, and shove details in database
 				$date=date('YmdHis');
-				$_SESSION['date']=$date;
-				$fprice=number_format($_SESSION['final_price'], 2);
+				$_SESSION['date'.$blog_id]=$date;
+				$fprice=number_format($_SESSION['final_price'.$blog_id], 2);
 				$_POST['amount']=$fprice;
 				$_POST['custom']=$date;
-				$_POST['numberofproducts']=sizeof($_SESSION['shopcart']);
+				$_POST['numberofproducts']=sizeof($_SESSION['shopcart'.$blog_id]);
 				//shipping - replicated here, but currently easier than a function
 				$shiparray=array();
-				foreach ($_SESSION['shopcart'] as $productid => $opt){
+				foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 					if(is_array($opt)){
 						switch(get_option('eshop_shipping')){
 						case '1'://( per quantity of 1, prices reduced for additional items )
@@ -598,27 +599,27 @@ if (!function_exists('eshop_checkout')) {
 				$echoit.= "\n";
 			}
 			//add to a session to store address:
-			$_SESSION['addy']['first_name']=$_POST['first_name'];
-			$_SESSION['addy']['last_name']=$_POST['last_name'];
-			$_SESSION['addy']['company']=$_POST['company'];
-			$_SESSION['addy']['phone']=$_POST['phone'];
-			$_SESSION['addy']['reference']=$_POST['reference'];
-			$_SESSION['addy']['email']=$_POST['email'];
-			$_SESSION['addy']['address1']=$_POST['address1'];
-			$_SESSION['addy']['address2']=$_POST['address2'];
-			$_SESSION['addy']['city']=$_POST['city'];
-			$_SESSION['addy']['country']=$_POST['country'];
-			$_SESSION['addy']['state']=$_POST['state'];
-			$_SESSION['addy']['zip']=$_POST['zip'];
-			$_SESSION['addy']['ship_name']=$_POST['ship_name'];
-			$_SESSION['addy']['ship_company']=$_POST['ship_company'];
-			$_SESSION['addy']['ship_phone']=$_POST['ship_phone'];
-			$_SESSION['addy']['ship_address']=$_POST['ship_address'];
-			$_SESSION['addy']['ship_city']=$_POST['ship_city'];
-			$_SESSION['addy']['ship_country']=$_POST['ship_country'];
-			$_SESSION['addy']['ship_state']=$_POST['ship_state'];
-			$_SESSION['addy']['ship_postcode']=$_POST['ship_postcode'];
-			$_SESSION['addy']['comments']=$_POST['comments'];
+			$_SESSION['addy'.$blog_id]['first_name']=$_POST['first_name'];
+			$_SESSION['addy'.$blog_id]['last_name']=$_POST['last_name'];
+			$_SESSION['addy'.$blog_id]['company']=$_POST['company'];
+			$_SESSION['addy'.$blog_id]['phone']=$_POST['phone'];
+			$_SESSION['addy'.$blog_id]['reference']=$_POST['reference'];
+			$_SESSION['addy'.$blog_id]['email']=$_POST['email'];
+			$_SESSION['addy'.$blog_id]['address1']=$_POST['address1'];
+			$_SESSION['addy'.$blog_id]['address2']=$_POST['address2'];
+			$_SESSION['addy'.$blog_id]['city']=$_POST['city'];
+			$_SESSION['addy'.$blog_id]['country']=$_POST['country'];
+			$_SESSION['addy'.$blog_id]['state']=$_POST['state'];
+			$_SESSION['addy'.$blog_id]['zip']=$_POST['zip'];
+			$_SESSION['addy'.$blog_id]['ship_name']=$_POST['ship_name'];
+			$_SESSION['addy'.$blog_id]['ship_company']=$_POST['ship_company'];
+			$_SESSION['addy'.$blog_id]['ship_phone']=$_POST['ship_phone'];
+			$_SESSION['addy'.$blog_id]['ship_address']=$_POST['ship_address'];
+			$_SESSION['addy'.$blog_id]['ship_city']=$_POST['ship_city'];
+			$_SESSION['addy'.$blog_id]['ship_country']=$_POST['ship_country'];
+			$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_state'];
+			$_SESSION['addy'.$blog_id]['ship_postcode']=$_POST['ship_postcode'];
+			$_SESSION['addy'.$blog_id]['comments']=$_POST['comments'];
 			
 			//grab all the POST variables and store in cookie
 			$array=$_POST;
@@ -631,28 +632,28 @@ if (!function_exists('eshop_checkout')) {
 		}
 	}else{
 		//for first time form usage.
-		if(isset($_SESSION['addy'])){
-			$first_name=$_SESSION['addy']['first_name'];
-			$last_name=$_SESSION['addy']['last_name'];
-			$company=$_SESSION['addy']['company'];
-			$phone=$_SESSION['addy']['phone'];
-			$reference=$_SESSION['addy']['reference'];
-			$email=$_SESSION['addy']['email'];
-			$address1=$_SESSION['addy']['address1'];
-			$address2=$_SESSION['addy']['address2'];
-			$city=$_SESSION['addy']['city'];
-			$country=$_SESSION['addy']['country'];
-			$state=$_SESSION['addy']['state'];
-			$zip=$_SESSION['addy']['zip'];
-			$ship_name=$_SESSION['addy']['ship_name'];
-			$ship_company=$_SESSION['addy']['ship_company'];
-			$ship_phone=$_SESSION['addy']['ship_phone'];
-			$ship_address=$_SESSION['addy']['ship_address'];
-			$ship_city=$_SESSION['addy']['ship_city'];
-			$ship_country=$_SESSION['addy']['ship_country'];
-			$ship_state=$_SESSION['addy']['ship_state'];
-			$ship_postcode=$_SESSION['addy']['ship_postcode'];
-			$comments=$_SESSION['addy']['comments'];
+		if(isset($_SESSION['addy'.$blog_id])){
+			$first_name=$_SESSION['addy'.$blog_id]['first_name'];
+			$last_name=$_SESSION['addy'.$blog_id]['last_name'];
+			$company=$_SESSION['addy'.$blog_id]['company'];
+			$phone=$_SESSION['addy'.$blog_id]['phone'];
+			$reference=$_SESSION['addy'.$blog_id]['reference'];
+			$email=$_SESSION['addy'.$blog_id]['email'];
+			$address1=$_SESSION['addy'.$blog_id]['address1'];
+			$address2=$_SESSION['addy'.$blog_id]['address2'];
+			$city=$_SESSION['addy'.$blog_id]['city'];
+			$country=$_SESSION['addy'.$blog_id]['country'];
+			$state=$_SESSION['addy'.$blog_id]['state'];
+			$zip=$_SESSION['addy'.$blog_id]['zip'];
+			$ship_name=$_SESSION['addy'.$blog_id]['ship_name'];
+			$ship_company=$_SESSION['addy'.$blog_id]['ship_company'];
+			$ship_phone=$_SESSION['addy'.$blog_id]['ship_phone'];
+			$ship_address=$_SESSION['addy'.$blog_id]['ship_address'];
+			$ship_city=$_SESSION['addy'.$blog_id]['ship_city'];
+			$ship_country=$_SESSION['addy'.$blog_id]['ship_country'];
+			$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
+			$ship_postcode=$_SESSION['addy'.$blog_id]['ship_postcode'];
+			$comments=$_SESSION['addy'.$blog_id]['comments'];
 		}else{
 			$first_name='';
 			$last_name='';
@@ -689,7 +690,7 @@ if (!function_exists('eshop_checkout')) {
 		$echoit.= eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_country);
 	}
 
-	if(isset($_SESSION['shopcart'])){
+	if(isset($_SESSION['shopcart'.$blog_id])){
 		if($chkerror==0 && !isset($_GET['action'])){
 			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink(get_option('eshop_cart')).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
 		}else{	
