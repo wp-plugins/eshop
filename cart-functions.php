@@ -43,7 +43,36 @@ if (!function_exists('display_cart')) {
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$echo.= "\n<tr".$alt.">";
-					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.stripslashes($opt["pname"]).' ('.$opt['pid'].' : '.stripslashes($opt['item']).')</td>'."\n";
+					/* test image insertion */
+					$eimg='';
+					if(is_numeric(get_option('eshop_image_in_cart'))){
+						$eshopprodimg='_eshop_prod_img';
+						$proddataimg=get_post_meta($opt['postid'],$eshopprodimg,true);
+						$imgs= eshop_get_images($opt['postid'],get_option('eshop_image_in_cart'));
+						$x=1;
+						if(is_array($imgs)){
+							if($proddataimg==''){
+								foreach($imgs as $k=>$v){
+									$x++;
+									$eimg='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'; 
+									break;
+								}
+							}else{
+								foreach($imgs as $k=>$v){
+									if($proddataimg==$v['url']){
+										$x++;
+										$eimg='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'; 
+										break;
+									}
+								}
+							}
+						}
+						if($x==1){
+							$eimg='';
+						}
+					}
+					/* end */
+					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' ('.$opt['pid'].' : '.stripslashes($opt['item']).')</a></td>'."\n";
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod$calt\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
@@ -1125,7 +1154,7 @@ if (!function_exists('eshop_files_directory')) {
 }
 
 if (!function_exists('eshop_get_images')) {
-	function eshop_get_images($pID){
+	function eshop_get_images($pID,$cartsize=''){
 		$attargs = array(
 			'post_type' => 'attachment',
 			'numberposts' => null,
@@ -1149,6 +1178,10 @@ if (!function_exists('eshop_get_images')) {
 				}
 				*/
 				@list($width, $height) = getimagesize($img_url);
+				if($cartsize!='' && is_numeric($cartsize)){
+					$width=round(($width*$cartsize)/100);
+					$height=round(($height*$cartsize)/100);
+				}
 				$echo[$x]['url']=$img_url;
 				$echo[$x]['alt']=apply_filters('the_title', $attachment->post_title);
 				//if there was an error we still want to show the picture!

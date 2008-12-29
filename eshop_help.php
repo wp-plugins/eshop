@@ -159,6 +159,9 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p><strong>Random products to display</strong> - this is the number of random products to display if you utilise the <code>[eshop_random_products]</code> shortcode.</p>
 <p><strong>Department Products to display</strong> - this sets the number of producs to appear per page when you use the <code>[eshop_list_subpages]</code> shortcode.</p>
 
+<h3>Cart Options</h3>
+<p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>
+
 <h3>Sub Pages</h3>
 <p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop).</p>
 
@@ -242,10 +245,21 @@ This is only triggered when someone visits the site.</p>
 <h3>Products</h3>
 <p>This page lists all the products you have entered, along with a few statistics.</p>
 
-
 <h3>Downloads</h3>
 <p>Providing the downloads directory is writable, you can upload files here. These will become available for sale within your eShop.The page lists all available downloadable products (that you have previously uploaded), along with a few statistics.</p>
 <p>As a security measure you are not able to delete a file that is currently available for sale within your eShop.</p>
+<h4>Uploading large files</h4>
+<p>Any files that you FTP to the correct eshop_downloads directory can be added by visiting the <em>Unknown Download Files</em> section on the eshop Downloads page.</p>
+<p>An alternative method is to amend your main wordpress .htaccess file, or amend your sites php.ini. The following are an example set of directives to be added to the htaccess file.</p>
+<pre><code># BEGIN eShop
+php_value upload_max_filesize 100M
+php_value post_max_size 200M
+php_value memory_limit 400M
+php_value max_execution_time 10800
+php_value max_input_time 10800
+php_value session.gc_maxlifetime 10800
+# END eShop</code></pre>
+<p>This is <strong>not</strong> done automatically as which method you can use may be reliant on your hosting company.</p>
 
 <h3>Discount Codes</h3>
 <p>Various options have been created to give a wide variety of discount codes, from single use to unlimited. This can be a set discount, or for free shipping.</p>

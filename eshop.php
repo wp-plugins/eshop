@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.12.4');
+define('ESHOP_VERSION', '2.12.5');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.12.4
+Version: 2.12.5
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -68,11 +68,10 @@ if (!function_exists('eshop_admin')) {
 			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),$eshoplevel, basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
 			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),$eshoplevel, basename('eshop_settings.php'),'eshop_admin_settings');
       		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),$eshoplevel, basename('eshop_uninstall.php'),'eshop_admin_uninstall');
-      		add_action( "admin_print_scripts-$myeshopjs", 'eshop_js_admin_head' );
-
       	}        
     }
 }
+
 if (!function_exists('eshop_admin_uninstall')) {
 	/**
 	 * display the uninstall page.
@@ -411,7 +410,6 @@ add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 //fold the page menu as it is likely to get long...
 //this can be removed in a theme by using remove_filter...
 //add option to make it settable
-add_option('eshop_fold_menu', 'yes');
 
 if(get_option('eshop_fold_menu') == 'yes'){
 	add_filter('wp_list_pages_excludes', 'eshop_fold_menus');

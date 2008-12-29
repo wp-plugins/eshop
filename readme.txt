@@ -4,11 +4,17 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.12.4
+Stable tag: 2.12.5
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
+
+= New for 2.12.5 =
+
+* added ability to add product images to the shopping cart
+* product items in cart now link back to the relevant product page.
+
 = New for 2.12.4 =
 
 * Required upgrade for WPMU (fixes cross site cart bug)

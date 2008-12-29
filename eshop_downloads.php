@@ -198,7 +198,7 @@ function eshop_downloads_manager() {
 				$metakeys[]="meta_key='_Download ".$x."'";
 			}
 			if(sizeof($metakeys)>0)
-				$meta_keys=implode(' OR ',$metakeys). 'AND';
+				$meta_keys='('.implode(' OR ',$metakeys). ') AND';
 			else
 				$meta_keys='';
 			
@@ -324,7 +324,6 @@ function eshop_downloads_manager() {
 		<p><strong><?php _e('Total Downloads:','eshop'); ?> </strong><?php echo $total; ?><br />
 		<strong><?php _e('Total Purchases:','eshop'); ?> </strong><? echo $purchased; ?><br />
 		</p>  
-
 		<table id="listing" summary="<?php _e('download listing','eshop'); ?>">
 		<caption><?php _e('Available downloads','eshop'); ?></caption>
 		<thead>
@@ -343,7 +342,6 @@ function eshop_downloads_manager() {
 		 $calt=0;
 		foreach($myrowres as $row){    
 			$filepath=$dir_upload.$row->files;
-
 		   $size = @filesize($filepath);
 		   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
 		   $calt++;
