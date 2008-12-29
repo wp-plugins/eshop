@@ -33,6 +33,7 @@ add_option('eshop_show_stock','no');
 add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
+add_option('eshop_fold_menu', 'yes');
 
 $table = $wpdb->prefix . "eshop_states";
 if ($wpdb->get_var("show tables like '$table'") != $table) {

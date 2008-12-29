@@ -69,7 +69,12 @@ if(isset($_POST['submit'])){
 		$err.='<li>'.__('Number of download attempts should be numeric, a default of 3 has been applied.','eshop').'</li>';
 		update_option('eshop_downloads_num','3');
 	}
-
+	if(is_numeric($_POST['eshop_image_in_cart']) || $_POST['eshop_image_in_cart']==''){
+		update_option('eshop_image_in_cart',$wpdb->escape($_POST['eshop_image_in_cart']));
+	}else{
+		$err.='<li>'.__('The number entered for the image in the cart must be numeric, a default of 75 has been applied.','eshop').'</li>';
+		update_option('eshop_image_in_cart','75');
+	}
 	if(is_numeric($_POST['eshop_xtra_privacy'])){
 		$ptitle=get_post($_POST['eshop_xtra_privacy']);
 		if($ptitle->post_title!=''){
@@ -377,6 +382,10 @@ echo $result;
 	<label for="eshop_pagelist_num"><?php _e('Department Products to display','eshop'); ?></label><input id="eshop_pagelist_num" name="eshop_pagelist_num" type="text" value="<?php echo get_option('eshop_pagelist_num'); ?>" size="5" /><br />
 </fieldset>
 
+<fieldset><legend><?php _e('Cart Options','eshop'); ?></legend>
+	<label for="eshop_image_in_cart"><?php _e('Percentage size of thumbnail image shown in cart - leave blank to not show the image.','eshop'); ?></label><input id="eshop_image_in_cart" name="eshop_image_in_cart" type="text" value="<?php echo get_option('eshop_image_in_cart'); ?>" size="5" /><br />
+</fieldset>
+
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
 <label for="eshop_fold_menu"><?php _e('Hide sub pages from menu until top level page is visited.','eshop'); ?></label>
 	<select name="eshop_fold_menu" id="eshop_fold_menu">
@@ -469,7 +478,7 @@ echo $result;
 <input type="hidden" name="page_options" value="eshop_method,
 eshop_status,eshop_currency,eshop_location,eshop_business,eshop_from_email,
 eshop_sysemails,eshop_records,eshop_options_num,eshop_currency_symbol,
-eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,eshop_fold_menu,
+eshop_cart_nostock,eshop_sudo_cat,eshop_random_num,eshop_downloads_num, eshop_credits,eshop_fold_menu,eshop_image_in_cart,
 eshop_xtra_help,eshop_xtra_privacy,eshop_stock_control,eshop_show_stock,eshop_cron_email,eshop_cart,eshop_search_img,
 eshop_cart_cancel,eshop_cart_shipping,eshop_cart_success,eshop_checkout,eshop_show_downloads,eshop_downloads_only" />
 
