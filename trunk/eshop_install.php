@@ -26,6 +26,8 @@ add_option('eshop_location','GB');
 add_option('eshop_sudo_cat','1');
 add_option('eshop_shipping', '1');
 add_option('eshop_shipping_zone', 'country');
+add_option('eshop_shipping_state', 'GB');
+
 add_option('eshop_show_zones','no');
 add_option('eshop_credits', 'yes');
 add_option('eshop_stock_control','no');
@@ -36,65 +38,174 @@ add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
 
 $table = $wpdb->prefix . "eshop_states";
+//new for 2.13.0
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.12.9' )
+	$wpdb->query("DROP TABLE $table");
+	
 if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
-		  	code char(2) NOT NULL default '',
+   			id INT NOT NULL AUTO_INCREMENT,
+		  	code char(4) NOT NULL default '',
 			stateName varchar(30) NOT NULL default '',
 			zone tinyint(1) NOT NULL default '0',
-			  PRIMARY KEY  (code),
+			list char(2) NOT NULL default '',
+			  PRIMARY KEY  (id),
 			KEY zone (zone)
 			);";
 	error_log("creating table $table");
 	dbDelta($sql);
-	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone) VALUES  ('AL', 'Alabama', 2),
-	('AZ', 'Arizona', 4),
-	('AR', 'Arkansas', 3),
-	('CA', 'California', 5),
-	('CO', 'Colorado', 4),
-	('CT', 'Connecticut', 1),
-	('DE', 'Delaware', 2),
-	('DC', 'District Of Columbia', 2),
-	('FL', 'Florida', 2),
-	('GA', 'Georgia', 2),
-	('ID', 'Idaho', 4),
-	('IL', 'Illinois', 3),
-	('IN', 'Indiana', 2),
-	('IA', 'Iowa', 3),
-	('KS', 'Kansas', 3),
-	('KY', 'Kentucky', 2),
-	('LA', 'Louisiana', 3),
-	('ME', 'Maine', 1),
-	('MD', 'Maryland', 2),
-	('MA', 'Massachusetts', 1),
-	('MI', 'Michigan', 2),
-	('MN', 'Minnesota', 3),
-	('MS', 'Mississippi', 3),
-	('MO', 'Missouri', 3),
-	('MT', 'Montana', 4),
-	('NE', 'Nebraska', 3),
-	('NV', 'Nevada', 5),
-	('NH', 'New Hampshire', 1),
-	('NJ', 'New Jersey', 2),
-	('NM', 'New Mexico', 4),
-	('NY', 'New York', 2),
-	('NC', 'North Carolina', 2),
-	('ND', 'North Dakota', 3),
-	('OH', 'Ohio', 2),
-	('OK', 'Oklahoma', 3),
-	('OR', 'Oregon', 5),
-	('PA', 'Pennsylvania', 2),
-	('RI', 'Rhode Island', 1),
-	('SC', 'South Carolina', 2),
-	('SD', 'South Dakota', 3),
-	('TN', 'Tennessee', 3),
-	('TX', 'Texas', 3),
-	('UT', 'Utah', 4),
-	('VT', 'Vermont', 1),
-	('VA', 'Virginia', 2),
-	('WA', 'Washington', 5),
-	('WV', 'West Virginia', 2),
-	('WI', 'Wisconsin', 3),
-	('WY', 'Wyoming', 4);");
+	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone,list) VALUES  
+	('AL', 'Alabama', 2,'US'),
+	('AZ', 'Arizona', 4,'US'),
+	('AR', 'Arkansas', 3,'US'),
+	('CA', 'California', 5,'US'),
+	('CO', 'Colorado', 4,'US'),
+	('CT', 'Connecticut', 1,'US'),
+	('DE', 'Delaware', 2,'US'),
+	('DC', 'District Of Columbia', 2,'US'),
+	('FL', 'Florida', 2,'US'),
+	('GA', 'Georgia', 2,'US'),
+	('ID', 'Idaho', 4,'US'),
+	('IL', 'Illinois', 3,'US'),
+	('IN', 'Indiana', 2,'US'),
+	('IA', 'Iowa', 3,'US'),
+	('KS', 'Kansas', 3,'US'),
+	('KY', 'Kentucky', 2,'US'),
+	('LA', 'Louisiana', 3,'US'),
+	('ME', 'Maine', 1,'US'),
+	('MD', 'Maryland', 2,'US'),
+	('MA', 'Massachusetts', 1,'US'),
+	('MI', 'Michigan', 2,'US'),
+	('MN', 'Minnesota', 3,'US'),
+	('MS', 'Mississippi', 3,'US'),
+	('MO', 'Missouri', 3,'US'),
+	('MT', 'Montana', 4,'US'),
+	('NE', 'Nebraska', 3,'US'),
+	('NV', 'Nevada', 5,'US'),
+	('NH', 'New Hampshire', 1,'US'),
+	('NJ', 'New Jersey', 2,'US'),
+	('NM', 'New Mexico', 4,'US'),
+	('NY', 'New York', 2,'US'),
+	('NC', 'North Carolina', 2,'US'),
+	('ND', 'North Dakota', 3,'US'),
+	('OH', 'Ohio', 2,'US'),
+	('OK', 'Oklahoma', 3,'US'),
+	('OR', 'Oregon', 5,'US'),
+	('PA', 'Pennsylvania', 2,'US'),
+	('RI', 'Rhode Island', 1,'US'),
+	('SC', 'South Carolina', 2,'US'),
+	('SD', 'South Dakota', 3,'US'),
+	('TN', 'Tennessee', 3,'US'),
+	('TX', 'Texas', 3,'US'),
+	('UT', 'Utah', 4,'US'),
+	('VT', 'Vermont', 1,'US'),
+	('VA', 'Virginia', 2,'US'),
+	('WA', 'Washington', 5,'US'),
+	('WV', 'West Virginia', 2,'US'),
+	('WI', 'Wisconsin', 3,'US'),
+	('WY', 'Wyoming', 4,'US'),
+	('AB', 'Alberta', 3,'CA'),
+	('BC', 'British Columbia', 3,'CA'),
+	('MB', 'Manitoba', 3,'CA'),
+	('NB', 'New Brunswick', 3,'CA'),
+	('NL', 'Newfoundland & Labrador', 3,'CA'),
+	('NT', 'Northwest Territories', 3,'CA'),
+	('NU', 'Nunavut', 3,'CA'),
+	('NS', 'Nova Scotia', 3,'CA'),
+	('ON', 'Ontario', 3,'CA'),
+	('PE', 'Prince Edward Island', 3,'CA'),
+	('QC', 'Quebec', 3,'CA'),
+	('SK', 'Saskatchewan', 3,'CA'),
+	('YU', 'Yukon', 3,'CA'),
+	('Lond','London', 1,'GB'),
+	('Beds','Bedfordshire', 1,'GB'),
+	('Buck','Buckinghamshire', 1,'GB'),
+	('Camb','Cambridgeshire', 1,'GB'),
+	('Ches','Cheshire', 1,'GB'),
+	('Corn','Cornwall and Isles of Scilly', 1,'GB'),
+	('Cumb','Cumbria', 1,'GB'),
+	('Derb','Derbyshire', 1,'GB'),
+	('Dev','Devon', 1,'GB'),
+	('Dors','Dorset', 1,'GB'),
+	('Durh','Durham', 1,'GB'),
+	('ESus','East Sussex', 1,'GB'),
+	('Esse','Essex', 1,'GB'),
+	('Glos','Gloucestershire', 1,'GB'),
+	('GL','Greater London', 1,'GB'),
+	('GM','Greater Manchester', 1,'GB'),
+	('Hamp','Hampshire', 1,'GB'),
+	('Hert','Hertfordshire', 1,'GB'),
+	('Kent','Kent', 1,'GB'),
+	('Lanc','Lancashire', 1,'GB'),
+	('Leic','Leicestershire', 1,'GB'),
+	('Linc','Lincolnshire', 1,'GB'),
+	('Mers','Merseyside', 1,'GB'),
+	('Norf','Norfolk', 1,'GB'),
+	('NYor','North Yorkshire', 1,'GB'),
+	('Nort','Northamptonshire', 1,'GB'),
+	('Norh','Northumberland', 1,'GB'),
+	('Nott','Nottinghamshire', 1,'GB'),
+	('Ox','Oxfordshire', 1,'GB'),
+	('Shrp','Shropshire', 1,'GB'),
+	('Som','Somerset', 1,'GB'),
+	('SYor','South Yorkshire', 1,'GB'),
+	('Staf','Staffordshire', 1,'GB'),
+	('Suff','Suffolk', 1,'GB'),
+	('Surr','Surrey', 1,'GB'),
+	('Tyne','Tyne and Wear', 1,'GB'),
+	('Warw','Warwickshire', 1,'GB'),
+	('WMid','West Midlands', 1,'GB'),
+	('WSus','West Sussex', 1,'GB'),
+	('WYor','West Yorkshire', 1,'GB'),
+	('Wilt','Wiltshire', 1,'GB'),
+	('Worc','Worcestershire', 1,'GB'),
+	('Flin','Flintshire', 1,'GB'),
+	('Glam','Glamorgan', 1,'GB'),
+	('Meri','Merionethshire', 1,'GB'),
+	('Mon','Monmouthshire', 1,'GB'),
+	('Mont','Montgomeryshire', 1,'GB'),
+	('Pemb','Pembrokeshire', 1,'GB'),
+	('Radn','Radnorshire', 1,'GB'),
+	('Angl','Anglesey', 1,'GB'),
+	('Brec','Breconshire', 1,'GB'),
+	('Caer','Caernarvonshire', 1,'GB'),
+	('Card','Cardiganshire', 1,'GB'),
+	('Carm','Carmarthenshire', 1,'GB'),
+	('Denb','Denbighshire', 1,'GB'),
+	('Kirk','Kirkcudbrightshire', 1,'GB'),
+	('Lana','Lanarkshire', 1,'GB'),
+	('Midl','Midlothian', 1,'GB'),
+	('Mora','Moray', 1,'GB'),
+	('Nair','Nairnshire', 1,'GB'),
+	('Orkn','Orkney', 1,'GB'),
+	('Peeb','Peebleshire', 1,'GB'),
+	('Pert','Perthshire', 1,'GB'),
+	('Renf','Renfrewshire', 1,'GB'),
+	('Ross','Ross &amp; Cromarty', 1,'GB'),
+	('Roxb','Roxburghshire', 1,'GB'),
+	('Selk','Selkirkshire', 1,'GB'),
+	('Shet','Shetland', 1,'GB'),
+	('Stir','Stirlingshire', 1,'GB'),
+	('Suth','Sutherland', 1,'GB'),
+	('WLot','West Lothian', 1,'GB'),
+	('Wigt','Wigtownshire', 1,'GB'),
+	('Aber','Aberdeenshire', 1,'GB'),
+	('Angu','Angus', 1,'GB'),
+	('Argy','Argyll', 1,'GB'),
+	('Ayrs','Ayrshire', 1,'GB'),
+	('Banf','Banffshire', 1,'GB'),
+	('Berw','Berwickshire', 1,'GB'),
+	('Bute','Bute', 1,'GB'),
+	('Cait','Caithness', 1,'GB'),
+	('Clac','Clackmannanshire', 1,'GB'),
+	('Dumf','Dumfriesshire', 1,'GB'),
+	('Dumb','Dumbartonshire', 1,'GB'),
+	('ELot','East Lothian', 1,'GB'),
+	('Fife','Fife', 1,'GB'),
+	('Inve','Inverness', 1,'GB'),
+	('Kinc','Kincardineshire', 1,'GB'),
+	('Kinr','Kinross-shire', 1,'GB')
+	;");
 }
 $table = $wpdb->prefix . "eshop_shipping_rates";
 if ($wpdb->get_var("show tables like '$table'") != $table) {
@@ -236,6 +347,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		code char(2) NOT NULL default '',
 		country varchar(50) NOT NULL default '',
 		zone tinyint(1) NOT NULL default '0',
+		list tinyint(1) NOT NULL default '1',
 		  PRIMARY KEY  (code),
 		KEY zone (zone)
 		);";
@@ -471,11 +583,6 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 }
 
 
-/* version number store - add/update */
-
-update_option('eshop_version', ESHOP_VERSION);
-
-
 /* db changes */
 $table = $wpdb->prefix ."eshop_base_products";
 $tablefields = $wpdb->get_results("DESCRIBE {$table};");
@@ -521,6 +628,18 @@ if(!in_array('down_id',$add_field)) {
     $sql="ALTER TABLE `".$table."` ADD `down_id` int(11) NOT NULL default '0'";
     $wpdb->query($sql);
 }
+/* db changes 2.13.0 */
+/* state table recreated + */
+$table = $wpdb->prefix . "eshop_countries";
+$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+foreach ($tablefields as $tablefield) {
+     $add_field[]= $tablefield->Field;
+}
+if(!in_array('list',$add_field)) {
+    $sql="ALTER TABLE `".$table."` ADD `list` tinyint(1) NOT NULL default '1'";
+    $wpdb->query($sql);
+}
+
 
 /*update all post meta to new post meta */
 $eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
@@ -650,4 +769,6 @@ if($newpages == true){
 	wp_cache_delete('all_page_ids', 'pages');
 	$wp_rewrite->flush_rules();
 }
+/* version number store - add/update */
+update_option('eshop_version', ESHOP_VERSION);
 ?>

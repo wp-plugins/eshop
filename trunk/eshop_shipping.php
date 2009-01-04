@@ -38,8 +38,16 @@ if (isset($_GET['action']) )
 else
 	$_GET['action']=$action_status = 'shipping';
 
+
+// for what was the US state list - ensures the menu is changed 
+$dtable=$wpdb->prefix.'eshop_states';
+
+if(isset($_POST['submitstate'])){
+	update_option('eshop_shipping_state',$wpdb->escape($_POST['eshop_shipping_state']));
+}
+
 $echosub= '<ul class="subsubsub">';
-$stati=array('shipping'=>__('Shipping Rates','eshop'),'countries' => __('Countries','eshop'),'states'=>__('US States','eshop'));
+$stati=array('shipping'=>__('Shipping Rates','eshop'),'countries' => __('Countries','eshop'),'states'=>get_option('eshop_shipping_state').' '.__('State/County/Province','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
@@ -65,19 +73,24 @@ case ('countries'):
 		//warning this truncates the table and then recreates it
 		$query=$wpdb->query("TRUNCATE TABLE $dtable");
 		//create the query
-		$build="INSERT INTO $dtable (`code`,`country`,`zone`) VALUES";
+		$build="INSERT INTO $dtable (`code`,`country`,`zone`,`list`) VALUES";
 		$count=count($_POST['code']);
 		for($i=0;$i<=$count-1;$i++){
 			//so if none of them are empty
 			if(($_POST['code'][$i]!='' && $_POST['country'][$i]!='' && $_POST['zone'][$i]!='') && !isset($_POST['delete'][$i])){
 			//complicated error checking - cannot check state name so easily
+				if(isset($_POST['list'][$i]))
+					$list[$i]='0';
+				else
+					$list[$i]='1';
+
 				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
 					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['country'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
 				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
 					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['country'][$i]."</li>\n";
 				}else{
 					//all must be ok
-					$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."'),";
+					$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$wpdb->escape($list[$i])."'),";
 				}
 			}elseif($_POST['code'][$i]=='' && $_POST['country'][$i]=='' && $_POST['zone'][$i]==''){
 				//ie no new state added
@@ -97,7 +110,7 @@ case ('countries'):
 		}
 	}
 	//each time re-request from the database
-	$query=$wpdb->get_results("SELECT * from $dtable ORDER BY country");
+	$query=$wpdb->get_results("SELECT * from $dtable GROUP BY list,country");
 	if($error!=''){
 		echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'<ul>'.$error.'</ul></div>'."\n";
 	}elseif(isset($_POST['submit'])){
@@ -108,6 +121,7 @@ case ('countries'):
 	<h2><?php _e('Country Shipping Zones','eshop'); ?></h2>
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 2 letter state abbreviation, followed by &#8220;Country Name,&#8221; then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
+	<p><?php _e('&#8220;List&#8221; promotes that country to appear at the top of the list.','eshop'); ?></p>
 
 	<div id="eshopformfloat">
 	<form id="filterzones" action="" method="post">
@@ -144,6 +158,7 @@ case ('countries'):
 	<th id="code"><?php _e('Code','eshop'); ?></th>
 	<th id="country"><?php _e('Country','eshop'); ?></th>
 	<th id="zone"><?php _e('Zone','eshop'); ?></th>
+		<th id="list"><?php _e('List','eshop'); ?></th>
 	<th id="delete"><?php _e('Delete','eshop'); ?></th>
 	</tr>
 	</thead>
@@ -158,6 +173,8 @@ case ('countries'):
 			echo '<td headers="code" id="headcode'.$x.'"><label for="code'.$x.'">'.__('Code','eshop').'</label><input id="code'.$x.'" name="code[]" type="text" value="'.$row->code.'" size="2" maxlength="2" /></td>'."\n";
 			echo '<td headers="country headcode'.$x.'"><label for="country'.$x.'">'.__('Country name','eshop').'</label><input id="country'.$x.'" name="country[]" type="text" value="'.$row->country.'" size="30" maxlength="50" /></td>'."\n";
 			echo '<td headers="zone headcode'.$x.'"><label for="zone'.$x.'">'.__('Zone','eshop').'</label><input id="zone'.$x.'" name="zone[]" type="text" value="'.$row->zone.'" size="2" maxlength="1" /></td>'."\n";
+				if($row->list == '0') $sel='checked="checked" '; else $sel ='';
+				echo '<td headers="list headcode'.$x.'"><label for="list'.$x.'">'.__('List','eshop').'</label><input id="list'.$x.'" name="list['.$x.']" type="checkbox" value="0" '.$sel.'/></td>'."\n";
 			echo '<td headers="delete headcode'.$x.'"><label for="delete'.$x.'">'.__('Delete','eshop').'</label><input id="delete'.$x.'" name="delete['.$x.']" type="checkbox" value="delete" /></td>'."\n";
 			echo '</tr>'."\n";
 		}else{
@@ -191,20 +208,30 @@ case ('countries'):
 case ('states'):
 	$dtable=$wpdb->prefix.'eshop_states';
 	$error='';
+
 	if(isset($_POST['submit'])){
 		//sanitise for display purposes.
 		$_POST['code']=sanitise_this($_POST['code']);
 		$_POST['stateName']=sanitise_this($_POST['stateName']);
 		$_POST['zone']=sanitise_this($_POST['zone']);
 
-		//warning this truncates the table and then recreates it
-		$query=$wpdb->query("TRUNCATE TABLE $dtable");
-		//create the query
-		$build="INSERT INTO $dtable (`code`,`stateName`,`zone`) VALUES";
-		$count=count($_POST['code']);
-		for($i=0;$i<=$count-1;$i++){
+		$build="UPDATE $dtable SET ";
+		$i=0;
+		foreach($_POST['id'] as $id){
 			//so if none of them are empty
-			if(($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='') && !isset($_POST['delete'][$i])){
+			if(isset($_POST['delete'][$id])){
+				$wpdb->query("DELETE from $dtable WHERE id='".$_POST['delete'][$id]."' limit 1");
+			}elseif($id=='0' && $_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!=''){
+				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
+					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
+				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
+					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
+				}else{
+					//all must be ok
+					$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".get_option('eshop_shipping_state')."')";
+					$wpdb->query($buildit);
+				}
+			}elseif($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='' && !isset($_POST['delete'][$i])){
 			//complicated error checking - cannot check state name so easily
 				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
 					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
@@ -212,7 +239,8 @@ case ('states'):
 					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
 				}else{
 					//all must be ok
-					$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."'),";
+					$buildit=$build." code='".$wpdb->escape($_POST['code'][$i])."',stateName='".$wpdb->escape($_POST['stateName'][$i])."',zone='".$wpdb->escape($_POST['zone'][$i])."' where id='$id'";
+					$wpdb->query($buildit);
 				}
 			}elseif($_POST['code'][$i]=='' && $_POST['stateName'][$i]=='' && $_POST['zone'][$i]==''){
 				//ie no new state added
@@ -222,55 +250,75 @@ case ('states'):
 				//if not set for deletion then there was an error
 				$error.="<li>".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i].", ".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
 			}
-		}
-		$build=trim($build,",");
-		//check to stop someone being dumb enough to try and delete all the states
-		if($count>1){
-			$query=$wpdb->query($build);
-		}else{
-			$error='<li>'.__('You cannot delete all the States!','eshop').'</li>'."\n";
+			$i++;
 		}
 	}
 	if($error!=''){
 		echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'<ul>'.$error.'</ul></div>'."\n";
 	}elseif(isset($_POST['submit'])){
-		echo'<div id="message" class="updated fade"><p>'.__('US State Shipping Zones changed successfully','eshop').'.</p></div>'."\n";
+		echo'<div id="message" class="updated fade"><p>'.get_option('eshop_shipping_state').' '.__('Specific Shipping Zones changed successfully','eshop').'.</p></div>'."\n";
 	}
 	//each time re-request from the database
-	$query=$wpdb->get_results("SELECT * from $dtable ORDER BY stateName");
+	$getstate=get_option('eshop_shipping_state');
+
+	$query=$wpdb->get_results("SELECT * from $dtable WHERE list='$getstate' ORDER BY stateName");
 	?>
 	<div class="wrap">
-	<h2><?php _e('US State Shipping Zones','eshop'); ?></h2>
+	<h2><?php echo get_option('eshop_shipping_state').' '.__('State/County/Province Shipping Zones','eshop'); ?></h2>
 	<?php echo $echosub; ?>
-	<p><?php _e('&#8220;Code&#8221; is the 2 letter state abbreviation, followed by &#8220;State Name,&#8221; then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
+	<p><?php _e('&#8220;Code&#8221; is the 4 letter(maximum usual is 2) abbreviation and must be unique, followed by &#8220;Name&#8221;, then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
+	<p><?php _e('Example: AZ, Arizona,4','eshop'); ?></p>
+	<div id="eshopformfloat">
+	<form id="eshop_shipping_state_form" action="" method="post">
+	<fieldset><legend><?php _e('Set State/County/Province','eshop'); ?></legend>
+	<label for="eshop_shipping_state"><?php _e('List','eshop'); ?></label>
+	<select id="eshop_shipping_state" name="eshop_shipping_state">
+	<?php
+		$ctable=$wpdb->prefix.'eshop_countries';
+		$currentlocations=$wpdb->get_results("SELECT * from $ctable ORDER BY country");
+		foreach ($currentlocations as $row){
+			if($row->code == get_option('eshop_shipping_state')){
+				$sel=' selected="selected"';
+			}else{
+				$sel='';
+			}
+			echo '<option value="'. $row->code .'"'. $sel .'>'. $row->country .'</option>';
+		}
+		?>
+	</select><br />
+	<p class="submit"><input type="submit" id="submitstate" name="submitstate" value="<?php _e('Submit','eshop'); ?>" /></p>
+	</fieldset>
+	</form>
+	</div>
 
 	<form id="zoneform" action="" method="post">
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
 
-	<table class="hidealllabels" summary="<?php _e('US States, with their 2 letter code, and applicable zone','eshop'); ?>">
+	<table class="hidealllabels" summary="<?php _e('States, with their 2 letter code, and applicable zone','eshop'); ?>">
 	<caption><?php _e('<abbr title="United States">US</abbr> States','eshop'); ?></caption>
 	<thead>
 	<tr>
 	<th id="code"><?php _e('Code','eshop'); ?></th>
-	<th id="statename"><?php _e('State Name','eshop'); ?></th>
+	<th id="statename"><?php _e('Name','eshop'); ?></th>
 	<th id="zone"><?php _e('Zone','eshop'); ?></th>
 	<th id="delete"><?php _e('Delete','eshop'); ?></th>
 	</tr>
 	</thead>
 	<tbody>
 	<?php
-	$x=0;
+	
 	foreach ($query as $row){
+	$x=$row->id;
 	echo '<tr>';
-	echo '<td headers="code" id="headcode'.$x.'"><label for="code'.$x.'">'.__('Code','eshop').'</label><input id="code'.$x.'" name="code[]" type="text" value="'.$row->code.'" size="2" maxlength="2" /></td>'."\n";
+	echo '<td headers="code" id="headcode'.$x.'"><label for="code'.$x.'">'.__('Code','eshop').'</label><input id="code'.$x.'" name="code[]" type="text" value="'.$row->code.'" size="4" maxlength="4" /><input id="id'.$x.'" name="id[]" type="hidden" value="'.$row->id.'" /></td>'."\n";
 	echo '<td headers="statename headcode'.$x.'"><label for="state'.$x.'">'.__('Statename','eshop').'</label><input id="state'.$x.'" name="stateName[]" type="text" value="'.$row->stateName.'" size="30" maxlength="50" /></td>'."\n";
 	echo '<td headers="zone headcode'.$x.'"><label for="zone'.$x.'">'.__('Zone','eshop').'</label><input id="zone'.$x.'" name="zone[]" type="text" value="'.$row->zone.'" size="2" maxlength="1" /></td>'."\n";
-	echo '<td headers="delete headcode'.$x.'"><label for="delete'.$x.'">'.__('Delete','eshop').'</label><input id="delete'.$x.'" name="delete['.$x.']" type="checkbox" value="delete" /></td>'."\n";
+	echo '<td headers="delete headcode'.$x.'"><label for="delete'.$x.'">'.__('Delete','eshop').'</label><input id="delete'.$x.'" name="delete['.$x.']" type="checkbox" value="'.$row->id.'" /></td>'."\n";
 	echo '</tr>'."\n";
-	$x++;
 	}
+	$x=0;
 	echo '<tr>';
-	echo '<td headers="code" id="headcode'.$x.'"><label for="code'.$x.'">'.__('Code','eshop').'</label><input id="code'.$x.'" name="code[]" type="text" value="" size="2" maxlength="2" /></td>'."\n";
+	echo '<td headers="code" id="headcode'.$x.'"><label for="code'.$x.'">'.__('Code','eshop').'</label><input id="code'.$x.'" name="code[]" type="text" value="" size="4" maxlength="4" /><input id="id'.$x.'" name="id[]" type="hidden" value="'.$x.'" /></td>'."\n";
 	echo '<td headers="statename headcode'.$x.'"><label for="state'.$x.'">'.__('Statename','eshop').'</label><input id="state'.$x.'" name="stateName[]" type="text" value="" size="30" maxlength="50" /></td>'."\n";
 	echo '<td headers="zone headcode'.$x.'"><label for="zone'.$x.'">'.__('Zone','eshop').'</label><input id="zone'.$x.'" name="zone[]" type="text" value="" size="2" maxlength="1" /></td>'."\n";
 	echo '<td>&nbsp;</td>';
@@ -346,10 +394,10 @@ default:
 	<?php
 	if('country' == get_option('eshop_shipping_zone')){
 		echo '<option value="country" selected="selected">'.__('Country','eshop').'</option>';
-		echo '<option value="state">'.__('US State','eshop').'</option>';
+		echo '<option value="state">'.__('State/County/Province','eshop').'</option>';
 	}else{
 		echo '<option value="country">'.__('Country','eshop').'</option>';
-		echo '<option value="state" selected="selected">'.__('US State','eshop').'</option>';
+		echo '<option value="state" selected="selected">'.__('State/County/Province','eshop').'</option>';
 	}
 	?>
 	</select><br />

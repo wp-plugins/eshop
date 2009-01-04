@@ -43,10 +43,10 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p>The <strong>Sku</strong> should be a unique identification reference for your product eg.abc001.</p>
 <p>The <strong>Product Description</strong> is a short description of the product. This is used in the customers cart, and will appear on their invoice from Paypal.</p>
 <p><strong>Option x</strong>, <strong>Price x</strong> and <strong>Download x</strong> are the individual item and price, thus allowing several options for each product eg. Small, Medium, Large. If there is only 1 option for a product, then please use the <strong>Option 1</strong> and <strong>Price 1</strong> input fields.</p>
-<p>The <strong>Download</strong> selection boxes only appear if you have uploaded a file via eShop for download. To link to a file, select it from the dropdown list.</p>
+<p>The <strong>Download</strong> selection boxes only appear if you have uploaded a file via eShop for download. To link to a file, select it from the dropdown list. Downloadable options now default to free shipping in the cart - even if you set the shipping rate as something different. This allows for online and offline options for the same product (e.g. book and ebook).</p>
 <p>Choose your <strong>Shipping Rate</strong> carefully, <strong>F</strong> is set aside for any Free shipping (obviously downloadable products should use this).</p>
 <p>The <strong>Featured Product</strong> product selection chooses whether that product can be listed as a featured product.</p>
-<p>A product is unavailble for sale until <strong>Stock Available</strong> is set.</p>
+<p>A product is unavailable for sale until <strong>Stock Available</strong> is set.</p>
 <p><strong>Stock Quantity</strong> - sets the quantity available for this product. A quantity needs to be entered for download products. I suggest you enter a 1.</p>
 
 </div>
@@ -117,6 +117,9 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><strong>Currency Symbol</strong> &#8212; The symbol for your currency e.g. <em>&pound;</em>.</li>
 <li><strong>Currency Code</strong> &#8212; your 3 letter currency code.</li>
 </ul>
+
+<p>It would also be advisable to visit the eShop > Shipping page.</p>
+
 <p>Everything should then be set up and working!</p>
 </div>
 
@@ -186,7 +189,7 @@ This is only triggered when someone visits the site.</p>
 <p>These are automatically generated when eShop is first activated. Changing these could affect how eShop works, but are available for amendment should you delete a page in error. All of these pages require shortcodes to work correctly.</p>
 
 <h3>Other Settings</h3>	
-<p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by <abbr title="United States">US</abbr> States. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
+<p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by country specific State/County/Province. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
 <p>The eShop <strong>appearance</strong> page allows you to amend the default style, or disable it completely.</p>
 
 
@@ -238,8 +241,8 @@ This is only triggered when someone visits the site.</p>
 
 <p>Shipping Rate F is preset for 'FREE' delivery and cannot be amended.</p>
 
-<h4>Countries and US States</h4>
-<p>Default zones are pre-configured for both 'Countries' and 'US States' but can be amended if necessary.</p>
+<h4>Countries and State/County/Province</h4>
+<p>Default zones are pre-configured for both 'Countries' and 'State/County/Province' but can be amended if necessary.</p>
 <p>Paypal doesn't list all countries, so you may need to check the list to ensure it is correct. Obviously you should delete any that you feel you don't want to deliver to. At the bottom of each form there is a blank field to allow you to add to these lists.</p>
 
 <h3>Products</h3>
