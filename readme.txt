@@ -10,26 +10,11 @@ An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-= New for 2.12.5 =
+= New for 2.13.0 =
 
-* added ability to add product images to the shopping cart
-* product items in cart now link back to the relevant product page.
-
-= New for 2.12.4 =
-
-* Required upgrade for WPMU (fixes cross site cart bug)
-* for WP users uploading large files - upload via FTP to the correct directory with no need to upload a small file via eShop.
-
-= New for 2.12.3 =
-
-* eShop download products are now checked against allowed quota in WPMU
-
-= New features for 2.12.x =
-
-* Discount codes can be offered, offering a percentage discount, or free shipping. They can be limited by date, or by number of uses.
-* Downloadable product options per product (e.g. all tracks off one album, or the same track in different formats).
-* eShop Stats and Order pages tidied up.
-
+* added ability to split countries by State/County/Province - US, UK and Canada are provided bt default.
+* if no State/County/Province are available then it will not appear on the checkout form.
+* *FIX* download items now automatically get free shipping
 
 = eShop features include: =
 
@@ -58,6 +43,26 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+New for 2.13.0
+
+* added ability to split countries by State/County/Province - US, UK and Canada are provided bt default.
+* if no State/County/Province are available then it will not appear on the checkout form.
+* *FIX* download items now automatically get free shipping
+
+New for 2.12.5 
+
+* added ability to add product images to the shopping cart
+* product items in cart now link back to the relevant product page.
+
+New for 2.12.4
+
+* Required upgrade for WPMU (fixes cross site cart bug)
+* for WP users uploading large files - upload via FTP to the correct directory with no need to upload a small file via eShop.
+
+New for 2.12.3 
+
+* eShop download products are now checked against allowed quota in WPMU
 
 Version 2.12.2
 

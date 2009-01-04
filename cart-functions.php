@@ -828,7 +828,7 @@ if (!function_exists('eshop_show_zones')) {
 		if('country' == get_option('eshop_shipping_zone')){
 			//countries
 			$tablec=$wpdb->prefix.'eshop_countries';
-			$List=$wpdb->get_results("SELECT code,country FROM $tablec ORDER BY country",ARRAY_A);
+			$List=$wpdb->get_results("SELECT code,country FROM $tablec GROUP BY list,country",ARRAY_A);
 			foreach($List as $key=>$value){
 				$k=$value['code'];
 				$v=$value['country'];

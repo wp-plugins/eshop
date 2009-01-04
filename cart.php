@@ -5,7 +5,7 @@ if ('cart.php' == basename($_SERVER['SCRIPT_FILENAME']))
 if (!function_exists('eshop_cart')) {
 	function eshop_cart($_POST){
 		global $wpdb, $blog_id;
-;
+
 		$echo='';
 		include "cart-functions.php";
 		$error='';
@@ -36,8 +36,12 @@ if (!function_exists('eshop_cart')) {
 			$productid=$pid=$_POST['pid'];
 			$pname=$_POST['pname'];
 			$getprice='_Price '.ltrim($option,'_Option ');
-			//////////////////////////////
+			/* if download option then it must be free shipping */
 			$postid=$wpdb->escape($_POST['postid']);
+			$edown='_Download '.ltrim($option,'_Option ');
+			$dlchk=get_post_meta($postid,$edown, true);
+			if($dlchk!='')	$pclas='F';
+			//////////////////////////////
 			$table=$wpdb->prefix.'postmeta';
 			$iprice= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$getprice' AND post_id='$postid'");
 			if($iprice==''){
