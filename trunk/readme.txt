@@ -12,7 +12,7 @@ An accessible Paypal Shopping Cart plugin.
 
 = New for 2.13.0 =
 
-* added ability to split countries by State/County/Province - US, UK and Canada are provided bt default.
+* added ability to split countries by State/County/Province - US, UK and Canada are provided by default.
 * if no State/County/Province are available then it will not appear on the checkout form.
 * *FIX* download items now automatically get free shipping
 
