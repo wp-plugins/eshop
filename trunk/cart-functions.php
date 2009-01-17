@@ -499,21 +499,20 @@ if (!function_exists('orderhandle')) {
 			$item_amt=$wpdb->escape($_POST[$chk_amt]);
 			$optname=$wpdb->escape($_POST[$chk_opt]);
 			$post_id=$wpdb->escape($_POST[$chk_postid]);
-			$queryitem=$wpdb->query("INSERT INTO $itemstable
-				(checkid, item_id,item_qty,item_amt,optname,post_id)values(
+			
+			$dlchking=$_POST['eshopident_'.$i];
+			$thechk=$_SESSION['shopcart'.$blog_id][$dlchking]['option'];
+			$edown=split(' ',$thechk);
+			$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
+			if($dlchk!=''){
+				//there are downloads.
+				$queryitem=$wpdb->query("INSERT INTO $itemstable
+				(checkid, item_id,item_qty,item_amt,optname,post_id,down_id)values(
 				'$checkid',
 				'$item_id',
 				'$item_qty',
-				'$item_amt','$optname','$post_id');");
-			$i++;
-		}
-		//are there any downloads?
-		$chkdownloads=$_SESSION['shopcart'.$blog_id];
-		foreach ($chkdownloads as $productid => $opt){
-			$edown=split(' ',$opt['option']);
-			$dlchk=get_post_meta($opt['postid'],'_Download '.$edown[1], true);
-			if($dlchk!=''){
-				//order contains downloads
+				'$item_amt','$optname','$post_id','$dlchk');");
+
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
 				//add to download orders table
 				$dloadtable=$wpdb->prefix.'eshop_download_orders';
@@ -531,17 +530,17 @@ if (!function_exists('orderhandle')) {
 				'$code',
 				'$email');"
 				);
-				//then update the items table - this works, but isn't pretty *sigh*
-				$postid=$opt['postid'];
-				$checkit=$wpdb->get_results("SELECT id,item_id FROM $itemstable where checkid='$checkid' && post_id='$postid'");
-				foreach($checkit as $crow){
-					$filetitlearr=split(' : ', $crow->item_id);
-					$option=trim($filetitlearr[sizeof($filetitlearr)-1]);
-					if(get_post_meta($opt['postid'],$opt['option'], true)==$option)
-						$wpdb->query("UPDATE $itemstable set down_id='$grabit->id' where checkid='$checkid' && id='$crow->id'");
-				}
+
+			}else{
+				$queryitem=$wpdb->query("INSERT INTO $itemstable
+				(checkid, item_id,item_qty,item_amt,optname,post_id)values(
+				'$checkid',
+				'$item_id',
+				'$item_qty',
+				'$item_amt','$optname','$post_id');");
 			}
-			
+			$i++;
+
 		}
 		$postage=$wpdb->escape($_POST['shipping_1']);
 		$querypostage=$wpdb->query("INSERT INTO  $itemstable 
