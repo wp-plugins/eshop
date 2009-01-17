@@ -163,7 +163,7 @@ if (!function_exists('eshopShowform')) {
 	foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
 		$x++;
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
-	//	$echo.= "\n  <input type=\"hidden\" name=\"".$itemoption.$x."\" value=\"".$opt['size']."\" />";
+		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productid."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 		/* DISCOUNT */
 		$amt=number_format(round($opt["price"], 2),2);
