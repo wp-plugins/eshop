@@ -136,13 +136,19 @@ switch ($_GET['action']) {
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
+			
 			if(strstr($name,'amount_')){
 				if(eshop_discount_codes_check()){
 					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 					if($chkcode && apply_eshop_discount_code('discount')>0){
 						$discount=apply_eshop_discount_code('discount')/100;
 						$value = number_format(round($value-($value * $discount), 2),2);
+						$vset='yes';
 					}
+				}
+				if(is_discountable(calculate_total())!=0 && !isset($vset)){
+					$discount=is_discountable(calculate_total())/100;
+					$value = number_format(round($value-($value * $discount), 2),2);
 				}
 			}
 			

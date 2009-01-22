@@ -267,6 +267,7 @@ echo $result;
 	}
 	?>
 </select><br />
+<p>Don't forget to set the <a href="admin.php?page=eshop_shipping.php&action=states">State/County/Province</a> on the shipping pages.</p>
 </fieldset>
 
 <fieldset><legend><?php _e('Product Options','eshop'); ?></legend>
