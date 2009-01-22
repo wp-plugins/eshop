@@ -106,7 +106,8 @@ if (!function_exists('display_cart')) {
 				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
 			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
-				
+			$final_price=$sub_total;
+			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
 			$shipping=0;
 			//$pzone will only be set after the checkout address fields have been filled in
@@ -176,6 +177,7 @@ if (!function_exists('display_cart')) {
 				$_SESSION['final_price'.$blog_id]=$final_price;
 				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
 			}
+
 			$echo.= "</tbody></table>\n";
 			// display unset/update buttons
 			if($change == true){
@@ -1122,6 +1124,7 @@ if (!function_exists('eshop_files_directory')) {
         $dirs=wp_upload_dir();
         $upload_dir=$dirs['basedir'];
         $url_dir=$dirs['baseurl'];
+        if(substr($url_dir, -1)!='/')$url_dir.='/';
        	$plugin_dir=ABSPATH.PLUGINDIR;
        	$eshop_goto=$upload_dir.'/eshop_files';
        	$eshop_from=$plugin_dir.'/eshop/files';
@@ -1138,12 +1141,12 @@ if (!function_exists('eshop_files_directory')) {
 				}
 				closedir($handle);
 			}
-			$urlpath=$url_dir.'/eshop_files/';
+			$urlpath=$url_dir.'eshop_files/';
 			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
 			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
 			return $rtn;
 		}else{
-			$urlpath=$url_dir.'/eshop_files/';
+			$urlpath=$url_dir.'eshop_files/';
 			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
 			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
 			return $rtn;

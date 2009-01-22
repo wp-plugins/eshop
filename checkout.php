@@ -140,11 +140,9 @@ if (!function_exists('eshopShowform')) {
 		}else{
 			$echo .='<input type="hidden" name="ship_state" value="" />';
 		}
-		$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
 		$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
 		  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
 		  <br />
-		  <input type="hidden" name="amount" value="'.$final_price.'" />
 		<label for="shipcountry">'.__('Country','eshop').'<br />
 		  <select class="med pointer" name="ship_country" id="shipcountry">
 		';
@@ -158,6 +156,8 @@ if (!function_exists('eshopShowform')) {
 		}
 		$echo.= "</select></label>";
 	}
+	$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
+	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
 	$x=0;
 	$discounttotal=0;
 	foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
@@ -167,10 +167,12 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 		/* DISCOUNT */
 		$amt=number_format(round($opt["price"], 2),2);
+		/*
 		if(is_discountable(calculate_total())!=0){
 			$discount=is_discountable(calculate_total())/100;
 			$amt = number_format(round($amt-($amt * $discount), 2),2);
 		}
+		*/
 		$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".$amt."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";

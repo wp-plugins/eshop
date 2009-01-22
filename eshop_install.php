@@ -55,6 +55,8 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	error_log("creating table $table");
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone,list) VALUES  
+	('AK', 'Alaska', 5,'US'),
+	('HI', 'Hawaii', 5,'US'),
 	('AL', 'Alabama', 2,'US'),
 	('AZ', 'Arizona', 4,'US'),
 	('AR', 'Arkansas', 3,'US'),

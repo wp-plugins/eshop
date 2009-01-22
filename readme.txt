@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.13.1
+Stable tag: 2.13.2
 
 An accessible Paypal Shopping Cart plugin.
 
@@ -43,6 +43,13 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+Version 2.13.2
+
+* Hawaii (HI) and Alaska (AK) - added to list of US States (sorry)
+* added note to settings page about setting the default State/County/Province
+* added an extra <br class="pagfoot" /> when viewing all for panel listings 
+* fixed wpmu issue with css url
+* fixed discount conflicts under certain circumstances
 
 Version 2.13.1
 

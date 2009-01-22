@@ -103,6 +103,8 @@ function eshop_list_subpages($atts){
 		
 		if(isset($eecho)){
 			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+		}else{
+			$echo .= '<br class="pagfoot" />';
 		}
 		return $echo;
 	} 
@@ -178,6 +180,8 @@ function eshop_list_new($atts){
 
 		if(isset($eecho)){
 			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+		}else{
+			$echo .= '<br class="pagfoot" />';
 		}
 		return $echo;
 	} 

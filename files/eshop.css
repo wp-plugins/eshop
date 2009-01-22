@@ -149,7 +149,13 @@ table.cart tr.stotal {
 	background:#F2FFDD;
 	text-align:right;
 }
-
+/*discount code*/
+.eshop_dcode{
+	text-align:center;
+}
+.eshop_dcode span{
+	font-weight:bold;
+}
 /* cart links*/
 
 
@@ -336,4 +342,35 @@ ul.eshoppanels li form.addtocart fieldset{
 /* eshop widget */
 p.eshopwidget span{
 	font-size:2em;
+}
+/* eshop discounts */
+table.eshopdiscounts {
+	width:100%;
+}
+table.eshopdiscounts caption {
+	margin-bottom:0;
+	padding:2px 0;
+}
+table.eshopdiscounts thead th {
+	background:#F3D6B4;
+	padding:2px;
+	text-align:center;
+	font-weight:normal;
+}
+table.eshopdiscounts tr {
+	background:#FDF7F1;
+}
+
+table.eshopdiscounts td, table.eshopdiscounts th {
+	padding:5px 8px;
+}
+table.eshopdiscounts td.amts {
+	text-align:right;
+}
+
+table.eshopdiscounts td.disc  {
+	text-align:right;
+}
+.shipdiscount span{
+	font-weight:bold;
 }
