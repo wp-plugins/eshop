@@ -98,20 +98,15 @@ p.success{
   margin : 13px 2px;
 }
 
-
 p.success {
   background-color : #669933;
 }
-
-
 
 p.notice, h3.status { 
   color : #777;
   background:transparent;
   border:0;
 }
-
-
 
 p.notice span, h3.status span {
   background-color : #F5FAFF;
@@ -123,6 +118,26 @@ p.notice span, h3.status span {
   font-size : 90%;
 }
 
+p.eshopwarn {
+  background-color : #F5FAFF;
+  border:1px solid #B9DFFF;
+  padding : 1px 8px;
+  color : #333;
+  font-size : 1.1em;
+  margin:0;
+}
+p.eshopwarn span.live{
+	color:#090;
+	font-weight : bold;
+}
+p.eshopwarn span.test{
+	color:#900;
+	font-weight : bold;
+}
+p.eshopwarn span.eshopgate{
+	color:#009;
+	font-weight : bold;
+}
 h3.status span.print {
   display : none;
 }
@@ -443,7 +458,10 @@ div.paginate p.checkers a {
 .eshopdisc{
 	width:40%;
 }
-
+#eshop-settings .cbox label{
+	display:inline;
+	padding-left:10px;
+}
 /* upload downloadables*/
 #eshopup,#downloadedit{
 	width:60%;
@@ -602,4 +620,11 @@ fieldset#baseothers fieldset{
 	font-size:1.2em;
 	font-style:italic;
 	letter-spacing:1px;
+}
+.eshop-shortcodes code{	
+	font-weight:bold;
+	font-size:1.4em;
+	color:#003;
+	background:#FFFBE9;
+	padding:1px 2px;
 }

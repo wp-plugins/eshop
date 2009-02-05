@@ -344,6 +344,7 @@ default:
 		update_option('eshop_shipping',$wpdb->escape($_POST['eshop_shipping']));
 		update_option('eshop_shipping_zone',$wpdb->escape($_POST['eshop_shipping_zone']));
 		update_option('eshop_show_zones',$wpdb->escape($_POST['eshop_show_zones']));
+		update_option('eshop_unknown_state',$wpdb->escape($_POST['eshop_unknown_state']));
 	}
 	if(isset($_POST['submit'])){
 		foreach($_POST as $k=>$v){
@@ -401,6 +402,16 @@ default:
 	}
 	?>
 	</select><br />
+	<label for="eshop_unknown_state"><?php _e('Default Zone for unknown State/County/Province','eshop'); ?></label>
+		<select id="eshop_unknown_state" name="eshop_unknown_state">
+		<?php
+		for($i=1;$i<=5;$i++){
+		?>
+			<option value="<?php echo $i; ?>"<?php if($i==get_option('eshop_unknown_state')) echo ' selected="selected"'; ?>><?php echo $i; ?></option>
+		<?php
+		}
+		?>
+	</select><br />
 	<label for="eshop_show_zones"><?php _e('Show Shipping Zones on Shipping Page','eshop'); ?></label>
 	<select id="eshop_show_zones" name="eshop_show_zones">
 	<?php
@@ -413,6 +424,7 @@ default:
 	}
 	?>
 	</select><br />
+	
 	<p class="submit eshop"><input type="submit" name="shipmethod" class="button-primary" id="submitit" value="<?php _e('Update Shipping rate calculation','eshop'); ?>" /></p>
 
 	</fieldset>

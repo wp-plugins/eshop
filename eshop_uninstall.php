@@ -49,6 +49,7 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
 
 	//options
+	$epages[] = 'eshop_payson';
 	$epages[] = 'eshop_business';
 	$epages[] = 'eshop_from_email';
 	$epages[] = 'eshop_cart';
@@ -79,15 +80,18 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_style';
 	$epages[] = 'eshop_sudo_cat'; 
 	$epages[] = 'eshop_sysemails'; 
+	$epages[] = 'eshop_unknown_state';
 	$epages[] = 'eshop_xtra_help'; 
 	$epages[] = 'eshop_xtra_privacy'; 
 	$epages[] = 'eshop_downloads_only';
 	$epages[] = 'eshop_fold_menu';
 	$epages[] = 'eshop_widget';
+	$epages[] = 'eshop_pay_widget';
 	$epages[] = 'eshop_search_img';
 	$epages[] = 'eshop_version';
 	$epages[] = 'eshop_image_in_cart';
 	$epages[] = 'eshop_shipping_state';
+	$epages[] = 'eshop_shop_page';
 	for ($x=1;$x<=3;$x++){
 		$epages[]='eshop_discount_spend'.$x;
 		$epages[]='eshop_discount_value'.$x;
@@ -159,9 +163,14 @@ if(isset($_POST['delete'])){
 		rmdir ($filedir[0]);
 		echo '<li>'.__('eShop template files deleted','eshop').'</li>';
 	}
-
+	//unregister widgets
+	unregister_sidebar_widget('eshopcart');
+	unregister_sidebar_widget('eshop_payments');
+	eshop_products_unregister();
 	//clear the cron
 	wp_clear_scheduled_hook('eshop_event');
+	//remove eshop capability
+	remove_eshop_caps();
 	//and finally deactivate the plugin - might cause the page to go walkabout - may need to redirect to plugins page
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	echo '<li>'.__('Plugin deactivated','eshop').'</li>';
@@ -175,6 +184,7 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('Removal of files uploaded via the plugin (downloads).','eshop').'</li>';
 	echo '<li>'.__('Removal of the database tables created by the plugin.','eshop').'</li>';
 	echo '<li>'.__('Removal of meta data(product information) associated with a product page.','eshop').'</li>';
+	echo '<li>'.__('Deactivation and removal of eShop widgets.','eshop').'</li>';
 	echo '<li>'.__('Deactivation of the plugin.','eshop').'</li>';
 	echo '</ul>';
 	echo '<p><strong>'.__('Uninstalling the plugin will not affect the following:','eshop').'</strong></p>';
@@ -186,4 +196,29 @@ if(isset($_POST['delete'])){
 	echo '<form action="plugins.php?page=eshop_uninstall.php" method="post"><p class="submit"><input type="submit" id="delete" class="button-primary" name="delete" value="'.__('Uninstall','eshop').'" /></p></form>';
 }
 echo '</div>';
+function remove_eshop_caps() {
+	global $wpdb, $user_level, $wp_rewrite, $wp_version;
+		$role = get_role('administrator');
+		if ($role !== NULL)
+			$role->remove_cap('eShop');
+		$role = get_role('editor');
+		if ($role !== NULL)
+			$role->remove_cap('eShop');
+}
+function eshop_products_unregister() {
+	if ( !$options = get_option('eshop_products_widgets') )
+		$options = array();
+
+	$registered = false;
+	foreach ( array_keys($options) as $o ) {
+		// Old widgets can have null values for some reason
+		if ( !isset($options[$o]['show_what']) ) // we used 'something' above in our exampple.  Replace with with whatever your real data are.
+			continue;
+		// $id should look like {$id_base}-{$o}
+		$id = "eshop-prod-$o"; // Never never never translate an id
+		$registered = true;
+		unregister_sidebar_widget( $id );
+	}
+
+}
 ?>

@@ -7,12 +7,27 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
+/** create capability */
+if (!function_exists('eshop_caps')) {
+    /**
+     * installation routine to set up tables
+     */
+    function eshop_caps() {
+        global $wpdb, $user_level, $wp_rewrite, $wp_version;
+			$role = get_role('administrator');
+			if ($role !== NULL)
+				$role->add_cap('eShop');
+			$role = get_role('editor');
+			if ($role !== NULL)
+				$role->add_cap('eShop');
+    }
+}
+eshop_caps();
 
 /***
 * default options(mainly for settings) go here
 */
 add_option('eshop_style', 'yes');
-add_option('eshop_method','paypal');
 add_option('eshop_records','10');
 add_option('eshop_options_num','3');
 add_option('eshop_downloads_num','3');
@@ -27,7 +42,7 @@ add_option('eshop_sudo_cat','1');
 add_option('eshop_shipping', '1');
 add_option('eshop_shipping_zone', 'country');
 add_option('eshop_shipping_state', 'GB');
-
+add_option('eshop_unknown_state', '5');
 add_option('eshop_show_zones','no');
 add_option('eshop_credits', 'yes');
 add_option('eshop_stock_control','no');
@@ -36,6 +51,13 @@ add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
+
+//new for 2.14.x
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' )
+	delete_option('eshop_method','paypal');
+
+add_option('eshop_method',array('paypal'));
+
 
 $table = $wpdb->prefix . "eshop_states";
 //new for 2.13.0
@@ -270,7 +292,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	address1 varchar(255) NOT NULL default '',
 	address2 varchar(255) NOT NULL default '',
 	city varchar(100) NOT NULL default '',
-	state varchar(3) NOT NULL default '',
+	state varchar(100) NOT NULL default '',
 	zip varchar(20) NOT NULL default '',
 	country varchar(3) NOT NULL default '',
 	reference varchar(255) NOT NULL default '',
@@ -279,7 +301,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	ship_phone varchar(30) NOT NULL default '',
 	ship_address varchar(255) NOT NULL default '',
 	ship_city varchar(100) NOT NULL default '',
-	ship_state varchar(3) NOT NULL default '',
+	ship_state varchar(100) NOT NULL default '',
 	ship_postcode varchar(20) NOT NULL default '',
 	ship_country varchar(3) NOT NULL default '',
 	custom_field varchar(15) NOT NULL default '',
@@ -289,6 +311,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	edited datetime NOT NULL default '0000-00-00 00:00:00',
 	downloads set('yes','no') NOT NULL default 'no',
 	admin_note TEXT NOT NULL,
+	paidvia VARCHAR(255) NOT NULL default '',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
@@ -584,100 +607,115 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	dbDelta($sql);
 }
 
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' ){
+	// lumping all changes prior to 3.0.0
+	/* db changes */
+	$table = $wpdb->prefix ."eshop_base_products";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table};");
+	foreach($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='condition') {
+			$sql="ALTER TABLE ".$table." CHANGE `condition` thecondition VARCHAR(255) NOT NULL default ''";
+			$wpdb->query($sql);
+		}
+	}
+	/* db changes */
+	$table = $wpdb->prefix . "eshop_orders";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table};");
+	foreach($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='memo') {
+			$sql="ALTER TABLE ".$table." CHANGE `memo` thememo TEXT NOT NULL";
+			$wpdb->query($sql);
+		}
+	}
 
-/* db changes */
-$table = $wpdb->prefix ."eshop_base_products";
-$tablefields = $wpdb->get_results("DESCRIBE {$table};");
-foreach($tablefields as $tablefield) {
-	if(strtolower($tablefield->Field)=='condition') {
-		$sql="ALTER TABLE ".$table." CHANGE `condition` thecondition VARCHAR(255) NOT NULL default ''";
+	/* db changes 2.10.1 */
+
+	$table = $wpdb->prefix . "eshop_orders";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='admin_note') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `admin_note` TEXT NOT NULL";
 		$wpdb->query($sql);
 	}
-}
-/* db changes */
-$table = $wpdb->prefix . "eshop_orders";
-$tablefields = $wpdb->get_results("DESCRIBE {$table};");
-foreach($tablefields as $tablefield) {
-	if(strtolower($tablefield->Field)=='memo') {
-		$sql="ALTER TABLE ".$table." CHANGE `memo` thememo TEXT NOT NULL";
+
+	/* db change 2.11.7 (2.12 release) */
+
+	$table = $wpdb->prefix . "eshop_order_items";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	foreach ($tablefields as $tablefield) {
+		 $add_field[]= $tablefield->Field;
+	}
+	if(!in_array('down_id',$add_field)) {
+		$sql="ALTER TABLE `".$table."` ADD `down_id` int(11) NOT NULL default '0'";
 		$wpdb->query($sql);
 	}
-}
-
-/* db changes 2.10.1 */
-
-$table = $wpdb->prefix . "eshop_orders";
-$tablefields = $wpdb->get_results("DESCRIBE {$table}");
-$add_field = TRUE;
-foreach ($tablefields as $tablefield) {
-    if(strtolower($tablefield->Field)=='admin_note') {
-        $add_field = FALSE;
-    }
-}
-if ($add_field) {
-    $sql="ALTER TABLE `".$table."` ADD `admin_note` TEXT NOT NULL";
-    $wpdb->query($sql);
-}
-
-/* db change 2.11.7 (2.12 release) */
-
-$table = $wpdb->prefix . "eshop_order_items";
-$tablefields = $wpdb->get_results("DESCRIBE {$table}");
-foreach ($tablefields as $tablefield) {
-     $add_field[]= $tablefield->Field;
-}
-if(!in_array('down_id',$add_field)) {
-    $sql="ALTER TABLE `".$table."` ADD `down_id` int(11) NOT NULL default '0'";
-    $wpdb->query($sql);
-}
-/* db changes 2.13.0 */
-/* state table recreated + */
-$table = $wpdb->prefix . "eshop_countries";
-$tablefields = $wpdb->get_results("DESCRIBE {$table}");
-foreach ($tablefields as $tablefield) {
-     $add_field[]= $tablefield->Field;
-}
-if(!in_array('list',$add_field)) {
-    $sql="ALTER TABLE `".$table."` ADD `list` tinyint(1) NOT NULL default '1'";
-    $wpdb->query($sql);
-}
-
-
-/*update all post meta to new post meta */
-$eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
-//add on options and prices into the mix
-
-$numoptions=get_option('eshop_options_num');
-if(!is_numeric($numoptions)) $numoptions='3';
-for($i=1;$i<=$numoptions;$i++){
-	$eshop_old_postmeta[]='Option '.$i;
-	$eshop_old_postmeta[]='Price '.$i;
-}
-//go through every page and post
-$args = array(
-	'post_type' => 'any',
-	'numberposts' => -1,
-	); 
-//add in transfer from prod download to _download here
-$allposts = get_posts($args);
-foreach( $allposts as $postinfo) {
-	foreach($eshop_old_postmeta as $field){
-		$eshopvalue=get_post_meta($postinfo->ID, $field,true);
-		if($eshopvalue!=''){
-			add_post_meta( $postinfo->ID, '_'.$field, $eshopvalue);
-	    	delete_post_meta($postinfo->ID, $field);
-	 	}
-	 }
-	if(get_post_meta($postinfo->ID, '_Product Download',true)!=''){
-		$eshopvalue=get_post_meta($postinfo->ID, '_Product Download',true);
-		add_post_meta( $postinfo->ID, '_Download 1', $eshopvalue);
+	/* db changes 2.13.0 */
+	/* state table recreated + */
+	$table = $wpdb->prefix . "eshop_countries";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	foreach ($tablefields as $tablefield) {
+		 $add_field[]= $tablefield->Field;
 	}
-	delete_post_meta($postinfo->ID, '_Product Download');
+	if(!in_array('list',$add_field)) {
+		$sql="ALTER TABLE `".$table."` ADD `list` tinyint(1) NOT NULL default '1'";
+		$wpdb->query($sql);
+	}
+	/*db change 3.0.0*/
+	$table = $wpdb->prefix . "eshop_orders";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	foreach ($tablefields as $tablefield) {
+		 $add_field[]= $tablefield->Field;
+	}
+	if(!in_array('paidvia',$add_field)) {
+		$sql="ALTER TABLE `".$table."` ADD `paidvia` VARCHAR(255) NOT NULL default 'paypal'";
+		$wpdb->query($sql);
+	}
+
+	$table = $wpdb->prefix . "eshop_orders";
+	$sql="ALTER TABLE `".$table."` CHANGE `state` `state` VARCHAR(100) NOT NULL default ''";
+	$sql="ALTER TABLE `".$table."` CHANGE `ship_state` `ship_state` VARCHAR(100) NOT NULL default ''";
+	$wpdb->query($sql);
+
+	/*update all post meta to new post meta */
+	$eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
+	//add on options and prices into the mix
+
+	$numoptions=get_option('eshop_options_num');
+	if(!is_numeric($numoptions)) $numoptions='3';
+	for($i=1;$i<=$numoptions;$i++){
+		$eshop_old_postmeta[]='Option '.$i;
+		$eshop_old_postmeta[]='Price '.$i;
+	}
+	//go through every page and post
+	$args = array(
+		'post_type' => 'any',
+		'numberposts' => -1,
+		); 
+	//add in transfer from prod download to _download here
+	$allposts = get_posts($args);
+	foreach( $allposts as $postinfo) {
+		foreach($eshop_old_postmeta as $field){
+			$eshopvalue=get_post_meta($postinfo->ID, $field,true);
+			if($eshopvalue!=''){
+				add_post_meta( $postinfo->ID, '_'.$field, $eshopvalue);
+				delete_post_meta($postinfo->ID, $field);
+			}
+		 }
+		if(get_post_meta($postinfo->ID, '_Product Download',true)!=''){
+			$eshopvalue=get_post_meta($postinfo->ID, '_Product Download',true);
+			add_post_meta( $postinfo->ID, '_Download 1', $eshopvalue);
+		}
+		delete_post_meta($postinfo->ID, '_Product Download');
+	}
+	/* post meta end */
 }
 
 
-
-/* post meta end */
 
 /* page insertion */
 /*
@@ -771,6 +809,33 @@ if($newpages == true){
 	wp_cache_delete('all_page_ids', 'pages');
 	$wp_rewrite->flush_rules();
 }
+
+/* payment images - need to be transferred to the files directory if they don't exists */
+
+if (!function_exists('eshop_pay_images')) {
+    function eshop_pay_images(){
+        $dirs=wp_upload_dir();
+        $upload_dir=$dirs['basedir'];
+        $url_dir=$dirs['baseurl'];
+        if(substr($url_dir, -1)!='/')$url_dir.='/';
+       	$plugin_dir=ABSPATH.PLUGINDIR;
+       	$eshop_goto=$upload_dir.'/eshop_files';
+       	 //make sure directory exists
+		wp_mkdir_p( $upload_dir );
+		wp_mkdir_p( $eshop_goto );
+		$files=array('paypal','payson');
+		foreach ($files as $file){
+			if(!file_exists($eshop_goto.'/'.$file.'.png')){
+				//copy the files
+				copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
+				chmod($eshop_goto.'/'.$file.'.png',0666);
+			}
+		}
+		return;
+    }
+}
+eshop_pay_images();
+
 /* version number store - add/update */
 update_option('eshop_version', ESHOP_VERSION);
 ?>

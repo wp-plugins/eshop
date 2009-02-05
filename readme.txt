@@ -4,17 +4,26 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 2.13.2
+Stable tag: 3.0.0
 
 An accessible Paypal Shopping Cart plugin.
 
 == Description ==
 
-= New for 2.13.0 =
-
-* added ability to split countries by State/County/Province - US, UK and Canada are provided by default.
-* if no State/County/Province are available then it will not appear on the checkout form.
-* *FIX* download items now automatically get free shipping
+= Updates for 3.0.0 =
+* New payment option added - Payson.
+* Settings page re-organised.
+* New field in checkout form - State/County/Province(if not in the list).
+* Checkout now features images for the different payment options.
+* New setting on shipping page - default zone for unknown State/County/Province.
+* New setting to specify 'Continue Shopping' link (ie main shop page).
+* Now compatible with Role Manager plugin.
+* New shortcode(and widget) to display the images for the payment options.
+* New multi use widget, for displaying products in sidebars.
+* Fixed -Cart now checks stock levels
+* Fixed - shortcode for discounts.
+* small bug fixes - most files changed.
+* New stylesheet for fresh installs.
 
 = eShop features include: =
 
@@ -43,6 +52,23 @@ Tested, and working, in Wordpress 2.7
 
 
 == Latest Updates ==
+
+Version 3.0.0
+
+* New payment option added - Payson.
+* Settings page re-organised.
+* New field in checkout form - State/County/Province(if not in the list).
+* Checkout now features images for the different payment options.
+* New setting on shipping page - default zone for unknown State/County/Province.
+* New setting to specify 'Continue Shopping' link (ie main shop page).
+* Now compatible with Role Manager plugin.
+* New shortcode(and widget) to display the images for the payment options.
+* New multi use widget, for displaying products in sidebars.
+* Fixed -Cart now checks stock levels
+* Fixed - shortcode for discounts.
+* small bug fixes - most files changed.
+* New stylesheet for fresh installs.
+
 Version 2.13.2
 
 * Hawaii (HI) and Alaska (AK) - added to list of US States (sorry)
