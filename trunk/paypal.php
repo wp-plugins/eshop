@@ -122,12 +122,12 @@ switch ($_GET['action']) {
 		//goes direct to this script as nothing needs showing on screen.
 		if(get_option('eshop_cart_success')!=''){
 			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?action=ipn';
+				$ilink=get_permalink(get_option('eshop_cart_success')).'?action=paypalipn';
 			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;action=ipn';
+				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;action=paypalipn';
 			}
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=ipn';
+			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=paypalipn';
 		}
 		$p->add_field('notify_url', $ilink);
 
@@ -224,7 +224,7 @@ switch ($_GET['action']) {
 		break;
    
       
-   case 'ipn':          // Paypal is calling page for IPN validation...
+   case 'paypalipn':          // Paypal is calling page for IPN validation...
    
 		// It's important to remember that paypal calling this script.  There
 		// is no output here.  This is where you validate the IPN data and if it's
@@ -366,7 +366,7 @@ switch ($_GET['action']) {
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
 			}
       	}else{
-      		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['mc_gross']);
+      		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].number_format($p->ipn_data['mc_gross'],2));
 			if(get_option('eshop_status')=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');

@@ -35,13 +35,13 @@ if (!function_exists('eshop_downloads')) {
 			   		}
 			   		$dltitle = (strlen($dlrow->title) >= 20) ? substr($dlrow->title,0,20) . "&#8230;" : $dlrow->title;
 					$echo.='
-					<form method="post" action="" class="dlproduct"><fieldset>
+					<form method="post" action="" class="eshop dlproduct"><fieldset>
 					<legend>'.$dltitle.' ('.check_filesize($dlfilesize).')</legend>
 					<input name="email" type="hidden" value="'.$_POST['email'].'" />
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
 					<input name="id" type="hidden" value="'.$dlrow->id.'" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
-					<label for="ro">'.__('Number of downloads remaining','eshop').'</label>
+					<label for="ro'.$x.'">'.__('Number of downloads remaining','eshop').'</label>
 					<input type="text" readonly="readonly" name="ro" class="ro" id="ro'.$x.'" value="'.$dlrow->downloads.'" />
 					<input type="submit" class="button" id="submit'.$x.'" name="Submit" value="'.__('Download','eshop').' '.$dltitle.'" />
 					</fieldset></form>
@@ -52,7 +52,7 @@ if (!function_exists('eshop_downloads')) {
 				if($dlcount>1){
 					//download all form.
 					$echo.='
-					<form method="post" action="" id="dlall"><fieldset>
+					<form method="post" action="" id="dlall" class="eshop"><fieldset>
 					<legend>'.__('Download all files','eshop').' ('.check_filesize($tsize).') '.__('in one zip file.','eshop').'</legend>
 					<input name="email" type="hidden" value="'.$_POST['email'].'" />
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
@@ -65,9 +65,9 @@ if (!function_exists('eshop_downloads')) {
 			}else{
 				$prevdlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code'");
 				if($dlcount==$prevdlcount){
-					$error='<p>'.__('Either your email address or code is incorrect, please try again.','eshop').'</p>';
+					$error='<p class="error">'.__('Either your email address or code is incorrect, please try again.','eshop').'</p>';
 				}else{
-					$error='<p>'.__('Your email address and code are correct, however you have no downloads remaining.','eshop').'</p>';
+					$error='<p class="error">'.__('Your email address and code are correct, however you have no downloads remaining.','eshop').'</p>';
 				}
 				$echo .= eshop_dloadform($email,$code,$error);
 			}
@@ -84,7 +84,7 @@ function eshop_dloadform($email,$code,$error=''){
 		$echo .= $error;
 	}
 	$echo .='
-	<form method="post" action="" id="eshopdlform">
+	<form method="post" action="" id="eshopdlform" class="eshop">
 	<fieldset><legend>'.__('Enter Details','eshop').'</legend>
 	<label for="email">'.__('Email:','eshop').'</label> 
 	<input name="email" id="email" type="text" value="'.$email.'" /><br />

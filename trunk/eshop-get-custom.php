@@ -33,7 +33,7 @@ function eshop_boing($pee,$short='no'){
 
 				$currsymbol=get_option('eshop_currency_symbol');
 				$replace .= '
-				<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="addtocart">
+				<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="eshop addtocart">
 				<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(attribute_escape(eshop_get_custom('Product Description'))).'</span></legend>';
 				$theid=sanitize_file_name(eshop_get_custom('Sku'));
 				if(get_option('eshop_options_num')>1){

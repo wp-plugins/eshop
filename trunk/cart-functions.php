@@ -23,9 +23,9 @@ if (!function_exists('display_cart')) {
 			global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
-				$echo.= '<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshopcart">';
+				$echo.= '<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopcart">';
 			}
-			$echo.= '<table class="cart" summary="'.__('Shopping cart contents overview','eshop').'">
+			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
 			<caption>'.__('Shopping Cart','eshop').'</caption>
 			<thead>
 			<tr class="thead">
@@ -127,13 +127,19 @@ if (!function_exists('display_cart')) {
 							if(!in_array($shipclass, $tempshiparray)) {
 								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									if($pzone!=get_option('eshop_unknown_state'))
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									else
+										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
 							}else{
 								if($shipclass!='F'){
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									if($pzone!=get_option('eshop_unknown_state'))
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									else
+										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
 									$shipping+=$shipcost;
 								}
@@ -145,7 +151,10 @@ if (!function_exists('display_cart')) {
 							if(!in_array($shipclass, $tempshiparray)) {
 								array_push($tempshiparray, $shipclass);
 								if($shipclass!='F'){
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									if($pzone!=get_option('eshop_unknown_state'))
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									else
+										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
@@ -153,7 +162,10 @@ if (!function_exists('display_cart')) {
 						}
 						break;
 					case '3'://( one overall charge no matter how many are ordered )
-						$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+						if($pzone!=get_option('eshop_unknown_state'))
+							$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+						else
+							$shipzone='zone'.$pzone;						
 						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
 						$shipping+=$shipcost;
 						break;
@@ -439,6 +451,9 @@ if (!function_exists('orderhandle')) {
 		$city=$wpdb->escape($_POST['city']);
 		$zip=$wpdb->escape($_POST['zip']);
 		$state=$wpdb->escape($_POST['state']);
+		if($_POST['state']=='' && $_POST['altstate']!='')
+			$state=$wpdb->escape($_POST['altstate']);
+
 		$country=$wpdb->escape($_POST['country']);
 
 		$ship_name=$wpdb->escape($_POST['ship_name']);
@@ -449,8 +464,12 @@ if (!function_exists('orderhandle')) {
 		$ship_postcode=$wpdb->escape($_POST['ship_postcode']);
 		$ship_country=$wpdb->escape($_POST['ship_country']);
 		$ship_state=$wpdb->escape($_POST['ship_state']);
+		if($_POST['ship_state']=='' && $_POST['ship_altstate']!='')
+			$ship_state=$wpdb->escape($_POST['ship_altstate']);
 		$reference=$wpdb->escape($_POST['reference']);
 		$comments=$wpdb->escape($_POST['comments']);
+		
+		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
 
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
@@ -459,7 +478,7 @@ if (!function_exists('orderhandle')) {
 			(checkid, first_name, last_name,company,email,phone, address1, address2, city,
 			state, zip, country, reference, ship_name,ship_company,ship_phone, 
 			ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
-			custom_field,transid,edited,comments)VALUES(
+			custom_field,transid,edited,comments,paidvia)VALUES(
 			'$checkid',
 			'$first_name',
 			'$last_name',
@@ -484,7 +503,8 @@ if (!function_exists('orderhandle')) {
 			'$custom_field',
 			'$processing',
 			NOW(),
-			'$comments'
+			'$comments',
+			'$paidvia'
 				);");
 		$i=1;
 		//this is here to generate just one code per order
@@ -665,6 +685,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$address.= $drow->city."\n";
 			$qcode=$wpdb->escape($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+			if($qstate=='') $qstate=$drow->state;
 			$address.= $qstate."\n";
 			$address.= $drow->zip."\n";
 			$qccode=$wpdb->escape($drow->country);
@@ -685,6 +706,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$address.= $drow->ship_city."\n";
 				$qcode=$wpdb->escape($drow->ship_state);
 				$sqstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+				if($sqstate=='') $sqstate=$drow->ship_state;
 				$address.= $sqstate."\n";
 				$address.= $drow->ship_postcode."\n";
 				$qccode=$wpdb->escape($drow->ship_country);
@@ -717,183 +739,6 @@ if (!function_exists('eshop_rtn_order_details')) {
 		}
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact);
 		return $array;
-	}
-}
-
-if (!function_exists('eshop_get_shipping')) {
-    /**
-     * returns a table of the shipping rates
-     */
-    function eshop_get_shipping($atts) { 
-		global $wpdb;
-		extract(shortcode_atts(array('shipclass'=>'A,B,C,D,E,F'), $atts));
-		$shipclasses = explode(",", $shipclass);
-		$dtable=$wpdb->prefix.'eshop_shipping_rates';
-		$query=$wpdb->get_results("SELECT * from $dtable");
-		$currsymbol=get_option('eshop_currency_symbol');
-
-		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'">';
-		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
-		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
-		$eshopshiptable.='<tbody>'."\n";
-		$x=1;
-		$calt=0;
-		switch (get_option('eshop_shipping')){
-			case '1':// ( per quantity of 1, prices reduced for additional items )
-				
-				$query=$wpdb->get_results("SELECT * from $dtable ORDER BY class ASC, items ASC");
-		
-				foreach ($query as $row){
-					if(in_array($row->class,$shipclasses)){
-						$calt++;
-						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
-						$eshopshiptable.= '<tr'.$alt.'>';
-						if($row->items==1){
-							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
-						}else{
-							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
-						}
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
-						$eshopshiptable.= '</tr>';
-						$x++;
-					}
-				}
-				break;
-			case '2'://( once per shipping class no matter what quantity is ordered )
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' ORDER BY 'class'  ASC");
-				foreach ($query as $row){
-					if(in_array($row->class,$shipclasses)){
-						$calt++;
-						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
-						$eshopshiptable.= '<tr'.$alt.'>';
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
-						$eshopshiptable.= '</tr>';
-						$x++;
-					}
-				}
-				break;
-			case '3'://( one overall charge no matter how many are ordered )
-
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='A' ORDER BY 'class'  ASC");
-		
-				foreach ($query as $row){
-					if(in_array($row->class,$shipclasses)){
-						$calt++;
-						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
-						$eshopshiptable.= '<tr'.$alt.'>';
-						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
-						$eshopshiptable.= '</tr>';
-						$x++;
-					}
-				}
-				break;
-		}
-		if(in_array('F',$shipclasses)){
-			$calt++;
-			$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
-			$eshopshiptable.= '<tr'.$alt.'>';
-			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">F <small>'.__('(Free)','eshop').'</small></th>'."\n";
-			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format('0',2)).'</td>'."\n";
-			$eshopshiptable.= '</tr>';
-		}
-		$eshopshiptable.='</tbody>'."\n";
-		$eshopshiptable.='</table>'."\n";
-
-		if('yes' == get_option('eshop_show_zones')){
-			$eshopshiptable.=eshop_show_zones();
-		}
-		return $eshopshiptable;
-
-	}
-}
-if (!function_exists('eshop_show_zones')) {
-    /**
-     * returns a table of the ones, state or country depending on what is chosen.
-     */
-    function eshop_show_zones() { 
-		global $wpdb;
-		if('country' == get_option('eshop_shipping_zone')){
-			//countries
-			$tablec=$wpdb->prefix.'eshop_countries';
-			$List=$wpdb->get_results("SELECT code,country FROM $tablec GROUP BY list,country",ARRAY_A);
-			foreach($List as $key=>$value){
-				$k=$value['code'];
-				$v=$value['country'];
-				$countryList[$k]=$v;
-			}
-			if(isset($_POST) && $_POST['country']!=''){
-				$country=$_POST['country'];
-			}
-			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
-			<legend>'.__('Check your shipping zone','eshop').'</legend>
-			 <label for="country">'.__('Country','eshop').' <select class="med" name="country" id="country">';
-			$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-			foreach($countryList as $code => $label)	{
-				if (isset($country) && $country == $code){
-					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-				}else{
-					$echo.="<option value=\"$code\">$label</option>\n";
-				}
-			}
-			$echo.= '</select></label> 
-			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></label>
-			</fieldset></form>';
-			if(isset($_POST) && $_POST['country']!=''){
-				$qccode=$wpdb->escape($_POST['country']);
-				$qcountry = $wpdb->get_row("SELECT country,zone FROM $tablec WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qcountry['country'],$qcountry['zone']).'.</p>';
-			}
-
-		}else{
-			//each time re-request from the database
-			$dtable=$wpdb->prefix.'eshop_states';
-			$List=$wpdb->get_results("SELECT code, stateName from $dtable ORDER BY stateName",ARRAY_A);
-			foreach($List as $key=>$value){
-				$k=$value['code'];
-				$v=$value['stateName'];
-				$stateList[$k]=$v;
-			}
-			if(isset($_POST) && $_POST['state']!=''){
-				$state=$_POST['state'];
-			}
-			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
-			<legend>'.__('Check your shipping zone','eshop').'</legend>
-			<label for="state">'.__('State','eshop').'<select class="med" name="state" id="state">';
-			$echo .='<option value="" selected="selected">'.__('Select your State','eshop').'</option>';
-			foreach($stateList as $code => $label)	{
-				if (isset($state) && $state == $code){
-					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-				}else{
-					$echo.="<option value=\"$code\">$label</option>\n";
-				}
-			}
-			$echo.= '</select></label>
-			<label for="submitit"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></label>
-			</fieldset></form>';
-			if(isset($_POST) && $_POST['state']!=''){
-				$qccode=$wpdb->escape($_POST['state']);
-				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $dtable WHERE code='$qccode' limit 1",ARRAY_A);
-				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qstate['stateName'],$qstate['zone']).'.</p>';
-			}
-		}
-		if(get_bloginfo('version')<'2.5.1')
-			remove_filter('the_content', 'wpautop');
-
-		return $echo;
 	}
 }
 
@@ -1049,18 +894,20 @@ if (!function_exists('eshop_download_the_product')) {
 if (!function_exists('eshop_show_credits')) {
 	function eshop_show_credits(){
 	//for admin
+	$version = explode(".", ESHOP_VERSION);
 	?>
-	<p class="creditline"><?php _e('Powered by','eshop'); ?> <a href="http://www.quirm.net/" title="<?php __('Created by','eshop'); ?> Rich Pedley">eShop</a>
-	<dfn title="<?php echo ESHOP_VERSION; ?>">v.2</dfn></p> 
+	<p class="creditline"><?php _e('Powered by','eshop'); ?> <a href="http://www.quirm.net/" title="<?php _e('Created by','eshop'); ?> Rich Pedley">eShop</a>
+	<dfn title="<?php echo ESHOP_VERSION; ?>">v.<?php echo $version[0]; ?></dfn></p> 
 	<?php 
 	}
 }
 if (!function_exists('eshop_visible_credits')) {
 	function eshop_visible_credits($pee){
 		//for front end
+		$version = explode(".", ESHOP_VERSION);
 		if('yes' == get_option('eshop_credits')){
 			 echo '<p class="creditline">'.__('Powered by','eshop').' <a href="http://www.quirm.net/" title="'.__('Created by','eshop').' Rich Pedley">eShop</a>
-		<dfn title="'.__('Version','eshop').' '.ESHOP_VERSION.'">v.2</dfn></p> ';
+		<dfn title="'.__('Version','eshop').' '.ESHOP_VERSION.'">v.'.$version[0].'</dfn></p> ';
 		}else{
 			echo '<!--'.__('Powered by','eshop').' eShop v'.ESHOP_VERSION.' by Rich Pedley http://www.quirm.net/-->';
 		}

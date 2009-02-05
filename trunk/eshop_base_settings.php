@@ -81,8 +81,7 @@ echo $result;
 </select><br />
 
 <label for="eshop_base_ptype"><?php _e('Product type','eshop'); ?></label><input id="eshop_base_ptype" name="eshop_base_ptype" type="text" value="<?php echo get_option('eshop_base_ptype'); ?>" size="30" /><br />
-<label for="eshop_base_payment"><?php _e('Payment Accepted <small> comma delimited list of payment methods available in addition to paypal.</small>','eshop'); ?></label><input id="eshop_base_payment" name="eshop_base_payment" type="text" value="<?php echo get_option('eshop_base_payment'); ?>" size="30" /><br />
-
+<label for="eshop_base_payment"><?php _e('Payment Accepted <small> comma delimited list of payment methods available.</small>','eshop'); ?></label><input id="eshop_base_payment" name="eshop_base_payment" type="text" value="<?php echo get_option('eshop_base_payment'); ?>" size="30" /><br />
 
 <input type="hidden" name="page_options" value="eshop_base_brand,eshop_base_condition,
 eshop_base_expiry,eshop_base_ptype,eshop_base_payment" />

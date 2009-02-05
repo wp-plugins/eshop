@@ -135,7 +135,7 @@ class paypal_class {
       echo "<h3>Please wait, your order is being processed&#8230;</h3>\n";
 */
 	// remove echo and hopefully I can echo this later
-      $echo= "<form method=\"post\" action=\"".$this->autoredirect."\"><div>\n";
+      $echo= "<form method=\"post\" class=\"eshop\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
          $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
@@ -163,7 +163,7 @@ class paypal_class {
        <div id="process">
          <p><strong><?php _e('Please wait, your order is being processed&#8230;','eshop'); ?></strong></p>
 	     <p><?php _e('If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.','eshop'); ?></p>
-         <form method="post" id="eshopgateway" action="<?php echo $this->paypal_url; ?>">
+         <form method="post" class="eshop" id="eshopgateway" action="<?php echo $this->paypal_url; ?>">
           <p><?php
 		  foreach ($_POST as $name => $value) {
 			if($name!='submit' && $name!='ppsubmit'){			

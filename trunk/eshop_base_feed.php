@@ -46,7 +46,6 @@ foreach($grabit as $foo=>$k){
 $basecondition=get_option('eshop_base_condition');
 $basebrand=get_option('eshop_base_brand');
 $baseptype=get_option('eshop_base_ptype');
-
 $baseexpiry=get_option('eshop_base_expiry');
 $basedate=date('Y-m-d',mktime(0, 0, 0, date("m") , date("d")+$baseexpiry, date("Y")));
 $basepayment=get_option('eshop_base_payment');

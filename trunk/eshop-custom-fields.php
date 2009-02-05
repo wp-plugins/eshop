@@ -8,10 +8,13 @@ add_action('save_post', 'eshop_save_postdata');
 function eshop_add_custom_box() {
 
   if( function_exists( 'add_meta_box' )) {
-    add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
+  	get_currentuserinfo() ;
+	if(current_user_can('eShop')){
+    	add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
                 'eshop_inner_custom_box', 'post', 'normal','high' );
-    add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
+   		add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
                 'eshop_inner_custom_box', 'page', 'normal' );
+    }
    }
 }
    

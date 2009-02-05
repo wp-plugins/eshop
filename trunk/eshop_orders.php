@@ -507,6 +507,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$custom=$drow->custom_field;
 		$transid=$drow->transid;
 		$admin_note=htmlspecialchars(stripslashes($drow->admin_note));
+		$paidvia=$drow->paidvia;
 	}
 	if($status=='Completed'){$status=__('Active','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
@@ -592,7 +593,10 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		<td headers="opname onum'.$calt.'">'.$myrow->item_qty.'</td>
 		<td headers="opname onum'.$calt.'" class="right">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."</td></tr>\n";
 	}
-	echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+	if($transid==__('Processing&#8230;','eshop'))
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+	else
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(_c('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	echo "</tbody></table>\n";
 			
 	$cyear=substr($custom, 0, 4);
@@ -624,13 +628,16 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
 			echo $address."<br />\n";
 			echo $drow->city."<br />\n";
-			echo $drow->zip."<br />\n";
 			$qcode=$wpdb->escape($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 			if($qstate!=''){
 				echo $qstate."<br />";
 				$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+			}else{
+				echo $drow->state."<br />";
 			}
+			echo $drow->zip."<br />\n";
+
 			$qcode=$wpdb->escape($drow->country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
@@ -639,6 +646,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				$qzone=$countryzone;
 			}else{
 				$qzone=$statezone;
+				if($statezone=='') $qzone=get_option('eshop_unknown_state');
 			}
 			echo '<p>'.__('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p></div>\n";
 			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
@@ -651,13 +659,15 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
 				echo $drow->ship_address."<br />\n";
 				echo $drow->ship_city."<br />\n";
-				echo $drow->ship_postcode."<br />\n";
 				$qcode=$wpdb->escape($drow->ship_state);
 				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 				if($qstate!=''){
 					$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
 					echo $qstate."<br />";
+				}else{
+					echo $drow->ship_state."<br />";
 				}
+				echo $drow->ship_postcode."<br />\n";
 				$qcode=$wpdb->escape($drow->ship_country);
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
@@ -666,6 +676,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 					$qzone=$countryzone;
 				}else{
 					$qzone=$statezone;
+					if($statezone=='') $qzone=get_option('eshop_unknown_state');
 				}
 				echo '<p>'. __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p></div>\n";
 			}

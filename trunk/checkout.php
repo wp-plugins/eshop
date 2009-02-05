@@ -6,7 +6,7 @@ if ('checkout.php' == basename($_SERVER['SCRIPT_FILENAME']))
 global $wpdb;
 
 if (!function_exists('eshopShowform')) {
-	function eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_country){
+	function eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$altstate,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_altstate,$ship_country){
 	global $wpdb, $blog_id;
 	if(get_option('eshop_shipping_zone')=='country'){
 		$creqd='<span class="reqd">*</span>';
@@ -22,7 +22,7 @@ if (!function_exists('eshopShowform')) {
 	<div class="custdetails">
 	<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
 	'.$xtralinks.'</small></p>
-	<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshopform">
+	<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopform">
 	<fieldset><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'<br />
 	</legend><fieldset>';
 	if('no' == get_option('eshop_downloads_only')){
@@ -76,6 +76,8 @@ if (!function_exists('eshopShowform')) {
 		}else{
 			$echo .='<input type="hidden" name="state" value="" />';
 		}
+		$echo .= '<label for="altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
+				  <input class="short" type="text" name="altstate" value="'.$altstate.'" id="altstate" size="20" /></label><br />';
 		$echo .= '
 		 <label for="zip">'.__('Zip/Post code','eshop').' <span class="reqd">*</span><br />
 		  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /></label><br />
@@ -140,6 +142,9 @@ if (!function_exists('eshopShowform')) {
 		}else{
 			$echo .='<input type="hidden" name="ship_state" value="" />';
 		}
+		$echo .= '<label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
+				 <input class="short" type="text" name="ship_altstate" value="'.$ship_altstate.'" id="ship_altstate" size="20" /></label><br />';
+
 		$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
 		  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
 		  <br />
@@ -188,7 +193,23 @@ if (!function_exists('eshopShowform')) {
 		$echo .='<p><label for="eshop_discount">'.__('Discount Code (case sensitive)','eshop').'</label><br />
 	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></p>'."\n";
 	}
-	
+	if(is_array(get_option('eshop_method'))){
+		$i=1;
+		$eshopfiles=eshop_files_directory();
+		$echo .='<fieldset class="eshoppayvia"><legend>'.__('Pay Via:', 'eshop').'<span class="reqd">*</span></legend>'."\n<ul>\n";
+		if(sizeof((array)get_option('eshop_method'))!=1){
+			foreach(get_option('eshop_method') as $k=>$eshoppayment){
+				$echo .='<li><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></label><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
+				$i++;
+			}
+		}else{
+			foreach(get_option('eshop_method') as $k=>$eshoppayment){
+				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
+				$i++;
+			}
+		}
+		$echo .="</ul>\n</fieldset>\n";
+	}
 	
 	$echo .='<input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" />
 	</fieldset>
@@ -207,8 +228,14 @@ if (!function_exists('eshop_checkout')) {
 		$echoit='';
 		include_once(ABSPATH.'wp-includes/wp-db.php');
 		include_once ABSPATH.PLUGINDIR."/eshop/cart-functions.php";
-		$paymentmethod=get_option('eshop_method');
-
+		if(isset($_POST['eshop_payment']))
+			$_SESSION['eshop_payment'.$blog_id]=$_POST['eshop_payment'];
+			
+		if(!isset($_SESSION['eshop_payment'.$blog_id])){
+			$paymentmethod='paypal';
+		}else{
+			$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
+		}
 		global $wpdb;
 
 		//left over from previous script, leaving in just in case another payment method is used.
@@ -280,6 +307,9 @@ if (!function_exists('eshop_checkout')) {
 					if($_POST['ship_state']==''){
 						$_POST['ship_state']=$_POST['state'];
 					}
+					if($_POST['ship_altstate']==''){
+						$_POST['ship_altstate']=$_POST['altstate'];
+					}
 				}else{
 					$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
 					$_POST['ship_company']=$_POST['company'];
@@ -294,6 +324,7 @@ if (!function_exists('eshop_checkout')) {
 					$_POST['ship_postcode']=$_POST['zip'];
 					$_POST['ship_country']=$_POST['country'];
 					$_POST['ship_state']=$_POST['state'];
+					$_POST['ship_altstate']=$_POST['altstate'];
 				}
 
 				if(get_option('eshop_shipping_zone')=='country'){
@@ -307,6 +338,12 @@ if (!function_exists('eshop_checkout')) {
 						$pzone=$_POST['ship_state'];
 					}else{
 						$pzone=$_POST['state'];
+					}
+					if($_POST['altstate']!=''){
+						$pzone=get_option('eshop_unknown_state');
+					}
+					if($_POST['ship_altstate']!=''){
+						$pzone=get_option('eshop_unknown_state');
 					}
 				}
 		}else{
@@ -402,7 +439,7 @@ if (!function_exists('eshop_checkout')) {
 				}
 			}
 		}else{
-			if(isset($_POST['state'])){
+			if(isset($_POST['state']) && $_POST['altstate']==''){
 				$valid=checkAlpha($_POST['state']);
 				if($valid==FALSE){
 					$error.= '<li>'.__('<strong>State/County/Province</strong> - missing or incorrect.','eshop').'</li>';
@@ -419,6 +456,9 @@ if (!function_exists('eshop_checkout')) {
 				if($valid==FALSE){
 					$error.= '<li>'.__('<strong>Zip/Post code</strong> - missing or incorrect.','eshop').'</li>';
 				}
+		}
+		if(!isset($_POST['eshop_payment'])){
+			$error.= '<li>'.__('You have not chosen a <strong>payment option</strong>.','eshop').'</li>';
 		}
 		if(eshop_discount_codes_check()){
 			$_SESSION['eshop_discount'.$blog_id]='';
@@ -445,6 +485,7 @@ if (!function_exists('eshop_checkout')) {
 				$city=$_POST['city'];
 				$country=$_POST['country'];
 				$state=$_POST['state'];
+				$altstate=$_POST['altstate'];
 				$zip=$_POST['zip'];
 				$ship_name=$_POST['ship_name'];
 				$ship_company=$_POST['ship_company'];
@@ -453,6 +494,7 @@ if (!function_exists('eshop_checkout')) {
 				$ship_city=$_POST['ship_city'];
 				$ship_country=$_POST['ship_country'];
 				$ship_state=$_POST['ship_state'];
+				$ship_altstate=$_POST['ship_altstate'];
 				$ship_postcode=$_POST['ship_postcode'];
 				$comments=$_POST['comments'];
 				$chkerror='1';
@@ -561,6 +603,9 @@ if (!function_exists('eshop_checkout')) {
 					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 					if($qstate!='')
 						$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
+					if($_POST['altstate']!='')
+						$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['altstate']."</li>\n";
+					
 					$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['zip']."</li>\n";
 					$qccode=$wpdb->escape($_POST['country']);
 					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
@@ -596,6 +641,9 @@ if (!function_exists('eshop_checkout')) {
 						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
 						if($qstate!='')
 							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
+						if($_POST['ship_altstate']!='')
+							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['ship_altstate']."</li>\n";
+
 						$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
 						$qccode=$wpdb->escape($_POST['ship_country']);
 						$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
@@ -617,6 +665,9 @@ if (!function_exists('eshop_checkout')) {
 			$_SESSION['addy'.$blog_id]['city']=$_POST['city'];
 			$_SESSION['addy'.$blog_id]['country']=$_POST['country'];
 			$_SESSION['addy'.$blog_id]['state']=$_POST['state'];
+			if(isset($_POST['altstate']) && $_POST['altstate']!='')
+				$_SESSION['addy'.$blog_id]['state']=$_POST['altstate'];
+
 			$_SESSION['addy'.$blog_id]['zip']=$_POST['zip'];
 			$_SESSION['addy'.$blog_id]['ship_name']=$_POST['ship_name'];
 			$_SESSION['addy'.$blog_id]['ship_company']=$_POST['ship_company'];
@@ -625,6 +676,8 @@ if (!function_exists('eshop_checkout')) {
 			$_SESSION['addy'.$blog_id]['ship_city']=$_POST['ship_city'];
 			$_SESSION['addy'.$blog_id]['ship_country']=$_POST['ship_country'];
 			$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_state'];
+			if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!='')
+				$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_altstate'];
 			$_SESSION['addy'.$blog_id]['ship_postcode']=$_POST['ship_postcode'];
 			$_SESSION['addy'.$blog_id]['comments']=$_POST['comments'];
 			
@@ -651,6 +704,8 @@ if (!function_exists('eshop_checkout')) {
 			$city=$_SESSION['addy'.$blog_id]['city'];
 			$country=$_SESSION['addy'.$blog_id]['country'];
 			$state=$_SESSION['addy'.$blog_id]['state'];
+			$altstate=$_SESSION['addy'.$blog_id]['altstate'];
+
 			$zip=$_SESSION['addy'.$blog_id]['zip'];
 			$ship_name=$_SESSION['addy'.$blog_id]['ship_name'];
 			$ship_company=$_SESSION['addy'.$blog_id]['ship_company'];
@@ -659,30 +714,15 @@ if (!function_exists('eshop_checkout')) {
 			$ship_city=$_SESSION['addy'.$blog_id]['ship_city'];
 			$ship_country=$_SESSION['addy'.$blog_id]['ship_country'];
 			$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
+			$ship_altstate=$_SESSION['addy'.$blog_id]['ship_altstate'];
 			$ship_postcode=$_SESSION['addy'.$blog_id]['ship_postcode'];
 			$comments=$_SESSION['addy'.$blog_id]['comments'];
 		}else{
-			$first_name='';
-			$last_name='';
-			$company='';
-			$phone='';
-			$reference='';
-			$email='';
-			$address1='';
-			$address2='';
-			$city='';
-			$country='';
-			$state='';
-			$zip='';
-			$ship_name='';
-			$ship_company='';
-			$ship_phone='';
-			$ship_address='';
-			$ship_city='';
-			$ship_postcode='';
-			$ship_country='';
-			$ship_state='';
-			$comments='';
+			$first_name=$last_name=$company=$phone=$reference='';
+			$email=$address1=$address2=$city=$country='';
+			$state=$altstate=$zip=$ship_name=$ship_company='';
+			$ship_phone=$ship_address=$ship_city=$ship_postcode='';
+			$ship_country=$ship_state=$ship_altstate=$comments='';
 			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0){
 			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
@@ -694,7 +734,7 @@ if (!function_exists('eshop_checkout')) {
 
 	if($chkerror!=0 || (!isset ($_POST['submit'])) && $numberofproducts>=1){
 		// only show form if not filled in.
-		$echoit.= eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_country);
+		$echoit.= eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$altstate,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_altstate,$ship_country);
 	}
 
 	if(isset($_SESSION['shopcart'.$blog_id])){

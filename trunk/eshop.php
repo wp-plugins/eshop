@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '2.13.2');
+define('ESHOP_VERSION', '3.0.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 2.13.2
+Version: 3.0.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -28,7 +28,7 @@ Author URI: http://quirm.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-load_plugin_textdomain('eshop', 'wp-content/plugins/eshop');
+load_plugin_textdomain('eshop', PLUGINDIR . '/' . plugin_basename(dirname(__FILE__)));
 if(!isset($_SESSION['shopcart'.$blog_id])) {
   session_start();
   $setsession=$_SESSION['shopcart'.$blog_id];
@@ -42,7 +42,7 @@ if(!isset($_SESSION['shopcart'.$blog_id])) {
 + DO NOT UPDATE TO NEW SETTINGS UNLESS YOU ALSO UPDATE ESHOPDATE FUNCTION +
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 */
-$eshoplevel=7;
+$eshoplevel='eShop';
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook
@@ -450,21 +450,8 @@ add_action('init','eshopdata');
 if (!function_exists('eshopdata')) {
 	function eshopdata(){
 		global $current_user, $wp_roles, $post;
-		//when using this code block use if($role
-		if( $current_user->id )  {
-			foreach($wp_roles->role_names as $role => $Role) {
-				if (array_key_exists($role, $current_user->caps))
-					break;
-			}
-		}
 		get_currentuserinfo() ;
-		global $user_level;
-		global $eshoplevel;
-		//for now use this - will need to check what will break on updating older plugins before implementing change
-		//if ($user_level >= $eshoplevel) {
-		if($role=='administrator' || $role=='editor'){
-		//when we change $eshoplevel to tie it to an permission use this one
-		//if(current_user_can('manage_options')){
+		if(current_user_can('eShop')){
 			//this block is used solely for back end downloads *ONLY*
 			if(isset($_GET['eshopdl'])){
 				include 'eshop-all-data.php';
@@ -473,9 +460,13 @@ if (!function_exists('eshopdata')) {
 				include 'eshop_base_feed.php';
 			}
 		}
-		if(isset($_GET['action']) && $_GET['action']=='ipn'){
+		if(isset($_GET['action']) && $_GET['action']=='paypalipn'){
 			include_once 'paypal.php';
 			exit;
+		}
+		if(isset($_GET['action']) && $_GET['action']=='paysonipn'){
+			include_once 'payson.php';
+			//exit;
 		}
 		//we need to buffer output on a few pages
 		if((isset($_GET['action']) && $_GET['action']=='redirect')||(isset($_POST['postid_1']))){
