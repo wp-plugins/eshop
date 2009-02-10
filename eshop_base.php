@@ -187,9 +187,9 @@ if(!isset($_GET['change'])){
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
+				$pid=$grabit['id'];
 				if($pdown=='No'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
-					$pid=$grabit['id'];
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
 					if($grabit['_Stock Available']=='No'){
 						$available='No';
@@ -200,11 +200,8 @@ if(!isset($_GET['change'])){
 					
 				}else{
 					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$id");
+					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$pid");
 					echo '<td headers="stk sku'.$calt.'">n/a</td>';
-					if($row->purchases==''){
-						$row->purchases='0';
-					}
 				}
 				
 				echo '<td headers="opt sku'.$calt.'">';
@@ -403,9 +400,9 @@ if(!isset($_GET['change'])){
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
+				$pid=$grabit['id'];
 				if($pdown=='No'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
-					$pid=$grabit['id'];
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
 					if($grabit['_Stock Available']=='No'){
 						$available='No';
@@ -414,13 +411,11 @@ if(!isset($_GET['change'])){
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 
-				}else{
+				}
+				else{
 					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$id");
+					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$pid");
 					echo '<td headers="stk sku'.$calt.'">n/a</td>';
-					if($row->purchases==''){
-						$row->purchases='0';
-					}
 				}
 
 				echo '<td headers="opt sku'.$calt.'">';

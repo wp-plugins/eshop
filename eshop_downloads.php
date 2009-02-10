@@ -246,7 +246,7 @@ function eshop_downloads_manager() {
 	}else{
 	//first page you see
 		include_once ("pager-class.php");
-		$cda=$cdd=$cta=$cdwa=$cpa=$ia='';
+		$cda=$cdd=$cta=$cdwa=$cpa=$cia='';
 		if(isset($_GET['by'])){
 			switch ($_GET['by']) {
 				case'dd'://date descending

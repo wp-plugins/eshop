@@ -108,7 +108,7 @@ switch ($_GET['action']) {
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
-				if(eshop_discount_codes_check()){
+				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 					if($chkcode && apply_eshop_discount_code('discount')>0){
 						$discount=apply_eshop_discount_code('discount')/100;

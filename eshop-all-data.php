@@ -1,5 +1,6 @@
 <?php
-session_start();
+if(!isset($_SESSION))
+	session_start();
 global $wpdb;
 //tables used
 $dtable=$wpdb->prefix.'eshop_orders';

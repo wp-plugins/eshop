@@ -17,7 +17,7 @@ function eshop_base_create_feed(){
 		<h2><?php _e('Here be Feeds','eshop'); ?></h2>
 		<ul>
 		<?php
-		$dlpage=$PHP_SELF.'?page='.$_GET['page'].'&amp;eshopbasedl=yes';
+		$dlpage='?page='.$_GET['page'].'&amp;eshopbasedl=yes';
 		?>
 		<li><a href="<?php echo $dlpage; ?>&amp;d=1"><?php _e('Download the xml file','eshop'); ?></a></li>
 		<li><a href="<?php echo $dlpage; ?>&amp;d=1&amp;os=mac"><?php _e('Mac - Download the xml file','eshop'); ?></a></li>

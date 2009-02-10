@@ -704,8 +704,10 @@ if (!function_exists('eshop_checkout')) {
 			$city=$_SESSION['addy'.$blog_id]['city'];
 			$country=$_SESSION['addy'.$blog_id]['country'];
 			$state=$_SESSION['addy'.$blog_id]['state'];
-			$altstate=$_SESSION['addy'.$blog_id]['altstate'];
-
+			if(isset($_SESSION['addy'.$blog_id]['altstate']))
+				$altstate=$_SESSION['addy'.$blog_id]['altstate'];
+			else
+				$altstate='';
 			$zip=$_SESSION['addy'.$blog_id]['zip'];
 			$ship_name=$_SESSION['addy'.$blog_id]['ship_name'];
 			$ship_company=$_SESSION['addy'.$blog_id]['ship_company'];
@@ -714,7 +716,10 @@ if (!function_exists('eshop_checkout')) {
 			$ship_city=$_SESSION['addy'.$blog_id]['ship_city'];
 			$ship_country=$_SESSION['addy'.$blog_id]['ship_country'];
 			$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
-			$ship_altstate=$_SESSION['addy'.$blog_id]['ship_altstate'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_altstate']))
+				$ship_altstate=$_SESSION['addy'.$blog_id]['ship_altstate'];
+			else
+				$ship_altstate='';
 			$ship_postcode=$_SESSION['addy'.$blog_id]['ship_postcode'];
 			$comments=$_SESSION['addy'.$blog_id]['comments'];
 		}else{
