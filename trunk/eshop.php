@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '3.0.0');
+define('ESHOP_VERSION', '3.0.1');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 3.0.0
+Version: 3.0.1
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -29,19 +29,11 @@ Author URI: http://quirm.net/
 */
 
 load_plugin_textdomain('eshop', PLUGINDIR . '/' . plugin_basename(dirname(__FILE__)));
-if(!isset($_SESSION['shopcart'.$blog_id])) {
+if(!isset($_SESSION)) {
   session_start();
-  $setsession=$_SESSION['shopcart'.$blog_id];
 
 }
-//if(!session_is_registered('shopcart')){
-//	$set=$_SESSION['shopcart'.$blog_id];
-//}
-/*access level : default of 7 is for editors, change to 8 for administrators.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-+ DO NOT UPDATE TO NEW SETTINGS UNLESS YOU ALSO UPDATE ESHOPDATE FUNCTION +
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-*/
+
 $eshoplevel='eShop';
 if (!function_exists('eshop_admin')) {
     /**

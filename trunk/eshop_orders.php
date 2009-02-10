@@ -345,7 +345,7 @@ if (!function_exists('displaystats')) {
 		<h3><?php _e('Download Data','eshop'); ?></h3>
 		<ul>
 		<?php
-			$dlpage=$PHP_SELF.'?page='.$_GET['page'].'&amp;eshopdl=yes';
+			$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopdl=yes';
 		?>
 		<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
 		<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>

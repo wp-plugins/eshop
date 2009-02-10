@@ -222,7 +222,7 @@ case ('states'):
 			if(isset($_POST['delete'][$id])){
 				$wpdb->query("DELETE from $dtable WHERE id='".$_POST['delete'][$id]."' limit 1");
 			}elseif($id=='0' && $_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!=''){
-				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
+				if(!preg_match("/[a-zA-Z]/", $_POST['code'][$i])){
 					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
 				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
 					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";

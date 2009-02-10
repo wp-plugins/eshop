@@ -208,7 +208,7 @@ if (!function_exists('display_cart')) {
 		if(get_option('eshop_status')!='live'){
 			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
 		}
-		if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
+		if(isset($_SESSION['eshop_discount'.$blog_id]) && valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
 			$echo .= '<p class="eshop_dcode">'.sprintf(__('Discount Code <span>%s</span> has been applied to your cart.','eshop'),$_SESSION['eshop_discount'.$blog_id]).'</p>'."\n";
 		}
 		return $echo;
@@ -246,19 +246,22 @@ if (!function_exists('calculate_total')) {
 if (!function_exists('calculate_items')) {
 	function calculate_items(){
 		global $blog_id;
-		$thecart=$_SESSION['shopcart'.$blog_id];
-		// sum total items in shopping shopcart
-		$items = 0;
-		if(is_array($thecart))	{
-			foreach ($thecart as $productid => $opt){
-				if(is_array($opt)){
-					foreach($opt as $option=>$qty){
-						$items += $qty;
+		if(isset($_SESSION['shopcart'.$blog_id])){
+			$thecart=$_SESSION['shopcart'.$blog_id];
+			// sum total items in shopping shopcart
+			$items = 0;
+			if(is_array($thecart))	{
+				foreach ($thecart as $productid => $opt){
+					if(is_array($opt)){
+						foreach($opt as $option=>$qty){
+							$items += $qty;
+						}
 					}
 				}
 			}
+			return $items;
 		}
-		return $items;
+		return;
 	}
 }
 if (!function_exists('is_discountable')) {
@@ -266,7 +269,8 @@ if (!function_exists('is_discountable')) {
 		global $blog_id;
 		$percent=0;
 		//check for 
-		if(eshop_discount_codes_check()){
+		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
+
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('discount')>0)
 				return apply_eshop_discount_code('discount');
@@ -276,7 +280,7 @@ if (!function_exists('is_discountable')) {
 			if(get_option('eshop_discount_spend'.$x)!='')
 				$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
 		}
-		if(is_array($edisc)){
+		if(isset($edisc) && is_array($edisc)){
 			krsort($edisc);
 			foreach ($edisc as $amt => $percent) {
 				if($amt <= $total)
@@ -291,7 +295,7 @@ if (!function_exists('is_discountable')) {
 if (!function_exists('is_shipfree')) {
 	function is_shipfree($total){
 		global $blog_id;
-		if(eshop_discount_codes_check()){
+		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('shipping'))
 				return true;

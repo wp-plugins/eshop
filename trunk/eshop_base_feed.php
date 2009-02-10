@@ -92,7 +92,7 @@ foreach($array as $foo=>$grabit){
 		<title>'.eshoprssfilter($basetitle).'</title>	
 		<description>'.$basedescription.'</description>
 		<g:id>'.eshoprssfilter($baseid).'</g:id>'."\n";
-		if($baseqty!=''){
+		if(isset($baseqty) && $baseqty!=''){
 			$data.='<g:quantity>'.eshoprssfilter($baseqty).'</g:quantity>'."\n";
 		}
 	$data.='<g:price>'.eshoprssfilter($baseprice).'</g:price>
@@ -102,28 +102,28 @@ foreach($array as $foo=>$grabit){
 			$data.='<g:payment_accepted>'.eshoprssfilter($baseapayment).'</g:payment_accepted>'."\n";
 		}
 	} 
-	if($basecondition!=''){
+	if(isset($basecondition) && $basecondition!=''){
 		$data.='<g:condition>'.eshoprssfilter($basecondition).'</g:condition>'."\n";
 	} 
-	if($baseean!=''){
+	if(isset($baseean) && $baseean!=''){
 		$data.='<g:ean>'.eshoprssfilter($baseean).'</g:ean>'."\n";
 	} 
-	if($basedate!=''){
+	if(isset($basedate) && $basedate!=''){
 		$data.='<g:expiration_date>'.$basedate.'</g:expiration_date>'."\n";
 	} 
-	if($basebrand!=''){
+	if(isset($basebrand) && $basebrand!=''){
 		$data.='<g:brand>'.eshoprssfilter($basebrand).'</g:brand>'."\n";
 	} 
-	if($baseimg!=''){
+	if(isset($baseimg) && $baseimg!=''){
 		$data.='<g:image_link>'.eshoprssfilter($baseimg).'</g:image_link>'."\n";
 	} 
-	if($baseisbn!=''){
+	if(isset($baseisbn) && $baseisbn!=''){
 		$data.='<g:isbn>'.eshoprssfilter($baseisbn).'</g:isbn>'."\n";
 	} 
-	if($basempn!=''){
+	if(isset($basempn) && $basempn!=''){
 		$data.='<g:mpn>'.eshoprssfilter($basempn).'</g:mpn>'."\n";
 	} 
-	if($baseptype!=''){
+	if(isset($baseptype) && $baseptype!=''){
 		$data.='<g:product_type>'.eshoprssfilter($baseptype).'</g:product_type>'."\n";
 	} 
 	$data.='</item>'."\n";

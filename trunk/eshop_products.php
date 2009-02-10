@@ -361,30 +361,28 @@ function eshop_products_manager() {
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$grabit['_Shipping Rate'].'</td>';
-				if($pdown=='No'){
-					$stocktable=$wpdb->prefix ."eshop_stock";
-					$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
-					if($grabit['_Stock Available']=='No'){
-						$available='No';
-					}elseif($grabit['_Stock Available']=='Yes' && $available==''){
-						$available=__('not set','eshop');
-					}
-					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
-					$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
-					if($purchases==''){
-						$purchases='0';
-					}
-					echo '<td headers="purc sku'.$calt.'">'.$purchases.'</td>';
-				}else{
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$getid");
-					echo '<td headers="stk sku'.$calt.'">n/a</td>';
-					if($row->purchases==''){
-						$row->purchases='0';
-					}
-					echo '<td headers="purc sku'.$calt.'">'.$row->purchases.'</td>';
+				$stocktable=$wpdb->prefix ."eshop_stock";
+				$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
+				if($grabit['_Stock Available']=='No'){
+					$available='No';
+				}elseif($grabit['_Stock Available']=='Yes' && $available==''){
+					$available=__('not set','eshop');
 				}
-				
+				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
+				$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
+				if($purchases==''){
+					$purchases='0';
+				}
+				$purcharray[]=$purchases;
+				$dltable = $wpdb->prefix ."eshop_downloads";
+				for($i=1;$i<=get_option('eshop_options_num');$i++){
+					if($grabit["_Download ".$i]!=''){
+						$fileid=$grabit["_Download ".$i];
+						$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
+						$purcharray[]=$purchases;
+					}
+				}
+				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
 				echo '<td headers="ftrd sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
 
 				echo '<td headers="opt sku'.$calt.'">';
