@@ -653,7 +653,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$transid=$drow->transid;
 		}
 		if($status=='Completed'){$status=__('Order Received','eshop');}
-		if($status=='Pending'){$status=__('Pending Payment','eshop');}
+		if($status=='Pending' || $status=='Waiting'){$status=__('Pending Payment','eshop');}
 		$contact=$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 		$total=0;
@@ -949,24 +949,7 @@ if (!function_exists('eshop_download_directory')) {
     function eshop_download_directory(){
 		$dirs=wp_upload_dir();
         $upload_dir=$dirs['basedir'];
-        $url_dir=$dirs['baseurl'];
-		$plugin_dir=ABSPATH.PLUGINDIR;
-		$eshop_goto=$upload_dir.'/../eshop_downloads';
-		$eshop_from=$plugin_dir.'/eshop/downloads';
-		if(!file_exists($eshop_goto.'/.htaccess')){
-			wp_mkdir_p( $upload_dir );
-			wp_mkdir_p( $eshop_goto );
-			if ($handle = opendir($eshop_from)) {
-				/* This is the correct way to loop over the directory. */
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-						chmod($eshop_goto.'/'.$file,0666);
-					}
-				}
-				closedir($handle);
-			}
-		}
+        $eshop_goto=$upload_dir.'/../eshop_downloads';
 		return $eshop_goto.'/';
     }
 }
@@ -976,33 +959,11 @@ if (!function_exists('eshop_files_directory')) {
         $upload_dir=$dirs['basedir'];
         $url_dir=$dirs['baseurl'];
         if(substr($url_dir, -1)!='/')$url_dir.='/';
-       	$plugin_dir=ABSPATH.PLUGINDIR;
        	$eshop_goto=$upload_dir.'/eshop_files';
-       	$eshop_from=$plugin_dir.'/eshop/files';
-       	if(!file_exists($eshop_goto.'/eshop.css')){
-			wp_mkdir_p( $upload_dir );
-			wp_mkdir_p( $eshop_goto );
-			if ($handle = opendir($eshop_from)) {
-				/* This is the correct way to loop over the directory. */
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-						chmod($eshop_goto.'/'.$file,0666);
-					}
-				}
-				closedir($handle);
-			}
-			$urlpath=$url_dir.'eshop_files/';
-			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
-			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
-			return $rtn;
-		}else{
-			$urlpath=$url_dir.'eshop_files/';
-			$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
-			$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
-			return $rtn;
-		}
-		return 0;
+		$urlpath=$url_dir.'eshop_files/';
+		$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
+		$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
+		return $rtn;
     }
 }
 
@@ -1120,7 +1081,7 @@ if (!function_exists('eshop_update_nag')) {
 			return false;
 
 		if ( current_user_can('manage_options') )
-			$msg = sprintf( __('<strong>eShop %1$s</strong> is installed, however you still need to <a href="%2$s">deactivate and re-activate the plugin</a>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
+			$msg = sprintf( __('<strong>eShop %1$s</strong> is now ready to use. <strong>You must now <a href="%2$s">deactivate and re-activate the plugin</a></strong>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
 		else
 			$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
 

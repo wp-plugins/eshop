@@ -47,11 +47,11 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	$email=$wpdb->get_var("Select email From $dtable where id='$view'");
 	$array=eshop_rtn_order_details($checked);
 	//grab the template
-	$eshopurl=eshop_files_directory();
-	$templateFile = $eshopurl['0'];
-	$this_email = stripslashes(file_get_contents($eshopurl['0'].'customer-response-email.tpl'));
+	$table=$wpdb->prefix.'eshop_emails';
+	$thisemail=$wpdb->get_row("Select * From $table where id='2' LIMIT 1");
+	$subject=$thisemail->emailSubject;
+	$this_email=$thisemail->emailContent;
 	// START SUBST
-	$subject=get_bloginfo('name').__(' Notification','eshop');
 	$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 	$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
 	$this_email = str_replace('{NAME}', $array['ename'], $this_email);
@@ -74,11 +74,15 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	<fieldset><legend><?php _e('Send a notification to:','eshop'); ?> <strong><?php echo $email; ?></strong></legend>
 	<label for="from"><?php _e('Select a reply-to address:','eshop'); ?><br />
     <select class="pointer" name="from" id="from">
-    <option value="<?php echo get_option('eshop_business'); ?>" selected="selected"><?php echo get_option('eshop_business'); ?></option>
 	<?php
 	if(get_option('eshop_from_email')!=''){
 	?>
-	<option value="<?php echo get_option('eshop_from_email'); ?>"><?php echo get_option('eshop_from_email'); ?></option>
+		<option value="<?php echo get_option('eshop_from_email'); ?>"><?php echo get_option('eshop_from_email'); ?></option>
+	<?php
+	}
+	if(get_option('eshop_business')!=''){
+	?>
+		<option value="<?php echo get_option('eshop_business'); ?>"><?php echo get_option('eshop_business'); ?></option>
 	<?php
 	}
     if(get_option('eshop_sysemails')!=''){

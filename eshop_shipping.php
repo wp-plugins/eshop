@@ -387,7 +387,7 @@ default:
 		}elseif($i==3){
 			$extra=' <small>'.__('( one overall charge no matter what quantity is ordered )','eshop').'</small>';
 		}	
-		echo '<input type="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">Method '.$i.$extra.'</label><br />';
+		echo '<input type="radio" class="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">Method '.$i.$extra.'</label><br />';
 	}
 	?>
 	<label for="eshop_shipping_zone"><?php _e('Shipping Zones by','eshop'); ?></label>
@@ -430,7 +430,7 @@ default:
 	</fieldset>
 	</form>
 	<form id="shipform" action="" method="post">
-	<fieldset><legend><span class="offset"><?php _e('Shipping Classes and Zones','eshop'); ?></span></legend>
+	<fieldset><legend><span><?php _e('Shipping Classes and Zones','eshop'); ?></span></legend>
 	<table class="hidealllabels" summary="Shipping rates">
 	<caption><?php _e('Shipping rates by class and zone','eshop'); ?></caption>
 	<tr>

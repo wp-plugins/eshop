@@ -227,7 +227,7 @@ if (!function_exists('eshop_checkout')) {
  		global $blog_id;
 		$echoit='';
 		include_once(ABSPATH.'wp-includes/wp-db.php');
-		include_once ABSPATH.PLUGINDIR."/eshop/cart-functions.php";
+		include_once WP_PLUGIN_DIR."/eshop/cart-functions.php";
 		if(isset($_POST['eshop_payment']))
 			$_SESSION['eshop_payment'.$blog_id]=$_POST['eshop_payment'];
 			
@@ -257,11 +257,11 @@ if (!function_exists('eshop_checkout')) {
 		// if everything went ok do the following, hopefully the rest won't happen!
 		if(isset($_GET['action'])){
 			if($_GET['action']=='success'){
-				include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'.php');
+				include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php');
 			}
 		}
 
-		include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'/index.php');
+		include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'/index.php');
 
 		if(isset($_SESSION['shopcart'.$blog_id])){
 			$shopcart=$_SESSION['shopcart'.$blog_id];
@@ -688,7 +688,7 @@ if (!function_exists('eshop_checkout')) {
 			$array['comments']=$array['reference']='';
 			$biscuits=eshop_build_cookie($array);
 			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
-			include(ABSPATH.PLUGINDIR.'/eshop/'.$paymentmethod.'.php');
+			include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php');
 		}
 	}else{
 		//for first time form usage.

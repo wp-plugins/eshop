@@ -84,7 +84,7 @@ function eshop_boing($pee,$short='no'){
 				}
 				$pee = $pee.$replace; 
 			}elseif(eshop_get_custom('Stock Available')=='No' && eshop_get_custom('Price 1')!=''){
-				$replace = '<p class="eshopnostock">'.get_option('eshop_cart_nostock').'</p>';
+				$replace = '<p class="eshopnostock"><span>'.get_option('eshop_cart_nostock').'</span></p>';
 				$pee = $pee.$replace;
 			}
 			return $pee;

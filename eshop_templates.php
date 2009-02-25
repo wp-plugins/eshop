@@ -1,117 +1,85 @@
 <?php
-function eshop_process_template($templateFile) {
-	global $wpdb;
-	//processes style page forms
-	if(!empty($_POST['templateFile'])){
-		//update css file
-    	$newfile = stripslashes($_POST['templateFile']);      	
-		if(is_writeable($templateFile)) {
-   			$f = fopen($templateFile, 'w+');
-         	fwrite($f, $newfile);
-        	fclose($f);
-    		echo '<div id="message" class="updated fade"><p><strong>'.__('The Template Has Been Updated','eshop').'</strong></p></div>'."\n";
-		} 
-	}
-	
-	return;
-}
 function eshop_template_email(){
-	//make sure options exist for the style page
-	//config options
-	$eshopurl=eshop_files_directory();
-
-	$templateFile = $eshopurl['0'];
-	$file1='order-recieved-email.tpl';
-	$file2='customer-response-email.tpl';
-	if(isset($_POST['choose'])||isset($_POST['edit'])){
-		if((isset($_POST['template']) && $_POST['template']==1 )|| (isset($_POST['edit']) && $_POST['edit']==$file1)){
-			$templateFile.=$file1;
-			$editthis=$file1;
-			$oemail=' selected="selected"';
-		}else{
-			$templateFile.=$file2;
-			$editthis=$file2;
-			$cemail=' selected="selected"';
-		}
-	}else{
-		$templateFile.=$file1;
-		$editthis=$file1;
-		$oemail=' selected="selected"';
+	global $wpdb;
+	$table=$wpdb->prefix.'eshop_emails';
+	if(isset($_POST['edit'])){
+		$subject=$wpdb->escape($_POST['subject']);
+		$content=$wpdb->escape($_POST['templateContent']);
+		$edit=$wpdb->escape($_POST['edit']);
+ 		$wpdb->query("UPDATE $table set emailSubject='$subject',emailContent='$content' where id='$edit'");
+   		echo '<div id="message" class="updated fade"><p><strong>'.__('The Template Has Been Updated','eshop').'</strong></p></div>'."\n";
 	}
-	$name1=__('Automatic order email','eshop');
-	$name2=__('Customer response email','eshop');
-    
-    if(!is_writeable($templateFile) && (!isset($_POST['choose'])||!isset($_POST['edit']))) {
-  			echo '<div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The template file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
-	 		</div>'."\n";
- 	}
-     $template=eshop_process_template($templateFile);
-
-    
+	if(isset($_GET['eshopuse']) && is_numeric($_GET['eshopuse'])){
+		$edit=$_GET['eshopuse'];
+		$wpdb->query("UPDATE $table set emailUse=(CASE WHEN emailUse=1 THEN 0 ELSE 1 END) where id='$edit'");
+   		echo '<div id="message" class="updated fade"><p><strong>'.__('The Template Has Been Changed','eshop').'</strong></p></div>'."\n";
+	}
 ?>
 <div class="wrap">
 <h2><?php _e('eShop Email Templates','eshop'); ?></h2>
  <p><?php _e('Use this page to modify your default email templates','eshop'); ?>.</p> 
-</div>
-<div class="wrap">
-<h2><?php _e('Choose template','eshop'); ?></h2>
-<p><?php _e('Choose which email template you would like to alter.','eshop'); ?></p>
-<form action="#edit_section" method="post" id="template_form" name="template">
- <fieldset>
-  <legend><?php _e('Choose Template','eshop'); ?></legend>
-  <label for="template">Edit</label>
-  <select id="template" name="template">
-  <?php
-  	if(isset($oemail)){
-  		echo '<option value="1"'.$oemail.'>'.$name1.'</option>';
-  		echo '<option value="2">'.$name2.'</option>';
-	}elseif(isset($cemail)){
-		echo '<option value="1">'.$name1.'</option>';
-  		echo '<option value="2"'.$cemail.'>'.$name2.'</option>';
+<table class="eshop widefat" summary="available email templates">
+<thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
+<tbody>
+<?php
+if(isset($_GET['template'])) $template=$_GET['template'];
+else $template='1';
+$thisemail=$wpdb->get_results("Select * From $table");
+$phpself=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
+$x=1;
+foreach($thisemail as $this_email){
+$active='';
+$state=__('Active','eshop');
+if($this_email->id>2){
+	if($this_email->emailUse==1) $active=__('Deactivate','eshop').' '.$this_email->id;
+	else{
+		$active=__('Activate','eshop').' '.$this_email->id;
+		$state='';
 	}
-  ?>
-  </select>
-  	<input type="hidden" name="choose" value="c" />
-   <p class="submit eshop"><input type="submit" value="<?php _e('Choose','eshop'); ?>" name="submit" /></p>
-</fieldset>
-</form>
+}
+$alt = ($x % 2) ? '' : ' class="alternate"';
+?>
+<tr<?php echo $alt; ?>><td id="row<?php echo $x; ?>" headers="num"><?php echo $this_email->id; ?></td><td headers="row<?php echo $x; ?> num"><a href="<?php echo $phpself.'&amp;template='.$this_email->id; ?>#edit_section" title="<?php _e('edit','eshop'); ?>"><?php echo $this_email->emailType; ?></a></td>
+<td headers="row<?php echo $x; ?> act"><?php echo $state; ?></td><td headers="row<?php echo $x; ?> chg"><a href="<?php echo $phpself.'&amp;eshopuse='.$this_email->id; ?>"><?php echo $active; ?></a></td></tr>
+<?php
+$x++;
+}
+?>
+</tbody>
+</table>
 </div>
 <div class="wrap">
+<?php
+$thisemail=$wpdb->get_row("Select emailType, emailSubject,emailContent From $table where id=$template");
+?>
 <h2 id="edit_section"><?php _e('Email Template Editor','eshop'); ?></h2>
  <p><?php _e('Use this simple file editor to modify the default email template file.','eshop'); ?></p>
  <form method="post" action="" id="edit_box">
   <fieldset>
-   <legend><?php _e('Template File Editor.','eshop'); ?></legend>
-   <label for="stylebox"><?php _e('Edit Template','eshop'); ?></label><br />
-<textarea rows="20" cols="80" id="stylebox" name="templateFile">
-<?php 
-if(!is_file($templateFile))
-	$error = 1;
+   <legend><?php _e('Template:','eshop'); ?> <?php echo $thisemail->emailType; ?> </legend>
+   	<label for="subject"><?php _e('Subject','eshop'); ?><br /><input type="text" id="subject" name="subject" size="60" value="<?php echo htmlspecialchars(stripslashes($thisemail->emailSubject)); ?>" /></label><br />
 
-if(!isset($error) && filesize($templateFile) > 0) {
-	$f="";
-	$f = fopen($templateFile, 'r');
-	$file = fread($f, filesize($templateFile));
-echo $file;
-	fclose($f);
-} else 
-	_e('Sorry. The file you are looking for could not be found','eshop');
+   <label for="stylebox"><?php _e('Email Content','eshop'); ?></label><br />
+<textarea rows="20" cols="80" id="stylebox" name="templateContent">
+<?php 
+echo htmlspecialchars(stripslashes($thisemail->emailContent));
 ?>
 </textarea>
-	<input type="hidden" name="edit" value="<?php echo $editthis;?>" />
+	<input type="hidden" name="edit" value="<?php echo $template;?>" />
+	<input type="hidden" name="template" value="<?php echo $template;?>" />
    <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
 </div>
 <div class="wrap">
-<h2>Template tags</h2>
+<h2><?php _e('Template tags for Email Content','eshop'); ?></h2>
 <ul>
 <li><strong>{STATUS}</strong> - <?php _e('the status of the order.','eshop'); ?></li>
 <li><strong>{FIRSTNAME}</strong> - <?php _e('Customers First Name.','eshop'); ?></li>
 <li><strong>{NAME}</strong> - <?php _e('Customers Full Name','eshop'); ?></li>
 <li><strong>{EMAIL}</strong> - <?php _e('Customers Email address','eshop'); ?></li>
 <li><strong>{CART}</strong> - <?php _e('The contents of the cusotmers order (i.e. their shopping cart)','eshop'); ?></li>
-<li><strong>{DOWNLOADS}</strong> - <?php _e('A Download link along with the customers email address and password. <em>Only used when an order contains downloads</em>','eshop'); ?></li>
+<li><strong>{DOWNLOADS}</strong> - <?php _e('A Download link along with the customers email address and password. <em>Only used when an order contains downloads</em>. (not used for cash sales).','eshop'); ?></li>
 <li><strong>{ADDRESS}</strong> - <?php _e('Customers Address','eshop'); ?></li>
 <li><strong>{REFCOMM}</strong> - <?php _e('The reference and other messages provided by the customer.','eshop'); ?></li>
 <li><strong>{CONTACT}</strong> - <?php _e('Customers shipping address phone number.','eshop'); ?></li>

@@ -1,57 +1,47 @@
 === eShop ===
 Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
-Tags: eshop, ecommerce, shop, paypal, stock control, cart, e-commerce
+Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 3.0.0
+Stable tag: 3.1.0
 
-An accessible Paypal Shopping Cart plugin.
+An accessible Shopping Cart plugin.
 
 == Description ==
 
-= Updates for 3.0.0 =
-* New payment option added - Payson.
-* Settings page re-organised.
-* New field in checkout form - State/County/Province(if not in the list).
-* Checkout now features images for the different payment options.
-* New setting on shipping page - default zone for unknown State/County/Province.
-* New setting to specify 'Continue Shopping' link (ie main shop page).
-* Now compatible with Role Manager plugin.
-* New shortcode(and widget) to display the images for the payment options.
-* New multi use widget, for displaying products in sidebars.
-* Fixed -Cart now checks stock levels
-* Fixed - shortcode for discounts.
-* small bug fixes - most files changed.
-* New stylesheet for fresh installs.
+eShop is an accessible shopping cart plugin for WordPress, packed with various features. Including:
 
-= eShop features include: =
-
-* Use Wordpress pages, or posts, to create products
-* Various methods now available for listing multiple products, with add to cart form,  on a single page
+* Utilises WordPress pages, or posts, to create products
+* Various methods available for listing products
 * Products can have multiple options
 * Upload downloadable products
 * Basic Statistics
 * Download sales data
-* 3 methods for calculating shipping charges, plus various zone settings via Country or US State
-* Parent pages can list random products, featured products, or sub product pages (just like categories with posts)
+* Various shipping options
 * Admin has access to an Order handling section
-* Automatic emails on successful purchase, with option to send one from the admin order handling section.
+* Automatic emails on successful purchase
 * User configurable email templates.
 * Configurable Out of Stock message.
 * Basic Stock Control
 * Google Base Data creation
 * Uninstall available within the plugin
-* Shop Wide Discounts
-* Public Shipping Rates page configuration
-* Ability to change eShop From address for automated emails
-* Ability to add an admin note to an order.
-* and more
+* Various discount options
+* Several payment options
+* and much much more
 
-Tested, and working, in Wordpress 2.7
+Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 
 == Latest Updates ==
+
+Version 3.1.0
+
+* New payment option added - cash.
+* better email template handling, one available for each payment option
+* various back end fixes 
+* *Fixed* error if eShop directories not created on install (hopefully)
+
 
 Version 3.0.0
 

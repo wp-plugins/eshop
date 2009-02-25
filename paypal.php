@@ -339,16 +339,12 @@ switch ($_GET['action']) {
 				//first extract the order details
 				$array=eshop_rtn_order_details($checked);
 
-				//"status"=>$status,"ename"=>$ename,"eemail"=>$eemail,
-				//"cart"=>$cart,"address"=>$address,"extras"=>$extras, "contact"=>$contact
+				$etable=$wpdb->prefix.'eshop_emails';
 				//grab the template
-				$eshopurl=eshop_files_directory();
-				
-				$templateFile = $eshopurl['0'];
-				$this_email = stripslashes(file_get_contents($eshopurl['0'].'order-recieved-email.tpl'));
-
+				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='3' AND emailUse='1') OR id='1'  order by id DESC limit 1");
+				$this_email = stripslashes($thisemail->emailContent);
 				// START SUBST
-				$csubject='Your order from '.get_bloginfo('name');
+				$csubject=stripslashes($thisemail->emailSubject);
 				$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 				$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
 				$this_email = str_replace('{NAME}', $array['ename'], $this_email);
