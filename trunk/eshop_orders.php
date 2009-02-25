@@ -201,6 +201,7 @@ if (!function_exists('displayorders')) {
 				<option value="Sent"><?php _e('Shipped','eshop'); ?></option>
 				<option value="Completed"><?php _e('Active','eshop'); ?></option>
 				<option value="Pending"><?php _e('Pending','eshop'); ?></option>
+				<option value="Waiting"><?php _e('Awaiting Payment','eshop'); ?></option>
 				<option value="Failed"><?php _e('Failed','eshop'); ?></option>
 				<option value="Deleted"><?php _e('Deleted','eshop'); ?></option>
 				</select>
@@ -235,8 +236,10 @@ if (!function_exists('displayorders')) {
 			
 			
 		}else{
-			if($type=='Completed'){$type='Active';}
-			if($type=='Sent'){$type='Shipped';}
+			if($type=='Completed'){$type=__('Active','eshop');}
+			if($type=='Sent'){$type=__('Shipped','eshop');}
+			if($type=='Waiting'){$type=__('Awaiting Payment','eshop');}
+
 			echo "<p class=\"notice\">".__('There are no','eshop')." <span>".$type."</span> ".__('orders','eshop').".</p>";
 		}
 	}
@@ -248,7 +251,7 @@ if (!function_exists('displaystats')) {
 		$phpself=wp_specialchars($_SERVER['REQUEST_URI']);
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
-		$array=array('Pending','Completed','Sent','Failed','Deleted');
+		$array=array('Pending','Waiting','Completed','Sent','Failed','Deleted');
 		echo '<div class="eshop-stats-box odd"><h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
 		foreach($array as $k=>$type){
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
@@ -258,6 +261,9 @@ if (!function_exists('displaystats')) {
 					break;
 				case 'Sent':
 					$type=__('Shipped','eshop');
+					break;
+				case 'Waiting':
+					$type=__('Awaiting Payment','eshop');
 					break;
 			}			
 			echo '<li><strong>'.$max.'</strong> '.$type.' orders</li>';
@@ -415,6 +421,7 @@ if(isset($_GET['view'])){
 	$status=$wpdb->get_var("Select status From $dtable where id='$view'");
 	if($status=='Completed'){$status=__('Active Order','eshop');}
 	if($status=='Pending'){$status=__('Pending Order','eshop');}
+	if($status=='Waiting'){$status=__('Orders Awaiting Payment','eshop');}
 	if($status=='Sent'){$status=__('Shipped Order','eshop');}
 	if($status=='Deleted'){$status=__('Deleted Order','eshop');}
 	if($status=='Failed'){$status=__('Failed Order','eshop');}
@@ -429,6 +436,9 @@ if(isset($_GET['view'])){
 			break;
 		case 'Failed':
 			$state=__('Failed Orders','eshop');
+			break;
+		case 'Waiting':
+			$state=__('Orders Awaiting Payment','eshop');
 			break;
 		case 'Sent':
 			$state=__('Shipped Orders','eshop');
@@ -449,7 +459,7 @@ if(isset($_GET['view'])){
 echo '<h2>'.$state."</h2>\n";
 echo '<ul class="subsubsub">';
 
-$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
+$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
@@ -520,6 +530,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	<select name="mark" id="mark">
 	<option value="Sent"><?php _e('Shipped','eshop'); ?></option>
 	<option value="Completed"><?php _e('Active','eshop'); ?></option>
+	<option value="Waiting"><?php _e('Awaiting Payment','eshop'); ?></option>
 	<option value="Pending"><?php _e('Pending','eshop'); ?></option>
 	<option value="Failed"><?php _e('Failed','eshop'); ?></option>
 	<option value="Deleted"><?php _e('Deleted','eshop'); ?></option>
@@ -616,7 +627,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 
 		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name."<br />\n";
 		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
-		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\">".$drow->email."</a><br />\n";
+		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email."</a><br />\n";
 		if('no' == get_option('eshop_downloads_only')){
 			echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->phone."</p>\n";
 
@@ -717,6 +728,9 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			break;
 		case 'Failed':
 			displayorders('Failed');
+			break;
+		case 'Waiting':
+			displayorders('Waiting');
 			break;
 		case 'Sent':
 			displayorders('Sent');

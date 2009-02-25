@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '3.0.1');
+define('ESHOP_VERSION', '3.1.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 3.0.1
+Version: 3.1.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -29,10 +29,6 @@ Author URI: http://quirm.net/
 */
 
 load_plugin_textdomain('eshop', PLUGINDIR . '/' . plugin_basename(dirname(__FILE__)));
-if(!isset($_SESSION)) {
-  session_start();
-
-}
 
 $eshoplevel='eShop';
 if (!function_exists('eshop_admin')) {
@@ -230,15 +226,6 @@ if (!function_exists('eshop_install')) {
         global $wpdb, $user_level, $wp_rewrite, $wp_version;
         include_once ('cart-functions.php');
         include 'eshop_install.php';
-        if( eshop_files_directory()!=0 ){
-       		eshop_download_directory();
-       		//mdy
-       		$eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
-       		wp_schedule_event($eshoptime, 'daily', 'eshop_event');
-       	}else{
-       		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
-			wp_die(__('ERROR! This plugin requires that the wp_content directory is writable.','eshop')); //add a more descriptive message of course.
-		}
     }
 }
 
@@ -257,7 +244,7 @@ if (!function_exists('eshop_cron')) {
 		global $wpdb;
 		if(get_option('eshop_cron_email')!=''){
 			$dtable=$wpdb->prefix.'eshop_orders';
-			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Pending'");
+			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Completed' OR status='Waiting'");
 			if($max>0){
 				$to = get_option('eshop_cron_email');    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
@@ -441,6 +428,9 @@ add_filter('the_content', 'eshop_boing');
 add_action('init','eshopdata');
 if (!function_exists('eshopdata')) {
 	function eshopdata(){
+	 	if(!session_id()){
+	    	session_start();
+    	}
 		global $current_user, $wp_roles, $post;
 		get_currentuserinfo() ;
 		if(current_user_can('eShop')){

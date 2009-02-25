@@ -301,10 +301,10 @@ fieldset#changestat {
 #eshop-settings legend, #template_form legend, #edit_box legend, #style_form legend, 
 #eshopformleft legend,#orderstatus legend, #emailer legend,#shipformmethod legend,#zoneform legend,
 #filterzones legend,#eshopup legend,#downloadedit legend,#eshop-gbase-alt legend,
-#eshopdisccodes legend{
+#eshopdisccodes legend, #shipform legend{
 	font-size:1.2em;
 	color:#666;
-	background:#E4F2FD;
+	background:#EDF6FF;
 	border-bottom:1px solid #999;
 	border-right:1px solid #999;
 	padding:0 5px 5px 5px;
@@ -335,6 +335,16 @@ fieldset#eshopcustom fieldset{
 p.submit.eshop,#filterzones p.submit{
 	border:0;
 	padding:0;
+}
+#shipformmethod{
+	line-height:2em;
+	margin-bottom:2em;
+}
+#shipformmethod legend{
+	line-height:1.2em;
+}
+#shipformmethod .radio{
+	margin-right: 5px;
 }
 /* end */
 p.thanks {

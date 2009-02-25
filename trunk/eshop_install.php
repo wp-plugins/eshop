@@ -7,6 +7,12 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
+
+if(!eshop_create_dirs()){
+	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
+	wp_die(__('ERROR! eShop requires that the wp_content directory is writable before the plugin can be activated.','eshop')); 
+}
+
 /** create capability */
 if (!function_exists('eshop_caps')) {
     /**
@@ -283,7 +289,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
 	id int(11) NOT NULL auto_increment,
 	checkid varchar(255) NOT NULL default '',
-	status set('Sent','Completed','Pending','Failed','Deleted') NOT NULL default 'Pending',
+	status set('Sent','Completed','Pending','Failed','Deleted','Waiting') NOT NULL default 'Pending',
 	first_name varchar(50) NOT NULL default '',
 	last_name varchar(50) NOT NULL default '',
 	company varchar(255) NOT NULL default '',
@@ -607,6 +613,124 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	dbDelta($sql);
 }
 
+$table = $wpdb->prefix ."eshop_emails";
+if ($wpdb->get_var("show tables like '$table'") != $table) {
+	$sql = "CREATE TABLE ".$table." (
+		`id` INT NOT NULL AUTO_INCREMENT ,
+		`emailUse` tinyint(1) NOT NULL default '0',
+		`emailType` VARCHAR( 50 ) NOT NULL ,
+		`emailSubject` VARCHAR( 255 ) NOT NULL ,
+		`emailContent` TEXT NOT NULL ,
+		PRIMARY KEY ( `id` )
+		);";
+	error_log("creating table $table");
+	dbDelta($sql);
+	//enter new defauts:
+	$esubject=__('Your order from ','eshop').get_bloginfo('name');
+	$emailfile='
+[AUTO-RESPONSE - PLEASE DO NOT REPLY]
+
+Dear {FIRSTNAME},
+
+Your order has been received. Thank you! 
+The details of your order follow...
+
+--------------- ORDER DETAILS ---------------
+
+{STATUS}
+{CART}
+
+
+--------------- DOWNLOAD DETAILS ---------------
+These are available for download via:
+{DOWNLOADS}
+
+
+--------------- CUSTOMER DETAILS ---------------
+
+{NAME}
+{ADDRESS}
+
+--------------- CONTACT DETAILS ---------------
+
+{CONTACT}
+
+--------------- OTHER INFORMATION (if applicable) ---------------
+
+{REFCOMM}
+---
+
+If you have questions or concerns, please contact us.
+Thank you for ordering with us.';
+	$wpdb->query("INSERT INTO ".$table." (emailUse,emailType, emailSubject,emailContent) VALUES ('1','Automatic default email','$esubject','$emailfile')"); 
+	$esubject=get_bloginfo('name').__(' Notification','eshop');
+	$emailfile='
+[SPECIAL COMMUNICATION/NOTIFICATION]
+
+Dear {FIRSTNAME},
+
+*** Enter a custom message here ***
+
+Respectfully,
+*** Enter your name, title, and email here ***
+
+
+
+--------------- ORDER DETAILS ---------------
+
+{STATUS}
+{CART}
+
+--------------- DOWNLOAD DETAILS ---------------
+These are available for download via:
+{DOWNLOADS}
+
+--------------- CUSTOMER DETAILS ---------------
+
+{NAME}
+{ADDRESS}
+
+--------------- CONTACT DETAILS ---------------
+
+{CONTACT}
+
+--------------- OTHER INFORMATION (if applicable) ---------------
+
+{REFCOMM}
+---
+
+If you have questions or concerns, please contact us.
+Again, thank you for ordering with us.
+';
+	$wpdb->query("INSERT INTO ".$table." (emailUse,emailType,emailSubject,emailContent) VALUES ('1','Admin Order Form email','$esubject','$emailfile')"); 
+	//payment option emails
+	$esubject=__('Your order from ','eshop').get_bloginfo('name');
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Paypal email','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Payson email','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Cash email','$esubject')"); 
+}
+
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
+//prior to 3.1
+	$eshopurl=eshop_files_directory();
+	$templateFile = $eshopurl['0'];
+	$table = $wpdb->prefix ."eshop_emails";
+	$files[]=array(0=>$templateFile.'order-recieved-email.tpl',1=>'Automatic default email',2=>__('Your order from ','eshop').get_bloginfo('name'),3=>'1');
+	$files[]=array(0=>$templateFile.'customer-response-email.tpl',1=>'Admin Order Form email',2=>get_bloginfo('name').__(' Notification','eshop'),3=>'2');
+	foreach($files as $foo=>$file){
+		if(is_file($file[0]) && filesize($file[0]) > 0){
+			$f = fopen($file[0], 'r');
+			$wpdb->query("DELETE FROM $table WHERE id = $file[3] LIMIT 1");
+			$emailfile = fread($f, filesize($file[0]));
+			$wpdb->query("INSERT INTO ".$table." (id,emailUse,emailType, emailSubject,emailContent) VALUES ('$file[3]','1','$file[1]','$file[2]','$emailfile')"); 
+			fclose($f);
+			unlink ($file[0]);
+		}
+	}
+	$table = $wpdb->prefix . "eshop_orders";
+	$wpdb->query("ALTER TABLE ".$table." CHANGE `status` `status` SET( 'Sent', 'Completed', 'Pending', 'Failed', 'Deleted', 'Waiting' ) DEFAULT 'Pending' NOT NULL");
+}
+
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' ){
 	// lumping all changes prior to 3.0.0
 	/* db changes */
@@ -810,20 +934,53 @@ if($newpages == true){
 	$wp_rewrite->flush_rules();
 }
 
-/* payment images - need to be transferred to the files directory if they don't exists */
+/* directory creation, and file transfer */
 
-if (!function_exists('eshop_pay_images')) {
-    function eshop_pay_images(){
-        $dirs=wp_upload_dir();
-        $upload_dir=$dirs['basedir'];
-        $url_dir=$dirs['baseurl'];
-        if(substr($url_dir, -1)!='/')$url_dir.='/';
-       	$plugin_dir=ABSPATH.PLUGINDIR;
-       	$eshop_goto=$upload_dir.'/eshop_files';
-       	 //make sure directory exists
-		wp_mkdir_p( $upload_dir );
+function eshop_create_dirs(){
+	$dirs=wp_upload_dir();
+	$upload_dir=$dirs['basedir'];
+
+	if(wp_mkdir_p( $upload_dir )){
+		$url_dir=$dirs['baseurl'];
+		if(substr($url_dir, -1)!='/')$url_dir.='/';
+		$plugin_dir=WP_PLUGIN_DIR;
+		//files
+		$eshop_goto=$upload_dir.'/eshop_files';
+		$eshop_from=$plugin_dir.'/eshop/files';
+		if(!file_exists($eshop_goto.'/eshop.css')){
+			wp_mkdir_p( $eshop_goto );
+			if ($handle = opendir($eshop_from)) {
+				/* This is the correct way to loop over the directory. */
+				while (false !== ($file = readdir($handle))) {
+					if($file!='' && $file!='.' && $file!='..'){
+						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+						chmod($eshop_goto.'/'.$file,0666);
+					}
+				}
+				closedir($handle);
+			}
+		}
+		//downloads
+		$eshop_goto=$upload_dir.'/../eshop_downloads';
+		$eshop_from=$plugin_dir.'/eshop/downloads';
+		if(!file_exists($eshop_goto.'/.htaccess')){
+			wp_mkdir_p( $eshop_goto );
+			if ($handle = opendir($eshop_from)) {
+				/* This is the correct way to loop over the directory. */
+				while (false !== ($file = readdir($handle))) {
+					if($file!='' && $file!='.' && $file!='..'){
+						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+						chmod($eshop_goto.'/'.$file,0666);
+					}
+				}
+				closedir($handle);
+			}
+		}
+		//pay images
+		$eshop_goto=$upload_dir.'/eshop_files';
+		 //make sure directory exists
 		wp_mkdir_p( $eshop_goto );
-		$files=array('paypal','payson');
+		$files=array('paypal','payson','cash');
 		foreach ($files as $file){
 			if(!file_exists($eshop_goto.'/'.$file.'.png')){
 				//copy the files
@@ -831,11 +988,12 @@ if (!function_exists('eshop_pay_images')) {
 				chmod($eshop_goto.'/'.$file.'.png',0666);
 			}
 		}
-		return;
-    }
+		return true;
+	}
+	return false;
 }
-eshop_pay_images();
-
+$eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
+wp_schedule_event($eshoptime, 'daily', 'eshop_event');
 /* version number store - add/update */
 update_option('eshop_version', ESHOP_VERSION);
 ?>

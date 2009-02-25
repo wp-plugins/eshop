@@ -41,7 +41,17 @@ if(isset($_POST['submit'])){
 			update_option('eshop_location',$wpdb->escape($_POST['eshop_location']));
 			update_option('eshop_business',$wpdb->escape(trim($_POST['eshop_business'])));
 			//these are for other payment options
-			update_option('eshop_payson',$_POST['payson']);
+			//payson
+			$paysonpost['email']=$wpdb->escape($_POST['payson']['email']);
+			$paysonpost['id']=$wpdb->escape($_POST['payson']['id']);
+			$paysonpost['key']=$wpdb->escape($_POST['payson']['key']);
+			$paysonpost['description']=$wpdb->escape($_POST['payson']['description']);
+			$paysonpost['minimum']=$wpdb->escape($_POST['payson']['minimum']);
+			update_option('eshop_payson',$paysonpost);
+			//cash
+			$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
+			update_option('eshop_cash',$cashpost);
+
 			if(!is_array(get_option('eshop_method'))){
 				update_option('eshop_status',$wpdb->escape('testing'));
 				$err.='<li>'.__('No Merchant Gateway selected, eShop has been put in Test Mode','eshop').'</li>';
@@ -347,6 +357,12 @@ switch($action_status){
 			?>
 	</select><br />
 	</fieldset>
+		<fieldset><legend><?php _e('Cash','eshop'); ?></legend>
+		<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?>
+		<?php $eshopcash = get_option('eshop_cash'); ?>
+		<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodc"><?php _e('Accept cash payments','eshop'); ?></label></p>
+		<label for="eshop_cashemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_cashemail" name="cash[email]" type="text" value="<?php echo $eshopcash['email']; ?>" size="30" maxlength="50" /><br />
+		</fieldset>
 	</fieldset>
 	<p class="submit">
 	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
