@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 
 An accessible Shopping Cart plugin.
 
@@ -34,6 +34,10 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Update =
 
+Version 3.1.2
+
+*fixed* errors when product details contained quotation marks - these are now stripped out - however existing users may need to update each product that contains quotation marks in the product details.
+
 Version 3.1.1
 
 * *NEW* shortcode [eshop_empty_cart] to show some text when the cart is empty - see help page for details
@@ -43,6 +47,10 @@ Version 3.1.1
 
 
 == Latest Updates ==
+
+Version 3.1.2
+
+* *fixed* errors when product details contained quotation marks - these are now stripped out
 
 Version 3.1.1
 
