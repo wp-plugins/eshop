@@ -12,7 +12,14 @@ add_shortcode('eshop_show_payments','eshop_show_payments');
 add_shortcode('eshop_show_product','eshop_show_product');
 add_shortcode('eshop_show_shipping', 'eshop_show_shipping');
 add_shortcode('eshop_show_success', 'eshop_show_success');
-
+add_shortcode('eshop_empty_cart', 'eshop_empty_cart');
+function eshop_empty_cart($atts, $content = '') {
+	global $blog_id;
+	if(isset($_SESSION['shopcart'.$blog_id])){
+		$content='';
+	}
+	return $content;
+}
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no'), $atts));

@@ -102,7 +102,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
 <li><code>[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the above attribute (<code>shipclass</code>).</li>
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
-
+<li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 </ol>
 </div>
 <div class="wrap">
@@ -216,7 +216,7 @@ This is only triggered when someone visits the site.</p>
 
 <h3>Other Settings</h3>	
 <p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by country specific State/County/Province. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>. </p>
-<p>The eShop <strong>appearance</strong> page allows you to amend the default style, or disable it completely.</p>
+<p>The <strong>Appearance</strong> eShop page allows you to amend the default style, or disable it completely. <strong>Note:</strong> If your theme has an eshop.css then that will be used.</p>
 
 
 <h3>Settings - eShop Base</h3>

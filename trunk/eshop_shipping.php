@@ -44,6 +44,9 @@ $dtable=$wpdb->prefix.'eshop_states';
 
 if(isset($_POST['submitstate'])){
 	update_option('eshop_shipping_state',$wpdb->escape($_POST['eshop_shipping_state']));
+	if(!isset($_POST['eshop_show_allstates']))$_POST['eshop_show_allstates']='0';
+	update_option('eshop_show_allstates',$wpdb->escape($_POST['eshop_show_allstates']));
+
 }
 
 $echosub= '<ul class="subsubsub">';
@@ -286,6 +289,7 @@ case ('states'):
 		}
 		?>
 	</select><br />
+	<input id="eshop_show_allstates" name="eshop_show_allstates" type="checkbox" value="1"<?php if(get_option('eshop_show_allstates')) echo ' checked="checked"'; ?> /> <label for="eshop_show_allstates"><?php _e('Use All','eshop'); ?></label>
 	<p class="submit"><input type="submit" id="submitstate" name="submitstate" value="<?php _e('Submit','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
