@@ -333,6 +333,8 @@ function eshop_products_manager() {
 		<?php
 		foreach($grab as $foo=>$grabit){
 			if($grabit['_Price 1']!=''){
+			//reset array
+				$purcharray=array();
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				$getid=$grabit['id'];
@@ -382,6 +384,7 @@ function eshop_products_manager() {
 						$purcharray[]=$purchases;
 					}
 				}
+				if($grabit['_Featured Product']=='')$grabit['_Featured Product']='no';
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
 				echo '<td headers="ftrd sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
 

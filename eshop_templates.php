@@ -22,8 +22,8 @@ function eshop_template_email(){
 <thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
 <tbody>
 <?php
-if(isset($_GET['template'])) $template=$_GET['template'];
-else $template='1';
+if(isset($_GET['eshoptemplate'])) $eshoptemplate=$_GET['eshoptemplate'];
+else $eshoptemplate='1';
 $thisemail=$wpdb->get_results("Select * From $table");
 $phpself=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 $x=1;
@@ -39,7 +39,7 @@ if($this_email->id>2){
 }
 $alt = ($x % 2) ? '' : ' class="alternate"';
 ?>
-<tr<?php echo $alt; ?>><td id="row<?php echo $x; ?>" headers="num"><?php echo $this_email->id; ?></td><td headers="row<?php echo $x; ?> num"><a href="<?php echo $phpself.'&amp;template='.$this_email->id; ?>#edit_section" title="<?php _e('edit','eshop'); ?>"><?php echo $this_email->emailType; ?></a></td>
+<tr<?php echo $alt; ?>><td id="row<?php echo $x; ?>" headers="num"><?php echo $this_email->id; ?></td><td headers="row<?php echo $x; ?> num"><a href="<?php echo $phpself.'&amp;eshoptemplate='.$this_email->id; ?>#edit_section" title="<?php _e('edit','eshop'); ?>"><?php echo $this_email->emailType; ?></a></td>
 <td headers="row<?php echo $x; ?> act"><?php echo $state; ?></td><td headers="row<?php echo $x; ?> chg"><a href="<?php echo $phpself.'&amp;eshopuse='.$this_email->id; ?>"><?php echo $active; ?></a></td></tr>
 <?php
 $x++;
@@ -50,7 +50,7 @@ $x++;
 </div>
 <div class="wrap">
 <?php
-$thisemail=$wpdb->get_row("Select emailType, emailSubject,emailContent From $table where id=$template");
+$thisemail=$wpdb->get_row("Select emailType, emailSubject,emailContent From $table where id=$eshoptemplate");
 ?>
 <h2 id="edit_section"><?php _e('Email Template Editor','eshop'); ?></h2>
  <p><?php _e('Use this simple file editor to modify the default email template file.','eshop'); ?></p>
@@ -65,8 +65,8 @@ $thisemail=$wpdb->get_row("Select emailType, emailSubject,emailContent From $tab
 echo htmlspecialchars(stripslashes($thisemail->emailContent));
 ?>
 </textarea>
-	<input type="hidden" name="edit" value="<?php echo $template;?>" />
-	<input type="hidden" name="template" value="<?php echo $template;?>" />
+	<input type="hidden" name="edit" value="<?php echo $eshoptemplate;?>" />
+	<input type="hidden" name="eshoptemplate" value="<?php echo $eshoptemplate;?>" />
    <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Template','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>

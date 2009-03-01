@@ -53,26 +53,34 @@ if (!function_exists('eshopShowform')) {
 		// state list from db
 		$table=$wpdb->prefix.'eshop_states';
 		$getstate=get_option('eshop_shipping_state');
-		$List=$wpdb->get_results("SELECT code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
-		if(sizeof($List)>0){
+		if(get_option('eshop_show_allstates') != '1'){
+			$stateList=$wpdb->get_results("SELECT code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
+		}else{
+			$stateList=$wpdb->get_results("SELECT code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
+		}
+		if(sizeof($stateList)>0){
 			$echo .='<label for="state">'.__('State/County/Province','eshop').' '.$sreqd.'<br />
 			  <select class="med pointer" name="state" id="state">';
-			foreach($List as $key=>$value){
-				$k=$value['code'];
-				$v=$value['stateName'];
-				$stateList[$k]=$v;
-			}
 			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
 			$echo .='<option value="">'.__('not applicable','eshop').'</option>';
-
-			foreach($stateList as $code => $label)	{
-				if (isset($state) && $state == $code){
-					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-				}else{
-					$echo.="<option value=\"$code\">$label</option>";
-				}
+			foreach($stateList as $code => $value)	{
+				$eshopstatelist[$value['list']][$value['code']]=$value['stateName'];
 			}
-			$echo.= "</select></label><br />";
+			$tablec=$wpdb->prefix.'eshop_countries';
+			foreach($eshopstatelist as $egroup =>$value){
+				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
+
+				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+				foreach($value as $code =>$stateName){
+					if (isset($state) && $state == $code){
+						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+					}else{
+						$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+					}
+				}
+				$echo .="</optgroup>\n";
+			}
+			$echo.= "</select></label><br />\n";
 		}else{
 			$echo .='<input type="hidden" name="state" value="" />';
 		}
@@ -124,19 +132,24 @@ if (!function_exists('eshopShowform')) {
 		  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
 		 <label for="ship_city">'.__('City or town','eshop').'<br />
 		  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />'."\n";
-		  
 		if(isset($stateList) && sizeof($stateList)>0){
 			$echo .='<label for="shipstate">'.__('State/County/Province','eshop').'<br />
 			  <select class="med pointer" name="ship_state" id="shipstate">';
 			//state list from db, as above
 			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
 			$echo .='<option value="">'.__('not applicable','eshop').'</option>';
-			foreach($stateList as $code => $label){
-				if (isset($ship_state) && $ship_state == $code){
-					$echo.="<option value=\"$code\" selected=\"selected\">$label</option>";
-				}else{
-					$echo.="<option value=\"$code\">$label</option>";
+			foreach($eshopstatelist as $egroup =>$value){
+				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
+
+				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+				foreach($value as $code =>$stateName){
+					if (isset($ship_state) && $ship_state == $code){
+						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+					}else{
+						$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+					}
 				}
+				$echo .="</optgroup>\n";
 			}
 			$echo .= '</select></label><br />';
 		}else{
