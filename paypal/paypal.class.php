@@ -159,28 +159,27 @@ class paypal_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to paypal.
-		?>
+		$rtnecho ='
        <div id="process">
-         <p><strong><?php _e('Please wait, your order is being processed&#8230;','eshop'); ?></strong></p>
-	     <p><?php _e('If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.','eshop'); ?></p>
-         <form method="post" class="eshop" id="eshopgateway" action="<?php echo $this->paypal_url; ?>">
-          <p><?php
+         <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
+	     <p>'. __('If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.','eshop').'</p>
+         <form method="post" class="eshop" id="eshopgateway" action="'.$this->paypal_url.'">
+          <p>';
 		  foreach ($_POST as $name => $value) {
 			if($name!='submit' && $name!='ppsubmit'){			
 				if($name!='return' && $name!='cancel_return' && $name!='notify_url'){
 					$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 					$value = str_replace($replace, " ", $value);
 				}
-				echo "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+				$rtnecho .= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
 			 }
 
 		  }
-      	?> 
-         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="<?php _e('Proceed to Paypal &raquo;','eshop'); ?>" /></p>
+      	$rtnecho .= '<input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to Paypal &raquo;','eshop').'" /></p>
 	     </form>
-	  </div>
-	  <?php
-		return;
+	  </div>';
+
+		return $rtnecho;
    }   
    function validate_ipn() {
 

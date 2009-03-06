@@ -31,6 +31,7 @@ function eshop_check_brokenlink($file){
 function eshop_contains_files(){
 	global $wpdb;
 	$contains='';
+	$indir[]='';
 	$table = $wpdb->prefix ."eshop_downloads";
 	$rows=$wpdb->get_results("SELECT files FROM $table");
 	foreach($rows as $row){
@@ -360,24 +361,7 @@ function eshop_downloads_manager() {
 		 </tbody>
 		</table>
 	<?php
-	//check for downloads that were uploaded via FTP.
-	if(is_array(eshop_contains_files())){
-		?>
-		<div class="wrap">
-		<h2><?php _e('Unknown Download Files','eshop'); ?></h2>
-		<ul>
-		<?php
-		foreach(eshop_contains_files() as $contains){
-			echo '<li>'.$contains.'</li>';
-		}
-		?>
-		</ul>
-		<p><a href="<?php echo wp_specialchars($_SERVER['REQUEST_URI']).'&amp;eshop_orphan'; ?>"><?php _e('Add all unknown download files','eshop'); ?></a></p>
-		</div>
-		<?php
-	}
-	
-	
+
 	//fix the uri for pagination?
 	//$_SERVER['REQUEST_URI']= preg_replace('/&edit=.*/','',$_SERVER['REQUEST_URI']);
 	   //paginate
@@ -405,7 +389,6 @@ function eshop_downloads_manager() {
 		</div>
 		<?php
 		$dirpath=eshop_download_directory();
-		
 		if(!is_writeable($dirpath)) {
 			echo '
 			<div id="message" class="error fade">
@@ -441,6 +424,22 @@ function eshop_downloads_manager() {
 			</form>
 		</div>
 		<?php
+		}
+		//check for downloads that were uploaded via FTP.
+		if(is_array(eshop_contains_files())){
+			?>
+			<div class="wrap">
+			<h2><?php _e('Unknown Download Files','eshop'); ?></h2>
+			<ul>
+			<?php
+			foreach(eshop_contains_files() as $contains){
+				echo '<li>'.$contains.'</li>';
+			}
+			?>
+			</ul>
+			<p><a href="<?php echo wp_specialchars($_SERVER['REQUEST_URI']).'&amp;eshop_orphan'; ?>"><?php _e('Add all unknown download files','eshop'); ?></a></p>
+			</div>
+			<?php
 		}
 	}
 	eshop_show_credits();

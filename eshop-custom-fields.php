@@ -54,6 +54,12 @@ function eshop_inner_custom_box($post) {
     }
     if($stkav=='' && $featured=='')
         $stkav=$featured='No';
+        
+    //recheck stkqty
+    $stocktable=$wpdb->prefix ."eshop_stock";
+    $stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID");
+    if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
+        
     ?>
 
     <h4><?php _e('Product','eshop'); ?></h4>

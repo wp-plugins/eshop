@@ -73,7 +73,7 @@ switch ($_GET['action']) {
 		}else{
 			$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';   // testing paypal url
 		}
-		$p->eshop_submit_paypal_post($_POST);
+		$echoit.=$p->eshop_submit_paypal_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
@@ -130,8 +130,6 @@ switch ($_GET['action']) {
 			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=paypalipn';
 		}
 		$p->add_field('notify_url', $ilink);
-
-	//	$p->add_field('notify_url', $this_script.'/wp-content/plugins/eshop/paypal.php?action=ipn');
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
 		foreach($_POST as $name=>$value){

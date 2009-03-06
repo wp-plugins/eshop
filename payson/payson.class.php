@@ -73,12 +73,11 @@ class payson_class {
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to payson.
       $payson = get_option('eshop_payson');
-		?>
-       <div id="process">
-         <p><strong><?php _e('Please wait, your order is being processed&#8230;','eshop'); ?></strong></p>
-	     <p><?php _e('If you are not automatically redirected to Payson, please use the <em>Proceed to Payson</em> button.','eshop'); ?></p>
-         <form method="post" id="eshopgateway" class="eshop" action="<?php echo $this->payson_url; ?>">
-          <p><?php
+		$echortn='<div id="process">
+         <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
+	     <p>'. __('If you are not automatically redirected to Payson, please use the <em>Proceed to Payson</em> button.','eshop').'</p>
+         <form method="post" id="eshopgateway" class="eshop" action="'.$this->payson_url.'">
+          <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$payson = get_option('eshop_payson'); 
 			$Key=$payson['key'];
@@ -98,26 +97,25 @@ class payson_class {
 			$MD5string = $payson['email'] . ":" . $Cost . ":" . $ExtraCost . ":" . $OkUrl . ":" . $GuaranteeOffered . $Key;
 			$MD5Hash = md5($MD5string);
 			$refid=$_POST['RefNr'];
-			?>
-			<input type="hidden" name="AgentId" value="<?php echo $payson['id']; ?>" />
-			<input type="hidden" name="SellerEmail" value="<?php echo $payson['email']; ?>" />
-			<input type="hidden" name="Description" value="<?php echo $desc; ?>" />
+			$echortn.='
+			<input type="hidden" name="AgentId" value="'.$payson['id'].'" />
+			<input type="hidden" name="SellerEmail" value="'.$payson['email'].'" />
+			<input type="hidden" name="Description" value="'.$desc.'" />
 			<input type="hidden" name="GuaranteeOffered" value="1" />
-			<input type="hidden" name="OkUrl" value="<?php echo $OkUrl; ?>" />
-			<input type="hidden" name="CancelUrl" value="<?php echo $_POST['cancel_return']; ?>" />
-			<input type="hidden" name="MD5" value="<?php echo $MD5Hash; ?>" />
-			<input type="hidden" name="BuyerEmail" value="<?php echo $_POST['email']; ?>" />
-			<input type="hidden" name="BuyerFirstName" value="<?php echo $_POST['first_name']; ?>" />
-			<input type="hidden" name="BuyerLastName" value="<?php echo $_POST['last_name']; ?>" />
-			<input type="hidden" name="Cost" value="<?php echo $Cost; ?>" />
-			<input type="hidden" name="ExtraCost" value="<?php echo $ExtraCost; ?>" />
-			<input type="hidden" name="RefNr" value="<?php echo $refid; ?>" />
+			<input type="hidden" name="OkUrl" value="'.$OkUrl.'" />
+			<input type="hidden" name="CancelUrl" value="'.$_POST['cancel_return'].'" />
+			<input type="hidden" name="MD5" value="'.$MD5Hash.'" />
+			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
+			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
+			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
+			<input type="hidden" name="Cost" value="'.$Cost.'" />
+			<input type="hidden" name="ExtraCost" value="'.$ExtraCost.'" />
+			<input type="hidden" name="RefNr" value="'.$refid.'" />
 
-         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="<?php _e('Proceed to Payson &raquo;','eshop'); ?>" /></p>
+         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to Payson &raquo;','eshop').'" /></p>
 	     </form>
-	  </div>
-	  <?php
-		return;
+	  </div>';
+		return $echortn;
    }   
    function validate_ipn() {
       // generate the post string from the _POST vars aswell as load the

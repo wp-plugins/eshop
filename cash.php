@@ -158,7 +158,7 @@ switch ($_GET['action']) {
 			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=success';
 		}
 		$p->cash_url = $ilink;     // cash url
-		$p->eshop_submit_cash_post($_POST);
+		$echoit.=$p->eshop_submit_cash_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		
 		break;

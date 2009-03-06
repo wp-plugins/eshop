@@ -66,7 +66,7 @@ switch ($_GET['action']) {
 		}else{
 			$p->payson_url = 'https://www.payson.se/testagent/default.aspx';   // testing payson url
 		}
-		$p->eshop_submit_payson_post($_POST);
+		$echoit.=$p->eshop_submit_payson_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         

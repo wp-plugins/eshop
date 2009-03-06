@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 3.1.2
+Stable tag: 3.1.3
 
 An accessible Shopping Cart plugin.
 
@@ -32,21 +32,23 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 
 Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
-= Latest Update =
+= Latest Updates =
 
-Version 3.1.2
+Version 3.1.3
 
-*fixed* errors when product details contained quotation marks - these are now stripped out - however existing users may need to update each product that contains quotation marks in the product details.
+* *fixed* - stock quantity bug on product edit.
+* *fixed* - downloads uploaded via ftp now show correctly.
+* *fixed* - display error on redirect page
+* *added* - class for single option in cart: sgloptiondetails
 
-Version 3.1.1
+== Previous Updates ==
 
-* *NEW* shortcode [eshop_empty_cart] to show some text when the cart is empty - see help page for details
-* *NEW* ability to show all States/Counties/Provinces on the checkout form
-* *Fixed* major bug on eshop products screen
-* *Fixed* minor bug on email templates (clashed with other plugins)
+Version 3.1.3
 
-
-== Latest Updates ==
+* *fixed* - stock quantity bug on product edit.
+* *fixed* - downloads uploaded via ftp now show correctly.
+* *fixed* - display error on redirect page
+* *added* - class for single option in cart: sgloptiondetails
 
 Version 3.1.2
 
