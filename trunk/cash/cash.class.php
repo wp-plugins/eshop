@@ -73,24 +73,21 @@ class cash_class {
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to cash.
       $cash = get_option('eshop_cash');
-		?>
-       <div id="process">
-         <p><strong><?php _e('Please wait, your order is being processed&#8230;','eshop'); ?></strong></p>
-	     <p><?php _e('If you are not automatically redirected, please use the <em>Proceed</em> button.','eshop'); ?></p>
-         <form method="post" id="eshopgateway" class="eshop" action="<?php echo $this->cash_url; ?>">
-          <p><?php
+		$echortn ='<div id="process">
+         <p><strong>'. __('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
+	     <p>'. __('If you are not automatically redirected, please use the <em>Proceed</em> button.','eshop').'</p>
+         <form method="post" id="eshopgateway" class="eshop" action="'.$this->cash_url.'">
+          <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$cash = get_option('eshop_cash'); 
 			$refid=$_POST['RefNr'];
-			?>
-			<input type="hidden" name="BuyerEmail" value="<?php echo $_POST['email']; ?>" />
-			<input type="hidden" name="BuyerFirstName" value="<?php echo $_POST['first_name']; ?>" />
-			<input type="hidden" name="BuyerLastName" value="<?php echo $_POST['last_name']; ?>" />
-			<input type="hidden" name="RefNr" value="<?php echo $refid; ?>" />
-         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="<?php _e('Proceed &raquo;','eshop'); ?>" /></p>
+			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
+			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
+			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
+			<input type="hidden" name="RefNr" value="'.$refid.'" />
+         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed &raquo;','eshop').'" /></p>
 	     </form>
-	  </div>
-	  <?php
-		return;
+	  </div>';
+		return $echortn;
    }   
 }   
