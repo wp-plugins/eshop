@@ -80,18 +80,29 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
 <li><code>[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on other pages within your site.</li>
 <li><code>[eshop_show_product]</code> Can be used to display a specific product, or products.</li>
+<li><code>[eshop_best_sellers]</code> Can be used to display the best selling products.</li>
+
 </ol>
 <p>All of the above can have the following attributes, except where mentioned</p>
 <ul class="eshop-shortcodes">
 <li><code>class</code> example: <em>class="myclass"</em> to change the default class.</li>
 <li><code>panels</code> example: <em>panels="yes"</em> to show 'panels'</li>
 <li><code>form</code> example: <em>form="yes"</em> to add the shortened add to cart form.</li>
-<li><code>show</code> (<em>eshop_list_new</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
-<li><code>records</code> (<em>eshop_list_new</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
+<li><code>show</code> (<em>eshop_list_new</em>, <em>eshop_list_featured</em> &amp; <em>eshop_best_sellers</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
+<li><code>records</code> (<em>eshop_list_new</em>, <em>eshop_list_featured</em> &amp; <em>eshop_best_sellers</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
+<li><code>sortby</code> (<em>eshop_list_subpages</em>  &amp; <em>eshop_list_featured</em> only) example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possivle values: post_date, post_title or menu_order</li>
+<li><code>order</code> (<em>eshop_list_subpages</em>  &amp; <em>eshop_list_featured</em> only) example: <em>order="ASC"</em> shows the results in ascending, or descending order. Possible values: ASC or DESC</li>
 <li><code>list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
 <li><code>id</code> (<em>eshop_show_product</em> only) example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
 <li><code>shipclass</code> (<em>eshop_show_shipping</em> only) example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
 </ul>
+<p><strong>sortby</strong> and <strong>order</strong> replace the following settings from earlier versions:</p>
+<ul>
+<li>Featured and department product sort order</li>
+<li>Random products to display</li>
+<li>Department Products to display</li>
+</ul>
+
 <h3>Examples</h3>
 <ul class="eshop-shortcodes">
 <li><code>[eshop_list_subpages class="myclass"]</code> changes the default class to 'myclass'</li>
@@ -104,6 +115,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 </ol>
+<h3>Notes</h3>
+<p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.
 </div>
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
@@ -155,9 +168,13 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p><strong>Symbol</strong> - whether it be $, &pound;, etc.</p>
 
 <h4>Product Listings</h4>
-<p><strong>Featured and department product sort order</strong> - newest, oldest, alphabetically - these are the values available to sort products when they are listed on a parent page.</p>
-<p><strong>Random products to display</strong> - this is the number of random products to display if you utilise the <code>[eshop_random_products]</code> shortcode.</p>
-<p><strong>Department Products to display</strong> - this sets the number of producs to appear per page when you use the <code>[eshop_list_subpages]</code> shortcode.</p>
+<p><strong>Show add to cart forms on WordPress post listings</strong> -  <strong>Warning</strong> activating this can invalidate your site!. By default eShop will not add forms, even if specified by a shortcode, to WordPress post listing pages. By enabling this option the add to cart form will be added, where possible to all posts, in category listings, search results, etc.</p>
+<p>The following Product Listings options have now been deprecated, and replaced by shortcodes (see above).</p>
+<ul>
+<li><del>Featured and department product sort order</del></li>
+<li><del>Random products to display</del></li>
+<li><del>Department Products to display</del></li>
+</ul>
 
 <h4>Cart Options</h4>
 <p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>

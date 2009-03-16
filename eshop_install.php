@@ -37,14 +37,11 @@ add_option('eshop_style', 'yes');
 add_option('eshop_records','10');
 add_option('eshop_options_num','3');
 add_option('eshop_downloads_num','3');
-add_option('eshop_random_num','5');
-add_option('eshop_pagelist_num','5');
 add_option('eshop_cart_nostock','Out of Stock');
 add_option('eshop_status', 'testing');
 add_option('eshop_currency_symbol','&pound;');
 add_option('eshop_currency','GBP');
 add_option('eshop_location','GB');
-add_option('eshop_sudo_cat','1');
 add_option('eshop_shipping', '1');
 add_option('eshop_shipping_zone', 'country');
 add_option('eshop_shipping_state', 'GB');
@@ -57,6 +54,13 @@ add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
+
+//new for 3.
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
+	delete_option('eshop_sudo_cat');
+	delete_option('eshop_random_num');
+	delete_option('eshop_pagelist_num');
+}
 
 //new for 2.14.x
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' )
