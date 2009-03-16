@@ -209,12 +209,13 @@ if(isset($_POST['submit'])){
 			update_option('eshop_sysemails',$wpdb->escape($_POST['eshop_sysemails']));
 			update_option('eshop_currency_symbol',$wpdb->escape($_POST['eshop_currency_symbol']));
 			update_option('eshop_cart_nostock',$wpdb->escape($_POST['eshop_cart_nostock']));
-			update_option('eshop_sudo_cat',$wpdb->escape($_POST['eshop_sudo_cat']));
 			update_option('eshop_credits',$wpdb->escape($_POST['eshop_credits']));
 			update_option('eshop_fold_menu',$wpdb->escape($_POST['eshop_fold_menu']));
 			update_option('eshop_stock_control',$wpdb->escape($_POST['eshop_stock_control']));
 			update_option('eshop_show_stock',$wpdb->escape($_POST['eshop_show_stock']));
 			update_option('eshop_search_img',$wpdb->escape($_POST['eshop_search_img']));
+			update_option('eshop_show_forms',$wpdb->escape($_POST['eshop_show_forms']));
+
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
 				update_option('eshop_records',$wpdb->escape($_POST['eshop_records']));
@@ -228,18 +229,7 @@ if(isset($_POST['submit'])){
 				$err.='<li>'.__('Options per product should be numeric, a default of 3 has been applied.','eshop').'</li>';
 				update_option('eshop_options_num','3');
 			}
-			if(is_numeric($_POST['eshop_random_num'])){
-				update_option('eshop_random_num',$wpdb->escape($_POST['eshop_random_num']));
-			}else{
-				$err.='<li>'.__('Number of random products to display should be numeric, a default of 5 has been applied.','eshop').'</li>';
-				update_option('eshop_random_num','5');
-			}
-			if(is_numeric($_POST['eshop_pagelist_num'])){
-				update_option('eshop_pagelist_num',$wpdb->escape($_POST['eshop_pagelist_num']));
-			}else{
-				$err.='<li>'.__('Number of products to display on department pages should be numeric, a default of 5 has been applied.','eshop').'</li>';
-				update_option('eshop_pagelist_num','5');
-			}
+
 			if(is_numeric($_POST['eshop_image_in_cart']) || $_POST['eshop_image_in_cart']==''){
 				update_option('eshop_image_in_cart',$wpdb->escape($_POST['eshop_image_in_cart']));
 			}else{
@@ -558,32 +548,18 @@ switch($action_status){
 
 </fieldset>
 <fieldset><legend><?php _e('Product Listings','eshop'); ?></legend>
-<label for="eshop_sudo_cat"><?php _e('Featured and department product sort order','eshop'); ?></label>
-	<select name="eshop_sudo_cat" id="eshop_sudo_cat">
+	<label for="eshop_show_forms"><?php _e('Show add to cart forms on WordPress post listings. <span class="warn"><span>Warning</span> this can invalidate your site!</span>','eshop'); ?></label>
+	<select name="eshop_show_forms" id="eshop_show_forms">
 	<?php
-	switch (get_option('eshop_sudo_cat')){
-		case '1'://newest
-			$sudo1=' selected="selected"';
-			$sudo2=$sudo3='';
-			break;
-		case '2'://oldest
-			$sudo2=' selected="selected"';
-			$sudo1=$sudo3='';
-			break;
-		case '3'://alphabetically
-			$sudo3=' selected="selected"';
-			$sudo1=$sudo2='';
-			break;
-		
+	if('yes' == get_option('eshop_show_forms')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
 	}
-	echo '<option value="1"'.$sudo1.'>'.__('Newest','eshop').'</option>';
-	echo '<option value="2"'.$sudo2.'>'.__('Oldest','eshop').'</option>';
-	echo '<option value="3"'.$sudo3.'>'.__('Alphabetically','eshop').'</option>';
-
 	?>
 	</select><br />
-	<label for="eshop_random_num"><?php _e('Random products to display','eshop'); ?></label><input id="eshop_random_num" name="eshop_random_num" type="text" value="<?php echo get_option('eshop_random_num'); ?>" size="5" /><br />
-	<label for="eshop_pagelist_num"><?php _e('Department Products to display','eshop'); ?></label><input id="eshop_pagelist_num" name="eshop_pagelist_num" type="text" value="<?php echo get_option('eshop_pagelist_num'); ?>" size="5" /><br />
 </fieldset>
 
 <fieldset><legend><?php _e('Cart Options','eshop'); ?></legend>

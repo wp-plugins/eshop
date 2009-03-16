@@ -69,8 +69,6 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_location';
 	$epages[] = 'eshop_method';
 	$epages[] = 'eshop_options_num';
-	$epages[] = 'eshop_pagelist_num';
-	$epages[] = 'eshop_random_num';
 	$epages[] = 'eshop_records';
 	$epages[] = 'eshop_shipping';
 	$epages[] = 'eshop_shipping_zone';
@@ -80,7 +78,6 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_status'; 
 	$epages[] = 'eshop_stock_control'; 
 	$epages[] = 'eshop_style';
-	$epages[] = 'eshop_sudo_cat'; 
 	$epages[] = 'eshop_sysemails'; 
 	$epages[] = 'eshop_unknown_state';
 	$epages[] = 'eshop_xtra_help'; 
@@ -107,7 +104,8 @@ if(isset($_POST['delete'])){
 		$epages[]='eshop_discount_value'.$x;
 	}
 	$epages[]='eshop_discount_shipping';
-		
+	$epages[]='	eshop_show_forms';
+	
 	foreach($epages as $epage){
 		delete_option($epage);
 	}

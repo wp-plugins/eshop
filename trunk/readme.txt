@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7
-Stable tag: 3.1.3
+Stable tag: 3.2.0
 
 An accessible Shopping Cart plugin.
 
@@ -34,14 +34,32 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.1.3
+Version 3.2.0
 
-* *fixed* - stock quantity bug on product edit.
-* *fixed* - downloads uploaded via ftp now show correctly.
-* *fixed* - display error on redirect page
-* *added* - class for single option in cart: sgloptiondetails
+* *added* - new shortcode and widget option to display best sellers.
+* *added* - classes to checkout form for ease of styling
+* *added* - more details to eShop paypal 'failed' emails
+* *added* - new setting to display add to cart form within WP listings
+* *fixed* - US State issue in checkout
+* *fixed* - translation issues
+* *fixed* - bug with class names in shortcodes
+* *removed* - some product listing settings
+* *added* - some shortcodes now have additional options - check the help page for full details
+
 
 == Previous Updates ==
+
+Version 3.2.0
+
+* *added* - new shortcode and widget option to display best sellers.
+* *added* - classes to checkout form for ease of styling
+* *added* - more details to eShop paypal 'failed' emails
+* *added* - new setting to display add to cart form within WP listings
+* *fixed* - US State issue in checkout
+* *fixed* - translation issues
+* *fixed* - bug with class names in shortcodes
+* *removed* - some product listing settings
+* *added* - some shortcodes now have additional options - check the help page for full details
 
 Version 3.1.3
 
@@ -294,15 +312,20 @@ You then need to create a top level shop page, and start creating departments an
 
 = Does this work with Wordpress MU =
 
-When WordpressMU utilises WP2.5, then hopefully yes.
+Yes.
+
+= What happened to my seetings? =
+the following settings have now been removed:
+
+* Featured and department product sort order
+* Random products to display
+* Department Products to display
+
+and replaced within shortcodes. See the eShop Help page for full documentation.
 
 = Upgrading to 2.11.0 (and above) from earlier versions =
 
 You need to deactivate, and then reactivate the plugin. Product data won't be lost, there is a minor update to the database.
-
-= Upgrading to 2.8.0 (and above) from earlier versions =
-
-You need to deactivate, and then reactivate the plugin. Product data won't be lost, but will be un-usable unless you do this.
 
 = Upgrading from eShop 2.5 and below =
 

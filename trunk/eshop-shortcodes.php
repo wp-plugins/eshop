@@ -1,5 +1,6 @@
 <?php 
 add_shortcode('eshop_list_featured', 'eshop_list_featured');
+add_shortcode('eshop_best_sellers', 'eshop_best_sellers');
 add_shortcode('eshop_list_new', 'eshop_list_new');
 add_shortcode('eshop_list_subpages', 'eshop_list_subpages');
 add_shortcode('eshop_random_products', 'eshop_list_random');
@@ -22,36 +23,23 @@ function eshop_empty_cart($atts, $content = '') {
 }
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no'), $atts));
-
-	switch (get_option('eshop_sudo_cat')){
-		case '1'://newest
-			$orderby='date';
-			$order= 'DESC';
-			break;
-		case '2'://oldest
-			$orderby='date';
-			$order= 'ASC';
-			break;
-		case '3'://alphabetically
-		default:
-			$orderby='title';
-			$order= 'ASC';
-			break;
-	}
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','sortby'=>'post_title','order'=>'ASC'), $atts));
+	$allowedsort=array('post_date','post_title','menu_order');
+	$allowedorder=array('ASC','DESC');
+	if(!in_array($sortby,$allowedsort)) 
+		$sortby='post_title';
+	if(!in_array($order,$allowedorder)) 
+		$order='ASC';
+	
 	
 	//my pager
 	include_once ("pager-class.php");
 	$range=10;
 	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent=$post->ID AND post_status='publish'");
+	if($max>$show)
+		$max=$show;
 	if($max>0){
-		if(get_option('eshop_pagelist_num')!='' && is_numeric(get_option('eshop_pagelist_num'))){
-			$records=get_option('eshop_pagelist_num');
-		}else{
-			$records='6';
-		}
 		if(isset($_GET['viewall']))$records=$max;
-		
 		$phpself=explode('?',get_permalink($post->ID));
 		$pager = new eshopPager( 
 			$max ,          //see above
@@ -62,21 +50,22 @@ function eshop_list_subpages($atts){
 
 		$pager->set_range($range);
 		$offset=$pager->get_limit_offset();
-	}
+	}else
+		$offset='0';
 	$args = array(
 	'post_type' => 'page',
 	'post_status' => null,
 	'post_parent' => $post->ID, // any parent
-	'orderby'=> $orderby,
+	'orderby'=> $sortby,
 	'order'=> $order,
 	'numberposts' => $records, 
 	'offset' => $offset,
 	); 
-	
 	$pages = get_posts($args);
+
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate"><p>';
+		$echo .= '<div class="paginate"><p>';
 		if($pager->_pages > 1){
 			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
 		}else{
@@ -105,7 +94,7 @@ function eshop_list_subpages($atts){
 		if($panels=='no'){
 			$echo .= eshop_listpages($pages,$class,$form);
 		}else{
-			if($class='eshopsubpages') $class='eshoppanels';
+			if($class=='eshopsubpages') $class='eshoppanels';
 			$echo .= eshop_listpanels($pages,$class,$form);
 		}
 		
@@ -182,7 +171,90 @@ function eshop_list_new($atts){
 		if($panels=='no'){
 			$echo .= eshop_listpages($pages,$class,$form);
 		}else{
-			if($class='eshopsubpages') $class='eshoppanels';
+			if($class=='eshopsubpages') $class='eshoppanels';
+			$echo .= eshop_listpanels($pages,$class,$form);
+		}
+
+		if(isset($eecho)){
+			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+		}else{
+			$echo .= '<br class="pagfoot" />';
+		}
+		return $echo;
+	} 
+	return;
+} 
+function eshop_best_sellers($atts){
+	global $wpdb, $post;
+	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'6','records'=>'6'), $atts));
+	//my pager
+	include_once ("pager-class.php");
+	$range=10;
+	$stktable=$wpdb->prefix.'eshop_stock';
+	$max=$wpdb->get_var("SELECT COUNT($wpdb->postmeta.post_id)
+		from $wpdb->postmeta,$wpdb->posts, $stktable as stk
+		WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
+	if($max>$show)
+		$max=$show;
+	if($max>0){
+
+		if(isset($_GET['viewall']))$records=$max;
+
+		$phpself=explode('?',get_permalink($post->ID));
+		$pager = new eshopPager( 
+			$max ,          //see above
+			$records,            // how many records to display at one time
+			@$_GET['_p'],	//this is the current page no. carried via _GET
+			array('php_self'=>$phpself[0])
+		);
+
+		$pager->set_range($range);
+		$offset=$pager->get_limit_offset();
+		if($records>$show)
+			$records=$show;
+		if($pager->curr > 1 && $show % $records > 0 && $show % $records < $records)
+			$records=$show % $records;
+
+	}
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title 
+	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
+	WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
+	order by stk.purchases DESC limit $offset,$records");
+
+	if($pages) {
+		//paginate
+		$echo = '<div class="paginate"><p>';
+		if($pager->_pages > 1){
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
+		}else{
+			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		}
+		$echo .= '</p>';
+		//set up correct link
+		$permalink = get_option('permalink_structure');
+		if('' != $permalink)
+			$bits='?';
+		else
+			$bits='&amp;';
+		if($pager->_pages > 1){
+			$eecho =  '<ul>';
+			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
+			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
+			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
+			if($pager->_pages >= 2){
+				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
+			}
+			$eecho .= '</ul>';
+			//$echo .= $eecho;
+		}
+		$echo .= '</div>';
+		//end
+		if($panels=='no'){
+			$echo .= eshop_listpages($pages,$class,$form);
+		}else{
+			if($class=='eshopbestsellers') $class='eshoppanels';
 			$echo .= eshop_listpanels($pages,$class,$form);
 		}
 
@@ -198,30 +270,19 @@ function eshop_list_new($atts){
 function eshop_list_featured($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no'), $atts));
-
-	switch (get_option('eshop_sudo_cat')){
-		case '1'://newest
-			$orderby='p.post_date';
-			$order= 'DESC';
-			break;
-		case '2'://oldest
-			$orderby='p.post_date';
-			$order= 'ASC';
-			break;
-		case '3'://alphabetically
-		default:
-			$orderby='p.post_title';
-			$order= 'ASC';
-			break;
-	}
-
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_Featured Product' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order");
+	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC'), $atts));
+	$allowedsort=array('post_date','post_title','menu_order');
+	$allowedorder=array('ASC','DESC');
+	if(!in_array($sortby,$allowedsort)) 
+		$sortby='post_title';
+	if(!in_array($order,$allowedorder)) 
+		$order='ASC';
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_Featured Product' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 	if($pages) {
 		if($panels=='no'){
 			$echo = eshop_listpages($pages,$class,$form);
 		}else{
-			if($class='eshopfeatured') $class='eshoppanels';
+			if($class=='eshopfeatured') $class='eshoppanels';
 			$echo = eshop_listpanels($pages,$class,$form);
 		}
 		$post=$paged;
@@ -233,7 +294,7 @@ function eshop_list_featured($atts){
 function eshop_list_random($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no'), $atts));
+	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
 		$class='eshoprandomproduct';
 	}
@@ -247,7 +308,7 @@ function eshop_list_random($atts){
 		if($panels=='no'){
 			$echo = eshop_listpages($pages,$class,$form);
 		}else{
-			if($class='eshoprandomlist') $class='eshoppanels';
+			if($class=='eshoprandomlist') $class='eshoppanels';
 				$echo = eshop_listpanels($pages,$class,$form);
 		}
 		$post=$paged;
@@ -272,6 +333,7 @@ function eshop_show_product($atts){
 			if($panels=='no'){
 				$echo = eshop_listpages($pages,$class,$form);
 			}else{
+				if($class=='eshopshowproduct') $class='eshoppanels';
 				$echo = eshop_listpanels($pages,$class,$form);
 			}
 			$post=$paged;

@@ -3,7 +3,7 @@ function eshopwidgets_init(){
 	$widget_ops = array('title'=>'','classname' => 'eshopcart_widget', 'description' => __('Displays a simplified cart','eshop'));
   	wp_register_sidebar_widget('eshopcart',__('eShop Cart','eshop'), 'eshop_widget',$widget_ops);
     wp_register_widget_control('eshopcart',__('eShop Cart','eshop'), 'eshop_control');
-    $widget_ops = array('title'=>'','classname' => 'eshop_payments_widget', 'description' => __('Displays accepted payments logos','eshop'));
+    $widget_ops = array('title'=>'','classname' => 'eshop_payments_widget', 'description' => __('Displays accepted payment logos','eshop'));
     wp_register_sidebar_widget('eshop_payments',__('eShop Payments','eshop'), 'eshop_pay_widget',$widget_ops);
   	wp_register_widget_control('eshop_payments',__('eshop_payments','eshop'), 'eshop_pay_control');
 	eshop_products_register();
@@ -122,6 +122,7 @@ function eshop_products_widgets( $args, $widget_args = 1 ) {
 	$show_id = attribute_escape($options[$number]['show_id']);
 	$show_type = attribute_escape($options[$number]['show_type']);
 	$show_what = attribute_escape($options[$number]['show_what']);
+	$order_by = attribute_escape($options[$number]['order_by']);
 	$show_amts = attribute_escape($options[$number]['show_amts']);
 	if(!is_numeric($show_size)) $show_size='';
 	echo $before_title.$show_title.$after_title;
@@ -129,7 +130,7 @@ function eshop_products_widgets( $args, $widget_args = 1 ) {
 	else $stype='no';
 	switch($show_what){
 		case '1'://featured
-			echo eshopw_list_featured(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size));
+			echo eshopw_list_featured(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'sortby'=>$order_by));
 			break;
 		case '2'://new
 			echo eshopw_list_new(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size));
@@ -139,6 +140,9 @@ function eshop_products_widgets( $args, $widget_args = 1 ) {
 			break;
 		case '4'://show specific products
 			echo eshopw_show_product(array('id'=>$show_id,'images'=>$stype,'size'=>$show_size));
+			break;
+		case '5'://show specific products
+			echo eshopw_best_sellers(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size));
 			break;
 	}
 	echo $after_widget;
@@ -195,8 +199,9 @@ function eshop_products_control( $widget_args = 1 ) {
 			$show_size = wp_specialchars( $eshop_products_widgets_instance['show_size'] );
 			$show_type = wp_specialchars( $eshop_products_widgets_instance['show_type'] );
 			$show_what = wp_specialchars( $eshop_products_widgets_instance['show_what'] );
+			$order_by = wp_specialchars( $eshop_products_widgets_instance['order_by'] );
 			$show_amts = wp_specialchars( $eshop_products_widgets_instance['show_amts'] );
-			$options[$widget_number] = array( 'show_id' => $show_id,'show_size' => $show_size,'show_what' => $show_what,'show_amts' => $show_amts,'show_type' => $show_type,'show_title' => $show_title);  // Even simple widgets should store stuff in array, rather than in scalar
+			$options[$widget_number] = array( 'show_id' => $show_id,'show_size' => $show_size,'show_what' => $show_what,'order_by' => $order_by,'show_amts' => $show_amts,'show_type' => $show_type,'show_title' => $show_title);  // Even simple widgets should store stuff in array, rather than in scalar
 		}
 
 		update_option('eshop_products_widgets', $options);
@@ -207,7 +212,7 @@ function eshop_products_control( $widget_args = 1 ) {
 
 	// Here we echo out the form
 	if ( -1 == $number ) { // We echo out a template for a form which can be converted to a specific form later via JS
-		$show_size = $show_id = $show_title = $show_what = $show_amts = $show_type='';
+		$show_size = $show_id = $show_title = $show_what = $order_by = $show_amts = $show_type='';
 		$number = '%i%';
 	} else {
 		$show_size = attribute_escape($options[$number]['show_size']);
@@ -215,6 +220,7 @@ function eshop_products_control( $widget_args = 1 ) {
 		$show_title = attribute_escape($options[$number]['show_title']);
 		$show_type = attribute_escape($options[$number]['show_type']);
 		$show_what = attribute_escape($options[$number]['show_what']);
+		$order_by = attribute_escape($options[$number]['order_by']);
 		$show_amts = attribute_escape($options[$number]['show_amts']);
 	}
 
@@ -238,6 +244,14 @@ function eshop_products_control( $widget_args = 1 ) {
 		<option value="2"<?php selected( $show_what, '2' ); ?>><?php _e('New','eshop'); ?></option>
 		<option value="3"<?php selected( $show_what, '3' ); ?>><?php _e('Random','eshop'); ?></option>
 		<option value="4"<?php selected( $show_what, '4' ); ?>><?php _e('Specific products','eshop'); ?></option>
+		<option value="5"<?php selected( $show_what, '5' ); ?>><?php _e('Best Sellers','eshop'); ?></option>
+	</select></p>
+	<p><label for="eshop_order_by-<?php echo $number; ?>"><?php _e('Featured Order by','eshop'); ?></label>
+			<select id="eshop_order_by-<?php echo $number; ?>" name="eshop_products_widget[<?php echo $number; ?>][order_by]">
+			<option value="1"<?php selected( $order_by, '1' ); ?>><?php _e('Title','eshop'); ?></option>
+			<option value="2"<?php selected( $order_by, '2' ); ?>><?php _e('Menu Order','eshop'); ?></option>
+			<option value="3"<?php selected( $order_by, '3' ); ?>><?php _e('Date Ascending','eshop'); ?></option>
+			<option value="4"<?php selected( $order_by, '4' ); ?>><?php _e('Date Descending','eshop'); ?></option>
 	</select></p>
 	<p><label for="eshop_show_amts-<?php echo $number; ?>"><?php _e('How many to show','eshop'); ?></label>
 		<select id="eshop_show_amts-<?php echo $number; ?>" name="eshop_products_widget[<?php echo $number; ?>][show_amts]">
@@ -317,21 +331,45 @@ function eshopw_list_new($atts){
 	} 
 	return;
 } 
+function eshopw_best_sellers($atts){
+	global $wpdb, $post;
+	$stktable=$wpdb->prefix.'eshop_stock';
+	extract(shortcode_atts(array('class'=>'eshopw_best','images'=>'no','show'=>'6','size'=>''), $atts));
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title 
+	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
+	WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
+	order by stk.purchases DESC limit $show");
+	if($pages) {
+		if($images=='no'){
+			$echo = eshopw_listpages($pages,$class);
+		}else{
+			$class='eshopw_panels';
+			$echo = eshopw_listpanels($pages,$class,$size);
+		}
+		return $echo;
+	} 
+	return;
+} 
 function eshopw_list_featured($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopw_featured','images'=>'no','show'=>'6','size'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopw_featured','images'=>'no','show'=>'6','size'=>'','sortby'=>'1'), $atts));
 
-	switch (get_option('eshop_sudo_cat')){
-		case '1'://newest
-			$orderby='p.post_date';
-			$order= 'DESC';
+	switch ($sortby){
+		case '2'://menu order
+			$orderby='p.menu_order';
+			$order= 'ASC';
 			break;
-		case '2'://oldest
+		case '3'://date asc
 			$orderby='p.post_date';
 			$order= 'ASC';
 			break;
-		case '3'://alphabetically
+		case '4'://date desc
+			$orderby='p.post_date';
+			$order= 'DESC';
+			break;
+		case '1'://title
 		default:
 			$orderby='p.post_title';
 			$order= 'ASC';

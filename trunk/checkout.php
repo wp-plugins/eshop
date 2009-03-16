@@ -23,8 +23,8 @@ if (!function_exists('eshopShowform')) {
 	<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
 	'.$xtralinks.'</small></p>
 	<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopform">
-	<fieldset><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'<br />
-	</legend><fieldset>';
+	<fieldset class="eshop fld1"><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'<br />
+	</legend><fieldset class="eshop fld2">';
 	if('no' == get_option('eshop_downloads_only')){
 		$echo .='<legend>'.__('Mailing Address','eshop').'</legend>';
 	}else{
@@ -112,7 +112,7 @@ if (!function_exists('eshopShowform')) {
 	}
 	$echo .= '
 
-	<fieldset>
+	<fieldset class="eshop fld3">
 	<legend>'.__('Additional information','eshop').'</legend>
 	 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
 	  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
@@ -120,7 +120,7 @@ if (!function_exists('eshopShowform')) {
 	  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';
 
 	if('no' == get_option('eshop_downloads_only')){
-		$echo .='<fieldset>
+		$echo .='<fieldset class="eshop fld4">
 		<legend>'.__('Shipping address (if different)','eshop').'</legend>
 		 <label for="ship_name">'.__('Name','eshop').'<br />
 		  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
@@ -460,7 +460,7 @@ if (!function_exists('eshop_checkout')) {
 			}
 		}
 		
-		if(isset($_POST['country']) && $_POST['country']=='US' && $_POST['state']==''){
+		if(isset($_POST['country']) && $_POST['country']=='US' && $_POST['state']=='' && $_POST['altstate']==''){
 			//must pick a state for US deliveries
 				$error.= '<li>'.__('<strong><abbr title="United States">US</abbr> State</strong> - missing or incorrect.','eshop').'</li>';
 		}
@@ -614,11 +614,11 @@ if (!function_exists('eshop_checkout')) {
 					$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['city']."</li>\n";
 					$qcode=$wpdb->escape($_POST['state']);
 					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-					if($qstate!='')
-						$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
 					if($_POST['altstate']!='')
 						$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['altstate']."</li>\n";
-					
+					elseif($qstate!='')
+						$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
+										
 					$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['zip']."</li>\n";
 					$qccode=$wpdb->escape($_POST['country']);
 					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
@@ -652,11 +652,11 @@ if (!function_exists('eshop_checkout')) {
 						$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
 						$qcode=$wpdb->escape($_POST['ship_state']);
 						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-						if($qstate!='')
-							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
 						if($_POST['ship_altstate']!='')
 							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['ship_altstate']."</li>\n";
-
+						elseif($qstate!='')
+							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
+						
 						$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
 						$qccode=$wpdb->escape($_POST['ship_country']);
 						$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");

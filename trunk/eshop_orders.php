@@ -239,7 +239,9 @@ if (!function_exists('displayorders')) {
 			if($type=='Completed'){$type=__('Active','eshop');}
 			if($type=='Sent'){$type=__('Shipped','eshop');}
 			if($type=='Waiting'){$type=__('Awaiting Payment','eshop');}
-
+			if($type=='Pending'){$status=__('Pending','eshop');}
+			if($type=='Deleted'){$status=__('Deleted','eshop');}
+			if($type=='Failed'){$status=__('Failed','eshop');}
 			echo "<p class=\"notice\">".__('There are no','eshop')." <span>".$type."</span> ".__('orders','eshop').".</p>";
 		}
 	}
@@ -256,6 +258,15 @@ if (!function_exists('displaystats')) {
 		foreach($array as $k=>$type){
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
 			switch($type){
+				case 'Pending':
+					$type=__('Pending','eshop');
+					break;
+				case 'Failed':
+					$type=__('Failed','eshop');
+					break;
+				case 'Deleted':
+					$type=__('Deleted','eshop');
+					break;
 				case 'Completed':
 					$type=__('Active','eshop');
 					break;
