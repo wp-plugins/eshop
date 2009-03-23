@@ -33,10 +33,10 @@ if (get_magic_quotes_gpc()) {
     $_REQUEST = stripslashes_this($_REQUEST);
 }
 
-if (isset($_GET['action']) )
-	$action_status = attribute_escape($_GET['action']);
+if (isset($_GET['eshopaction']) )
+	$action_status = attribute_escape($_GET['eshopaction']);
 else
-	$_GET['action']=$action_status = 'shipping';
+	$_GET['eshopaction']=$action_status = 'shipping';
 
 
 // for what was the US state list - ensures the menu is changed 
@@ -56,14 +56,14 @@ foreach ( $stati as $status => $label ) {
 	if ( $status == $action_status )
 		$class = ' class="current"';
 
-	$status_links[] = "<li><a href=\"?page=eshop_shipping.php&amp;action=$status\"$class>" . $label . '</a>';
+	$status_links[] = "<li><a href=\"?page=eshop_shipping.php&amp;eshopaction=$status\"$class>" . $label . '</a>';
 }
 $echosub.= implode(' | </li>', $status_links) . '</li>';
 $echosub.= '</ul><br class="clear" />';
 
 
 
-switch ($_GET['action']){
+switch ($_GET['eshopaction']){
 case ('countries'):
 	$dtable=$wpdb->prefix.'eshop_countries';
 	$error='';

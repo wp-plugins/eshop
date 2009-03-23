@@ -19,7 +19,7 @@ function eshop_template_email(){
 <h2><?php _e('eShop Email Templates','eshop'); ?></h2>
  <p><?php _e('Use this page to modify your default email templates','eshop'); ?>.</p> 
 <table class="eshop widefat" summary="available email templates">
-<thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
+<thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="blank"><?php _e('Template?', 'eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
 <tbody>
 <?php
 if(isset($_GET['eshoptemplate'])) $eshoptemplate=$_GET['eshoptemplate'];
@@ -28,21 +28,24 @@ $thisemail=$wpdb->get_results("Select * From $table");
 $phpself=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 $x=1;
 foreach($thisemail as $this_email){
-$active='';
-$state=__('Active','eshop');
-if($this_email->id>2){
-	if($this_email->emailUse==1) $active=__('Deactivate','eshop').' '.$this_email->id;
-	else{
-		$active=__('Activate','eshop').' '.$this_email->id;
-		$state='';
+	$active='';
+	$state=__('Active','eshop');
+	if($this_email->id>2){
+		if($this_email->emailUse==1) $active=__('Deactivate','eshop').' '.$this_email->id;
+		else{
+			$active=__('Activate','eshop').' '.$this_email->id;
+			$state='';
+		}
 	}
-}
-$alt = ($x % 2) ? '' : ' class="alternate"';
-?>
-<tr<?php echo $alt; ?>><td id="row<?php echo $x; ?>" headers="num"><?php echo $this_email->id; ?></td><td headers="row<?php echo $x; ?> num"><a href="<?php echo $phpself.'&amp;eshoptemplate='.$this_email->id; ?>#edit_section" title="<?php _e('edit','eshop'); ?>"><?php echo $this_email->emailType; ?></a></td>
-<td headers="row<?php echo $x; ?> act"><?php echo $state; ?></td><td headers="row<?php echo $x; ?> chg"><a href="<?php echo $phpself.'&amp;eshopuse='.$this_email->id; ?>"><?php echo $active; ?></a></td></tr>
-<?php
-$x++;
+	$alt = ($x % 2) ? '' : ' class="alternate"';
+	if($this_email->emailContent=='') $ewarn=' <span class="ewarn">'.__('Template is blank','eshop').'</span>';
+	else $ewarn=' <span class="emailok">'.__('Template exists','eshop').'</span>';
+	?>
+	<tr<?php echo $alt; ?>><td id="row<?php echo $x; ?>" headers="num"><?php echo $this_email->id; ?></td><td headers="row<?php echo $x; ?> num"><a href="<?php echo $phpself.'&amp;eshoptemplate='.$this_email->id; ?>#edit_section" title="<?php _e('edit','eshop'); ?>"><?php echo $this_email->emailType; ?></a></td>
+	<td headers="row<?php echo $x; ?> blank"><?php echo $ewarn; ?></td>
+	<td headers="row<?php echo $x; ?> act"><?php echo $state; ?></td><td headers="row<?php echo $x; ?> chg"><a href="<?php echo $phpself.'&amp;eshopuse='.$this_email->id; ?>"><?php echo $active; ?></a></td></tr>
+	<?php
+	$x++;
 }
 ?>
 </tbody>

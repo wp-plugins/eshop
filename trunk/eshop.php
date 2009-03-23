@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '3.2.1');
+define('ESHOP_VERSION', '3.3.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 3.2.1
+Version: 3.3.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -48,7 +48,7 @@ if (!function_exists('eshop_admin')) {
       	    add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), $eshoplevel, basename('eshop_discount_codes.php'), 'eshop_discount_codes');
 
       	    add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), $eshoplevel, basename('eshop_base.php'), 'eshop_admin_base');
-			add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Templates','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
+			add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),$eshoplevel, basename('eshop_templates.php'),'eshop_admin_templates');
       	    add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), $eshoplevel, basename('eshop_about.php'), 'eshop_admin_about');
       	    add_submenu_page('eshop.php',__('eShop Help','eshop'),__('Help','eshop'), $eshoplevel, basename('eshop_help.php'), 'eshop_admin_help');
 			add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),$eshoplevel, basename('eshop_style.php'),'eshop_admin_style');

@@ -371,10 +371,6 @@ function eshop_products_manager() {
 					$available=__('not set','eshop');
 				}
 				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
-				$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
-				if($purchases==''){
-					$purchases='0';
-				}
 				$purcharray[]=$purchases;
 				$dltable = $wpdb->prefix ."eshop_downloads";
 				for($i=1;$i<=get_option('eshop_options_num');$i++){
@@ -382,6 +378,12 @@ function eshop_products_manager() {
 						$fileid=$grabit["_Download ".$i];
 						$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
 						$purcharray[]=$purchases;
+					}else{
+						$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
+						if($purchases!='')
+							$purcharray[]=$purchases;
+						else
+							$purcharray[]='0';
 					}
 				}
 				if($grabit['_Featured Product']=='')$grabit['_Featured Product']='no';

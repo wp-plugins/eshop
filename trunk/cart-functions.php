@@ -23,7 +23,7 @@ if (!function_exists('display_cart')) {
 			global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
-				$echo.= '<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopcart">';
+				$echo.= '<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="eshop eshopcart">';
 			}
 			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
 			<caption>'.__('Shopping Cart','eshop').'</caption>

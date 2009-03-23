@@ -74,27 +74,68 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <div class="wrap">
 <h2 id="short">Shortcodes</h2>
 <p>To then list the products on the Online Shop and Department pages there are various options available. You will need to add to those pages one of the following codes:</p>
-<ol class="eshop-shortcodes">
-<li><code>[eshop_list_subpages]</code> This displays a list of pages with products and is ideal for use on a Department page.</li>
-<li><code>[eshop_list_featured]</code> This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</li>
-<li><code>[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
-<li><code>[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on other pages within your site.</li>
-<li><code>[eshop_show_product]</code> Can be used to display a specific product, or products.</li>
-<li><code>[eshop_best_sellers]</code> Can be used to display the best selling products.</li>
+<table class="widefat eshopatt">
+<thead>
+<tr><th>Shotrtcodes</th><th colspan="10" class="eshopdefault">Attributes: Defaults shown(where applicable)</th></tr>
+<tr class="center"><th></th>
+<th>class</th>
+<th>panels</th>
+<th>form</th>
+<th>show</th>
+<th>records</th>
+<th>sortby</th>
+<th>order</th>
+<th>list</th>
+<th>id</th>
+<th>imgsize</th>
 
-</ol>
-<p>All of the above can have the following attributes, except where mentioned</p>
+</tr>
+</thead>
+<tbody>
+<tr><th>[eshop_list_subpages]</th>	<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr>
+<tr class="alternate"><th>[eshop_list_featured]</th>	<td>eshopfeatured</td><td>no</td><td>no</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr>
+<tr><th>[eshop_list_new]</th>		<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr> 
+<tr class="alternate"><th>[eshop_random_products]</th><td>eshoprandomlist</td><td>no</td><td>no</td><td>6</td><td>6</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>yes</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr> 
+<tr><th>[eshop_show_product]</th>	<td>eshopshowproduct</td><td>no</td><td>no</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>0</td><td>100</td></tr> 
+<tr class="alternate"><th>[eshop_best_sellers]</th>	<td>eshopbestsellers</td><td>no</td><td>no</td><td>100</td><td>10</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr> 
+<tr><th>[eshop_list_alpha]</th>		<td>eshopalpha</td><td>no</td><td>no</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>25</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td></tr> 
+</tbody>
+</table>
+<dl class="eshop-def">
+<dt><code>[eshop_list_subpages]</code></dt>
+<dd>This displays a list of pages with products and is ideal for use on a Department page.</dd>
+<dt><code>[eshop_list_featured]</code></dt>
+<dd>This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</dd>
+<dt><code>[eshop_list_new]</code></dt>
+<dd>This displays latest products. Suggested use for this is on a separate Latest Products page.</dd>
+<dt><code>[eshop_random_products]</code></dt>
+<dd>This displays a random selection of products. This could be used on the Online Shop page, or on other pages within your site.</dd>
+<dt><code>[eshop_show_product]</code></dt>
+<dd>Can be used to display a specific product, or products.</dd>
+<dt><code>[eshop_best_sellers]</code></dt>
+<dd>Can be used to display the best selling products.</dd>
+<dt><code>[eshop_list_alpha]</code></dt>
+<dd><strong>Experimental</strong> Displays products alphabetically split by alphabet and 0-9. A selection list of A to Z plus 0-9 is included.</dd>
+</dl>
+<p><strong>Remember</strong> you do not have to add in the defaults. You should only add the attributes when you want to change from the defaults.</p>
+<h3>Examples</h3>
+<ul class="eshop-shortcodes">
+<li><code>[eshop_list_subpages class="myclass"]</code> changes the default class to 'myclass'</li>
+<li><code>[eshop_show_product id='9' class='hilite' panels='yes' form='yes']</code> shows product '9' only. Changes the default class to 'hilite', shows the product as a panel and the add to cart form is shown.</li>
+</ul>
+<p>Details for attributes:</p>
 <ul class="eshop-shortcodes">
 <li><code>class</code> example: <em>class="myclass"</em> to change the default class.</li>
 <li><code>panels</code> example: <em>panels="yes"</em> to show 'panels'</li>
 <li><code>form</code> example: <em>form="yes"</em> to add the shortened add to cart form.</li>
-<li><code>show</code> (<em>eshop_list_new</em>, <em>eshop_list_featured</em> &amp; <em>eshop_best_sellers</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
-<li><code>records</code> (<em>eshop_list_new</em>, <em>eshop_list_featured</em> &amp; <em>eshop_best_sellers</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
-<li><code>sortby</code> (<em>eshop_list_subpages</em>  &amp; <em>eshop_list_featured</em> only) example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possivle values: post_date, post_title or menu_order</li>
-<li><code>order</code> (<em>eshop_list_subpages</em>  &amp; <em>eshop_list_featured</em> only) example: <em>order="ASC"</em> shows the results in ascending, or descending order. Possible values: ASC or DESC</li>
-<li><code>list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
-<li><code>id</code> (<em>eshop_show_product</em> only) example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
-<li><code>shipclass</code> (<em>eshop_show_shipping</em> only) example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
+<li><code>show</code> example: <em>show="10"</em> limits the display to 10 products.</li>
+<li><code>records</code> example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
+<li><code>sortby</code> example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possivle values: post_date, post_title or menu_order</li>
+<li><code>order</code> example: <em>order="ASC"</em> shows the results in ascending, or descending order. Possible values: ASC or DESC</li>
+<li><code>list</code> example: <em>list="no"</em> limits the display to 1 random product.</li>
+<li><code>id</code> example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
+<li><code>imgsize</code> example: <em>imgsize="50"</em> would resize the image to 50% of its original width and height.</li>
+
 </ul>
 <p><strong>sortby</strong> and <strong>order</strong> replace the following settings from earlier versions:</p>
 <ul>
@@ -103,20 +144,18 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li>Department Products to display</li>
 </ul>
 
-<h3>Examples</h3>
-<ul class="eshop-shortcodes">
-<li><code>[eshop_list_subpages class="myclass"]</code> changes the default class to 'myclass'</li>
-<li><code>[eshop_show_product id='9' class='hilite' panels='yes' form='yes']</code> shows product '9' only. Changes the default class to 'hilite', shows the product as a panel and the add to cart form is shown.</li>
-</ul>
+
 <h3>Extra</h3>
 <ol class="eshop-shortcodes">
 <li><code>[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
-<li><code>[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the above attribute (<code>shipclass</code>).</li>
+<li><code>[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the attribute 
+<code>shipclass</code>. example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
+
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 </ol>
 <h3>Notes</h3>
-<p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.
+<p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
 </div>
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
