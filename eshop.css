@@ -631,10 +631,69 @@ fieldset#baseothers fieldset{
 	font-style:italic;
 	letter-spacing:1px;
 }
+dl.eshop-def dt{
+	background:#FFFDF1;
+}
+/* help page */
+table.eshopatt .center th{
+	text-align:center;
+}
+table.eshopatt th, table.eshopatt td{
+	border-left:1px solid #eee;
+	border-right:1px solid #eee;
+}
+table.eshopatt td img{
+	display:block;
+	margin:0 auto;
+}
+table.eshopatt td{
+	text-align:center;
+	font-size:0.8em;
+	vertical-align:middle;
+}
+table.eshopatt tbody th{
+	vertical-align:middle;
+	font-size:1.1em;
+}
+table.eshopatt th.eshopdefault{
+	text-align:center;
+	font-style:italic;
+	font-size:0.8em;
+}
+dl.eshop-def{
+	margin-top:20px;
+}
+dl.eshop-def code,
 .eshop-shortcodes code{	
 	font-weight:bold;
 	font-size:1.4em;
 	color:#003;
-	background:#FFFBE9;
+	background:#FFFDF1;
 	padding:1px 2px;
 }
+dl.eshop-def dd{
+	margin-left:20px;
+}
+dl.eshop-def dd ul{
+	margin-left:20px;
+}
+/* email templates */
+.ewarn{
+	color:#800;
+	font-weight:bold;
+	font-size:0.8em;
+}
+.emailok{	
+	color:#080;
+	font-size:0.8em;
+}
+/* css style page */
+.eshopnewstyle{
+	border:1px solid #BBD8E7;
+	background:#fffff5;
+	color:#000;
+	padding:10px;
+	max-height:200px;
+	overflow-y:scroll;
+}
+	

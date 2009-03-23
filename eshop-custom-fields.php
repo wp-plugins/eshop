@@ -224,7 +224,7 @@ function eshop_save_postdata( $post_id ) {
 	}else{
 		foreach($mydata as $title=>$meta_value){
 			delete_post_meta( $id, $title );
-			$replace = array("'", "\"");
+			$replace = array("'", "\"","&");
 			$meta_value = str_replace($replace, "", $meta_value);
 			add_post_meta( $id, $title, $meta_value);
 		}

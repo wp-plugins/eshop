@@ -245,7 +245,8 @@ switch ($_GET['action']) {
  		/*
 		updating db.
 		*/
-			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].number_format($p->ipn_data['mc_gross'],2));
+			$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
+			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 
 			if(get_option('eshop_status')=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
@@ -365,7 +366,8 @@ switch ($_GET['action']) {
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
 			}
       	}else{
-      		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].number_format($p->ipn_data['mc_gross'],2));
+      		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
+			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			if(get_option('eshop_status')=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');

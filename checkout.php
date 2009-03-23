@@ -72,6 +72,7 @@ if (!function_exists('eshopShowform')) {
 
 				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 				foreach($value as $code =>$stateName){
+					$stateName=htmlspecialchars($stateName);
 					if (isset($state) && $state == $code){
 						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
 					}else{
@@ -101,7 +102,8 @@ if (!function_exists('eshopShowform')) {
 			$countryList[$k]=$v;
 		}
 		$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-		foreach($countryList as $code => $label)	{
+		foreach($countryList as $code => $label){
+			$label=htmlspecialchars($label);
 			if (isset($country) && $country == $code){
 				$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
 			}else{
@@ -110,9 +112,8 @@ if (!function_exists('eshopShowform')) {
 		}
 		$echo.= "</select></label></fieldset>";
 	}
-	$echo .= '
-
-	<fieldset class="eshop fld3">
+	$echo .= '</fieldset>';
+	$echo .= '<fieldset class="eshop fld3">
 	<legend>'.__('Additional information','eshop').'</legend>
 	 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
 	  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
@@ -143,6 +144,7 @@ if (!function_exists('eshopShowform')) {
 
 				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 				foreach($value as $code =>$stateName){
+					$stateName=htmlspecialchars($stateName);
 					if (isset($ship_state) && $ship_state == $code){
 						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
 					}else{
@@ -165,7 +167,8 @@ if (!function_exists('eshopShowform')) {
 		  <select class="med pointer" name="ship_country" id="shipcountry">
 		';
 		$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-		foreach($countryList as $code => $label)	{
+		foreach($countryList as $code => $label){
+			$label=htmlspecialchars($label);
 			if (isset($ship_country) && $ship_country == $code){
 				$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
 			}else{
@@ -196,7 +199,6 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
 	}
 	$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
-	$echo .= '</fieldset>';
 	if('no' == get_option('eshop_downloads_only')){
 		$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
 	}

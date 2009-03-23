@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7.1
-Stable tag: 3.2.1
+Stable tag: 3.3.0
 
 An accessible Shopping Cart plugin.
 
@@ -34,20 +34,39 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.2.0
+Version 3.3.0
 
-* *added* - new shortcode and widget option to display best sellers.
-* *added* - classes to checkout form for ease of styling
-* *added* - more details to eShop paypal 'failed' emails
-* *added* - new setting to display add to cart form within WP listings
-* *fixed* - US State issue in checkout
-* *fixed* - translation issues
-* *fixed* - bug with class names in shortcodes
-* *removed* - some product listing settings
-* *added* - some shortcodes now have additional options - check the help page for full details
+* *NEW* - tax can now be added to an order at Paypal.
+* *fixed* - eshop downloads, overwriting exisitng files error.
+* *fixed* - oddity in number of purchases displayed.
+* *fixed* - fixed sortby post_title now works correctly
+* *fixed* - nesting error in checkout
+* *fixed* - random product listing
+* *fixed* - & is now stripped from the sku field.
+* *renamed*  - eshop - templates to eshop - emails
+* *added* -  warning when email template is blank
+* *added* - new experimental shortcode - eshop_list_alpha.
+* *added* - experimental css update viewer.
+* *added* - allow resizing of images in shortcodeas as well as images.
+
 
 
 == Previous Updates ==
+
+Version 3.3.0
+
+* *NEW* - tax can now be added to an order at Paypal.
+* *fixed* - eshop downloads, overwriting exisitng files error.
+* *fixed* - oddity in number of purchases displayed.
+* *fixed* - fixed sortby post_title now works correctly
+* *fixed* - nesting error in checkout
+* *fixed* - random product listing
+* *fixed* - & is now stripped from the sku field.
+* *renamed*  - eshop - templates to eshop - emails
+* *added* -  warning when email template is blank
+* *added* - new experimental shortcode - eshop_list_alpha.
+* *added* - experimental css update viewer.
+* *added* - allow resizing of images in shortcodeas as well as images.
 
 Version 3.2.0
 

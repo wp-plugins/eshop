@@ -76,13 +76,12 @@ function eshop_downloads_manager() {
 			}
 			if(!file_exists($dir_upload.$file_name) || $_POST['overwrite']=='yes'){
 				if(@is_uploaded_file($_FILES["upfile"]["tmp_name"])) {
-					
+					if(!file_exists($dir_upload.$file_name)) $newfile='y';
 					if(move_uploaded_file($_FILES["upfile"]["tmp_name"], $dir_upload.$file_name)){
 						$success='<p>'.__('File moved','eshop').'</p>';
 					}else{
 						$error.='<p>'.__('Failed to move file','eshop').'</p>';
 					}
-
 				} else {
 					$error.="<p>".__('Error uploading file','eshop')." " . $_FILES["upfile"]["name"] . " <strong>".$file_error_strings[$_FILES["upfile"]["error"]]."</strong></p>";
 				}
@@ -92,7 +91,14 @@ function eshop_downloads_manager() {
 		}else{
 			$error.='<p>'.__('A title must be provided.','eshop').'</p>';
 		}
-		if($error==''){ //ie a successful upload
+		if(isset($success) && !isset($newfile)){
+			$entfile=$wpdb->escape($file_name);
+			$dafile=$wpdb->get_var("SELECT id FROM $table WHERE files='$entfile'");
+			$enttitle=$wpdb->escape($_POST['title']);
+			$wpdb->query("UPDATE $table SET title='$enttitle',added=NOW() WHERE id=$dafile");
+			echo '<div id="message" class="updated fade"><p>' . $_FILES["upfile"]["name"] . " ".__('has successfully overwritten existing file','eshop').'</p></div>';
+
+		}elseif($error==''){ //ie a successful upload
 			$enttitle=$wpdb->escape($_POST['title']);
 			$entfile=$wpdb->escape($file_name);
 			$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$enttitle',NOW(),'$entfile')");
