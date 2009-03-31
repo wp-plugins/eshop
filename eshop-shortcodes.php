@@ -549,7 +549,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 				}
 			}
 		}
-		$echo .= $post->post_title.'</a>'."\n";
+		$echo .= '<span>'.$post->post_title.'</span></a>'."\n";
 		include_once( 'eshop-get-custom.php' );
 		if($form=='yes'){
 			$short='yes';

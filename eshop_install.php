@@ -54,7 +54,7 @@ add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
-
+add_option('eshop_downloads_hideall','no');
 //new for 3.
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
 	delete_option('eshop_sudo_cat');

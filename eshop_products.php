@@ -371,13 +371,16 @@ function eshop_products_manager() {
 					$available=__('not set','eshop');
 				}
 				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
-				$purcharray[]=$purchases;
+				$purcharray=array();
 				$dltable = $wpdb->prefix ."eshop_downloads";
 				for($i=1;$i<=get_option('eshop_options_num');$i++){
 					if($grabit["_Download ".$i]!=''){
 						$fileid=$grabit["_Download ".$i];
 						$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
-						$purcharray[]=$purchases;
+						if($purchases!='')
+							$purcharray[]=$purchases;
+						else
+							$purcharray[]='0';
 					}else{
 						$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
 						if($purchases!='')

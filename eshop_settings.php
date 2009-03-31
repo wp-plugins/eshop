@@ -173,6 +173,7 @@ if(isset($_POST['submit'])){
 				update_option('eshop_downloads_num','3');
 			}
 			update_option('eshop_downloads_only',$wpdb->escape($_POST['eshop_downloads_only']));
+			update_option('eshop_downloads_hideall',$wpdb->escape($_POST['eshop_downloads_hideall']));
 
 			break;	
 		case ('Discounts'):
@@ -429,7 +430,21 @@ switch($action_status){
 			?>
 			</select><br />
 		</fieldset>
-			
+			<fieldset><legend><?php _e('Download All','eshop'); ?></legend>
+			<p><?php _e('As some downloads can be quite large, people may experience errors if they try and download all files in one go.','eshop'); ?></p>
+			<label for="eshop_downloads_hideall"><?php _e('Hide download all form','eshop'); ?></label>
+				<select name="eshop_downloads_hideall" id="eshop_downloads_hideall">
+				<?php
+				if('yes' == get_option('eshop_downloads_hideall')){
+					echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+					echo '<option value="no">'.__('No','eshop').'</option>';
+				}else{
+					echo '<option value="yes">'.__('Yes','eshop').'</option>';
+					echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+				}
+				?>
+				</select><br />
+		</fieldset>
 		<p class="submit">
 		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
 		</p>

@@ -104,7 +104,8 @@ if(isset($_POST['delete'])){
 		$epages[]='eshop_discount_value'.$x;
 	}
 	$epages[]='eshop_discount_shipping';
-	$epages[]='	eshop_show_forms';
+	$epages[]='eshop_show_forms';
+	$epages[]='eshop_downloads_hideall';
 	
 	foreach($epages as $epage){
 		delete_option($epage);
