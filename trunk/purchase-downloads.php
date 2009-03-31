@@ -19,7 +19,7 @@ if (!function_exists('eshop_downloads')) {
 			if($dlcount>0){
 				$tsize=0;
 				$x=0;
-				if($dlcount>1){
+				if($dlcount>1 && get_option('eshop_downloads_hideall') != 'yes'){
 					$echo .= '<p class="jdl"><a href="#dlall">'.__('Download all files','eshop').'</a></p>';
 				}
 				$dlresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
@@ -49,7 +49,7 @@ if (!function_exists('eshop_downloads')) {
 					$x++;
 					$size=0;
 				}
-				if($dlcount>1){
+				if($dlcount>1 && get_option('eshop_downloads_hideall') != 'yes'){
 					//download all form.
 					$echo.='
 					<form method="post" action="" id="dlall" class="eshop"><fieldset>

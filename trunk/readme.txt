@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7.1
-Stable tag: 3.3.0
+Stable tag: 3.3.1
 
 An accessible Shopping Cart plugin.
 
@@ -34,24 +34,23 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.3.0
+Version 3.3.1
 
-* *NEW* - tax can now be added to an order at Paypal.
-* *fixed* - eshop downloads, overwriting exisitng files error.
-* *fixed* - oddity in number of purchases displayed.
-* *fixed* - fixed sortby post_title now works correctly
-* *fixed* - nesting error in checkout
-* *fixed* - random product listing
-* *fixed* - & is now stripped from the sku field.
-* *renamed*  - eshop - templates to eshop - emails
-* *added* -  warning when email template is blank
-* *added* - new experimental shortcode - eshop_list_alpha.
-* *added* - experimental css update viewer.
-* *added* - allow resizing of images in shortcodeas as well as images.
-
-
+* *fixed* - Product images, no longer links to non images.
+* *fixed* - product sales info (hopefully)
+* *fixed* - sanitise downloads filenames for punctuation.
+* *added* - span around post title when listing as panels to help with styling
+* *added* - option to turn off download all which helps those with larger files.
 
 == Previous Updates ==
+
+Version 3.3.1
+
+* *fixed* - Product images, no longer links to non images.
+* *fixed* - product sales info (hopefully)
+* *fixed* - sanitise downloads filenames for punctuation.
+* *added* - span around post title when listing as panels to help with styling
+* *added* - option to turn off download all which helps those with larger files.
 
 Version 3.3.0
 

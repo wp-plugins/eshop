@@ -70,7 +70,8 @@ function eshop_downloads_manager() {
 				//for MU
 				check_upload_size($_FILES["upfile"]);
 			}
-			$file_name = $_FILES["upfile"]["name"];
+			$replace = array("'", "\"","&"," ");
+			$file_name = str_replace($replace, "_", $_FILES["upfile"]["name"]);
 			if(trim($_FILES["upfile"]["name"]) == "") {
 				$error.="<p>".__('No file indicated','eshop')."</p>";
 			}
