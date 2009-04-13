@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7.1
-Stable tag: 3.3.2
+Stable tag: 3.3.3
 
 An accessible Shopping Cart plugin.
 
@@ -34,13 +34,19 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.3.2
+Version 3.3.3
 
-* *fixed* - Products page order by stock
-* *fixed* - fieldsets on checkout form - specifically shipping - can now be styled separately
-* *moved* - eshop base settings no dded to the main eshop settings page
+* *fixed* - missing stats page
+* *fixed* - error when using paypal
+* *warning* - please check paypal redirect still works- I'm unable to test locally atm
 
 == Previous Updates ==
+
+Version 3.3.3
+
+* *fixed* - missing stats page
+* *fixed* - error when using paypal
+* *warning* - please check paypal redirect still works- I'm unable to test locally atm
 
 Version 3.3.2
 
