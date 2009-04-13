@@ -249,38 +249,11 @@ if (!function_exists('displayorders')) {
 if (!function_exists('displaystats')) {
 	function displaystats(){
 		global $wpdb;
+		include 'eshop_statistics.php';
 		//these should be global, but it wasn't working *sigh*
 		$phpself=wp_specialchars($_SERVER['REQUEST_URI']);
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
-		$array=array('Pending','Waiting','Completed','Sent','Failed','Deleted');
-		echo '<div class="eshop-stats-box odd"><h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
-		foreach($array as $k=>$type){
-			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
-			switch($type){
-				case 'Pending':
-					$type=__('Pending','eshop');
-					break;
-				case 'Failed':
-					$type=__('Failed','eshop');
-					break;
-				case 'Deleted':
-					$type=__('Deleted','eshop');
-					break;
-				case 'Completed':
-					$type=__('Active','eshop');
-					break;
-				case 'Sent':
-					$type=__('Shipped','eshop');
-					break;
-				case 'Waiting':
-					$type=__('Awaiting Payment','eshop');
-					break;
-			}			
-			echo '<li><strong>'.$max.'</strong> '.$type.' orders</li>';
-		}
-		echo '</ul></div>';
-		
 		$metatable=$wpdb->prefix.'postmeta';
 		$poststable=$wpdb->prefix.'posts';
 		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
@@ -312,15 +285,15 @@ if (!function_exists('displaystats')) {
 		}
 
 		?>
-		<div class="eshop-stats-box"><h3><?php _e('Product stats','eshop'); ?></h3>
+		<div class="eshop-stats-box odd"><h3><?php _e('Product stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
 		<li><strong><?php echo $count; ?></strong> <?php _e('Products.','eshop'); ?></li>
 		<li><strong><?php echo $countprod; ?></strong> <?php _e('Products in stock.','eshop'); ?></li>
 		<li><strong><?php echo $countfeat; ?></strong> <?php _e('Featured products.','eshop'); ?></li>
 		<li><strong><?php echo $stkpurc; ?></strong> <?php _e('Purchases','eshop'); ?>.</li>
 		</ul>
+		<?php eshop_small_stats('stock'); ?>
 		</div>
-		<hr class="eshopclear" />
 		<?php
 		//work out totals for quick stats
 		$dltable = $wpdb->prefix ."eshop_downloads";
@@ -334,19 +307,69 @@ if (!function_exists('displaystats')) {
 			$purchased=0;
 		}
 		?>
-		<div class="eshop-stats-box odd">
+		<div class="eshop-stats-box">
 		<h3><?php _e('Product Download Stats','eshop'); ?></h3>
 		<ul class="eshop-stats">
 		<li><strong><?php echo $total; ?></strong> <?php _e('Total Downloads','eshop'); ?></li>
 		<li><strong><?php echo $purchased; ?></strong> <?php _e('Total Purchases','eshop'); ?></li>
 		</ul>
+		<?php eshop_small_stats('dloads'); ?>
 		</div>
+		
+		<hr class="eshopclear" />
 		<?php
+		$array=array('Pending','Waiting','Completed','Sent','Failed','Deleted');
+		echo '<div class="eshop-stats-box odd"><h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
+		foreach($array as $k=>$type){
+			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
+			switch($type){
+				case 'Pending':
+					$type=__('Pending','eshop');
+					break;
+				case 'Failed':
+					$type=__('Failed','eshop');
+					break;
+				case 'Deleted':
+					$type=__('Deleted','eshop');
+					break;
+				case 'Completed':
+					$type=__('Active','eshop');
+					break;
+				case 'Sent':
+					$type=__('Shipped','eshop');
+					break;
+				case 'Waiting':
+					$type=__('Awaiting Payment','eshop');
+					break;
+			}			
+			echo '<li><strong>'.$max.'</strong> '.$type.' '.eshop_plural($max,__('order','eshop'),__('orders','eshop')).'</li>';
+		}
+		echo '</ul></div>';
+		if(is_array(get_option('eshop_method'))){
+			$paytype=get_option('eshop_method');
+			?>
+			<div class="eshop-stats-box">
+			<h3><?php _e('Merchant Gateways Usage','eshop'); ?></h3>
+			<p><?php _e('Includes all orders.','eshop'); ?></p>
+				<ul class="eshop-stats">
+				<?php
+				foreach($paytype as $gatetype){
+					$mcount=$wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE paidvia='$gatetype'");
+					?>
+					<li><strong><?php echo $mcount; ?></strong> <?php echo ucwords($gatetype).' '.eshop_plural($mcount,__('order','eshop'),__('orders','eshop')); ?></li>
+					<?php
+				}
+				?>
+			</ul>
+			</div>
+		<?php
+		}
+		echo '<hr class="eshopclear" />';
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		$row=$wpdb->get_row("SELECT COUNT(id) as ids, SUM(IF(live='yes',1,0)) as live, SUM(USED) as total FROM $disctable WHERE id>0");
 		if($row->ids>0){
 		?>
-		<div class="eshop-stats-box">
+		<div class="eshop-stats-box odd">
 			<h3><?php _e('Discount Codes','eshop'); ?></h3>
 			<ul class="eshop-stats">
 			<li><strong><?php echo $row->ids; ?></strong> <?php _e('Total Available','eshop'); ?></li>
@@ -369,7 +392,6 @@ if (!function_exists('displaystats')) {
 		</ul>
 		</div>
 		<?php
-		
 	}
 }
 if (!function_exists('deleteorder')) {

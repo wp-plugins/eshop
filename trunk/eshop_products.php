@@ -221,7 +221,7 @@ function eshop_products_manager() {
 				break;
 			
 			case'sd'://stock availability no longer works
-				$sortby='_Stock Available';
+				$sortby='_Stock Quantity';
 				$csd=' class="current"';
 				break;
 		

@@ -231,7 +231,7 @@ switch ($_GET['action']) {
 		// a bit of good.  This is on the "backend".  That is why, by default, the
 		// class logs all IPN data to a text file.
 		// the loggin to a text file isn't working, so we have coded an email to be sent instead.
-
+		$extradetails =''.
 		if ($p->validate_ipn()) {
 			// Payment has been recieved and IPN is verified.  This is where you
 			// update your database to activate or process the order, or setup
@@ -262,14 +262,14 @@ switch ($_GET['action']) {
 				if(strpos($trans->transid, $p->ipn_data['txn_id'])===true){
 					$astatus='Failed';
 					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
-					$extradetails = __("Duplicated Transaction Id.",'eshop');
+					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
 			//check reciever email is correct - we will use business for now
 			if($p->ipn_data['receiver_email']!= get_option('eshop_business')){
 				$astatus='Failed';
 				$txn_id = __("Fraud-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
-				$extradetails = __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
+				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
 			}
 			//add any memo from user at paypal here
 			$memo=$wpdb->escape($p->ipn_data['memo']);
@@ -315,9 +315,9 @@ switch ($_GET['action']) {
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
-				$extradetails = __("The transaction was not completed successfully.eShop thought the order to be no longer pending.",'eshop');
+				$extradetails .= __("The transaction was not completed successfully.eShop thought the order to be no longer pending.",'eshop');
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
-					$extradetails = __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
+					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
@@ -327,7 +327,7 @@ switch ($_GET['action']) {
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 //debug
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']."\n";
-			if(isset($extradetails)) $body .= $extradetails."\n\n";
+			if($extradetails!='') $body .= $extradetails."\n\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
@@ -384,13 +384,13 @@ switch ($_GET['action']) {
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("INVALID Payment",'eshop');	
-				$extradetails = __("The order may be a duplicate, and Paypal has reported an invalid payment.",'eshop');	
+				$extradetails .= __("The order may be a duplicate, and Paypal has reported an invalid payment.",'eshop');	
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Invalid and Failed Payment",'eshop');
-				$extradetails = __("The order may be a duplicate, and Paypal has reported an invalid, and failed payment.",'eshop');
+				$extradetails .= __("The order may be a duplicate, and Paypal has reported an invalid, and failed payment.",'eshop');
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
-					$extradetails = __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
+					$extradetails .= __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
@@ -399,7 +399,7 @@ switch ($_GET['action']) {
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__('from','eshop')." ".$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
-			 if(isset($extradetails)) $body .= $extradetails."\n\n";
+			 if($extradetails!='') $body .= $extradetails."\n\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
 			 $headers=eshop_from_address();
