@@ -1,0 +1,352 @@
+<?php
+if ('eshop_help.php' == basename($_SERVER['SCRIPT_FILENAME']))
+die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+/*
+See eshop.php for information and license terms
+*/
+if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
+require_once(ABSPATH . 'wp-includes/l10n.php');
+}
+else {
+require_once(ABSPATH . 'wp-includes/wp-l10n.php');
+}
+
+?>
+<div id="eshoppage">
+<div class="wrap">
+<h2>Help</h2>
+<p>This is some basic helpful information about the shopping cart admin.</p>
+<h3>Sections</h3>
+<ul>
+<li><a href="#crpr">Creating Products</a></li>
+<li><a href="#dept">Creating Departments</a></li>
+<li><a href="#short">Shortcodes</a></li>
+<li><a href="#test">eShop testing</a></li>
+<li><a href="#glive">Going Live with eShop</a></li>
+<li><a href="#bover">Configuration</a></li>
+
+<li><a href="#aover">eShop Admin Pages</a></li>
+<li><a href="#pend">Why is an Order Still Pending?</a></li>
+
+<li><a href="#base">eShop Base</a></li>
+<li><a href="#extr">Cart Operations</a></li>
+<li><a href="#conf">Conflicting plugins</a></li>
+<li><a href="#comp">Compatability</a></li>
+<li><a href="#actnote">Notes on activation</a></li>
+<li><a href="#del">Deactivating and Uninstalling</a></li>
+
+</ul>
+</div>
+<div class="wrap">
+<h2 id="crpr">Creating Products</h2>
+<p>Adding a product is as easy as creating a page. Just fill in the required fields within the <strong>Product Entry</strong> section when creating or editing a page.</p>
+<p>The <strong>Sku</strong> should be a unique identification reference for your product eg.abc001.</p>
+<p>The <strong>Product Description</strong> is a short description of the product. This is used in the customers cart, and will appear on their invoice from Paypal.</p>
+<p><strong>Option x</strong>, <strong>Price x</strong> and <strong>Download x</strong> are the individual item and price, thus allowing several options for each product eg. Small, Medium, Large. If there is only 1 option for a product, then please use the <strong>Option 1</strong> and <strong>Price 1</strong> input fields.</p>
+<p>The <strong>Download</strong> selection boxes only appear if you have uploaded a file via eShop for download. To link to a file, select it from the dropdown list. Downloadable options now default to free shipping in the cart - even if you set the shipping rate as something different. This allows for online and offline options for the same product (e.g. book and ebook).</p>
+<p>Choose your <strong>Shipping Rate</strong> carefully, <strong>F</strong> is set aside for any Free shipping (obviously downloadable products should use this).</p>
+<p>The <strong>Featured Product</strong> product selection chooses whether that product can be listed as a featured product.</p>
+<p>A product is unavailable for sale until <strong>Stock Available</strong> is set.</p>
+<p><strong>Stock Quantity</strong> - sets the quantity available for this product. A quantity needs to be entered for download products. I suggest you enter a 1.</p>
+
+</div>
+<div class="wrap">
+<h2 id="dept">Creating Departments</h2>
+<p>There are many options, but a suggested layout would be:</p>
+<ul>
+<li><strong>Online Shop</strong> <em>Page Parent: Main Page</em>
+<ul>
+<li><strong>Department A</strong> <em>Page Parent: Online Shop</em>
+<ul>
+<li><strong>Product 1</strong> <em>Page Parent: Department A</em></li>
+<li><strong>Product 2</strong> <em>Page Parent: Department A</em></li>
+</ul>
+</li>
+</ul>
+<ul><li><strong>Department B</strong> <em>Page Parent: Online Shop</em>
+<ul><li><strong>Product 2</strong> <em>Page Parent: Department B</em></li>
+<li><strong>Product 3</strong> <em>Page Parent: Department B</em></li></ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="wrap">
+<h2 id="short">Shortcodes</h2>
+<p>To then list the products on the Online Shop and Department pages there are various options available. You will need to add to those pages one of the following codes:</p>
+<ol>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_subpages]</code> This displays a list of pages with products and is ideal for use on a Department page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_featured]</code> This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_new]</code> This displays latest products. Suggested use for this is on a separate Latest Products page.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_random_products]</code> This displays a random selection of products. This could be used on the Online Shop page, or on other pages within your site.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_product]</code> Can be used to display a specific product, or products.</li>
+</ol>
+<p>All of the above can have the following attributes, except where mentioned</p>
+<ul>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">class</code> example: <em>class="myclass"</em> to change the default class.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">panels</code> example: <em>panels="yes"</em> to show 'panels'</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">form</code> example: <em>form="yes"</em> to add the shortened add to cart form.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">show</code> (<em>eshop_list_new</em> only) example: <em>show="10"</em> limits the display to 10 products.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">records</code> (<em>eshop_list_new</em> only) example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">list</code> (<em>eshop_list_random</em> only) example: <em>list="no"</em> limits the display to 1 random product.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">id</code> (<em>eshop_show_product</em> only) example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">shipclass</code> (<em>eshop_show_shipping</em> only) example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_list_subpages class="myclass"]</code> changes the default class to 'myclass'</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_product id='9' class='hilite' panels='yes' form='yes']</code> shows product '9' only. Changes the default class to 'hilite', shows the product as a panel and the add to cart form is shown.</li>
+</ul>
+<h3>Extra</h3>
+<ol>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
+<li><code style="font-weight:bold;font-size:1.2em;color:#000;">[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the above attribute (<code style="font-weight:bold;font-size:1.2em;color:#000;">shipclass</code>).</li>
+</ol>
+</div>
+<div class="wrap">
+<h2 id="test">eShop Testing</h2>
+<p>To test the shop you need to have an account on <a href="https://developer.paypal.com/">Paypal Sandbox</a>. You will need to create and utilise email addresses for the 'seller' and 'buyer' within the sandbox when you test the cart. To make test purchases whilst in test mode you have to be logged into Wordpress <strong>and</strong> Paypal Sandbox.</p>
+</div>
+<div class="wrap">
+<h2 id="glive">Going Live with eShop</h2>
+<p>In the <strong>Settings - eShop</strong> page you then need to change the following.</p>
+<ul>
+<li><strong>eShop Status</strong> needs to be set to <em>Live</em>.</li>
+<li><strong>Email Address</strong> &#8212; Needs to be your Paypal account email address.</li>
+<li><strong>Business Location</strong> &#8212; Your 2 letter country code.</li>
+<li><strong>Currency Symbol</strong> &#8212; The symbol for your currency e.g. <em>&pound;</em>.</li>
+<li><strong>Currency Code</strong> &#8212; your 3 letter currency code.</li>
+</ul>
+
+<p>It would also be advisable to visit the eShop > Shipping page.</p>
+
+<p>Everything should then be set up and working!</p>
+</div>
+
+<div class="wrap">
+<h2 id="bover">Configuration</h2>
+<p>There are a number of settings that need to be configured <strong>before</strong> you can start selling.</p>
+<p>Go to Settings - <strong>eShop</strong>. This page features the main options for the plugin. Defaults have been added for your convenience, where possible.</p>
+
+<h3>eShop Admin</h3> 
+<p><strong>eShop status</strong> - is the cart live or in test mode? To test the shop you need to have an account on <a href="https://developer.paypal.com/">Paypal sandbox</a>. You will need to create and utilise email addresses for the 'seller' and 'buyer' within the sandbox when you test the cart.</p>
+<p><strong>Items per page</strong> - this value sets how many items (orders, products etc.) per page are displayed on the various admin pages.</p>
+
+<h3>Merchant Gateway</h3>
+<p><strong>Payment method:</strong> only Paypal is available at present.</p>
+<p><strong>Email address:</strong> the email address associated with your Paypal business account. Ensure that you enter it correctly!</p>
+
+<h3>Business Details </h3>
+<p><strong>eShop from email address</strong> - eShop will use this as the 'From' address in the automated emails. If it is not set, eShop will use the Merchant Gateway email address.</p>
+<p><strong>Available business email addresses</strong> - extra business email addresses for use when contacting customers via their order details.</p>
+<p><strong>Business Location</strong> - which country you are in, or registered as being in when setting up your Paypal account.</p>
+
+<h3>Product options </h3>
+<p><strong>Options per product</strong> - how many different options values can you add to a product.</p>
+<p><strong>Out of Stock message</strong> - when you run out of stock you may want to temporarily display an out of stock message.</p>
+<p><strong>Stock Control</strong> - If checked, when a product's stock level falls to 0 or below, the product will automatically be marked as 'not available' However stock levels are <strong>not</strong> checked during the order process, and stock reduction is only processed <strong>after</strong> a successful purchase. Therefore it is possible to sell more items than you have in stock.</p>
+<p><strong>Show stock available</strong> - if using stock control this allows you to display the stock avaialble.</p>
+<p><strong>Download attempts</strong> - the number of download attempts that you will allow per purchase, per file. If set to 0 you will stop all downloads! The default value is 3.</p>
+
+<h3>Discounts</h3>
+<p><strong>Spend</strong> - how much needs to be spent before <strong>% Discount</strong> is applied.</p>
+<p><strong>Spend over to get free shipping</strong> - how much needs to be spent before the order qualifies for free shipping.</p>
+<p>In both cases deleting the amount will cancel the discount.</p>
+
+<h3>Currency</h3> 
+<p><strong>Symbol</strong> - whether it be $, &pound;, etc.</p>
+<p><strong>Code</strong> -  a 3 letter currency code that matches your country.</p>
+
+<h3>Product Listings</h3>
+<p><strong>Featured and department product sort order</strong> - newest, oldest, alphabetically - these are the values available to sort products when they are listed on a parent page.</p>
+<p><strong>Random products to display</strong> - this is the number of random products to display if you utilise the <code>[eshop_random_products]</code> shortcode.</p>
+<p><strong>Department Products to display</strong> - this sets the number of producs to appear per page when you use the <code>[eshop_list_subpages]</code> shortcode.</p>
+
+<h3>Cart Options</h3>
+<p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>
+
+<h3>Sub Pages</h3>
+<p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop).</p>
+
+<h3>Search Results</h3>
+<p><strong>Add image to search results</strong> - if used eShop will add an image to the search results page for any post or page or product pages only.</p>
+
+<h3>Credits</h3> 
+<p><strong>Display eShop credit</strong> allows you to hide the '<em>Powered by eShop</em>' credit that appears on various pages in your shop. Disabling this will still add a hidden <abbr title="Hypertext MarkUp Language">HTML</abbr> comment to the page.</p>
+
+<h3>Link to extra pages</h3>
+<p>Here you can add 2 extra links to appear in various places in the cart/checkout procedure that link to a <strong>Privacy Policy</strong>, or <strong>Help page</strong>. The page id number should be used.</p>
+
+<h3>Downloads Only</h3>
+<p>If using eShop for a downloads-only store, then setting this to <em>'yes'</em> will hide the shipping rates link, and provide a shorter checkout form.</p>
+
+<h3>Cron</h3>
+<p>Cron automatically sends out a daily email to the specified address if there are any outstanding, or pending, orders.
+This is only triggered when someone visits the site.</p>
+<p>To stop this feature, simply delete the Cron Email address.</p>
+
+<h3 id="auotp">Automatically created pages</h3>
+<p>These are automatically generated when eShop is first activated. Changing these could affect how eShop works, but are available for amendment should you delete a page in error. All of these pages require shortcodes to work correctly.</p>
+
+<h3>Other Settings</h3>	
+<p>The eShop <strong>Shipping Rates</strong> menu item also allows you to amend the shipping calculations and set whether you would like to use the zones set up by country, or by country specific State/County/Province. The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
+<p>The eShop <strong>appearance</strong> page allows you to amend the default style, or disable it completely.</p>
+
+
+<h3>Settings - eShop Base</h3>
+<p>This section sets up defaults that may be useful if you want to use Google Base. Anything entered here is applied to <em>all</em> products. You don't have to enter anything but the more information you supply the better. You are able to override these settings per product via the eShop - Base page.</p>
+<p><strong>Brand</strong> - if you sell one particular brand, set it here.</p>
+<p><strong>Condition</strong> - choose from one of the options available.</p>
+<p><strong>Product expiry in days</strong> - Google base automatically expires products listed after 30 days, but yo can set a different value here.</p>
+<p><strong>Product type</strong> - if you sell one type of product eg. figurines, set it here.</p>
+<p><strong>Payment Accepted</strong> - comma delimited list of payment methods available in addition to Paypal.</p>
+<h4>Reset eShop Base</h4>
+<p>This resets all data that has been set using the eShop - Base page.</p>
+
+<h3>Appearance - eShop</h3>
+<p>Some default style has been included with the eShop plugin to allow you to get up and running as quickly as possible. On this page you are able to disable the default styling if you would rather use style associated with a particular theme. If the CSS file is editable you can also edit it directly via this page.</p>
+<p>Should your theme already have an eshop.css file then it will be used by default.</p>
+
+</div>
+
+<div class="wrap">
+<h2 id="aover">eShop Admin Pages</h2>
+
+<h3>Orders</h3>
+
+<ul>
+<li><strong>eShop</strong> &amp; <strong>Stats</strong> - a quick statistics page showing how many orders are in the system.</li>
+<li><strong><a href="#pend" title="Why is an Order Still Pending?">Pending</a></strong> - not yet processed - orders are automatically removed from here after 4 days (Paypal can take that long to interact with your system)</li>
+<li><strong>Active</strong> - these orders have been paid for and a successful transaction has been completed at Paypal.</li>
+<li><strong>Shipped</strong> - you may want to move an order here after you ship it.</li>
+<li><strong>Failed</strong> - hopefully never used but, if there is a problem with a payment for an order, it will show here.</li>
+<li><strong>Deleted</strong> - when you delete an order, it is initially moved to here. You then have the facility to delete *all* orders over a certain age - x hours. Once deleted from this section, the order is completely removed from the database.</li>
+</ul>
+
+<p>Each page lists orders (except statistics). Select an individual order to view the full order details. The customer's email address is highlighted and can be used to contact the customer. Selecting the Customer's email address will take you to a Customer Contact page containing a pre-filled 'customer response' email template for your use.</p>
+
+<h3>Shipping</h3>
+<h4>Shipping Rates</h4>
+<p>Shipping rate calculations - 3 methods are offered:</p>
+<ul>
+<li><strong>Method 1</strong> ( per quantity of 1, prices reduced for additional items ) may take a while to calculate, but is possibly of greatest use.</li>
+<li><strong>Method 2</strong> ( once per shipping class no matter what quantity is ordered ) </li>
+<li><strong>Method 3</strong> ( one overall charge no matter what quantity is ordered )</li>
+</ul>
+<p>Each of these methods still allow for a 'per zone' price.</p>
+
+<p><strong>Shipping Zones</strong> - choose between US States <strong>or</strong> Countries to be used.</p>
+<p>The <strong>Show Shipping Zones on Shipping Page</strong> option allows you to automatically show the correct table for the zones. Be warned that these tables are <em>large</em>.</p>
+<p>The table for the shipping charges is fairly complex, but hopefully easy to follow.</p>
+
+<p>Shipping Rate F is preset for 'FREE' delivery and cannot be amended.</p>
+
+<h4>Countries and State/County/Province</h4>
+<p>Default zones are pre-configured for both 'Countries' and 'State/County/Province' but can be amended if necessary.</p>
+<p>Paypal doesn't list all countries, so you may need to check the list to ensure it is correct. Obviously you should delete any that you feel you don't want to deliver to. At the bottom of each form there is a blank field to allow you to add to these lists.</p>
+
+<h3>Products</h3>
+<p>This page lists all the products you have entered, along with a few statistics.</p>
+
+<h3>Downloads</h3>
+<p>Providing the downloads directory is writable, you can upload files here. These will become available for sale within your eShop.The page lists all available downloadable products (that you have previously uploaded), along with a few statistics.</p>
+<p>As a security measure you are not able to delete a file that is currently available for sale within your eShop.</p>
+<h4>Uploading large files</h4>
+<p>Any files that you FTP to the correct eshop_downloads directory can be added by visiting the <em>Unknown Download Files</em> section on the eshop Downloads page.</p>
+<p>An alternative method is to amend your main wordpress .htaccess file, or amend your sites php.ini. The following are an example set of directives to be added to the htaccess file.</p>
+<pre><code># BEGIN eShop
+php_value upload_max_filesize 100M
+php_value post_max_size 200M
+php_value memory_limit 400M
+php_value max_execution_time 10800
+php_value max_input_time 10800
+php_value session.gc_maxlifetime 10800
+# END eShop</code></pre>
+<p>This is <strong>not</strong> done automatically as which method you can use may be reliant on your hosting company.</p>
+
+<h3>Discount Codes</h3>
+<p>Various options have been created to give a wide variety of discount codes, from single use to unlimited. This can be a set discount, or for free shipping.</p>
+
+<h3>Base</h3>
+<p>Manage your products for Google Base.</p>
+<p>The details for each product can be tweaked by following the <em>Sku</em> link.</p>
+<p>For images to be used they <strong>must</strong> be uploaded via the page the product is allied to.</p>
+
+<h3>Templates</h3>
+<p>This allows you to edit 2 email templates:</p>
+<ul>
+<li>The <em>Automatic order email</em> is sent out automatically when a successful transaction is recorded on your system.</li>
+<li>The <em>Customer response email</em> can be sent at any time from you order details screen.</li>
+</ul>
+
+<h3>About</h3>
+<p>List initial installation and configuration help, along with eShop credits.</p>
+<h3>Help</h3>
+<p>This page!</p>
+
+</div>
+
+<div class="wrap">
+<h2 id="pend">Why is an Order Still Pending?</h2>
+<p>Pending orders should be automatically moved to <strong>Active</strong> once a successful transaction has taken place. However there are a few circumstances where this might not happen.</p>
+<ul>
+<li>A customer cancelled the transaction.</li>
+<li>Part of the Paypal transaction was invalid.</li>
+<li>Paypal's server is down, possibly for maintenance.</li>
+</ul>
+<p>In all cases before you decide to move an order from pending, check the following.</p>
+<h3>Paypal service status</h3>
+<p><a href="http://www.pdncommunity.com/blog?blog.id=mts_updates">Paypal Live Site Status</a> : it is always worth keeping an eye on this page for outages and planned maintenance.</p>
+<h3>Has 4 days passed?</h3>
+<p>Paypal can take up to 4 days to interact with your web site with regard to any transaction. Orders are automatically sent to <em>Deleted</em> orders after 4 days via eShop. However no orders are fully deleted unless you specifically request it, so the order can be retrieved at a later date.</p>
+<h3>Did you recieve a transaction notification?</h3>
+<p>All successful, and most unsuccessful, orders generate a system email to your Paypal address. This email should be kept as a permanent record of the transaction. These are useful for checking outstanding transactions.</p>
+<h3>Check your Paypal account</h3>
+<p>Check your account at Paypal to see if there are any sales that don't tie up with anything.</p>
+</div>
+
+<div class="wrap">
+<h2 id="base">eShop Base</h2>
+<p>eShop Base creates a data file for upload to Google Base.</p>
+<h3>Manage - eShop base Feed</h3>
+<p>Download or view online your product feed for uploading to Google Base.</p>
+</div>
+
+<div id="delete-info" class="wrap">
+<h2 id="extr">Cart Operations</h2>
+<p>After items are added to the Cart, the customer can complete a form on the Checkout page before being  redirected to Paypal for payment. A successful payment will auto generate an email to the customer <strong>and</strong> yourself. The email sent to you will have a subject containing the phrase <strong>Paypal IPN</strong>. This is a quick record of the transaction that should be kept as a permanent record. The email to the customer details their order and includes a download link, along with their login details when necessary. This download information is comprised of their email address, and a unique code. They have 'x' attempts to download a file, as set in the eShop settings. Providing Paypal has successfully accepted payment, a download form will be available should the customer come back to the site.</p>
+<p>If the order just contains downloads it should be automatically moved to the <strong>Sent</strong> orders page, otherwise they will be sent to the <strong>Active</strong> page for delivery.</p>
+</div>
+
+<div class="wrap">
+<h2 id="conf">Conflicting plugins</h2>
+<p>The eShop plugin may conflict with others you have installed. If you encounter any conflicting plugins, please post their details on the <a href="http://www.quirm.net/punbb/">support forum</a>.</p>
+<h3>Bad Behaviour plugin</h3>
+<p>It is recommended that this plugin is not used with eShop. I am unable to test this plugin effectively as it slowed the test site down dramatically, causing it to become unusable.</p>
+<p>However for those that still wish to use it, so far as I can tell there are no conflicts. But you will have to visit the <a href="https://www.Paypal.com/IntegrationCenter/ic_go-live.html">Paypal Go Live Checklist</a> and add all of the <abbr title="Internet protocol">IP</abbr> addresses to Bad Behaviour's whitelist.</p>
+<h3>Maintenance Mode plugin</h3>
+<p>Maintenance Mode would have to be deactivated when testing eShop, otherwise Paypal can not interact with the site.</p>
+</div>
+
+<div class="wrap">
+<h2 id="comp">Compatability</h2>
+<p>eShop has been written for Wordpress 2.5 and up, and is not compatible with earlier versions.</p>
+</div>
+
+<div class="wrap">
+<h2 id="actnote">Notes on activation</h2>
+<p>When eShop is actiavted it adds database tables, and adds data where necessary to those, and native wordpress, tables. Additionally there are some <a href="#autop">automatically created pages</a>.</p>
+<p>To ensure updates to the plugin don't over write changes you have made ceratin directories and files are copied to new locations <strong>on the first activation only</strong>.</p>
+<ul>
+<li><strong>wp-content/eshop_downloads</strong> is created from plugins/eshop/downloads</li>
+<li><strong>wp-content/uploads/eshop_files</strong> is created from plugins/eshop/files</li>
+</ul>
+<p>So, for example, when you edit your style, the actual eshop.css file that is being amended is located in <strong>wp-content/uploads/eshop_files</strong>.</p>
+</div>
+
+<div class="wrap">
+<h2 id="del">Deactivating and Uninstalling</h2>
+<p>To deactivate the plugin without losing data use the <em>deactivate</em> link on the plugins page. If you want to completely uninstall the plugin, delete all associated data and files use the <strong>eShop Uninstall</strong> link from the plugins page.</p>
+</div>
+</div>
+<?php eshop_show_credits(); ?>

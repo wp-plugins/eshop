@@ -1,0 +1,317 @@
+/*  default styles for eShop display */
+.offset {
+	position :absolute;
+	top :-9000px;
+	left :-9000px;
+}
+
+/* generic form button */
+input.button {
+	width:auto;
+	padding:2px 5px;
+	margin-right:1em;
+	background:#3B6C57;
+	color:#EDE5CF;
+	border-width:1px;
+	border-style:solid;
+	border-color:#92B0A9 #345045 #345045 #92B0A9;
+}
+input.button:hover,input.button:focus,input.button:active {
+	background:#4F8F72;
+	color:#EDE5CF;
+	border:1px solid #080;
+	cursor:pointer;
+}
+
+/* featured product listing */
+ul.eshopfeatured {
+	list-style-type:none;
+	list-style-image:none;
+	margin-left:0;
+	padding-left:0;
+}
+#content ul.eshopfeatured li {
+	list-style-type:none;
+	list-style-image:none;
+	margin-left:0;
+	padding-left:0;
+	border-bottom:1px solid #AEA27F;
+}
+/* random product listing */
+ul.eshoprandomlist{
+	list-style-type:none;
+	margin-left:0;
+	padding-left:0;
+}
+ul.eshoprandomlist li{
+	list-style-type:none;
+	margin-left:0;
+	padding-left:0;
+	border-bottom: 1px solid #F2FFDD;
+}
+/* single random product */
+ul.eshoprandomproduct{
+	list-style-type:none;
+	margin-left:0;
+	padding:2px 3px;
+	border:1px solid #FFD3D3;
+	background:#fffff5;
+}
+ul.eshoprandomproduct li{
+	list-style-type:none;
+	margin-left:0;
+	padding-left:0;
+}
+/* subpages listing */
+ul.eshopsubpages {
+	list-style-type:none;
+	margin-left:0;
+	padding-left:0;
+}
+ul.eshopsubpages li {
+	list-style-type:none;
+	margin-left:0;
+	padding-left:0;
+	border-bottom:1px solid #F2FFDD;
+}
+
+/*common for above */
+a.itemref {
+	font-size:1.3em;
+}
+
+/* more link */
+a.eshopmore {
+clear:right;
+	display:block;
+	text-align:right;
+}
+
+/* add to cart forms */
+form.addtocart {
+	width:100%;
+	margin-top:50px;
+	padding:5px;
+	background:#EDD1AC;
+	color:#404040;
+	border:1px solid #CDBBA4;
+}
+form.addtocart legend {
+	border:0;
+	background:transparent;
+}
+form.addtocart fieldset {
+	border:0;
+	padding:0;
+}
+form.addtocart select {
+	width:auto;
+	margin-right:4px;
+	font-size:0.9em;
+}
+form.addtocart input.iqty {
+	width:2.5em;
+}
+
+/* shopping cart */
+table.cart {
+	width:100%;
+}
+table.cart caption {
+	margin-bottom:0;
+	padding:2px 0;
+}
+table.cart thead th {
+	background:#F3D6B4;
+	padding:2px;
+	text-align:center;
+	font-weight:normal;
+}
+table.cart tr {
+	background:#FDF7F1;
+}
+table.cart tr.alt {
+	background:#FAECDE;
+}
+table.cart td, table.cart th {
+	padding:5px 8px;
+}
+table.cart td.amts {
+	text-align:right;
+}
+table.cart td.cqty {
+	text-align:center;
+}
+table.cart td.cqty input {
+	text-align:right;
+}
+table.cart tr.stotal {
+	background:#F2FFDD;
+	text-align:right;
+}
+
+/* cart links*/
+
+
+/* customer details form */
+.reqd {
+	color:#800;
+	font-size:1.1em;
+}
+
+/* shipping rates */
+#eshopshiprates, #zonelist {
+	width:100%;
+	border:1px solid #F2FFDD;
+	border-collapse:collapse;
+	background:#F3D6B4;
+}
+#eshopshiprates td {
+	text-align:right;
+}
+#zonelist td {
+	text-align:left;
+}
+#zonelist td.code,#zonelist td.zone {
+	text-align:center;
+}
+#eshopshiprates caption, #zonelist caption {
+	margin-bottom:0;
+	padding:2px 0;
+}
+#eshopshiprates th {
+	text-align:left;
+}
+#eshopshiprates thead th, #zonelist thead th {
+	background:#F3D6B4;
+	padding:2px;
+	text-align:center;
+	font-weight:normal;
+}
+#eshopshiprates td, #zonelist td {
+	padding:5px 8px;
+background:#FDF7F1;
+}
+#eshopshiprates tr.alt td, #zonelist tr.alt td {
+	background:#FAECDE;
+}
+#eshopshiprates td.center {
+	text-align:center;
+}
+#eshopshiprates {
+	margin-bottom:10px;
+}
+
+/* this section is for the automatic redirect to paypal */
+#process {
+	 border :3px solid #3B6C57;
+	 background-color :#F3D6B4;
+	 color :#333;
+	 width :90%;
+	 margin :10px auto 0 auto;
+	 padding :0 15px;
+}	
+#process h3 { 
+	 font :150% 'trebuchet ms', helvetica, arial, sans-serif;
+}
+
+/* downloads page form */
+#eshopdlform fieldset {
+	border:1px solid #F2FFDD;
+	width:20em;
+	margin:0 auto;
+}
+#eshopdlform fieldset legend {
+}
+#eshopdlform input#email,#eshopdlform input#code {
+	width:100%;
+	font-size:0.9em;
+	margin:0 0 10px 0;
+}
+#eshopdlform label {
+	display:block;
+	font-size:1em;
+}
+#eshopdlform input.button {
+	display:block;
+	margin:0 auto;
+}
+
+/* download products page */
+p.jdl {
+	text-align:center;
+}
+form.dlproduct fieldset, form#dlall fieldset {
+	border:1px solid #F2FFDD;
+	padding:15px;
+	margin-bottom:5px;
+}
+form.dlproduct .ro {
+	width:2em;
+	margin-right:10px;
+}
+form.dlproduct label {
+	color:#800;
+}
+
+/*credit*/
+.creditline {
+	text-align:center;
+	color:#969696;
+	font-size:0.7em;
+}
+/* pagination */
+div.paginate {
+  margin : 5px 2px;
+  font-size : 90%;
+}
+
+div.paginate p { 
+  padding : 0; 
+  line-height : 2em;
+}
+
+div.paginate p span {
+  font-weight : bold;
+}
+div.paginate ul{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+div.paginate ul li{
+	list-style:none;
+	float:left;
+	border:1px solid #ca9;
+	padding:0 4px;
+	margin-right:5px;
+}
+div.paginate ul li a{
+	display:block;
+}
+/* eshop panel listings */
+ul.eshoppanels{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+ul.eshoppanels li{
+	list-style:none;
+	float:left;
+	border:1px solid #ca9;
+	margin:0 5px 5px 0;
+	text-align:center;
+	min-height:175px;
+}
+#content ul.eshoppanels li a{
+	text-decoration:none;
+	display:block;
+	padding:0 4px;
+}
+#content ul.eshoppanels li a img{
+	float:none;
+	margin:0;
+}
+.pagfoot{
+	clear:left;
+}
