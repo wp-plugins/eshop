@@ -1090,4 +1090,12 @@ if (!function_exists('eshop_update_nag')) {
 		echo "<div id='eshop-update-nag'>$msg</div>";
 	}
 }
+
+if (!function_exists('eshop_plural')) {
+	function eshop_plural( $quantity, $singular, $plural ){
+	  if( intval( $quantity ) == 1 )
+		return $singular;
+	  return $plural;
+	}
+}
 ?>

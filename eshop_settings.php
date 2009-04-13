@@ -11,6 +11,8 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
+include 'eshop-base-functions.php';
+
 global $wpdb;
 $err='';
 //set up submenu here so it can accessed in the code
@@ -18,7 +20,7 @@ if (isset($_GET['eshop']) )
 	$action_status = attribute_escape($_GET['eshop']);
 else
 	$_GET['eshop']=$action_status = 'General';
-$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'));
+$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'),'Base'=>__('eShop Base','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
@@ -255,8 +257,16 @@ if(isset($_POST['submit'])){
 				update_option('eshop_status',$wpdb->escape($_POST['eshop_status']));
 			
 			break;
+		case ('Base'):
+				update_option('eshop_base_brand',$wpdb->escape($_POST['eshop_base_brand']));
+				update_option('eshop_base_condition',$wpdb->escape($_POST['eshop_base_condition']));
+				update_option('eshop_base_expiry',$wpdb->escape($_POST['eshop_base_expiry']));
+				update_option('eshop_base_ptype',$wpdb->escape($_POST['eshop_base_ptype']));
+				update_option('eshop_base_payment',$wpdb->escape($_POST['eshop_base_payment']));
+			break;
 	}
 }
+
 echo '<div class="wrap">';
 echo '<h2>'.__('eShop Settings','eshop').'</h2>'."\n";
 //info:
@@ -277,12 +287,74 @@ echo implode(' | </li>', $status_links) . '</li>';
 echo '</ul><br class="clear" />';
 if($err!=''){
 	echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'</p><ul>'.$err.'</ul></div>'."\n";
+	
+}elseif(isset($_GET['resetbase']) && $_GET['resetbase']=='yes'){
+	$table=$wpdb->prefix.'eshop_base_products';
+	$wpdb->query("TRUNCATE TABLE $table"); 
+	echo '<div id="message" class="updated fade"><p>'.__('eShop Base product data has been reset.','eshop').'</p></div>'."\n";
 }elseif(isset($_POST['submit'])){
 	echo'<div id="message" class="updated fade"><p>'.__('eshop Settings have been updated.','eshop').'</p></div>'."\n";
 }
 /* submenu end */
 
 switch($action_status){
+	case ('Base'):
+	?>
+	<form method="post" action="" id="eshop-settings">
+	<?php wp_nonce_field('update-options') ?>
+	<fieldset><legend><?php _e('eShop Base Options','eshop'); ?></legend>
+	
+	<label for="eshop_base_brand"><?php _e('Brand','eshop'); ?></label><input id="eshop_base_brand" name="eshop_base_brand" type="text" value="<?php echo get_option('eshop_base_brand'); ?>" size="30" /><br />
+	<label for="eshop_base_condition"><?php _e('Condition','eshop'); ?></label>
+		<select name="eshop_base_condition" id="eshop_base_condition">
+		<?php
+			
+		foreach($currentconditions as $code){
+			if($code == get_option('eshop_base_condition')){
+				$sel=' selected="selected"';
+			}else{
+				$sel='';
+			}
+			echo '<option value="'. $code .'"'. $sel .'>'. $code .'</option>';
+		}
+		
+		?>
+		</select><br />
+	<label for="eshop_base_expiry"><?php _e('Product expiry in days','eshop'); ?></label>
+		<select name="eshop_base_expiry" id="eshop_base_expiry">
+		<?php
+		$currentexpiry=array('1', '7', '28', '180', '365','730');
+		foreach($currentexpiry as $code){
+			if($code == get_option('eshop_base_expiry')){
+				$sel=' selected="selected"';
+			}else{
+				$sel='';
+			}
+			echo '<option value="'. $code .'"'. $sel .'>'. $code .'</option>';
+		}
+		?>
+	</select><br />
+	
+	<label for="eshop_base_ptype"><?php _e('Product type','eshop'); ?></label><input id="eshop_base_ptype" name="eshop_base_ptype" type="text" value="<?php echo get_option('eshop_base_ptype'); ?>" size="30" /><br />
+	<label for="eshop_base_payment"><?php _e('Payment Accepted <small> comma delimited list of payment methods available.</small>','eshop'); ?></label><input id="eshop_base_payment" name="eshop_base_payment" type="text" value="<?php echo get_option('eshop_base_payment'); ?>" size="30" /><br />
+	
+	<input type="hidden" name="page_options" value="eshop_base_brand,eshop_base_condition,
+	eshop_base_expiry,eshop_base_ptype,eshop_base_payment" />
+	
+	</fieldset>
+	<p class="submit">
+	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+	</p>
+	</form>
+	
+	</div>
+	<div class="wrap">
+	<h2><?php _e('Reset eShop Base','eshop'); ?></h2>
+	<p><?php _e('This resets all product data entered on the <a href="admin.php?page=eshop_base.php">eShop Base Products</a> page.','eshop'); ?></p>
+	<p class="ebox"><a class="ebox" href="?page=eshop_settings.php&amp;eshop=Base&amp;resetbase=yes"><?php _e('Reset Now','eshop'); ?></a></p>
+	</div>
+	<?php
+	break;
 	case ('Merchant'):
 	?>
 	<form method="post" action="" id="eshop-settings">

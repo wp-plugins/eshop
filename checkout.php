@@ -112,7 +112,7 @@ if (!function_exists('eshopShowform')) {
 		}
 		$echo.= "</select></label></fieldset>";
 	}
-	$echo .= '</fieldset>';
+
 	$echo .= '<fieldset class="eshop fld3">
 	<legend>'.__('Additional information','eshop').'</legend>
 	 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
@@ -176,6 +176,7 @@ if (!function_exists('eshopShowform')) {
 			}
 		}
 		$echo.= "</select></label>";
+		$echo .='</fieldset>';
 	}
 	$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
 	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
@@ -199,19 +200,17 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
 	}
 	$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
-	if('no' == get_option('eshop_downloads_only')){
-		$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
-	}
+	
 	
 	if(eshop_discount_codes_check()){
 		if(!isset($eshop_discount)) $eshop_discount='';
-		$echo .='<p><label for="eshop_discount">'.__('Discount Code (case sensitive)','eshop').'</label><br />
-	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></p>'."\n";
+		$echo .='<fieldset class="eshop fld5"><legend><label for="eshop_discount">'.__('Discount Code (case sensitive)','eshop').'</label></legend>
+	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></fieldset>'."\n";
 	}
 	if(is_array(get_option('eshop_method'))){
 		$i=1;
 		$eshopfiles=eshop_files_directory();
-		$echo .='<fieldset class="eshoppayvia"><legend>'.__('Pay Via:', 'eshop').'<span class="reqd">*</span></legend>'."\n<ul>\n";
+		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via:', 'eshop').'<span class="reqd">*</span></legend>'."\n<ul>\n";
 		if(sizeof((array)get_option('eshop_method'))!=1){
 			foreach(get_option('eshop_method') as $k=>$eshoppayment){
 				$echo .='<li><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></label><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
@@ -225,7 +224,9 @@ if (!function_exists('eshopShowform')) {
 		}
 		$echo .="</ul>\n</fieldset>\n";
 	}
-	
+	if('no' == get_option('eshop_downloads_only')){
+			$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
+	}
 	$echo .='<input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" />
 	</fieldset>
 	</form>
@@ -629,24 +630,24 @@ if (!function_exists('eshop_checkout')) {
 				$echoit.= "</ul>\n";
 
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])==''){
-					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= "<div class=\"eshop fld3\"><h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
 					$echoit.= '<li><span class="items">'.__('Reference or PO:','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
-					$echoit.= '</ul>'."\n";
+					$echoit.= '</ul></div>'."\n";
 				}
 				if( (trim($_POST['reference'])=='') && trim($_POST['comments'])!=''){
-					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= "<div class=\"eshop fld3\"><h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
 					$echoit.= '<li><span class="items">'.__('Comments or instructions:','eshop').'</span> '.$_POST['comments'].'</li>'."\n";
-					$echoit.= '</ul>'."\n";
+					$echoit.= '</ul></div>'."\n";
 				}
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])!=''){
-					$echoit.= "<h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
+					$echoit.= "<div class=\"eshop fld3\"><h4>".__('Additional information','eshop')."</h4>\n<ul>\n";
 					$echoit.= '<li><span class="items">'.__('Reference or PO:','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
 					$echoit.= '<li><span class="items">'.__('Comments or instructions:','eshop').'</span> '.$_POST['comments'].'</li>'."\n";
-					$echoit.= '</ul>'."\n";
+					$echoit.= '</ul></div>'."\n";
 				}
 				if('no' == get_option('eshop_downloads_only')){
 					if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
-						$echoit.= "<h4>".__('Shipping Address','eshop')."</h4>\n<ul>\n";
+						$echoit.= "<div class=\"eshop fld4\"><h4>".__('Shipping Address','eshop')."</h4>\n<ul>\n";
 						$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
 						$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
 						$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
@@ -663,7 +664,7 @@ if (!function_exists('eshop_checkout')) {
 						$qccode=$wpdb->escape($_POST['ship_country']);
 						$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 						$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
-						$echoit.= "</ul>\n";
+						$echoit.= "</ul></div>\n";
 					}
 				}
 				$echoit.= "\n";

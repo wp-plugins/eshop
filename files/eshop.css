@@ -474,3 +474,30 @@ a.eshopmore {
 	text-align:center;
 	font-size:.7em;
 }
+/* ==3== */
+/* Added in 3.2.2 */
+/* eshop a-z listing */
+ul.eshopaz li{
+	line-height:1.8em;
+	list-style:none;
+	display:inline;
+	margin:0 1px 0 0;
+}
+ul.eshopaz li a{
+ 	display:inline;
+	padding:1px 3px;
+	margin:0;
+	border:1px solid #b5b5b5;
+}
+ul.eshopaz li.current a{
+	border:1px solid #000;
+}
+ul.eshopaz li a:active,ul.eshopaz li a:hover,ul.eshopaz li a:focus{
+	text-decoration:underline;
+	border:1px solid #060;
+}
+ul.eshopaz li span{
+ 	color:#b5b5b5;
+ 	padding:1px 3px;
+ 	border:1px solid #b5b5b5;
+}
