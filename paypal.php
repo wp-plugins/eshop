@@ -231,7 +231,7 @@ switch ($_GET['action']) {
 		// a bit of good.  This is on the "backend".  That is why, by default, the
 		// class logs all IPN data to a text file.
 		// the loggin to a text file isn't working, so we have coded an email to be sent instead.
-		$extradetails =''.
+		$extradetails ='';
 		if ($p->validate_ipn()) {
 			// Payment has been recieved and IPN is verified.  This is where you
 			// update your database to activate or process the order, or setup
