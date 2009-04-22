@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7.1
-Stable tag: 3.3.4
+Stable tag: 3.3.5
 
 An accessible Shopping Cart plugin.
 
@@ -34,14 +34,26 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.3.4
-*fix* 3.3.3
+Version 3.3.5
 
+* *added* - setting to display sku.
+* *fixed* - out of stock message only displaying once
+* *fixed* - error checking for number of options per product
+* *fixed* - problems when individual prices greater than 1000.
+* *deleted* - check for previous email template chnages, due to errors (only affects upgrading from before 3.1)
 
 
 == Previous Updates ==
 
-Version 3.3.3
+Version 3.3.5
+
+* *added* - setting to display sku.
+* *fixed* - out of stock message only displaying once
+* *fixed* - error checking for number of options per product
+* *fixed* - problems when individual prices greater than 1000.
+* *deleted* - check for previous email template chnages, due to errors (only affects upgrading from before 3.1)
+
+Version 3.3.3/4
 
 * *fixed* - missing stats page
 * *fixed* - error when using paypal
@@ -51,7 +63,7 @@ Version 3.3.2
 
 * *fixed* - Products page order by stock
 * *fixed* - fieldsets on checkout form - specifically shipping - can now be styled separately
-* *moved* - eshop base settings no dded to the main eshop settings page
+* *moved* - eshop base settings now added to the main eshop settings page
 
 Version 3.3.1
 

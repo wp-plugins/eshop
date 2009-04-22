@@ -55,6 +55,8 @@ add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
 add_option('eshop_downloads_hideall','no');
+add_option('eshop_show_sku','no');
+
 //new for 3.
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
 	delete_option('eshop_sudo_cat');
@@ -716,6 +718,8 @@ Again, thank you for ordering with us.
 
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
 //prior to 3.1
+//this portion removed due to problems.
+/*
 	$eshopurl=eshop_files_directory();
 	$templateFile = $eshopurl['0'];
 	$table = $wpdb->prefix ."eshop_emails";
@@ -731,6 +735,7 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
 			unlink ($file[0]);
 		}
 	}
+*/
 	$table = $wpdb->prefix . "eshop_orders";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `status` `status` SET( 'Sent', 'Completed', 'Pending', 'Failed', 'Deleted', 'Waiting' ) DEFAULT 'Pending' NOT NULL");
 }
