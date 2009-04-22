@@ -218,6 +218,7 @@ if(isset($_POST['submit'])){
 			update_option('eshop_show_stock',$wpdb->escape($_POST['eshop_show_stock']));
 			update_option('eshop_search_img',$wpdb->escape($_POST['eshop_search_img']));
 			update_option('eshop_show_forms',$wpdb->escape($_POST['eshop_show_forms']));
+			update_option('eshop_show_sku',$wpdb->escape($_POST['eshop_show_sku']));
 
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
@@ -226,10 +227,10 @@ if(isset($_POST['submit'])){
 				$err.='<li>'.__('Orders per page should be numeric, a default of 10 has been applied.','eshop').'</li>';
 				update_option('eshop_records','10');
 			}
-			if(is_numeric($_POST['eshop_options_num'])){
+			if(is_numeric($_POST['eshop_options_num']) && $_POST['eshop_options_num']>'0'){
 				update_option('eshop_options_num',$wpdb->escape($_POST['eshop_options_num']));
 			}else{
-				$err.='<li>'.__('Options per product should be numeric, a default of 3 has been applied.','eshop').'</li>';
+				$err.='<li>'.__('Options per product should be numeric and be greater than 0, a default of 3 has been applied.','eshop').'</li>';
 				update_option('eshop_options_num','3');
 			}
 
@@ -621,7 +622,18 @@ switch($action_status){
 	}
 	?>
 	</select><br />
-
+<label for="eshop_show_sku"><?php _e('Show product sku','eshop'); ?></label>
+	<select name="eshop_show_sku" id="eshop_show_sku">
+	<?php
+	if('yes' == get_option('eshop_show_sku')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
 
 
 </fieldset>

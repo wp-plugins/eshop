@@ -522,7 +522,7 @@ if (!function_exists('orderhandle')) {
 			$chk_postid='postid_'.$i;
 			$item_id=$wpdb->escape($_POST[$chk_id]);
 			$item_qty=$wpdb->escape($_POST[$chk_qty]);
-			$item_amt=$wpdb->escape($_POST[$chk_amt]);
+			$item_amt=$wpdb->escape(str_replace(',', "", $_POST[$chk_amt]));;
 			$optname=$wpdb->escape($_POST[$chk_opt]);
 			$post_id=$wpdb->escape($_POST[$chk_postid]);
 			
@@ -568,7 +568,7 @@ if (!function_exists('orderhandle')) {
 			$i++;
 
 		}
-		$postage=$wpdb->escape($_POST['shipping_1']);
+		$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
 		$querypostage=$wpdb->query("INSERT INTO  $itemstable 
 				(checkid, item_id,item_qty,item_amt)values(
 				'$checkid',
