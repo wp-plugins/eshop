@@ -332,6 +332,7 @@ function eshop_products_manager() {
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
+			$pdownloads='no';
 			if($grabit['_Price 1']!=''){
 			//reset array
 				$purcharray=array();
@@ -342,14 +343,18 @@ function eshop_products_manager() {
 				$pdown='';
 				//check if downloadable product
 				for($i=1;$i<=get_option('eshop_options_num');$i++){
-					if($grabit["_Download ".$i]!=''){
-						$dltable=$wpdb->prefix.'eshop_downloads';
-						$fileid=$grabit["_Download ".$i];
-						$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-						$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+					if($grabit['_Option '.$i]!=''){
+						if($grabit["_Download ".$i]!=''){
+							$dltable=$wpdb->prefix.'eshop_downloads';
+							$fileid=$grabit["_Download ".$i];
+							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
+							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+							$pdownloads='yes';
+						}else{
+							$pdown.='<br />';
+						}
 					}
 				}
-				if($pdown=='') $pdown='No';
 				if($ptitle->post_title=='')
 					$posttitle=__('(no title)');
 				else
@@ -374,20 +379,23 @@ function eshop_products_manager() {
 				$purcharray=array();
 				$dltable = $wpdb->prefix ."eshop_downloads";
 				for($i=1;$i<=get_option('eshop_options_num');$i++){
-					if($grabit["_Download ".$i]!=''){
-						$fileid=$grabit["_Download ".$i];
-						$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
-						if($purchases!='')
-							$purcharray[]=$purchases;
-						else
-							$purcharray[]='0';
-					}else{
-						$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
-						if($purchases!='')
-							$purcharray[]=$purchases;
-						else
-							$purcharray[]='0';
+					if($grabit['_Option '.$i]!=''){
+						if($grabit["_Download ".$i]!=''){
+							$fileid=$grabit["_Download ".$i];
+							$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
+							if($purchases!='')
+								$purcharray[]=$purchases;
+							else
+								$purcharray[]='0';
+						}else{
+							$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
+							if($purchases!='')
+								$purcharray[]=$purchases;
+							else
+								$purcharray[]='0';
+						}
 					}
+					if($pdownloads=='no') break;
 				}
 				if($grabit['_Featured Product']=='')$grabit['_Featured Product']='no';
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';

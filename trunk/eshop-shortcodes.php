@@ -421,7 +421,7 @@ function eshop_list_featured($atts){
 function eshop_list_random($atts){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
 		$class='eshoprandomproduct';
 	}
@@ -430,7 +430,18 @@ function eshop_list_random($atts){
 	}else{
 		$elimit=1;
 	}
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by rand() limit $elimit");
+	$subquery='';
+	if($excludes!=0){
+		$exclude= explode(",", $excludes);
+		foreach($exclude as $exid){
+			if(is_numeric($exid) && $exid>0){
+				$subq[]= "$wpdb->posts.ID!=$exid";
+			}
+		}
+		$subquery= ' AND '.implode(' AND ',$subq);
+	}
+	
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
 
 	if($pages) {
 		if($panels=='no'){
