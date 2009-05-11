@@ -19,18 +19,18 @@ $this_script = get_option('siteurl');
 global $wp_rewrite;
 if(get_option('eshop_checkout')!=''){
 	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?action=redirect';
+		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
 	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;action=redirect';
+		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
 	}
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;action=redirect';
+	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
 }
 
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['action'])) $_GET['action'] = 'process';  
+if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
 
-switch ($_GET['action']) {
+switch ($_GET['eshopaction']) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -114,15 +114,7 @@ switch ($_GET['action']) {
 			$this_email = stripslashes($thisemail->emailContent);
 			// START SUBST
 			$csubject=stripslashes($thisemail->emailSubject);
-			$this_email = str_replace('{STATUS}', $array['status'], $this_email);
-			$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
-			$this_email = str_replace('{NAME}', $array['ename'], $this_email);
-			$this_email = str_replace('{EMAIL}', $array['eemail'], $this_email);
-			$this_email = str_replace('{CART}', $array['cart'], $this_email);
-			//$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
-			$this_email = str_replace('{ADDRESS}', $array['address'], $this_email);
-			$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
-			$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
+			$this_email = eshop_email_parse($this_email,$array,'no');
 
 			//try and decode various bits - may need tweaking Mike, we may have to write 
 			//a function to handle this depending on what you are using - but for now...
@@ -150,12 +142,12 @@ switch ($_GET['action']) {
 		$p = new cash_class; 
 		if(get_option('eshop_cart_success')!=''){
 			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?action=success';
+				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=success';
 			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;action=success';
+				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=success';
 			}
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;action=success';
+			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=success';
 		}
 		$p->cash_url = $ilink;     // cash url
 		$echoit.=$p->eshop_submit_cash_post($_POST);

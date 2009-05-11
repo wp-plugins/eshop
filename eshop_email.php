@@ -52,15 +52,7 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	$subject=$thisemail->emailSubject;
 	$this_email=$thisemail->emailContent;
 	// START SUBST
-	$this_email = str_replace('{STATUS}', $array['status'], $this_email);
-	$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
-	$this_email = str_replace('{NAME}', $array['ename'], $this_email);
-	$this_email = str_replace('{EMAIL}', $array['eemail'], $this_email);
-	$this_email = str_replace('{CART}', $array['cart'], $this_email);
-	$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
-	$this_email = str_replace('{ADDRESS}', $array['address'], $this_email);
-	$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
-	$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
+	$this_email = eshop_email_parse($this_email,$array);
 	$this_email = str_replace('&#8230;', '...', $this_email);
 // For system email - get_option('eshop_business') is called for below, twice
 	if(get_option('eshop_business')!=''){

@@ -43,7 +43,7 @@ if (!function_exists('eshop_downloads')) {
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
 					<label for="ro'.$x.'">'.__('Number of downloads remaining','eshop').'</label>
 					<input type="text" readonly="readonly" name="ro" class="ro" id="ro'.$x.'" value="'.$dlrow->downloads.'" />
-					<input type="submit" class="button" id="submit'.$x.'" name="Submit" value="'.__('Download','eshop').' '.$dltitle.'" />
+					<span class="buttonwrap"><input type="submit" class="button" id="submit'.$x.'" name="Submit" value="'.__('Download','eshop').' '.$dltitle.'" /></span>
 					</fieldset></form>
 					';
 					$x++;
@@ -58,7 +58,7 @@ if (!function_exists('eshop_downloads')) {
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
 					<input name="id" type="hidden" value="all" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
-					<p><input class="button" type="submit" id="submit" name="Submit" value="'.__('Download All Files','eshop').'" /></p>
+					<p><span class="buttonwrap"><input class="button" type="submit" id="submit" name="Submit" value="'.__('Download All Files','eshop').'" /></span></p>
 					</fieldset></form>
 					';
 				}
@@ -90,7 +90,7 @@ function eshop_dloadform($email,$code,$error=''){
 	<input name="email" id="email" type="text" value="'.$email.'" /><br />
 	<label for="code">'.__('Code:','eshop').'</label> 
 	<input name="code" id="code" type="text" value="'.$code.'" /><br />
-	<input type="submit" id="submit" class="button" name="Submit" value="'.__('Submit','eshop').'" />
+	<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('Submit','eshop').'" /></span>
 	</fieldset>
 	</form>
 	';

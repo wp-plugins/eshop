@@ -1,5 +1,33 @@
 /*  Default css for eShop display */
 
+ /* PANEL DIMENSIONS */
+ /* you may need to adjust these figures to accomodate your product images*/
+ul.eshoppanels li {
+	min-height:200px;
+	min-width:200px;
+}
+
+/* FLOATS & CLEARS */
+ul.eshoppanels li, ul.eshop li a img, table.eshop img, 
+form.eshopform fieldset.eshoppayvia li label, .paginate ul li {
+	float:left;
+}
+/* payment-via options on checkout page */
+form.eshopform fieldset.eshoppayvia li label {
+	float:left;
+}
+ul.eshop li, form.addtocart, .pagfoot {
+	clear:left;
+}
+
+/* adjust to suit if you are using an Add To Cart image rather than a button */
+form.eshop input.buttonimg {
+	width:111px;
+	height:33px;
+	position:relative;
+	top:10px;
+}
+
 /* COLORS */
 
 /*********** TABLES ***************/
@@ -48,7 +76,26 @@ ul.eshop li a:hover img,ul.eshop li a:active img,ul.eshop li a:focus img {
 ul.eshoppanels li form.addtocart {
 	background:transparent;
 	color:#404040;
-	border:0;
+	border:none;
+}
+
+/*********** A-Z LISTING ***************/
+ul.eshopaz li a {
+	border:1px solid #b5b5b5;
+}
+ul.eshopaz li.current a {
+	border:1px solid #000;
+}
+ul.eshopaz li span {
+ 	color:#b5b5b5;
+ 	border:1px solid #b5b5b5;
+}
+ul.eshopaz li a:hover,ul.eshopaz li a:active,ul.eshopaz li a:focus {
+	border:1px solid #060;
+}
+ul.eshopaz li a:active,ul.eshopaz li a:focus {
+	background:#D1FDA5;
+	color:#000;
 }
 
 /*********** FORMS ***************/
@@ -60,9 +107,13 @@ form.eshop input.button {
 	border-style:solid;
 	border-color:#9396A4 #555 #555 #9396A4;
 }
-form.eshop input.button:hover,form.eshop input.button:active,form.eshop input.buttonfocus {
+form.eshop input.button:hover,form.eshop input.button:active,form.eshop input.button:focus {
 	background:#D1FDA5;
 	color:#404040;
+}
+form.eshop input.buttonimg {
+	background:transparent;
+	border:none;
 }
 form.eshop fieldset {
 	background:#E6E6F6;
@@ -95,6 +146,7 @@ form.dlproduct label {
 
 /*********** OTHER ***************/
 /* no bullets */
+#content .eshop li,
 #content ul.eshopfeatured li,#content ul.eshopfeatured li,#content ul.eshopsubpages li,
 #content ul.eshoprandomlist li,#content ul.eshopshowproduct li,#content ul.eshoppanels li,
 #content fieldset.eshoppayvia li,
@@ -157,7 +209,6 @@ table.eshop dfn {
 	font-style:normal;
 }
 table.eshop img {
-	float:left;
 	margin:0 10px 0 0;
 	vertical-align:top;
 }
@@ -226,7 +277,6 @@ ul.eshop {
 	padding:0
 }
 ul.eshop li {
-	clear:left;
 	margin:0 20px 20px;
 	padding:0;
 	line-height:1.3em;
@@ -238,7 +288,6 @@ ul.eshop li a {
 	text-decoration:none;
 }
 ul.eshop li a img {
-	float:left;
 	margin-right:20px;
 	margin-bottom:20px;
 }
@@ -248,10 +297,7 @@ ul.eshop li a.itemref {
 /* eshop panel listings */
 ul.eshoppanels li {
 	clear:none;
-	float:left;
 	text-align:center;
-	min-height:200px; /* you may need to adjust this figure to accomodate the height of your product images*/
-
 }
 ul.eshoppanels li a img {
 	float:none;
@@ -273,6 +319,25 @@ ul.eshopfeatured form.addtocart {
 	clear:none;
 }
 
+/*********** A-Z LISTING ***************/
+ul.eshopaz li {
+	line-height:1.8em;
+	list-style:none;
+	display:inline;
+	margin:0 1px 0 0;
+}
+ul.eshopaz li a {
+ 	display:inline;
+	padding:1px 3px;
+	margin:0;
+}
+ul.eshopaz li a:active,ul.eshopaz li a:hover,ul.eshopaz li a:focus {
+	text-decoration:underline;
+}
+ul.eshopaz li span {
+ 	padding:1px 3px;
+}
+
 /*********** FORMS ***************/
 /* generic form buttons */
 input.button {
@@ -280,7 +345,7 @@ input.button {
 	padding:2px 5px;
 	margin-right:1em;
 }
-input.button:hover,input.button:focus,input.button:active {
+input.button:hover,input.button:active,input.button:focus {
 	cursor:pointer;
 }
 /* generic form layout */
@@ -300,7 +365,6 @@ form.eshop textarea {
 }
 /* add to cart forms */
 form.addtocart {
-	clear:left;
 	width:99%;
 	margin-top:20px;
 	padding:5px;
@@ -358,10 +422,6 @@ form.dlproduct .ro {
 form.dlproduct label {
 	display:inline;
 }
-/* payment via options - checkout page */
-form.eshopform fieldset.eshoppayvia li label {
-	float:left;
-}
 
 /*********** OTHER ***************/
 /* cart options */
@@ -369,7 +429,7 @@ form.eshopform fieldset.eshoppayvia li label {
 	text-align:center;
 }
 .cartopt p {
-	width:16em;
+	width:20em;
 	margin:10px auto;
 }
 .cartopt label {
@@ -437,15 +497,11 @@ p.eshopwidget span {
 	padding:0;
 }
 .paginate ul li {
-	float:left;
 	padding:0 4px;
 	margin-right:5px;
 }
 .paginate ul li a {
 	display:block;
-}
-.pagfoot {
-	clear:left;
 }
 
 /* downloads page */
@@ -456,7 +512,6 @@ p.jdl {
 
 /* more link */
 a.eshopmore {
-	clear:right;
 	display:block;
 	text-align:right;
 }
@@ -464,40 +519,8 @@ a.eshopmore {
 /* can be used to position text offscreen */
 .offset {
 }
-
-/* errors */
-.reqd,.error {
-	color:#A22F2F;
-}
 /* credits */
 .creditline {
 	text-align:center;
 	font-size:.7em;
-}
-/* ==3== */
-/* Added in 3.2.2 */
-/* eshop a-z listing */
-ul.eshopaz li{
-	line-height:1.8em;
-	list-style:none;
-	display:inline;
-	margin:0 1px 0 0;
-}
-ul.eshopaz li a{
- 	display:inline;
-	padding:1px 3px;
-	margin:0;
-	border:1px solid #b5b5b5;
-}
-ul.eshopaz li.current a{
-	border:1px solid #000;
-}
-ul.eshopaz li a:active,ul.eshopaz li a:hover,ul.eshopaz li a:focus{
-	text-decoration:underline;
-	border:1px solid #060;
-}
-ul.eshopaz li span{
- 	color:#b5b5b5;
- 	padding:1px 3px;
- 	border:1px solid #b5b5b5;
 }

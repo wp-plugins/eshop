@@ -51,6 +51,8 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
 
 	//options
+	$epages[] = 'eshop_addtocart_image';
+	$epages[] = 'eshop_webtopay';
 	$epages[] = 'eshop_payson';
 	$epages[] = 'eshop_business';
 	$epages[] = 'eshop_from_email';
@@ -97,6 +99,7 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_base_payment';
 	$epages[] = 'eshop_base_ptype';
 	$epages[] = 'eshop_cash';
+	$epages[] = 'eshop_epn';
 	$epages[] = 'eshop_products_widgets';
 	$epages[] = 'eshop_show_allstates';
 	$epages[] = 'eshop_show_sku';
@@ -195,8 +198,10 @@ echo '</div>';
 function remove_eshop_caps() {
 	global $wpdb, $user_level, $wp_rewrite, $wp_version;
 		$role = get_role('administrator');
-		if ($role !== NULL)
+		if ($role !== NULL){
 			$role->remove_cap('eShop');
+			$role->remove_cap('eShop_admin');
+		}
 		$role = get_role('editor');
 		if ($role !== NULL)
 			$role->remove_cap('eShop');

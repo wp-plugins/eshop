@@ -154,6 +154,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
+<li><code>[eshop_cart_items]</code> A simple shortcode for use in templates via the <code>do_shortcode</code> function. In its simplest form it displays the number of items in the cart. It can be adjusted with the following attributes <code>before</code> and <code>after</code>, which can be used to insert text before and after the cart size.
+<code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty.
 </ol>
 <h3>Notes</h3>
 <p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
@@ -247,6 +249,18 @@ This is only triggered when someone visits the site.</p>
 <p>The <strong>Email address</strong>, <strong>Agent ID</strong> and <strong>Secret Key</strong> must match those at Payson.</p>
 <p>You need to set a <strong>Cart Description</strong> and this will be used in place of the shopping cart at Payson.</p>
 <p>Payson has a minimum order value which, at time of writing, is 4 SEK. The <strong>Min. Cart value</strong> alters the amount that Payson recieves to ensure the minimum value is met. Payson refuses values less than this.</p>
+
+<h4>eProcessingNetwork</h4>
+<p><strong>Warning</strong> - test mode does not look any different on the payment side.</p>
+
+<h4>Cash</h4>
+<p>Orders placed here are automatically added to the awaiting payment page.</p>
+
+
+<h4>webtopay</h4>
+<p>For help with webtopay please contact <a href="mailto:integrate@mokejimai.lt">Markas Krasovskis</a></p>
+
+
 
 <h3>Discounts</h3>
 <p><strong>Spend</strong> - how much needs to be spent before <strong>% Discount</strong> is applied.</p>
@@ -408,6 +422,8 @@ php_value session.gc_maxlifetime 10800
 <h3>Bad Behaviour plugin</h3>
 <p>It is recommended that this plugin is not used with eShop. I am unable to test this plugin effectively as it slowed the test site down dramatically, causing it to become unusable.</p>
 <p>However for those that still wish to use it, so far as I can tell there are no conflicts. But you will have to visit the <a href="https://www.Paypal.com/IntegrationCenter/ic_go-live.html">Paypal Go Live Checklist</a> and add all of the <abbr title="Internet protocol">IP</abbr> addresses to Bad Behaviour's whitelist.</p>
+<h3>Sociable plugin</h3>
+<p>If you use this plugin and you experience problems with eShop functionality, you may have to deactivate it. Sorry.</p>
 <h3>Maintenance Mode plugin</h3>
 <p>Maintenance Mode would have to be deactivated when testing eShop, otherwise Paypal can not interact with the site.</p>
 </div>

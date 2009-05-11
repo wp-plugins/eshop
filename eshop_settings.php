@@ -50,10 +50,19 @@ if(isset($_POST['submit'])){
 			$paysonpost['description']=$wpdb->escape($_POST['payson']['description']);
 			$paysonpost['minimum']=$wpdb->escape($_POST['payson']['minimum']);
 			update_option('eshop_payson',$paysonpost);
+			//epn
+			$epnpost['email']=$wpdb->escape($_POST['epn']['email']);
+			$epnpost['id']=$wpdb->escape($_POST['epn']['id']);
+			$epnpost['description']=$wpdb->escape($_POST['epn']['description']);
+			update_option('eshop_epn',$epnpost);
 			//cash
 			$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
 			update_option('eshop_cash',$cashpost);
-
+			//webtopay
+			$webtopaypost['id']=$wpdb->escape($_POST['webtopay']['id']);
+			$webtopaypost['password']=$wpdb->escape($_POST['webtopay']['password']);
+			$webtopaypost['lang']=$wpdb->escape($_POST['webtopay']['lang']);
+			update_option('eshop_webtopay',$webtopaypost);
 			if(!is_array(get_option('eshop_method'))){
 				update_option('eshop_status',$wpdb->escape('testing'));
 				$err.='<li>'.__('No Merchant Gateway selected, eShop has been put in Test Mode','eshop').'</li>';
@@ -219,7 +228,7 @@ if(isset($_POST['submit'])){
 			update_option('eshop_search_img',$wpdb->escape($_POST['eshop_search_img']));
 			update_option('eshop_show_forms',$wpdb->escape($_POST['eshop_show_forms']));
 			update_option('eshop_show_sku',$wpdb->escape($_POST['eshop_show_sku']));
-
+			update_option('eshop_addtocart_image',$wpdb->escape($_POST['eshop_addtocart_image']));
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
 				update_option('eshop_records',$wpdb->escape($_POST['eshop_records']));
@@ -378,7 +387,7 @@ switch($action_status){
 			}
 			?>
 		</select><br />
-		<p>Don't forget to set the <a href="admin.php?page=eshop_shipping.php&action=states">State/County/Province</a> on the shipping pages.</p>
+		<p>Don't forget to set the <a href="admin.php?page=eshop_shipping.php&amp;action=states">State/County/Province</a> on the shipping pages.</p>
 	<?php //' fix my code colours - not needed elswhere ?>
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
@@ -402,7 +411,7 @@ switch($action_status){
 	
 	</fieldset>
 	<fieldset><legend><?php _e('Payson','eshop'); ?></legend>
-	<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?>
+	<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?></p>
 	<?php $payson = get_option('eshop_payson'); ?>
 
 		<p class="cbox"><input id="eshop_methodb" name="eshop_method[]" type="checkbox" value="payson"<?php if(in_array('payson',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodb"><?php _e('Accept payment by Payson','eshop'); ?></label></p>
@@ -421,12 +430,36 @@ switch($action_status){
 			?>
 	</select><br />
 	</fieldset>
-		<fieldset><legend><?php _e('Cash','eshop'); ?></legend>
-		<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?>
+	<fieldset><legend><?php _e('eProcessingNetwork','eshop'); ?></legend>
+		<p><?php _e('<strong>Warning:</strong> All payments to eProcessingNetwork are in USD, irrespective of settings above. In test mode totals ending in a single cent are always failed.','eshop'); ?></p>
+		<?php $epn = get_option('eshop_epn'); ?>
+		<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="epn"<?php if(in_array('epn',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodb"><?php _e('Accept payment by eProcessingNetwork','eshop'); ?></label></p>
+		<label for="eshop_epnemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_epnemail" name="epn[email]" type="text" value="<?php echo $epn['email']; ?>" size="30" /><br />
+		<label for="eshop_epnid"><?php _e('User ID','eshop'); ?></label><input id="eshop_epnid" name="epn[id]" type="text" value="<?php echo $epn['id']; ?>" size="20" /><br />
+		<label for="eshop_epndesc"><?php _e('Cart Description','eshop'); ?></label><input id="eshop_epndesc" name="epn[description]" type="text" value="<?php echo $epn['description']; ?>" size="50" maxlength="200" /><br />
+	</fieldset>
+	<fieldset><legend><?php _e('Cash','eshop'); ?></legend>
+		<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
 		<?php $eshopcash = get_option('eshop_cash'); ?>
-		<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodc"><?php _e('Accept cash payments','eshop'); ?></label></p>
+		<p class="cbox"><input id="eshop_methodd" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodd"><?php _e('Accept cash payments','eshop'); ?></label></p>
 		<label for="eshop_cashemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_cashemail" name="cash[email]" type="text" value="<?php echo $eshopcash['email']; ?>" size="30" maxlength="50" /><br />
 		</fieldset>
+		
+	<fieldset><legend><?php _e('Webtopay','eshop'); ?></legend>
+	<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
+	<?php $eshopwebtopay = get_option('eshop_webtopay'); ?>
+	<p class="cbox"><input id="eshop_methode" name="eshop_method[]" type="checkbox" value="webtopay"<?php if(in_array('webtopay',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methode"><?php _e('Accept webtopay payments','eshop'); ?></label></p>
+			
+	<label for="eshop_webtopayid"><?php _e('Webtopay user ID','eshop'); ?></label>
+	<input id="eshop_webtopayid" name="webtopay[id]" type="text" value="<?php echo $eshopwebtopay['id']; ?>" size="30" maxlength="50" /><br />
+			
+	<label for="eshop_webtopaypassword"><?php _e('Webtopay password','eshop'); ?></label>
+	<input id="eshop_webtopaypassword" name="webtopay[password]" type="password" value="<?php echo $eshopwebtopay['password']; ?>" size="30" maxlength="50" /><br />
+			
+	<label for="eshop_webtopaylang"><?php _e('Webtopay language (ENG ESP EST FIN FRE GEO GER ITA LAV LIT NOR POL ROU RUS SPA SWE)','eshop'); ?></label>
+	<input id="eshop_webtopaylang" name="webtopay[lang]" type="text" value="<?php echo $eshopwebtopay['lang']; ?>" size="30" maxlength="50" /><br />
+			
+	</fieldset>
 	</fieldset>
 	<p class="submit">
 	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
@@ -586,7 +619,7 @@ switch($action_status){
 </fieldset>
 
 <fieldset><legend><?php _e('Business Details','eshop'); ?></legend>
-<label for="eshop_from_email"><?php _e('eShop from email address','eshop'); ?></label><input id="eshop_from_email" name="eshop_from_email" type="text" value="<?php echo get_option('eshop_from_email'); ?>" size="30" /><br />
+<label for="eshop_from_email"><?php _e('eShop From email address','eshop'); ?></label><input id="eshop_from_email" name="eshop_from_email" type="text" value="<?php echo get_option('eshop_from_email'); ?>" size="30" /><br />
 <label for="eshop_sysemails"><?php _e('Available business email addresses','eshop'); ?></label>
 <textarea id="eshop_sysemails" name="eshop_sysemails" rows="5" cols="50">
 <?php echo get_option('eshop_sysemails'); ?>
@@ -647,7 +680,7 @@ switch($action_status){
 
 </fieldset>
 <fieldset><legend><?php _e('Product Listings','eshop'); ?></legend>
-	<label for="eshop_show_forms"><?php _e('Show add to cart forms on WordPress post listings. <span class="warn"><span>Warning</span> this can invalidate your site!</span>','eshop'); ?></label>
+	<label for="eshop_show_forms"><?php _e('Show add to cart forms on WordPress post listings. <span class="warn"><span>Warning</span> this can invalidate your html!</span>','eshop'); ?></label>
 	<select name="eshop_show_forms" id="eshop_show_forms">
 	<?php
 	if('yes' == get_option('eshop_show_forms')){
@@ -663,6 +696,18 @@ switch($action_status){
 
 <fieldset><legend><?php _e('Cart Options','eshop'); ?></legend>
 	<label for="eshop_image_in_cart"><?php _e('Percentage size of thumbnail image shown in cart - leave blank to not show the image.','eshop'); ?></label><input id="eshop_image_in_cart" name="eshop_image_in_cart" type="text" value="<?php echo get_option('eshop_image_in_cart'); ?>" size="5" /><br />
+<label for="eshop_addtocart_image"><?php _e('Use an add to cart image or button?','eshop'); ?></label>
+	<select name="eshop_addtocart_image" id="eshop_addtocart_image">
+	<?php
+	if('img' == get_option('eshop_addtocart_image')){
+		echo '<option value="img" selected="selected">'.__('Image','eshop').'</option>';
+		echo '<option value="">'.__('Button','eshop').'</option>';
+	}else{
+		echo '<option value="img">'.__('Image','eshop').'</option>';
+		echo '<option value="" selected="selected">'.__('Button','eshop').'</option>';
+	}
+	?>
+	</select><br />
 </fieldset>
 
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
