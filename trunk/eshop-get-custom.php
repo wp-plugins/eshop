@@ -63,10 +63,14 @@ function eshop_boing($pee,$short='no'){
 			<input type="hidden" name="pname" value="'.stripslashes(attribute_escape(eshop_get_custom('Product Description'))).'" />
 			<input type="hidden" name="pid" value="'.eshop_get_custom('Sku').'" />
 			<input type="hidden" name="purl" value="'.get_permalink($post->ID).'" />
-			<input type="hidden" name="postid" value="'.$post->ID.'" />
-
-			<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />
-			</fieldset>
+			<input type="hidden" name="postid" value="'.$post->ID.'" />';
+			$eshopfiles=eshop_files_directory();
+			if(get_option('eshop_addtocart_image')=='img'){
+				$replace .='<input class="buttonimg" src="'.$eshopfiles['1'].'addtocart.png" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';
+			}else{
+				$replace .='<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />';
+			}
+			$replace .='</fieldset>
 			</form>';
 			if($short=='no' && get_option('eshop_downloads_only') !='yes'){
 				if(get_option('eshop_cart_shipping')!=''){

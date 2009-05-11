@@ -21,8 +21,10 @@ if (!function_exists('eshop_caps')) {
     function eshop_caps() {
         global $wpdb, $user_level, $wp_rewrite, $wp_version;
 			$role = get_role('administrator');
-			if ($role !== NULL)
+			if ($role !== NULL){
 				$role->add_cap('eShop');
+				$role->add_cap('eShop_admin');
+			}
 			$role = get_role('editor');
 			if ($role !== NULL)
 				$role->add_cap('eShop');
@@ -715,7 +717,12 @@ Again, thank you for ordering with us.
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Payson email','$esubject')"); 
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Cash email','$esubject')"); 
 }
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.3.7' ){
+	$esubject=__('Your order from ','eshop').get_bloginfo('name');
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ePN email','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic webtopay email','$esubject')"); 
 
+}
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
 //prior to 3.1
 //this portion removed due to problems.
@@ -989,7 +996,7 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
 		wp_mkdir_p( $eshop_goto );
-		$files=array('paypal','payson','cash');
+		$files=array('paypal','payson','cash','epn','webtopay');
 		foreach ($files as $file){
 			if(!file_exists($eshop_goto.'/'.$file.'.png')){
 				//copy the files
