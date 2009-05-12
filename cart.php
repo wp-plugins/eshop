@@ -89,14 +89,32 @@ if (!function_exists('eshop_cart')) {
 			$postid=$wpdb->escape($_POST['postid']);
 			$table=$wpdb->prefix.'postmeta';
 			$item= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$option' AND post_id='$postid'");
+			$_SESSION['shopcart'.$blog_id][$identifier]['postid']=$postid;
+			$testqty=$qty;
+			$stkav = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Available' );
+			$stkav = attribute_escape($stkav[ 0 ]);
+			$stkqty = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Quantity' );
+			$stkqty = attribute_escape($stkqty[ 0 ]);
+			//recheck stkqty
+			$stocktable=$wpdb->prefix ."eshop_stock";
+			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid");
+			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
+			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
+				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+			}elseif('yes' == get_option('eshop_stock_control') && ($stkav!='Yes' || $stkqty<$testqty)){
+				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+				$_SESSION['shopcart'.$blog_id][$identifier]['qty']=$stkqty;
+			}else{
+				$_SESSION['shopcart'.$blog_id][$identifier]['qty']=$qty;
+			}
+			
 			$_SESSION['shopcart'.$blog_id][$identifier]['item']=$item;
 			$_SESSION['shopcart'.$blog_id][$identifier]['option']=stripslashes($option);
-			$_SESSION['shopcart'.$blog_id][$identifier]['qty']=$qty;
 			$_SESSION['shopcart'.$blog_id][$identifier]['pclas']=stripslashes($pclas);
 			$_SESSION['shopcart'.$blog_id][$identifier]['pid']=$pid;
 			$_SESSION['shopcart'.$blog_id][$identifier]['pname']=stripslashes($pname);
 			$_SESSION['shopcart'.$blog_id][$identifier]['price']=$iprice;
-			$_SESSION['shopcart'.$blog_id][$identifier]['postid']=$postid;
+			
 		}
 		//save? not sure why I used that, but its working so why make trouble for myself.
 		if(isset($_POST['save'])){

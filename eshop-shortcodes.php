@@ -74,11 +74,11 @@ function eshop_list_alpha($atts){
 	foreach ($letter_array as $letter) {
 		if (in_array($letter, $used)){
 			if(isset($_GET['eshopaz']) && strtoupper($_GET['eshopaz'])==$letter){
-				$class=' class="current"';
+				$addclass=' class="current"';
 				$dbletter=$letter;
 			}else
-				$class='';
-			$econtain.= '<li'.$class.'><a href="'.$thispage.$letter.'">'.$letter . "</a></li>\n";
+				$addclass='';
+			$econtain.= '<li'.$addclass.'><a href="'.$thispage.$letter.'">'.$letter . "</a></li>\n";
 		}else $econtain.= '<li><span>'.$letter."</span></li>\n";
 	}
 	if(isset($_GET['eshopaz']) && $_GET['eshopaz']=='num' && $usednum>0 )

@@ -192,8 +192,14 @@ function eshop_save_postdata( $post_id ) {
 	$mydata['_Product Description']=$_POST['eshop_product_description'];
 	$mydata['_Shipping Rate']=$_POST['eshop_shipping_rate'];
 	if($mydata['_Shipping Rate']=='') $mydata['_Shipping Rate']='F';
-	$mydata['_Featured Product']=$_POST['eshop_featured_product'];
-	$mydata['_Stock Available']=$_POST['eshop_stock_available'];
+	if(isset($_POST['eshop_featured_product']))
+		$mydata['_Featured Product']=$_POST['eshop_featured_product'];
+	else
+		$mydata['_Featured Product']='no';
+	if(isset($_POST['eshop_stock_available']))
+		$mydata['_Stock Available']=$_POST['eshop_stock_available'];
+	else
+		$mydata['_Stock Available']='0';
 	$mydata['_Stock Quantity']=$_POST['eshop_stock_quantity'];
 	if($mydata['_Stock Quantity']!='' && is_numeric($mydata['_Stock Quantity'])){
 		$meta_value=$mydata['_Stock Quantity'];
