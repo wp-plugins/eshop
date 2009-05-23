@@ -87,9 +87,8 @@ if (!function_exists('display_cart')) {
 					/* DISCOUNT */
 					if(is_discountable(calculate_total())>0){
 						$discount=is_discountable(calculate_total())/100;
-						$disc_line= number_format(round($opt["price"]-($opt["price"] * $discount), 2),2);
+						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
-					
 					$line_total=$opt["price"]*$opt["qty"];
 					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
@@ -270,11 +269,9 @@ if (!function_exists('is_discountable')) {
 		$percent=0;
 		//check for 
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
-
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('discount')>0)
 				return apply_eshop_discount_code('discount');
-			
 		}
 		for ($x=1;$x<=3;$x++){
 			if(get_option('eshop_discount_spend'.$x)!='')

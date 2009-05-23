@@ -154,7 +154,7 @@ if (!function_exists('displayorders')) {
 					$cday=substr($custom, 6, 2);
 					$chours=substr($custom, 8, 2);
 					$cminutes=substr($custom, 10, 2);
-					$thisdate=$cyear."-".$cmonth."-".$cday.' at '.$chours.':'.$cminutes;
+					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at|Ymd at Hrs Mins','eshop').' '.$chours.':'.$cminutes;
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					if($myrow->company!=''){

@@ -16,6 +16,7 @@ add_shortcode('eshop_show_success', 'eshop_show_success');
 add_shortcode('eshop_empty_cart', 'eshop_empty_cart');
 add_shortcode('eshop_list_alpha', 'eshop_list_alpha');
 add_shortcode('eshop_cart_items','eshop_cart_items');
+add_shortcode('eshop_addtocart','eshop_addtocart');
 
 function eshop_cart_items($atts){
 	global $blog_id;
@@ -161,6 +162,7 @@ function eshop_list_alpha($atts){
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>''), $atts));
+	$echo='';
 	$allowedsort=array('post_date','post_title','menu_order');
 	$allowedorder=array('ASC','DESC');
 	if(!in_array($sortby,$allowedsort)) 
@@ -259,7 +261,7 @@ function eshop_list_subpages($atts){
 function eshop_list_new($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
-
+	$echo='';
 	//my pager
 	include_once ("pager-class.php");
 	$range=10;
@@ -337,6 +339,7 @@ function eshop_list_new($atts){
 function eshop_best_sellers($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
+	$echo='';
 	//my pager
 	include_once ("pager-class.php");
 	$range=10;
@@ -824,5 +827,10 @@ if (!function_exists('eshop_show_zones')) {
 
 		return $echo;
 	}
+}
+function eshop_addtocart(){
+	global $wpdb, $post;
+	include_once( 'eshop-get-custom.php' );
+	return eshop_boing('');
 }
 ?>
