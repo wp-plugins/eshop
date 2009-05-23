@@ -100,6 +100,8 @@ update_option('eshop_first_time','no');
   <li><a href="http://www.blackwidows.co.uk/">Mel Pedley</a> - design and layout, and proof reading at various stages.</li>
   <li><a href="http://4visions.nl/">Allard van Hagen</a> (aka RavanH) - help with Wordpress MU coding and general bug hunting.</li>
   <li><a href="mailto:integrate@mokejimai.lt">Markas Krasovskis</a> - for coding the webtopay merchant gateway api.</li>
+  <li><a href="http://donelliott.us/">Don Elliott Design</a> - donating to have the eProcessingNetwork merchant gateway added.</li>
+
   </ul>
 </div>
 </div>

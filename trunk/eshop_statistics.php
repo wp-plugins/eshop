@@ -20,8 +20,8 @@ function eshop_small_stats($stock,$limit=5){
 	switch($stock){
 		case 'dloads':
 			$mypages=$wpdb->get_results("Select id,title,purchases,downloads From $table order by purchases DESC LIMIT $limit");
-			echo '<table class="widefat"><caption>Top Download Purchases</caption>';
-			echo '<thead><tr><th id="edtitle'.$rand.'">Download</th><th id="eddown'.$rand.'">Downloads</th><th id="edpurch'.$rand.'">Purchases</th></tr></thead><tbody>';
+			echo '<table class="widefat"><caption>'.__('Top Download Purchases','eshop').'</caption>';
+			echo '<thead><tr><th id="edtitle'.$rand.'">'.__('Download','eshop').'</th><th id="eddown'.$rand.'">'.__('Downloads','eshop').'</th><th id="edpurch'.$rand.'">'.__('Purchases','eshop').'</th></tr></thead><tbody>';
 			$calt=0;
 			foreach($mypages as $row){
 				$calt++;
@@ -41,8 +41,8 @@ function eshop_small_stats($stock,$limit=5){
 			WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
 			AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 			order by stk.purchases DESC LIMIT $limit");
-			echo '<table class="widefat"><caption>Top Sellers</caption>';
-			echo '<thead><tr><th id="edprod'.$rand.'">Product</th><th id="edpurch'.$rand.'">Purchases</th></tr></thead><tbody>';
+			echo '<table class="widefat"><caption>'.__('Top Sellers','eshop').'</caption>';
+			echo '<thead><tr><th id="edprod'.$rand.'">'.__('Product','eshop').'</th><th id="edpurch'.$rand.'">'.__('Purchases','eshop').'</th></tr></thead><tbody>';
 			$calt=0;
 			foreach($mypages as $page){
 				$calt++;

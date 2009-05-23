@@ -287,9 +287,9 @@ else
 	_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
 
 if(is_array(get_option('eshop_method')))
-	echo ' Merchant Gateways in use: <span class="eshopgate">'.ucwords(implode(', ',(array)get_option('eshop_method'))).'</span>';
+    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)get_option('eshop_method'))).'</span>';
 else
-	echo ' No Merchant Gateway selected.';
+    _e(' No Merchant Gateway selected.','eshop');
 echo '</p>';
 //the submenu 
 echo '<ul class="subsubsub">';
@@ -353,7 +353,7 @@ switch($action_status){
 	
 	</fieldset>
 	<p class="submit">
-	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 	</p>
 	</form>
 	
@@ -392,7 +392,7 @@ switch($action_status){
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
-			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso');
+			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats');
 			foreach($currencycodes as $code=>$codename){
 				if($code == get_option('eshop_currency')){
 					$sel=' selected="selected"';
@@ -462,7 +462,7 @@ switch($action_status){
 	</fieldset>
 	</fieldset>
 	<p class="submit">
-	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 	</p>
 	</form>
 	
@@ -476,7 +476,7 @@ switch($action_status){
 		<?php wp_nonce_field('update-options') ?>
 
 <fieldset><legend><?php _e('Discounts','eshop'); ?></legend>
-<p>In all cases deleting the entry will disable the discount.</p>
+<p><?php _e('In all cases deleting the entry will disable the discount.', 'eshop'); ?></p>
 <table class="hidealllabels widefat eshopdisc" summary="<?php _e('Discount for amount sold','eshop'); ?>">
 	<caption><?php _e('Discount for amount sold','eshop'); ?></caption>
 	<thead>
@@ -505,7 +505,7 @@ switch($action_status){
 		
 
 		<p class="submit">
-		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 		</p>
 		</form>
 
@@ -552,7 +552,7 @@ switch($action_status){
 				</select><br />
 		</fieldset>
 		<p class="submit">
-		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 		</p>
 		</form>
 		
@@ -585,7 +585,7 @@ switch($action_status){
 		</fieldset>
 						
 		<p class="submit">
-		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+		<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 		</p>
 		</form>
 		
@@ -768,7 +768,7 @@ switch($action_status){
 
 
 <p class="submit">
-<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;') ?>" />
+<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 </p>
 </form>
 

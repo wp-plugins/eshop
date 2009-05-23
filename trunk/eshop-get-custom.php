@@ -6,10 +6,10 @@ function eshop_get_custom ($field) {
 } 
 
 function eshop_boing($pee,$short='no'){
-	global $wpdb,$post;
+	global $wpdb,$post,$eshopchk;
 	//if the search page we don't want the form!
-
-	if(((is_single() || is_page())|| 'yes' == get_option('eshop_show_forms')) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+	
+	if((!strpos($pee, '[eshop_addtocart]')) && ((is_single() || is_page())|| 'yes' == get_option('eshop_show_forms')) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//stock checker
 		if($post->ID!=''){
 			if('yes' == get_option('eshop_stock_control')){

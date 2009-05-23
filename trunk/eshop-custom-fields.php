@@ -165,7 +165,9 @@ function eshop_save_postdata( $post_id ) {
 	global $wpdb;
   // verify this came from the our screen and with proper authorization,
   // because save_post can be triggered at other times
-
+	if (!isset($_POST['eshop_noncename'])){
+		return $post_id;
+	}
   if ( !wp_verify_nonce( $_POST['eshop_noncename'], plugin_basename(__FILE__) )) {
     return $post_id;
   }

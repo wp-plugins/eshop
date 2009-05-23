@@ -45,7 +45,7 @@ if (!function_exists('eshopShowform')) {
 		  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /></label><br />
 		 <label for="address1">'.__('Address','eshop').' <span class="reqd">*</span><br />
 		  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /></label><br />
-		 <label for="address2">'.__('Address','eshop').' (continued)<br />
+		 <label for="address2">'.__('Address (continued)','eshop').'<br />
 		  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /></label><br />
 		 <label for="city">'.__('City or town','eshop').' <span class="reqd">*</span><br />
 		  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /></label><br />'."\n";

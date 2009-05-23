@@ -151,11 +151,11 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
 <li><code>[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the attribute 
 <code>shipclass</code>. example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
-
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 <li><code>[eshop_cart_items]</code> A simple shortcode for use in templates via the <code>do_shortcode</code> function. In its simplest form it displays the number of items in the cart. It can be adjusted with the following attributes <code>before</code> and <code>after</code>, which can be used to insert text before and after the cart size.
 <code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty.
+<li><code>[eshop_addtocart]</code> will enable the add to cart form to appear anywhere on a product page. By default the form appears after the content. (not fully tested - please let me know if it causes problems).
 </ol>
 <h3>Notes</h3>
 <p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
@@ -369,12 +369,14 @@ php_value session.gc_maxlifetime 10800
 <p>The details for each product can be tweaked by following the <em>Sku</em> link.</p>
 <p>For images to be used they <strong>must</strong> be uploaded via the page the product is allied to.</p>
 
-<h3>Templates</h3>
-<p>This allows you to edit 2 email templates:</p>
+<h3>Emails</h3>
+<p>This allows you to edit the email templates:</p>
 <ul>
 <li>The <em>Automatic order email</em> is sent out automatically when a successful transaction is recorded on your system.</li>
 <li>The <em>Customer response email</em> can be sent at any time from you order details screen.</li>
 </ul>
+
+<p>The other templates are empty by default, make sure you add some content to them before activating them!</p>
 
 <h3>About</h3>
 <p>List initial installation and configuration help, along with eShop credits.</p>
