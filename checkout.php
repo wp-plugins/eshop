@@ -190,7 +190,7 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productid."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 		/* DISCOUNT */
-		$amt=number_format(round($opt["price"], 2),2);
+		$amt=round($opt["price"], 2);
 		/*
 		if(is_discountable(calculate_total())!=0){
 			$discount=is_discountable(calculate_total())/100;
