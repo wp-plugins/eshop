@@ -178,7 +178,7 @@ if (!function_exists('display_cart')) {
 				<th headers="cartItem" id="scharge" class="leftb">'.__('Shipping','eshop');
 				if(get_option('eshop_cart_shipping')!=''){
 					$ptitle=get_post(get_option('eshop_cart_shipping'));
-					$echo.=' <small>(<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.$ptitle->post_title.'</a>)</small>';
+					$echo.=' <small>(<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
 				}
 				$echo.='</th>
 				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>

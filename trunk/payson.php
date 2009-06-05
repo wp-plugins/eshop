@@ -246,7 +246,7 @@ switch ($_GET['eshopaction']) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
+				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 
 				//this is an email sent to the customer:
 				//first extract the order details
