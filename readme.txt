@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu
 Requires at least: 2.5
 Tested up to: 2.7.1
-Stable tag: 3.5.3
+Stable tag: 3.5.4
 
 An accessible Shopping Cart plugin.
 
@@ -34,12 +34,16 @@ Tested, and working, in Wordpress 2.7 and is WPMU compatible.
 
 = Latest Updates =
 
-Version 3.5.3
+Version 3.5.4
 
-* *fixed* bug in discounts for large amounts sent to paypal
+* *fixed* various minor bugs
 
 
 == Previous Updates ==
+
+Version 3.5.3
+
+* *fixed* bug in discounts for large amounts sent to paypal
 
 Version 3.5.2
 

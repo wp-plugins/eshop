@@ -19,7 +19,7 @@ $myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_Stock Available'
-		AND meta.meta_value != 'No'
+		AND meta.meta_value != 'No' AND meta.meta_value !='' AND meta.meta_value >'0'
 		AND posts.ID = meta.post_id
 		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
 		ORDER BY meta.post_id");

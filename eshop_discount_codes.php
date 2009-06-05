@@ -15,7 +15,7 @@ else {
 
 function eshop_discounts_manager() {
 	global $wpdb;
-	include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
+	include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 	$legtext=__('Add a discount code','eshop'); 
 	$subtext=__('Submit','eshop');
 	$edit=false;

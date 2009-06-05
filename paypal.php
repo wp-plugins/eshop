@@ -20,12 +20,12 @@ global $wpdb;
 $detailstable=$wpdb->prefix.'eshop_orders';
 
 //sanitise
-include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
+include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 $_POST=sanitise_array($_POST);
 
-include_once (ABSPATH.'wp-content/plugins/eshop/paypal/index.php');
+include_once (WP_PLUGIN_DIR.'/eshop/paypal/index.php');
 // Setup class
-require_once(ABSPATH.'wp-content/plugins/eshop/paypal/paypal.class.php');  // include the class file
+require_once(WP_PLUGIN_DIR.'/eshop/paypal/paypal.class.php');  // include the class file
 $p = new paypal_class;             // initiate an instance of the class
 
 
@@ -337,7 +337,7 @@ switch ($_GET['eshopaction']) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
+				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 
 				//this is an email sent to the customer:
 				//first extract the order details

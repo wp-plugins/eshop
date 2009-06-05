@@ -21,7 +21,7 @@ if (!function_exists('eshopShowform')) {
 	<div class="hr"></div>
 	<div class="custdetails">
 	<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
-	'.$xtralinks.'</small></p>
+	'.__($xtralinks,'eshop').'</small></p>
 	<form action="'.wp_specialchars($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopform">
 	<fieldset class="eshop fld1"><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'</legend>
 	<fieldset class="eshop fld2">';
