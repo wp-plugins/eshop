@@ -421,7 +421,7 @@ function eshop_downloads_manager() {
 				<label for="filetitle" class="lab"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo $atitle; ?>" /><br />
 			   <label for="upfile" class="lab"><?php _e('Local File','eshop'); ?></label>
 				 <input name="upfile" type="file" id="upfile" size="45" />
-				 <fieldset><legend><?php _e('Overwrite file it it exists','eshop'); ?></legend>
+				 <fieldset><legend><?php _e('Overwrite file if it exists','eshop'); ?></legend>
 				 <input name="overwrite" type="radio" id="overwrite" value="no" checked="checked" /><label for="overwrite"><?php _e('No','eshop'); ?></label>
 				 <input name="overwrite" type="radio" id="yesoverwrite" value="yes" /><label for="yesoverwrite"><?php _e('Yes','eshop'); ?></label>
 

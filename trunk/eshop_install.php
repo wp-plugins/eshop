@@ -58,7 +58,8 @@ add_option('eshop_search_img', 'no');
 add_option('eshop_fold_menu', 'yes');
 add_option('eshop_downloads_hideall','no');
 add_option('eshop_show_sku','no');
-
+add_option('eshop_hide_addinfo','');
+add_option('eshop_hide_shipping','');
 //new for 3.
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
 	delete_option('eshop_sudo_cat');
@@ -279,7 +280,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
 	id int(11) NOT NULL auto_increment,
 	checkid varchar(255) NOT NULL default '',
-	item_id varchar(30) NOT NULL default '0',
+	item_id varchar(255) NOT NULL default '0',
 	item_qty int(11) NOT NULL default '0',
 	item_amt float(8,2) NOT NULL default '0.00',
 	optname varchar(255) NOT NULL default '',
@@ -722,6 +723,10 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.3.7' ){
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ePN email','$esubject')"); 
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic webtopay email','$esubject')"); 
 
+}
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.5.0' ){
+	$table = $wpdb->prefix . "eshop_order_items";
+	$wpdb->query("ALTER TABLE ".$table." CHANGE `item_id` `item_id` VARCHAR( 255 ) NOT NULL DEFAULT''");
 }
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
 //prior to 3.1

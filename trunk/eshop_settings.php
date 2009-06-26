@@ -229,6 +229,9 @@ if(isset($_POST['submit'])){
 			update_option('eshop_show_forms',$wpdb->escape($_POST['eshop_show_forms']));
 			update_option('eshop_show_sku',$wpdb->escape($_POST['eshop_show_sku']));
 			update_option('eshop_addtocart_image',$wpdb->escape($_POST['eshop_addtocart_image']));
+			update_option('eshop_hide_addinfo',$wpdb->escape($_POST['eshop_hide_addinfo']));
+			update_option('eshop_hide_shipping',$wpdb->escape($_POST['eshop_hide_shipping']));
+
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
 				update_option('eshop_records',$wpdb->escape($_POST['eshop_records']));
@@ -709,7 +712,33 @@ switch($action_status){
 	?>
 	</select><br />
 </fieldset>
+<fieldset><legend><?php _e('Checkout Options','eshop'); ?></legend>
+<label for="eshop_hide_addinfo"><?php _e('Hide the Additional information form fields.','eshop'); ?></label>
+	<select name="eshop_hide_addinfo" id="eshop_hide_addinfo">
+	<?php
+	if('yes' == get_option('eshop_hide_addinfo')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
+<label for="eshop_hide_shipping"><?php _e('Hide the shipping address form fields.','eshop'); ?></label>
+	<select name="eshop_hide_shipping" id="eshop_hide_shipping">
+	<?php
+	if('yes' == get_option('eshop_hide_shipping')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
 
+</fieldset>
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
 <label for="eshop_fold_menu"><?php _e('Hide sub pages from menu until top level page is visited.','eshop'); ?></label>
 	<select name="eshop_fold_menu" id="eshop_fold_menu">
