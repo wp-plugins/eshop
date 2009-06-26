@@ -30,7 +30,8 @@ class eshop_multi_sort {
 }
 
 function eshop_products_manager() {
-	global $wpdb;
+	global $wpdb, $user_ID;
+	get_currentuserinfo();
 	include_once ("pager-class.php");
 	$eshopprodimg='_eshop_prod_img';
 	///images
@@ -195,8 +196,25 @@ function eshop_products_manager() {
 	}else{
 			
 	///images end
-	
-	
+	//add in if current user can here
+	if(current_user_can('eShop_admin')){
+		$eshopfilter='all';
+		if(isset($_POST['eshopfiltering'])){
+			$eshopfilter=$_POST['eshopfilter'];
+		}
+		?>
+		<div class="wrap">
+		<h2><?php _e('Authors','eshop'); ?></h2>
+		<?php if(isset($msg)) echo '<div class="updated fade"><p>'.$msg.'</p></div>'; ?>
+		<form action="" method="post" class="eshop filtering">
+		<p><label for="filter"><?php _e('Show products for','esupplier'); ?></label><select name="eshopfilter" id="eshopfilter">
+		<?php
+		echo eshop_authors($eshopfilter);
+		?>
+		</select><input type="submit" name="eshopfiltering" id="submit"  class="submit button-primary" value="Filter" /></p>
+		</form>
+	<?php
+	}
 	?>
 	<div class="wrap">
 	<h2><?php _e('Products','eshop'); ?></h2>
@@ -239,12 +257,21 @@ function eshop_products_manager() {
 		$sortby='id';
 	}
 	
-	
+	if(current_user_can('eShop_admin')){
+		if($eshopfilter=='all')
+			$addtoq='';
+		elseif(is_numeric($eshopfilter))
+			$addtoq="AND posts.post_author = $eshopfilter";
+		else
+			die('There was an error');
+	}else{
+		$addtoq="AND posts.post_author = $user_ID ";
+	}
 	$numoptions=get_option('eshop_options_num');
 	$metatable=$wpdb->prefix.'postmeta';
 	$poststable=$wpdb->prefix.'posts';
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit') ".$addtoq);
 	if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
 		$records=get_option('eshop_records');
 	}else{
@@ -274,14 +301,25 @@ function eshop_products_manager() {
 		echo '<li><a href="'.$apge.'&amp;by=se"'.$cse.'>'.__('Featured','eshop').'</a></li>';
 		echo '</ul>';
 		
-		//$myrowres=$wpdb->get_results("Select DISTINCT post_id From $metatable where meta_key='Option 1' AND meta_value!='' order by post_id LIMIT $thispage");
+		if(current_user_can('eShop_admin')){
+			if($eshopfilter=='all')
+				$addtoq='';
+			elseif(is_numeric($eshopfilter))
+				$addtoq="AND posts.post_author = $eshopfilter";
+			else
+				die('There was an error');
+		}else{
+			$addtoq="AND posts.post_author = $user_ID ";
+		}
+		
 		$myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_Option 1'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
-		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		AND (posts.post_type != 'revision' && posts.post_type != 'inherit') 
+		$addtoq
 		ORDER BY meta.post_id  LIMIT $thispage");
 
 		$calt=0;
@@ -467,5 +505,24 @@ function eshop_products_manager() {
 	echo '</div>';
 }
 	eshop_show_credits();
+}
+function eshop_authors($filter=''){
+	global $wpdb;
+	$all_logins = $wpdb->get_results( "SELECT ID, user_login FROM $wpdb->users ORDER BY user_login ");
+	$selected=' selected="selected"';
+	$sel='';
+	if($filter=='all') $sel=$selected;
+	$echo= '<option value="all"'.$sel.'>'.__('All','eshop').'</option>'."\n";
+	$sel='';
+	if($filter=='') $sel=$selected;
+	foreach ($all_logins as $login) {
+		$user_info = get_userdata($login->ID);
+		$enic='';
+		if($user_info->nickname!='' && $user_info->display_name!=$user_info->nickname) $enic='['.$user_info->nickname.']';
+		$thisone='';
+		if($filter!='' && $filter==$login->ID) $thisone=$selected;
+		$echo.='<option value="'.$login->ID.'"'.$thisone.'>'.$user_info->display_name.$enic.'</option>'."\n";
+	}
+	return $echo;
 }
 ?>

@@ -130,8 +130,7 @@ if (!function_exists('displayorders')) {
 			<th id="price">'.__('Price','eshop').'</th>
 			<th id="downloads">'.__('Contains Downloads','eshop').'</th>
 			<th id="transid">'.__('Transaction ID','eshop').'</th>
-			<th id="bulk" title="Bulk operations">'.__('Bulk','eshop').'</th>
-			</tr></thead><tbody>'."\n";
+			<th id="bulk" title="Bulk operations">'.__('Bulk','eshop').'</th></tr></thead><tbody>'."\n";
 			$move=array();
 			foreach($myrowres as $myrow){
 				//total + products
@@ -154,7 +153,7 @@ if (!function_exists('displayorders')) {
 					$cday=substr($custom, 6, 2);
 					$chours=substr($custom, 8, 2);
 					$cminutes=substr($custom, 10, 2);
-					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at|Ymd at Hrs Mins','eshop').' '.$chours.':'.$cminutes;
+					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at','eshop').' '.$chours.':'.$cminutes;
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					if($myrow->company!=''){
@@ -379,19 +378,21 @@ if (!function_exists('displaystats')) {
 		</div>
 		<?php
 		}
-		?>
-		<hr class="eshopclear" />
-		<div class="eshop-stats-box">
-		<h3><?php _e('Download Data','eshop'); ?></h3>
-		<ul>
-		<?php
-			$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopdl=yes';
-		?>
-		<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
-		<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
-		</ul>
-		</div>
-		<?php
+		if(current_user_can('eShop_admin')){
+			?>
+			<hr class="eshopclear" />
+			<div class="eshop-stats-box">
+			<h3><?php _e('Download Data','eshop'); ?></h3>
+			<ul>
+			<?php
+				$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopdl=yes';
+			?>
+			<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
+			<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
+			</ul>
+			</div>
+			<?php
+		}
 	}
 }
 if (!function_exists('deleteorder')) {
@@ -491,8 +492,11 @@ if(isset($_GET['view'])){
 
 echo '<h2>'.$state."</h2>\n";
 echo '<ul class="subsubsub">';
+if(current_user_can('eShop_admin'))
+	$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
+else
+	$stati=array('Stats'=>__('Stats','eshop'));
 
-$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )

@@ -115,70 +115,73 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "</select></label>";
 	}
 	$echo .="</fieldset>";
-	$echo .= '<fieldset class="eshop fld3">
-	<legend>'.__('Additional information','eshop').'</legend>
-	 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
-	  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
-	 <label for="eshop-comments">'.__('Comments or special instructions','eshop').'<br />
-	  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';
-
+	if('yes' != get_option('eshop_hide_addinfo')){
+		$echo .= '<fieldset class="eshop fld3">
+		<legend>'.__('Additional information','eshop').'</legend>
+		 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').'<br />
+		  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
+		 <label for="eshop-comments">'.__('Comments or special instructions','eshop').'<br />
+		  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';
+	}
 	if('no' == get_option('eshop_downloads_only')){
-		$echo .='<fieldset class="eshop fld4">
-		<legend>'.__('Shipping address (if different)','eshop').'</legend>
-		 <label for="ship_name">'.__('Name','eshop').'<br />
-		  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
-		 <label for="ship_company">'.__('Company','eshop').'<br />
-		  <input class="med" type="text" name="ship_company" value="'.$ship_company.'" id="ship_company" size="40" /></label><br />
-		 <label for="ship_phone">'.__('Phone','eshop').'<br />
-		  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
-		 <label for="ship_address">'.__('Address','eshop').'<br />
-		  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
-		 <label for="ship_city">'.__('City or town','eshop').'<br />
-		  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />'."\n";
-		if(isset($stateList) && sizeof($stateList)>0){
-			$echo .='<label for="shipstate">'.__('State/County/Province','eshop').'<br />
-			  <select class="med pointer" name="ship_state" id="shipstate">';
-			//state list from db, as above
-			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
-			$echo .='<option value="">'.__('not applicable','eshop').'</option>';
-			foreach($eshopstatelist as $egroup =>$value){
-				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
+		if('yes' != get_option('eshop_hide_shipping')){
+			$echo .='<fieldset class="eshop fld4">
+			<legend>'.__('Shipping address (if different)','eshop').'</legend>
+			 <label for="ship_name">'.__('Name','eshop').'<br />
+			  <input class="med" type="text" name="ship_name" id="ship_name" value="'.$ship_name.'" maxlength="40" size="40" /></label><br />
+			 <label for="ship_company">'.__('Company','eshop').'<br />
+			  <input class="med" type="text" name="ship_company" value="'.$ship_company.'" id="ship_company" size="40" /></label><br />
+			 <label for="ship_phone">'.__('Phone','eshop').'<br />
+			  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
+			 <label for="ship_address">'.__('Address','eshop').'<br />
+			  <input class="med" type="text" name="ship_address" id="ship_address" value="'.$ship_address.'" maxlength="40" size="40" /></label><br />
+			 <label for="ship_city">'.__('City or town','eshop').'<br />
+			  <input class="med" type="text" name="ship_city" id="ship_city" value="'.$ship_city.'" maxlength="40" size="40" /></label><br />'."\n";
+			if(isset($stateList) && sizeof($stateList)>0){
+				$echo .='<label for="shipstate">'.__('State/County/Province','eshop').'<br />
+				  <select class="med pointer" name="ship_state" id="shipstate">';
+				//state list from db, as above
+				$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
+				$echo .='<option value="">'.__('not applicable','eshop').'</option>';
+				foreach($eshopstatelist as $egroup =>$value){
+					$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
 
-				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
-				foreach($value as $code =>$stateName){
-					$stateName=htmlspecialchars($stateName);
-					if (isset($ship_state) && $ship_state == $code){
-						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
-					}else{
-						$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+					$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+					foreach($value as $code =>$stateName){
+						$stateName=htmlspecialchars($stateName);
+						if (isset($ship_state) && $ship_state == $code){
+							$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+						}else{
+							$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+						}
 					}
+					$echo .="</optgroup>\n";
 				}
-				$echo .="</optgroup>\n";
-			}
-			$echo .= '</select></label><br />';
-		}else{
-			$echo .='<input type="hidden" name="ship_state" value="" />';
-		}
-		$echo .= '<label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
-				 <input class="short" type="text" name="ship_altstate" value="'.$ship_altstate.'" id="ship_altstate" size="20" /></label><br />';
-
-		$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
-		  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
-		  <br />
-		<label for="shipcountry">'.__('Country','eshop').'<br />
-		  <select class="med pointer" name="ship_country" id="shipcountry">
-		';
-		$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
-		foreach($countryList as $code => $label){
-			$label=htmlspecialchars($label);
-			if (isset($ship_country) && $ship_country == $code){
-				$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
+				$echo .= '</select></label><br />';
 			}else{
-				$echo.="<option value=\"$code\">$label</option>";
+				$echo .='<input type="hidden" name="ship_state" value="" />';
 			}
+			$echo .= '<label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
+					 <input class="short" type="text" name="ship_altstate" value="'.$ship_altstate.'" id="ship_altstate" size="20" /></label><br />';
+
+			$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
+			  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
+			  <br />
+			<label for="shipcountry">'.__('Country','eshop').'<br />
+			  <select class="med pointer" name="ship_country" id="shipcountry">
+			';
+			$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
+			foreach($countryList as $code => $label){
+				$label=htmlspecialchars($label);
+				if (isset($ship_country) && $ship_country == $code){
+					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
+				}else{
+					$echo.="<option value=\"$code\">$label</option>";
+				}
+			}
+			$echo.= "</select></label>";
+			$echo .='</fieldset>';
 		}
-		$echo.= "</select></label>";
-		$echo .='</fieldset>';
 	}
 	$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
 	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
@@ -298,74 +301,93 @@ if (!function_exists('eshop_checkout')) {
 				|| $_POST['ship_city']!='' || $_POST['ship_postcode']!=''
 				|| $_POST['ship_company']!='' || $_POST['ship_phone']!=''
 				|| $_POST['ship_country']!='' || $_POST['ship_state']!=''){
-					if($_POST['ship_name']==''){
-						$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
-					}
-					if($_POST['ship_company']==''){
-						$_POST['ship_company']=$_POST['company'];
-					}
-					if($_POST['ship_phone']==''){
-						$_POST['ship_phone']=$_POST['phone'];
-					}
-					if($_POST['ship_address']==''){
-						$_POST['ship_address']=$_POST['address1'];
-						if($_POST['address2']!=''){
-							$_POST['ship_address'].=", ".$_POST['address2'];
-						}
-					}
-					if($_POST['ship_city']==''){
-						$_POST['ship_city']=$_POST['city'];
-					}
-					if($_POST['ship_postcode']==''){
-						$_POST['ship_postcode']=$_POST['zip'];
-					}
-					if($_POST['ship_country']==''){
-						$_POST['ship_country']=$_POST['country'];
-					}
-					if($_POST['ship_state']==''){
-						$_POST['ship_state']=$_POST['state'];
-					}
-					if($_POST['ship_altstate']==''){
-						$_POST['ship_altstate']=$_POST['altstate'];
-					}
-				}else{
+				if($_POST['ship_name']==''){
 					$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
+				}
+				if($_POST['ship_company']==''){
 					$_POST['ship_company']=$_POST['company'];
+				}
+				if($_POST['ship_phone']==''){
 					$_POST['ship_phone']=$_POST['phone'];
-					if($_POST['ship_address']==''){
-						$_POST['ship_address']=$_POST['address1'];
-						if($_POST['address2']!=''){
-							$_POST['ship_address'].=", ".$_POST['address2'];
-						}
+				}
+				if($_POST['ship_address']==''){
+					$_POST['ship_address']=$_POST['address1'];
+					if($_POST['address2']!=''){
+						$_POST['ship_address'].=", ".$_POST['address2'];
 					}
+				}
+				if($_POST['ship_city']==''){
 					$_POST['ship_city']=$_POST['city'];
+				}
+				if($_POST['ship_postcode']==''){
 					$_POST['ship_postcode']=$_POST['zip'];
+				}
+				if($_POST['ship_country']==''){
 					$_POST['ship_country']=$_POST['country'];
+				}
+				if($_POST['ship_state']==''){
 					$_POST['ship_state']=$_POST['state'];
+				}
+				if($_POST['ship_altstate']==''){
 					$_POST['ship_altstate']=$_POST['altstate'];
 				}
-
-				if(get_option('eshop_shipping_zone')=='country'){
-					if($_POST['ship_country']!=''){
-						$pzone=$_POST['ship_country'];
-					}else{
-						$pzone=$_POST['country'];
-					}
-				}else{
-					if($_POST['ship_state']!=''){
-						$pzone=$_POST['ship_state'];
-					}else{
-						$pzone=$_POST['state'];
-					}
-					if($_POST['altstate']!=''){
-						$pzone=get_option('eshop_unknown_state');
-					}
-					if($_POST['ship_altstate']!=''){
-						$pzone=get_option('eshop_unknown_state');
+			}else{
+				$_POST['ship_name']=$_POST['first_name']." ".$_POST['last_name'];
+				$_POST['ship_company']=$_POST['company'];
+				$_POST['ship_phone']=$_POST['phone'];
+				if($_POST['ship_address']==''){
+					$_POST['ship_address']=$_POST['address1'];
+					if($_POST['address2']!=''){
+						$_POST['ship_address'].=", ".$_POST['address2'];
 					}
 				}
+				$_POST['ship_city']=$_POST['city'];
+				$_POST['ship_postcode']=$_POST['zip'];
+				$_POST['ship_country']=$_POST['country'];
+				$_POST['ship_state']=$_POST['state'];
+				$_POST['ship_altstate']=$_POST['altstate'];
+			}
+
+			if(get_option('eshop_shipping_zone')=='country'){
+				if($_POST['ship_country']!=''){
+					$pzone=$_POST['ship_country'];
+				}else{
+					$pzone=$_POST['country'];
+				}
+			}else{
+				if($_POST['ship_state']!=''){
+					$pzone=$_POST['ship_state'];
+				}else{
+					$pzone=$_POST['state'];
+				}
+				if($_POST['altstate']!=''){
+					$pzone=get_option('eshop_unknown_state');
+				}
+				if($_POST['ship_altstate']!=''){
+					$pzone=get_option('eshop_unknown_state');
+				}
+			}
 		}else{
 			$pzone='';
+			if(get_option('eshop_shipping_zone')=='country'){
+				if($_POST['ship_country']!=''){
+					$pzone=$_POST['ship_country'];
+				}else{
+					$pzone=$_POST['country'];
+				}
+			}else{
+				if($_POST['ship_state']!=''){
+					$pzone=$_POST['ship_state'];
+				}else{
+					$pzone=$_POST['state'];
+				}
+				if($_POST['altstate']!=''){
+					$pzone=get_option('eshop_unknown_state');
+				}
+				if($_POST['ship_altstate']!=''){
+					$pzone=get_option('eshop_unknown_state');
+				}
+			}
 		}
 		//
 		$shiparray=array();
@@ -648,25 +670,27 @@ if (!function_exists('eshop_checkout')) {
 					$echoit.= '</ul></div>'."\n";
 				}
 				if('no' == get_option('eshop_downloads_only')){
-					if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
-						$echoit.= "<div class=\"eshop fld4\"><h4>".__('Shipping Address','eshop')."</h4>\n<ul class=\"eshop confirmship\">\n";
-						$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
-						$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
-						$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
-						$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
-						$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
-						$qcode=$wpdb->escape($_POST['ship_state']);
-						$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-						if($_POST['ship_altstate']!='')
-							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['ship_altstate']."</li>\n";
-						elseif($qstate!='')
-							$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
-						
-						$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
-						$qccode=$wpdb->escape($_POST['ship_country']);
-						$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
-						$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
-						$echoit.= "</ul></div>\n";
+					if('yes' != get_option('eshop_hide_shipping')){
+						if($_POST['ship_name']!='' || $_POST['ship_address']!='' || $_POST['ship_city']!='' || $_POST['ship_postcode']!=''){
+							$echoit.= "<div class=\"eshop fld4\"><h4>".__('Shipping Address','eshop')."</h4>\n<ul class=\"eshop confirmship\">\n";
+							$echoit.= "<li><span class=\"items\">".__('Full name:','eshop')."</span> ".$_POST['ship_name']."</li>\n";
+							$echoit.= "<li><span class=\"items\">".__('Company:','eshop')."</span> ".$_POST['ship_company']."</li>\n";
+							$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$_POST['ship_phone']."</li>\n";
+							$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
+							$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
+							$qcode=$wpdb->escape($_POST['ship_state']);
+							$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+							if($_POST['ship_altstate']!='')
+								$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['ship_altstate']."</li>\n";
+							elseif($qstate!='')
+								$echoit.= "<li><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
+
+							$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$_POST['ship_postcode']."</li>\n";
+							$qccode=$wpdb->escape($_POST['ship_country']);
+							$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
+							$echoit.= "<li><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
+							$echoit.= "</ul></div>\n";
+						}
 					}
 				}
 				$echoit.= "\n";
