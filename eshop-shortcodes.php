@@ -517,7 +517,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize){
 	foreach ($subpages as $post) {
 		setup_postdata($post);
 
-		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.$post->post_title.'</a>';
+		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
 		//grab image or choose first image uploaded for that page
 		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
 		$imgs= eshop_get_images($post->ID,$imgsize);
@@ -587,7 +587,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 				}
 			}
 		}
-		$echo .= '<span>'.$post->post_title.'</span></a>'."\n";
+		$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
 		include_once( 'eshop-get-custom.php' );
 		if($form=='yes'){
 			$short='yes';
@@ -767,7 +767,7 @@ if (!function_exists('eshop_show_zones')) {
 				$v=$value['country'];
 				$countryList[$k]=$v;
 			}
-			if(isset($_POST) && $_POST['country']!=''){
+			if(isset($_POST['country']) && $_POST['country']!=''){
 				$country=$_POST['country'];
 			}
 			$echo ='<form action="#customzone" method="post" class="eshop eshopzones"><fieldset>
@@ -792,33 +792,49 @@ if (!function_exists('eshop_show_zones')) {
 
 		}else{
 			//each time re-request from the database
-			$dtable=$wpdb->prefix.'eshop_states';
-			$List=$wpdb->get_results("SELECT code, stateName from $dtable ORDER BY stateName",ARRAY_A);
-			foreach($List as $key=>$value){
-				$k=$value['code'];
-				$v=$value['stateName'];
-				$stateList[$k]=$v;
+			// state list from db
+			$table=$wpdb->prefix.'eshop_states';
+			$getstate=get_option('eshop_shipping_state');
+			if(get_option('eshop_show_allstates') != '1'){
+				$stateList=$wpdb->get_results("SELECT code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
+			}else{
+				$stateList=$wpdb->get_results("SELECT code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
 			}
-			if(isset($_POST) && $_POST['state']!=''){
+			
+			if(isset($_POST['state']) && $_POST['state']!=''){
 				$state=$_POST['state'];
 			}
 			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
 			<legend>'.__('Check your shipping zone','eshop').'</legend>
 			<label for="state">'.__('State','eshop').'<select class="med" name="state" id="state">';
 			$echo .='<option value="" selected="selected">'.__('Select your State','eshop').'</option>';
-			foreach($stateList as $code => $label)	{
-				if (isset($state) && $state == $code){
-					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
-				}else{
-					$echo.="<option value=\"$code\">$label</option>\n";
-				}
+
+			foreach($stateList as $code => $value){
+				if(isset($value['list'])) $li=$value['list'];
+				else $li='1';
+				$eshopstatelist[$li][$value['code']]=$value['stateName'];
 			}
-			$echo.= '</select></label>
+			$tablec=$wpdb->prefix.'eshop_countries';
+			foreach($eshopstatelist as $egroup =>$value){
+				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
+
+				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+				foreach($value as $code =>$stateName){
+					$stateName=htmlspecialchars($stateName);
+					if (isset($state) && $state == $code){
+						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+					}else{
+						$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+					}
+				}
+				$echo .="</optgroup>\n";
+			}
+			$echo.= "</select></label>\n".'
 			<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
-			if(isset($_POST) && $_POST['state']!=''){
+			if(isset($_POST['state']) && $_POST['state']!=''){
 				$qccode=$wpdb->escape($_POST['state']);
-				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $dtable WHERE code='$qccode' limit 1",ARRAY_A);
+				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $table WHERE code='$qccode' limit 1",ARRAY_A);
 				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qstate['stateName'],$qstate['zone']).'.</p>';
 			}
 		}

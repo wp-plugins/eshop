@@ -118,6 +118,15 @@ class webtopay_class {
 			
 			<input type="hidden" name="PayText" value="'.__('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop').'" />
 			
+			<input type="hidden" name="p_firstname" value="'.$_POST['first_name'].'">			
+			<input type="hidden" name="p_lastname" value="'.$_POST['last_name'].'">			
+			<input type="hidden" name="p_email" value="'.$_POST['email'].'">			
+			<input type="hidden" name="p_street" value="' . $_POST['address1'].' '. $_POST['address2']; . '">			
+			<input type="hidden" name="p_city" value="'.$_POST['city'].'">			
+			<input type="hidden" name="p_state" value="'.$_POST['state'].'">			
+			<input type="hidden" name="p_zip" value="'.$_POST['zip'].'">			
+			<input type="hidden" name="p_countrycode" value="'.$_POST['country'].'">	
+			
 			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
 			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
 			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
