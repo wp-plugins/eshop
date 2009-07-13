@@ -20,7 +20,7 @@ if (!function_exists('display_cart')) {
 		}
 		//therefore if cart exists and has products
 		if($check > 0){
-			global $final_price, $sub_total;
+			//global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
 				$echo.= '<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="eshop eshopcart">';
@@ -72,7 +72,7 @@ if (!function_exists('display_cart')) {
 						}
 					}
 					/* end */
-					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' ('.$opt['pid'].' : '.stripslashes($opt['item']).')</a></td>'."\n";
+					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a></td>'."\n";
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod$calt\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
@@ -589,6 +589,9 @@ if (!function_exists('orderhandle')) {
 				if(is_numeric($remaining) && $remaining!='')			
 					$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
 			}
+		}
+		if(get_option('eshop_status')!='live'){
+			echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
 		}
 	}
 }

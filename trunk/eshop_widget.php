@@ -441,7 +441,7 @@ function eshopw_listpages($subpages,$eshopclass){
 	$echo .='<ul class="'.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.$post->post_title.'</a></li>';
+		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a></li>';
 	}
 	$echo .= '</ul>';
 	$post=$paged;
@@ -464,14 +464,14 @@ function eshopw_listpanels($subpages,$eshopclass,$size){
 			if($proddataimg==''){
 				foreach($imgs as $k=>$v){
 					$x++;
-					$echo .='<li><a href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$post->post_title.'" /></a></li>'."\n";;
+					$echo .='<li><a href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.apply_filters("the_title",$post->post_title).'" /></a></li>'."\n";;
 					break;
 				}
 			}else{
 				foreach($imgs as $k=>$v){
 					if($proddataimg==$v['url']){
 						$x++;
-						$echo .='<li><a href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$post->post_title.'" /></a></li>'."\n";;
+						$echo .='<li><a href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.apply_filters("the_title",$post->post_title).'" /></a></li>'."\n";;
 						break;
 					}
 				}

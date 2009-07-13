@@ -2,9 +2,9 @@
 Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu
-Requires at least: 2.5
-Tested up to: 2.7.1
-Stable tag: 3.6.0
+Requires at least: 2.7
+Tested up to: 2.8.1
+Stable tag: 3.6.1
 
 An accessible Shopping Cart plugin.
 
@@ -31,9 +31,24 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * and much much more
 
 Tested, and working, in Wordpress 2.7 and is WPMU compatible.
-*note* this plugin has yet to be tested in WP2.8
+
+Version 3.6.1
+
+* *added* more details on the help page
+* *added* test mode note to payament redirect page
+* *fixed* minor backend 
+* *fixed* shipping zones on the shipping rates page
+* *updated* webtopay class
 
 = Latest Updates =
+
+Version 3.6.1
+
+* *added* more details on the help page
+* *added* test mode note to payament redirect page
+* *fixed* minor backend 
+* *fixed* shipping zones on the shipping rates page
+* *updated* webtopay class
 
 Version 3.6.0
 
@@ -433,3 +448,9 @@ adjust other pages that use the code:
 = Is eShop translatable =
 
 Yes! the po file is available from quirm.net
+
+= Support =
+
+Available via the WordPress forums (please tag the post eshop) or via http://www.quirm.net/punbb/viewforum.php?id=14
+
+Due to increasing demands we no longer offer free CSS support.

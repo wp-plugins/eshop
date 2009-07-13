@@ -24,6 +24,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#test">eShop testing</a></li>
 <li><a href="#glive">Going Live with eShop</a></li>
 <li><a href="#bover">Configuration</a></li>
+<li><a href="#img">Product Images</a></li>
 
 <li><a href="#aover">eShop Admin Pages</a></li>
 <li><a href="#pend">Why is an Order Still Pending?</a></li>
@@ -222,7 +223,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>
 
 <h4>Sub Pages</h4>
-<p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop).</p>
+<p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop). <strong>Warning</strong> this affect all sub page listings on your site.</p>
 
 <h4>Search Results</h4>
 <p><strong>Add image to search results</strong> - if used eShop will add an image to the search results page for any post or page or product pages only.</p>
@@ -305,7 +306,12 @@ This is only triggered when someone visits the site.</p>
 <p>Should your theme already have an eshop.css file then it will be used by default.</p>
 
 </div>
+<div class="wrap">
+<h2 id="img">Product Images</h2>
+<p>You can add and use any image to a product page. But for eShop to find and use that image in shortcodes and widgets that image must be associated with that page or post. This is easily achieved by ensuring you upload the image via the media toolbar when editing that page or post. That image is then associated with that page and eShop can find and use it.</p>
 
+
+</div>
 <div class="wrap">
 <h2 id="aover">eShop Admin Pages</h2>
 
