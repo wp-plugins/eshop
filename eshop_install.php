@@ -718,12 +718,16 @@ Again, thank you for ordering with us.
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Payson email','$esubject')"); 
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Cash email','$esubject')"); 
 }
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.3.7' ){
-	$esubject=__('Your order from ','eshop').get_bloginfo('name');
+//additions
+$esubject=__('Your order from ','eshop').get_bloginfo('name');
+if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ePN email' limit 1")!='Automatic ePN email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ePN email','$esubject')"); 
+if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic webtopay email' limit 1")!='Automatic webtopay email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic webtopay email','$esubject')"); 
 
-}
+if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
+
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.5.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `item_id` `item_id` VARCHAR( 255 ) NOT NULL DEFAULT''");
@@ -1001,7 +1005,7 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
 		wp_mkdir_p( $eshop_goto );
-		$files=array('paypal','payson','cash','epn','webtopay');
+		$files=array('paypal','payson','cash','epn','webtopay','authorizenet');
 		foreach ($files as $file){
 			if(!file_exists($eshop_goto.'/'.$file.'.png')){
 				//copy the files

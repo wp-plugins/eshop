@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '3.6.1');
+define('ESHOP_VERSION', '3.7.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 3.6.1
+Version: 3.7.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -316,6 +316,31 @@ if (!function_exists('eshop_show_success')) {
 				}
 			}
 		}
+		elseif(isset($_GET['eshopaction']) && $_GET['eshopaction']=='authorizenetipn'){
+			// because authorize.net handles things differently... have to add this in here
+			$detailstable=$wpdb->prefix.'eshop_orders';
+			$dltable=$wpdb->prefix.'eshop_download_orders';
+			if(get_option('eshop_status')=='live'){
+				$txn_id = $wpdb->escape($_POST['x_trans_id']);
+			}else{
+				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['x_trans_id']);
+			}
+			$checked=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' order by id DESC limit 1");
+
+			$checkstatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' && downloads='yes' limit 1");
+			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checked!=''){
+				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checked' and downloads>0 limit 1");
+				if($row->email!='' && $row->code!=''){
+					//display form only if there are downloads!
+						$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
+					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+					<input name="code" type="hidden" value="'.$row->code.'" /> 
+					<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
+					</form>';
+				}
+			}
+		}
+		
 		return $echo;
 	}
 }
@@ -405,6 +430,7 @@ if (!function_exists('eshop_wp_head')) {
 			$_SESSION = array();
 			session_destroy();
 		}
+		
     }
 }
 
@@ -477,6 +503,10 @@ if (!function_exists('eshopdata')) {
 		}
 		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='paysonipn'){
 			include_once 'payson.php';
+			//exit;
+		}
+		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='authorizenetipn'){
+			include_once 'authorizenet.php';
 			//exit;
 		}
 		//we need to buffer output on a few pages
