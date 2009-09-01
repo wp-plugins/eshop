@@ -218,20 +218,36 @@ if (!function_exists('eshopShowform')) {
 		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via:', 'eshop').'<span class="reqd">*</span></legend>'."\n<ul>\n";
 		if(sizeof((array)get_option('eshop_method'))!=1){
 			foreach(get_option('eshop_method') as $k=>$eshoppayment){
+				$replace = array(".");
+				$eshoppayment = str_replace($replace, "", $eshoppayment);
 				$echo .='<li><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></label><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
 		}else{
 			foreach(get_option('eshop_method') as $k=>$eshoppayment){
+				$replace = array(".");
+				$eshoppayment = str_replace($replace, "", $eshoppayment);
 				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
 		}
 		$echo .="</ul>\n</fieldset>\n";
 	}
+	if('yes' == get_option('eshop_tandc_use')){
+		if(get_option('eshop_tandc_id')!='')
+			$eshoptc='<a href="'.get_permalink(get_option('eshop_tandc_id')).'">'.get_option('eshop_tandc').'</a>';
+		else
+			$eshoptc=get_option('eshop_tandc');
+
+		$echo .='<p class="eshop_tandc"><input type="checkbox" name="eshop_tandc" id="eshop_tandc" value="1" /><label for="eshop_tandc">'.$eshoptc.'<span class="reqd">*</span></label></p>';
+	}
+	
+	
 	if('no' == get_option('eshop_downloads_only')){
 			$echo .='<label for="submitit"><small>'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
 	}
+		
+	
 	$echo .='<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" /></span>
 	</fieldset>
 	</form>
@@ -497,6 +513,13 @@ if (!function_exists('eshop_checkout')) {
 					$error.= '<li>'.__('<strong>Zip/Post code</strong> - missing or incorrect.','eshop').'</li>';
 				}
 		}
+		if('yes' == get_option('eshop_tandc_use')){
+			if(!isset($_POST['eshop_tandc'])){
+				$error.= '<li><strong>'.get_option('eshop_tandc').'</strong>'.__(' - not checked.','eshop').'</li>';
+			}
+		}
+			
+			
 		if(!isset($_POST['eshop_payment'])){
 			$error.= '<li>'.__('You have not chosen a <strong>payment option</strong>.','eshop').'</li>';
 		}
@@ -513,7 +536,7 @@ if (!function_exists('eshop_checkout')) {
 		}
 
 		if($error!=''){
-				$echoit.= "<p><strong class=\"error\">".__('There were some errors with the details you entered&#8230;','eshop')."</strong></p><ul class=\"errors\">".$error.'</ul>';
+				$echoit.= "<p><strong class=\"error\">".__('There were some errors in the details you entered&#8230;','eshop')."</strong></p><ul class=\"errors\">".$error.'</ul>';
 				$first_name=$_POST['first_name'];
 				$last_name=$_POST['last_name'];
 				$company=$_POST['company'];
@@ -548,6 +571,7 @@ if (!function_exists('eshop_checkout')) {
 				$_POST['amount']=$fprice;
 				$_POST['custom']=$date;
 				$_POST['numberofproducts']=sizeof($_SESSION['shopcart'.$blog_id]);
+/* to be removed if no errors reported.
 				//shipping - replicated here, but currently easier than a function
 				$shiparray=array();
 				foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
@@ -620,7 +644,13 @@ if (!function_exists('eshop_checkout')) {
 				}
 				//discount shipping
 				if(is_shipfree(calculate_total())) $shipping=0;
+				$_POST['shipping_1']=$shipping;
 
+*/
+				//shipping
+				if(isset($_SESSION['shipping'.$blog_id]))$shipping=$_SESSION['shipping'.$blog_id];
+				//discount shipping
+				if(is_shipfree(calculate_total())) $shipping=0;
 				//shipping
 				$_POST['shipping_1']=$shipping;
 				$ctable=$wpdb->prefix.'eshop_countries';

@@ -50,6 +50,12 @@ if(isset($_POST['submit'])){
 			$paysonpost['description']=$wpdb->escape($_POST['payson']['description']);
 			$paysonpost['minimum']=$wpdb->escape($_POST['payson']['minimum']);
 			update_option('eshop_payson',$paysonpost);
+			//authorize.net
+			$authorizenetpost['email']=$wpdb->escape($_POST['authorizenet']['email']);
+			$authorizenetpost['id']=$wpdb->escape($_POST['authorizenet']['id']);
+			$authorizenetpost['key']=$wpdb->escape($_POST['authorizenet']['key']);
+			$authorizenetpost['secret']=$wpdb->escape($_POST['authorizenet']['secret']);
+			update_option('eshop_authorizenet',$authorizenetpost);
 			//epn
 			$epnpost['email']=$wpdb->escape($_POST['epn']['email']);
 			$epnpost['id']=$wpdb->escape($_POST['epn']['id']);
@@ -231,6 +237,9 @@ if(isset($_POST['submit'])){
 			update_option('eshop_addtocart_image',$wpdb->escape($_POST['eshop_addtocart_image']));
 			update_option('eshop_hide_addinfo',$wpdb->escape($_POST['eshop_hide_addinfo']));
 			update_option('eshop_hide_shipping',$wpdb->escape($_POST['eshop_hide_shipping']));
+			update_option('eshop_tandc',$wpdb->escape($_POST['eshop_tandc']));
+			update_option('eshop_tandc_use',$wpdb->escape($_POST['eshop_tandc_use']));
+			update_option('eshop_tandc_id',$wpdb->escape($_POST['eshop_tandc_id']));
 
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
@@ -395,7 +404,7 @@ switch($action_status){
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
-			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats');
+			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats','LTL' => 'Lithuanian Litas');
 			foreach($currencycodes as $code=>$codename){
 				if($code == get_option('eshop_currency')){
 					$sel=' selected="selected"';
@@ -463,6 +472,18 @@ switch($action_status){
 	<input id="eshop_webtopaylang" name="webtopay[lang]" type="text" value="<?php echo $eshopwebtopay['lang']; ?>" size="30" maxlength="50" /><br />
 			
 	</fieldset>
+	
+	<fieldset><legend><?php _e('Authorize.net','eshop'); ?></legend>
+		<?php $authorizenet = get_option('eshop_authorizenet'); ?>
+		<p class="cbox"><input id="eshop_methodf" name="eshop_method[]" type="checkbox" value="authorize.net"<?php if(in_array('authorize.net',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodf"><?php _e('Accept payment by Authorize.net','eshop'); ?></label></p>
+		<label for="eshop_authorizenetemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_authorizenetemail" name="authorizenet[email]" type="text" value="<?php echo $authorizenet['email']; ?>" size="30" maxlength="50" /><br />
+		<label for="eshop_authorizenetid"><?php _e('API Login ID','eshop'); ?></label><input id="eshop_authorizenetid" name="authorizenet[id]" type="text" value="<?php echo $authorizenet['id']; ?>" size="20" /><br />
+		<label for="eshop_authorizenetkey"><?php _e('Transaction Key','eshop'); ?></label><input id="eshop_authorizenetkey" name="authorizenet[key]" type="text" value="<?php echo $authorizenet['key']; ?>" size="40" /><br />
+		<label for="eshop_authorizenetsecret"><?php _e('Secret Answer','eshop'); ?></label><input id="eshop_authorizenetsecret" name="authorizenet[secret]" type="text" value="<?php echo $authorizenet['secret']; ?>" size="40" /><br />
+
+	</fieldset>
+	
+	
 	</fieldset>
 	<p class="submit">
 	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
@@ -711,6 +732,7 @@ switch($action_status){
 	}
 	?>
 	</select><br />
+	
 </fieldset>
 <fieldset><legend><?php _e('Checkout Options','eshop'); ?></legend>
 <label for="eshop_hide_addinfo"><?php _e('Hide the Additional information form fields.','eshop'); ?></label>
@@ -736,7 +758,21 @@ switch($action_status){
 		echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
 	}
 	?>
+	</select><br /><br />
+	<label for="eshop_tandc_use"><?php _e('Add a required checkbox to the checkout.','eshop'); ?></label>
+	<select name="eshop_tandc_use" id="_tandc_use">
+		<?php
+		if('yes' == get_option('eshop_tandc_use')){
+			echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+			echo '<option value="">'.__('No','eshop').'</option>';
+		}else{
+			echo '<option value="yes">'.__('Yes','eshop').'</option>';
+			echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
+		}
+		?>
 	</select><br />
+	<label for="eshop_tandc"><?php _e('Text for the required checkbox.','eshop'); ?></label><input id="eshop_tandc" name="eshop_tandc" type="text" value="<?php echo get_option('eshop_tandc'); ?>" size="60" /><br />
+	<label for="eshop_tandc_id"><?php _e('Page id (transforms text above into a link).','eshop'); ?></label><input id="eshop_tandc_id" name="eshop_tandc_id" type="text" value="<?php echo get_option('eshop_tandc_id'); ?>" size="6" /><br />
 
 </fieldset>
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
