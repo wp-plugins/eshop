@@ -55,6 +55,7 @@ if(isset($_POST['submit'])){
 			$authorizenetpost['id']=$wpdb->escape($_POST['authorizenet']['id']);
 			$authorizenetpost['key']=$wpdb->escape($_POST['authorizenet']['key']);
 			$authorizenetpost['secret']=$wpdb->escape($_POST['authorizenet']['secret']);
+			$authorizenetpost['desc']=$wpdb->escape($_POST['authorizenet']['desc']);
 			update_option('eshop_authorizenet',$authorizenetpost);
 			//epn
 			$epnpost['email']=$wpdb->escape($_POST['epn']['email']);
@@ -480,7 +481,7 @@ switch($action_status){
 		<label for="eshop_authorizenetid"><?php _e('API Login ID','eshop'); ?></label><input id="eshop_authorizenetid" name="authorizenet[id]" type="text" value="<?php echo $authorizenet['id']; ?>" size="20" /><br />
 		<label for="eshop_authorizenetkey"><?php _e('Transaction Key','eshop'); ?></label><input id="eshop_authorizenetkey" name="authorizenet[key]" type="text" value="<?php echo $authorizenet['key']; ?>" size="40" /><br />
 		<label for="eshop_authorizenetsecret"><?php _e('Secret Answer','eshop'); ?></label><input id="eshop_authorizenetsecret" name="authorizenet[secret]" type="text" value="<?php echo $authorizenet['secret']; ?>" size="40" /><br />
-
+		<label for="eshop_authorizenetdesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_authorizenetdesc" name="authorizenet[desc]" type="text" value="<?php echo $authorizenet['desc']; ?>" size="40" /><br />
 	</fieldset>
 	
 	
