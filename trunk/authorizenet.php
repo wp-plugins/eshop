@@ -53,6 +53,7 @@ switch ($_GET['eshopaction']) {
 		$Key=$authorizenet['key'];
 		$LID=$authorizenet['id'];
 		$secret=$authorizenet['secret'];
+		$description=$authorizenet['desc'];
 		// a sequence number is randomly generated
 		$sequence	= rand(1, 1000);
 		// a timestamp is generated
