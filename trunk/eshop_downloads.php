@@ -387,7 +387,7 @@ function eshop_downloads_manager() {
 	}else{
 	?>
 		<div class="wrap">
-		<h2><?php _e('Downloadable Product','eshop'); ?>s</h2>
+		<h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<p><?php _e('You currently have no downloadable products','eshop'); ?>.</p>
 		
 	<?php

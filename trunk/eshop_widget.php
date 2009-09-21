@@ -235,7 +235,7 @@ function eshop_products_control( $widget_args = 1 ) {
 		<option value="1"<?php selected( $show_type, '1' ); ?>><?php _e('Images','eshop'); ?></option>
 		<option value="2"<?php selected( $show_type, '2' ); ?>><?php _e('Text','eshop'); ?></option>
 	</select></p>
-	<p><label for="eshop_show_size-<?php echo $number; ?>"><?php _e('% size image to display','eshop'); ?></label>
+	<p><label for="eshop_show_size-<?php echo $number; ?>"><?php _e('&#37; size image to display','eshop'); ?></label>
 		<input size="3" maxlength="3" id="eshop_show_size-<?php echo $number; ?>" name="eshop_products_widget[<?php echo $number; ?>][show_size]" type="text" value="<?php echo $show_size; ?>" />
 	</p>
 	<p><label for="eshop_show_what-<?php echo $number; ?>"><?php _e('What to show','eshop'); ?></label>

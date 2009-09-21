@@ -375,9 +375,7 @@ default:
 	?>
 	<?php echo $echosub; ?>
 	<p><?php _e('The following are the shipping rates by class and zone.','eshop'); ?></p>
-	<p><?php _e('<strong>Warning:</strong> changing which method you use <em>may</em> affect the full table
-	of shipping rates. To change from one method to another, first <em>update</em>
-	your choice, and the relevant table will then appear.','eshop'); ?></p>
+	<p><?php _e('<strong>Warning:</strong> changing which method you use <em>may</em> affect the full table of shipping rates. To change from one method to another, first <em>update</em>	your choice, and the relevant table will then appear.','eshop'); ?></p>
 	<form id="shipformmethod" action="" method="post">
 	<fieldset><legend><?php _e('Shipping rate calculation','eshop'); ?></legend>
 	<?php
@@ -391,7 +389,7 @@ default:
 		}elseif($i==3){
 			$extra=' <small>'.__('( one overall charge no matter what quantity is ordered )','eshop').'</small>';
 		}	
-		echo '<input type="radio" class="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">Method '.$i.$extra.'</label><br />';
+		echo '<input type="radio" class="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">'.__('Method ','eshop').$i.$extra.'</label><br />';
 	}
 	?>
 	<label for="eshop_shipping_zone"><?php _e('Shipping Zones by','eshop'); ?></label>

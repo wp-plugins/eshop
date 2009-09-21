@@ -157,7 +157,7 @@ if (!function_exists('displayorders')) {
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					if($myrow->company!=''){
-						$company=' of '.$myrow->company;
+						$company=__(' of ','eshop').$myrow->company;
 					}else{
 						$company='';
 					}
@@ -517,8 +517,8 @@ if(isset($_POST['dall'])){
 	$dhours=$_POST['dhours'];
 	if($_POST['dhours']=='0' ||$_POST['dhours']=='4'||$_POST['dhours']=='8'||$_POST['dhours']=='16'||$_POST['dhours']=='24'||$_POST['dhours']=='48'||$_POST['dhours']=='72'){
 		$delay=$wpdb->escape($_POST['dhours']);
-		$replace=$delay.' hours';
-		if($delay==24){$replace='1 day';}
+		$replace=$delay.__(' hours','eshop');
+		if($delay==24){$replace=__('1 day','eshop');}
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$myrows=$wpdb->get_results("Select checkid From $dtable where status='Deleted' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
@@ -652,7 +652,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	$cday=substr($custom, 6, 2);
 	$chours=substr($custom, 8, 2);
 	$cminutes=substr($custom, 10, 2);
-	$thisdate=$cyear."-".$cmonth."-".$cday.' at '.$chours.':'.$cminutes;
+	$thisdate=$cyear."-".$cmonth."-".$cday.__(' at ','eshop').$chours.':'.$cminutes;
 	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.</p>\n";
 	
 	echo "</div>\n";

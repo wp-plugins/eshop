@@ -242,7 +242,7 @@ function eshop_discounts_manager() {
 	if($max>0){
 		?>
 		<div id="eshopdisccodesexisting">
-		<h3>Current Discount Codes</h3>
+		<h3><?php _e('Current Discount Codes','eshop'); ?></h3>
 		<table class="widefat" summary="<?php _e('Discount Codes','eshop'); ?>">
 		<caption><?php _e('Discount codes reference table','eshop'); ?></caption>
 		<thead>
