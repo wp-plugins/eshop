@@ -207,7 +207,7 @@ function eshop_products_manager() {
 		<h2><?php _e('Authors','eshop'); ?></h2>
 		<?php if(isset($msg)) echo '<div class="updated fade"><p>'.$msg.'</p></div>'; ?>
 		<form action="" method="post" class="eshop filtering">
-		<p><label for="filter"><?php _e('Show products for','esupplier'); ?></label><select name="eshopfilter" id="eshopfilter">
+		<p><label for="filter"><?php _e('Show products for','eshop'); ?></label><select name="eshopfilter" id="eshopfilter">
 		<?php
 		echo eshop_authors($eshopfilter);
 		?>
@@ -361,7 +361,7 @@ function eshop_products_manager() {
 		<th id="down"><abbr title="<?php _e('Downloads','eshop'); ?>"><?php _e('DL','eshop'); ?></abbr></th>
 		<th id="ship"><abbr title="<?php _e('Shipping Rate','eshop'); ?>"><?php _e('S/R','eshop'); ?></abbr></th>
 		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
-		<th id="purc"><abbr title="<?php _e('Number of Purchase','eshop'); ?>s"><?php _e('Purc.','eshop'); ?></abbr></th>
+		<th id="purc"><abbr title="<?php _e('Number of Purchases','eshop'); ?>"><?php _e('Purc.','eshop'); ?></abbr></th>
 		<th id="ftrd"><abbr title="<?php _e('Marked as Featured','eshop'); ?>"><?php _e('Feat.','eshop'); ?></abbr></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
 		<th id="associmg"><?php _e('Listing Images','eshop'); ?></th>

@@ -177,7 +177,7 @@ if(!isset($_GET['change'])){
 				}
 				if($pdown=='') $pdown='No';
 				if($ptitle->post_title=='')
-					$posttitle=__('(no title)');
+					$posttitle=__('(no title)','eshop');
 				else
 					$posttitle=$ptitle->post_title;
 				$calt++;
@@ -192,16 +192,16 @@ if(!isset($_GET['change'])){
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
 					if($grabit['_Stock Available']=='No'){
-						$available='No';
+						$available=__('No','eshop');
 					}elseif($grabit['_Stock Available']=='Yes' && $available==''){
-						$available='not set';
+						$available=__('not set','eshop');
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 					
 				}else{
 					$dltable = $wpdb->prefix ."eshop_downloads";
 					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$pid");
-					echo '<td headers="stk sku'.$calt.'">n/a</td>';
+					echo '<td headers="stk sku'.$calt.'">'.__('n/a','eshop').'</td>';
 				}
 				
 				echo '<td headers="opt sku'.$calt.'">';
@@ -405,9 +405,9 @@ if(!isset($_GET['change'])){
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
 					if($grabit['_Stock Available']=='No'){
-						$available='No';
+						$available=__('No','eshop');
 					}elseif($grabit['_Stock Available']=='Yes' && $available==''){
-						$available='not set';
+						$available=__('not set','eshop');
 					}
 					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 

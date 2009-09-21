@@ -400,7 +400,7 @@ switch($action_status){
 			}
 			?>
 		</select><br />
-		<p>Don't forget to set the <a href="admin.php?page=eshop_shipping.php&amp;action=states">State/County/Province</a> on the shipping pages.</p>
+		<p><?php printf(__('Don\'t forget to set the <a href="%s">State/County/Province</a> on the shipping pages.','eshop'),'admin.php?page=eshop_shipping.php&amp;action=states'); ?></p>
 	<?php //' fix my code colours - not needed elswhere ?>
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">

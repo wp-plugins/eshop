@@ -161,12 +161,16 @@ if (!function_exists('display_cart')) {
 						}
 						break;
 					case '3'://( one overall charge no matter how many are ordered )
-						if($pzone!=get_option('eshop_unknown_state'))
-							$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
-						else
-							$shipzone='zone'.$pzone;						
-						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
-						$shipping+=$shipcost;
+						foreach ($shiparray as $nowt => $shipclass){
+							if($shipclass!='F'){
+								if($pzone!=get_option('eshop_unknown_state'))
+									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+								else
+									$shipzone='zone'.$pzone;						
+								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
+								$shipping+=$shipcost;
+							}
+						}
 						break;
 				}
 
