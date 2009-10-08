@@ -116,6 +116,7 @@ if(isset($_POST['delete'])){
 	$epages[]='eshop_discount_shipping';
 	$epages[]='eshop_show_forms';
 	$epages[]='eshop_downloads_hideall';
+	$epages[]='eshop_paypal_noemail';
 	
 	foreach($epages as $epage){
 		delete_option($epage);
