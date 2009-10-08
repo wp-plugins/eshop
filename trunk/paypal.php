@@ -73,6 +73,9 @@ switch ($_GET['eshopaction']) {
 		}else{
 			$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';   // testing paypal url
 		}
+		if('no'==get_option('eshop_paypal_noemail')){
+			unset($_POST['email']);
+		}
 		$echoit.=$p->eshop_submit_paypal_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;

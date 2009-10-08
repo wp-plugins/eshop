@@ -244,6 +244,7 @@ This is only triggered when someone visits the site.</p>
 
 <h4>Paypal</h4>
 <p><strong>Email address:</strong> the email address associated with your Paypal business account. Ensure that you enter it correctly!</p>
+<p><strong>Send buyers email address to paypal?:</strong>(<em>experimental</em>) unsetting this may change the login screen at Paypal to highlight ability to pay without joining Paypal.</p>
 
 <h4>Payson</h4>
 <p><strong>Warning</strong> - all Payson transactions are in SEK irrespective of settings within eShop. there is also a minimum order value, which is not reflected in the shopping cart on the site. However it will be shown to the buyer when they go to pay.</p>
@@ -261,6 +262,8 @@ This is only triggered when someone visits the site.</p>
 <h4>webtopay</h4>
 <p>For help with webtopay please contact <a href="mailto:integrate@mokejimai.lt">Markas Krasovskis</a></p>
 
+<h4>Authorize.net</h4>
+<p>Settings must match those set at Authorize.net exactly.</p>
 
 
 <h3>Discounts</h3>

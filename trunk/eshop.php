@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '3.7.3');
+define('ESHOP_VERSION', '3.7.4');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 3.7.3
+Version: 3.7.4
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -392,7 +392,7 @@ if (!function_exists('eshop_admin_head')) {
      */
     function eshop_admin_head() {
         echo '   <link title="eShop Admin Styles" rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop.css" type="text/css" media="screen" />'."\n";
-        echo '   <link title="eShop Print Styles" rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop-print.css" type="text/css" media="print" />'."\n";
+        echo '   <link rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop-print.css" type="text/css" media="print" />'."\n";
 		echo '   <script type="text/javascript">
      //<![CDATA[
       function checkedAll (id, checked) {

@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.7
 Tested up to: 2.8.4
-Stable tag: 3.7.3
+Stable tag: 3.7.4
 
 An accessible Shopping Cart plugin.
 
@@ -28,11 +28,17 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * Uninstall available within the plugin
 * Various discount options
 * WPMU compatible.
-* Several payment options - Paypal, Payson, eProcessingNetwork, Webtopay and Cash/Cheque! and more.
+* Several payment options - Authorize.net, Paypal, Payson, eProcessingNetwork, Webtopay and Cash/Cheque!
 * and much much more
 
 
 == Changelog == 
+
+Version 3.7.4
+
+* *amended* Authorize.net Secrret Answer is now MD5-Hash Phrase and must match your setting at Authorize.net
+* *fixed* print syle for orders page.
+* *added* Ability to hide buyers email address when sending to Paypal - this may change the login screen at Paypal to highlight ability to pay without joining Paypal.
 
 Version 3.7.3
 

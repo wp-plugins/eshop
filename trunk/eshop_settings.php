@@ -42,6 +42,7 @@ if(isset($_POST['submit'])){
 			update_option('eshop_currency',$wpdb->escape($_POST['eshop_currency']));
 			update_option('eshop_location',$wpdb->escape($_POST['eshop_location']));
 			update_option('eshop_business',$wpdb->escape(trim($_POST['eshop_business'])));
+			update_option('eshop_paypal_noemail',$wpdb->escape($_POST['eshop_paypal_noemail']));
 			//these are for other payment options
 			//payson
 			$paysonpost['email']=$wpdb->escape($_POST['payson']['email']);
@@ -405,7 +406,7 @@ switch($action_status){
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
-			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats','LTL' => 'Lithuanian Litas');
+			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats','LTL' => 'Lithuanian Litas','RM' => 'Ringgit Malaysia');
 			foreach($currencycodes as $code=>$codename){
 				if($code == get_option('eshop_currency')){
 					$sel=' selected="selected"';
@@ -421,7 +422,18 @@ switch($action_status){
 	<fieldset><legend><?php _e('Paypal','eshop'); ?></legend>
 		<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_method"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
 		<label for="eshop_business"><?php _e('Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo get_option('eshop_business'); ?>" size="30" /><br />
-	
+		<label for="eshop_paypal_noemail"><?php _e('Send buyers email address to paypal?','eshop'); ?></label>
+				<select name="eshop_paypal_noemail" id="eshop_paypal_noemail">
+				<?php
+				if('no' == get_option('eshop_paypal_noemail')){
+					echo '<option value="yes">'.__('Yes','eshop').'</option>';
+					echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+				}else{
+					echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+					echo '<option value="no">'.__('No','eshop').'</option>';
+				}
+				?>
+			</select><br />
 	</fieldset>
 	<fieldset><legend><?php _e('Payson','eshop'); ?></legend>
 	<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?></p>
@@ -480,7 +492,7 @@ switch($action_status){
 		<label for="eshop_authorizenetemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_authorizenetemail" name="authorizenet[email]" type="text" value="<?php echo $authorizenet['email']; ?>" size="30" maxlength="50" /><br />
 		<label for="eshop_authorizenetid"><?php _e('API Login ID','eshop'); ?></label><input id="eshop_authorizenetid" name="authorizenet[id]" type="text" value="<?php echo $authorizenet['id']; ?>" size="20" /><br />
 		<label for="eshop_authorizenetkey"><?php _e('Transaction Key','eshop'); ?></label><input id="eshop_authorizenetkey" name="authorizenet[key]" type="text" value="<?php echo $authorizenet['key']; ?>" size="40" /><br />
-		<label for="eshop_authorizenetsecret"><?php _e('Secret Answer','eshop'); ?></label><input id="eshop_authorizenetsecret" name="authorizenet[secret]" type="text" value="<?php echo $authorizenet['secret']; ?>" size="40" /><br />
+		<label for="eshop_authorizenetsecret"><?php _e('MD5-Hash Phrase(was Secret Answer)','eshop'); ?></label><input id="eshop_authorizenetsecret" name="authorizenet[secret]" type="text" value="<?php echo $authorizenet['secret']; ?>" size="40" /><br />
 		<label for="eshop_authorizenetdesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_authorizenetdesc" name="authorizenet[desc]" type="text" value="<?php echo $authorizenet['desc']; ?>" size="40" /><br />
 	</fieldset>
 	
