@@ -40,12 +40,14 @@ function eshop_boing($pee,$short='no'){
 			$optsets = eshop_get_custom('eshoposets');
 			if(is_array($optsets)){	
 				$opttable=$wpdb->prefix.'eshop_option_sets';
+				$optnametable=$wpdb->prefix.'eshop_option_names';
+
 				foreach($optsets as $foo=>$opset){
 					$qb[]="(n.optid=$opset && n.optid=s.optid)";
 				}
 				$qbs = implode("OR", $qb);
-				$myrowres=$wpdb->get_results("select n.optid,n.name as name, n.type, s.name as label, s.price, s.id from wp_eshop_option_sets as s, 
-					wp_eshop_option_names as n where $qbs ORDER BY type, id ASC");
+				$myrowres=$wpdb->get_results("select n.optid,n.name as name, n.type, s.name as label, s.price, s.id from $opttable as s, 
+					$optnametable as n where $qbs ORDER BY type, id ASC");
 				$x=0;
 				foreach($myrowres as $myrow){
 					$optarray[$myrow->optid]['name']=$myrow->name;
@@ -56,6 +58,7 @@ function eshop_boing($pee,$short='no'){
 					$optarray[$myrow->optid]['item'][$x]['price']=$myrow->price;
 					$x++;
 				}
+				
 				foreach($optarray as $optsets){
 					switch($optsets['type']){
 						case '0'://select
