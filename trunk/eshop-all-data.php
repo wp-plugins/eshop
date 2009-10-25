@@ -87,8 +87,8 @@ foreach($dquery as $drow){
 		$theaddress=$drow->address1."\n".$drow->address2."\n".$drow->city."\n".$drow->zip."\n";
 		if($drow->country=='US'){
 			$qcode=$wpdb->escape($drow->state);
-			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
+			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 			$theaddress.=$qstate."\n";
 		}
 		$qcode=$wpdb->escape($drow->country);
@@ -108,8 +108,8 @@ foreach($dquery as $drow){
 		$shipaddress=$drow->ship_address."\n".$drow->ship_city."\n".$drow->ship_postcode."\n";
 		if($drow->ship_country=='US'){
 			$qcode=$wpdb->escape($drow->ship_state);
-			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
-			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
+			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 			$shipaddress.=$qstate."\n";
 		}
 		$qcode=$wpdb->escape($drow->ship_country);

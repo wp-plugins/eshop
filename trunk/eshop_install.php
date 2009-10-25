@@ -284,6 +284,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	item_qty int(11) NOT NULL default '0',
 	item_amt float(8,2) NOT NULL default '0.00',
 	optname varchar(255) NOT NULL default '',
+	optsets text NOT NULL,
 	post_id int(11) NOT NULL default '0',
 	down_id int(11) NOT NULL default '0',
 	  PRIMARY KEY  (id),
@@ -621,6 +622,32 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	error_log("creating table $table");
 	dbDelta($sql);
 }
+//new for 4.0.0
+$table = $wpdb->prefix . "eshop_option_sets";
+if ($wpdb->get_var("show tables like '$table'") != $table) {
+	$sql = "CREATE TABLE ".$table." (
+	id int(11) NOT NULL auto_increment,
+	optid int(11) NOT NULL default '0',
+	name varchar(255) NOT NULL default '',
+	price float(8,2) NOT NULL default '0.00',
+	weight float(8,2) NOT NULL default '0.00',
+	  PRIMARY KEY  (id)
+	);";
+	error_log("creating table $table");
+	dbDelta($sql);
+}
+$table = $wpdb->prefix . "eshop_option_names";
+if ($wpdb->get_var("show tables like '$table'") != $table) {
+	$sql = "CREATE TABLE ".$table." (
+	optid int(11) NOT NULL auto_increment,
+	name varchar(255) NOT NULL default '',
+	type tinyint(1) NOT NULL default '0',
+	  PRIMARY KEY  (optid)
+	);";
+	error_log("creating table $table");
+	dbDelta($sql);
+}
+
 
 $table = $wpdb->prefix ."eshop_emails";
 if ($wpdb->get_var("show tables like '$table'") != $table) {
@@ -727,7 +754,20 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic w
 
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
-
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.9.0' ){
+	$table = $wpdb->prefix . "eshop_order_items";
+		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+		$add_field = TRUE;
+		foreach ($tablefields as $tablefield) {
+			if(strtolower($tablefield->Field)=='optsets') {
+				$add_field = FALSE;
+			}
+		}
+		if ($add_field) {
+			$sql="ALTER TABLE `".$table."` ADD `optsets` TEXT NOT NULL";
+			$wpdb->query($sql);
+	}
+}
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.5.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `item_id` `item_id` VARCHAR( 255 ) NOT NULL DEFAULT''");

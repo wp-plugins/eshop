@@ -299,7 +299,7 @@ case ('states'):
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
 
 	<table class="hidealllabels" summary="<?php _e('States, with their 2 letter code, and applicable zone','eshop'); ?>">
-	<caption><?php _e('<abbr title="United States">US</abbr> States','eshop'); ?></caption>
+	<caption><?php _e('State/County/Province','eshop'); ?></caption>
 	<thead>
 	<tr>
 	<th id="code"><?php _e('Code','eshop'); ?></th>

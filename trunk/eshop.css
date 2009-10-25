@@ -162,6 +162,11 @@ ul.eshop-stats li strong {
   color : #333;
 }
 /* table listings */
+#eshopoptionsets{
+	width:60%;
+	margin:0 auto;
+}
+
 table#listing {
   text-align : left;
   width : 100%;
@@ -345,6 +350,29 @@ p.submit.eshop,#filterzones p.submit{
 }
 #shipformmethod .radio{
 	margin-right: 5px;
+}
+/* special option sets */
+#eshoposetc{
+	float:left;
+	margin-right:1em;
+	width:45%;
+}
+#eshoposetc h4{
+
+}
+#eshoposets{ 
+	border: 1px solid #587800; 
+	list-style: none; 
+	height: 8em; 
+	overflow: auto; 
+	width:95%;
+	background:#fffff9;
+}
+#eshoposets label{
+	margin-left:5px;
+}
+#eshoposets li{
+margin:0;
 }
 /* end */
 p.thanks {

@@ -36,6 +36,60 @@ function eshop_boing($pee,$short='no'){
 			<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="eshop addtocart">
 			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(attribute_escape(eshop_get_custom('Product Description'))).'</span></legend>';
 			$theid=sanitize_file_name(eshop_get_custom('Sku'));
+			//option sets
+			$optsets = eshop_get_custom('eshoposets');
+			if(is_array($optsets)){	
+				$opttable=$wpdb->prefix.'eshop_option_sets';
+				foreach($optsets as $foo=>$opset){
+					$qb[]="(n.optid=$opset && n.optid=s.optid)";
+				}
+				$qbs = implode("OR", $qb);
+				$myrowres=$wpdb->get_results("select n.optid,n.name as name, n.type, s.name as label, s.price, s.id from wp_eshop_option_sets as s, 
+					wp_eshop_option_names as n where $qbs ORDER BY type, id ASC");
+				$x=0;
+				foreach($myrowres as $myrow){
+					$optarray[$myrow->optid]['name']=$myrow->name;
+					$optarray[$myrow->optid]['optid']=$myrow->optid;
+					$optarray[$myrow->optid]['type']=$myrow->type;
+					$optarray[$myrow->optid]['item'][$x]['id']=$myrow->id;
+					$optarray[$myrow->optid]['item'][$x]['label']=$myrow->label;
+					$optarray[$myrow->optid]['item'][$x]['price']=$myrow->price;
+					$x++;
+				}
+				foreach($optarray as $optsets){
+					switch($optsets['type']){
+						case '0'://select
+							$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].'">'.stripslashes(attribute_escape($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].'" name="optset[]">'."\n";
+							foreach($optsets['item'] as $opsets){
+								if($opsets['price']!='0.00')
+									$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
+								else
+									$addprice='';
+								$replace.='<option value="'.$opsets['id'].'">'.stripslashes(attribute_escape($opsets['label'])).$addprice.'</option>'."\n";
+							}
+							$replace.="</select></span>\n";
+							break;
+						
+						case '1'://checkbox
+						$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(attribute_escape($optsets['name'])).'</legend>'."\n";
+						$ox=0;
+						foreach($optsets['item'] as $opsets){
+							$ox++;
+							if($opsets['price']!='0.00')
+								$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
+							else
+								$addprice='';
+							$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].'i'.$ox.'">'.stripslashes(attribute_escape($opsets['label'])). $addprice.'</label></span>'."\n";
+						}
+						$replace.="</fieldset>\n";
+						
+						break;
+					}
+				
+				}
+			}
+
+						
 			if(get_option('eshop_options_num')>1){
 				$opt=get_option('eshop_options_num');
 				$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';

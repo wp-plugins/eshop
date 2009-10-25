@@ -40,6 +40,7 @@ if(!isset($_GET['change'])){
 	<div class="wrap">
 	<h2><?php _e('eShop Base Products','eshop'); ?></h2>
 	<p><?php _e('A reference table for products in your base feed.','eshop'); ?></p>
+	<p><a href="tools.php?page=eshop_base_create_feed.php"><?php _e('Create feed.','eshop'); ?></a>.</p>
 	<?php	
 	//sort by switch statement
 	$csa=$csb=$csc=$csd=$cse=$csf='';

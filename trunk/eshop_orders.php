@@ -612,6 +612,8 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$value=$myrow->item_qty * $myrow->item_amt;
 		$total=$total+$value;
 		$itemid=$myrow->item_id;
+		if($myrow->optsets!='')
+			$itemid.='<br />'.$myrow->optsets;
 		//check if downloadable product
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
 		$downstable=$wpdb->prefix.'eshop_downloads';
@@ -677,10 +679,10 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			echo $address."<br />\n";
 			echo $drow->city."<br />\n";
 			$qcode=$wpdb->escape($drow->state);
-			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 			if($qstate!=''){
 				echo $qstate."<br />";
-				$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+				$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 			}else{
 				echo $drow->state."<br />";
 			}
@@ -708,9 +710,9 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				echo $drow->ship_address."<br />\n";
 				echo $drow->ship_city."<br />\n";
 				$qcode=$wpdb->escape($drow->ship_state);
-				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 				if($qstate!=''){
-					$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE code='$qcode' limit 1");
+					$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 					echo $qstate."<br />";
 				}else{
 					echo $drow->ship_state."<br />";

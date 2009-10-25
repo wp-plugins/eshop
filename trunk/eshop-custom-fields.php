@@ -27,6 +27,7 @@ function eshop_inner_custom_box($post) {
     // The actual fields for data entry
     $sku=$prod=$shiprate=$stkqty='';
     $stkav=$featured='No';
+    $osets=array();
     if( isset( $_REQUEST[ 'post' ] ) ) {
         $sku = get_post_meta( $_REQUEST[ 'post' ], '_Sku' );
         if(isset($sku[ 0 ]))
@@ -51,6 +52,12 @@ function eshop_inner_custom_box($post) {
         $stkqty = get_post_meta( $_REQUEST[ 'post' ], '_Stock Quantity' );
         if(isset($stkqty[ 0 ]))
         	$stkqty = attribute_escape($stkqty[ 0 ]);
+        
+        $optsets = get_post_meta( $_REQUEST[ 'post' ], '_eshoposets' );
+		if($optsets!='')
+        	$osets = $optsets[ 0 ];
+        if(!is_array($osets))
+        	$osets=array();
     }
     if($stkav=='' && $featured=='')
         $stkav=$featured='No';
@@ -117,6 +124,29 @@ function eshop_inner_custom_box($post) {
     ?>
     </tbody>
 	</table>
+	<?php
+	$opttable=$wpdb->prefix.'eshop_option_names';
+	$myrowres=$wpdb->get_results("select *	from $opttable ORDER BY name ASC");
+	if(sizeof($myrowres)>0){
+	?>
+	<div id="eshoposetc">
+	<h4><?php _e('Option Sets','eshop'); ?></h4>
+	<div id="eshoposets">
+	<ul>
+	<?php
+	$oi=1;
+	foreach($myrowres as $row){
+	?>
+		<li><input type="checkbox" name="eshoposets[]" id="osets<?php echo $oi; ?>" value="<?php echo $row->optid; ?>"<?php if(in_array($row->optid,$osets)) echo ' checked="checked"'; ?>><label for="osets<?php echo $oi; ?>"><?php echo stripslashes(attribute_escape($row->name))?></label></li>
+	<?php
+		$oi++;
+	}
+	?>
+	</ul>
+	</div>
+	</div>
+	<?php } ?>
+	<div id="eshoposetsc">
     <h4><?php _e('Product Settings','eshop'); ?></h4>
     <?php
 	if(get_option('eshop_downloads_only') !='yes'){
@@ -157,6 +187,7 @@ function eshop_inner_custom_box($post) {
     <?php
     }
     if(isset($post->ID) && $post->ID!=0 && $sku!='') echo '<p><a href="admin.php?page=eshop_products.php&change='.$post->ID.'">'.__('Choose listing image','eshop').'</a></p>';
+	echo '</div><div class="clear"></div>';
 
 }
 
@@ -223,6 +254,12 @@ function eshop_save_postdata( $post_id ) {
 		}
 
 	}
+	//option sets
+	if(isset($_POST['eshoposets'])){
+		$mydata['_eshoposets']=$_POST['eshoposets'];
+	}else{
+		$mydata['_eshoposets']='';
+	}
 	if($mydata['_Sku']=='' && $mydata['_Option 1']=='' &&	$mydata['_Price 1']=='' && $mydata['_Product Description']=='' 
 	&& $mydata['_Download 1']=='' && $mydata['_Shipping Rate']=='' && $mydata['_Stock Quantity']==''){
 		//delete all
@@ -251,6 +288,7 @@ function eshop_save_postdata( $post_id ) {
 			}
 		}
 	}
+
    return $mydata;
 }
 ?>

@@ -24,6 +24,7 @@ if (!function_exists('eshop_cart')) {
 			$_REQUEST = stripslashes_array($_REQUEST);
 		}
 		$_POST=sanitise_array($_POST);
+
 		//if adding a product to the cart
 		if(isset($_POST['qty']) && !isset($_POST['save']) && (!ctype_digit(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
 			$qty=$_POST['qty']=1;
@@ -57,10 +58,14 @@ if (!function_exists('eshop_cart')) {
 
 
 		//unique identifier
+		if(isset($_POST['optset']))
+			$optset='os'.implode('os',$_POST['optset']);
+		else
+			$optset='';
 		if(!isset($pid)) $pid='';
 		if(!isset($option)) $option='';
 		if(!isset($postid)) $postid='';
-		$identifier=$pid.$option.$postid;
+		$identifier=$pid.$option.$postid.$optset;
 		$needle=array(" ",".","-","_");
 		$identifier=str_replace($needle,"",$identifier);
 		
@@ -114,6 +119,9 @@ if (!function_exists('eshop_cart')) {
 			$_SESSION['shopcart'.$blog_id][$identifier]['pid']=$pid;
 			$_SESSION['shopcart'.$blog_id][$identifier]['pname']=stripslashes($pname);
 			$_SESSION['shopcart'.$blog_id][$identifier]['price']=$iprice;
+			if(isset($_POST['optset'])){
+				$_SESSION['shopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
+			}
 			
 		}
 		//save? not sure why I used that, but its working so why make trouble for myself.
@@ -163,7 +171,7 @@ if (!function_exists('eshop_cart')) {
 				}
 			}
 			$_SESSION['final_price'.$blog_id] = calculate_price();
-			$_SESSION['items'.$blog_id] = calculate_items();
+			//$_SESSION['items'.$blog_id] = calculate_items();
 		}
 		//any errors will print here.
 		if($error!='') $echo.= $error;
