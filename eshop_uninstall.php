@@ -41,6 +41,8 @@ if(isset($_POST['delete'])){
 	$etable[] = $wpdb->prefix ."eshop_base_products";
 	$etable[] = $wpdb->prefix ."eshop_discount_codes";
 	$etable[] = $wpdb->prefix ."eshop_emails";
+	$etable[] = $wpdb->prefix.'eshop_option_names';
+	$etable[] = $wpdb->prefix.'eshop_option_sets';
 
 	foreach($etable as $table){
 		if ($wpdb->get_var("show tables like '$table'") == $table) {
@@ -131,6 +133,7 @@ if(isset($_POST['delete'])){
 	$eshopmetaary[]= '_Stock Available';
 	$eshopmetaary[]= '_Stock Quantity';
 	$eshopmetaary[]= '_eshop_prod_img';
+	$eshopmetaary[]= '_eshoposets';
 
 	for($i=1;$i<=$numoptions;$i++){
 		$eshopmetaary[]= '_Option '.$i;

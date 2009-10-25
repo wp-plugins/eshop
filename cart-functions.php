@@ -38,6 +38,7 @@ if (!function_exists('display_cart')) {
 			$shipping=0;
 			$currsymbol=get_option('eshop_currency_symbol');
 			foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
+				$addoprice=0;
 				if(is_array($opt)){
 					$key=$opt['option'];
 					$calt++;
@@ -72,7 +73,29 @@ if (!function_exists('display_cart')) {
 						}
 					}
 					/* end */
-					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a></td>'."\n";
+					//opsets
+					if(isset($opt['optset'])){
+						$oset=$qb=array();
+						
+						$optings=unserialize($opt['optset']);
+						$opttable=$wpdb->prefix.'eshop_option_sets';
+						foreach($optings as $foo=>$opst){
+							$qb[]="id=$opst";
+						}
+						$qbs = implode(" OR ", $qb);
+						$otable=$wpdb->prefix.'eshop_option_sets';
+						$orowres=$wpdb->get_results("select name, price, id from $otable where $qbs ORDER BY id ASC");
+						$x=0;
+						foreach($orowres as $orow){
+							$oset[]=$orow->name;
+							$addoprice+=$orow->price;
+							$x++;
+						}
+						$optset='('.implode(', ',$oset).')';
+					}else{
+						$optset='';
+					}
+					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.$optset.'</td>'."\n";
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod$calt\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
@@ -85,6 +108,7 @@ if (!function_exists('display_cart')) {
 						$echo.= $opt["qty"];
 					}
 					/* DISCOUNT */
+					$opt["price"]+=$addoprice;
 					if(is_discountable(calculate_total())>0){
 						$discount=is_discountable(calculate_total())/100;
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
@@ -115,8 +139,10 @@ if (!function_exists('display_cart')) {
 				//shipping for cart.
 				if(get_option('eshop_shipping_zone')=='country'){
 					$table=$wpdb->prefix.'eshop_countries';
+					$dacode='code';
 				}else{
 					$table=$wpdb->prefix.'eshop_states';
+					$dacode='id';
 				}
 				$table2=$wpdb->prefix.'eshop_shipping_rates';
 				switch(get_option('eshop_shipping')){
@@ -127,7 +153,7 @@ if (!function_exists('display_cart')) {
 								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
 									if($pzone!=get_option('eshop_unknown_state'))
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
@@ -136,7 +162,7 @@ if (!function_exists('display_cart')) {
 							}else{
 								if($shipclass!='F'){
 									if($pzone!=get_option('eshop_unknown_state'))
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
@@ -151,7 +177,7 @@ if (!function_exists('display_cart')) {
 								array_push($tempshiparray, $shipclass);
 								if($shipclass!='F'){
 									if($pzone!=get_option('eshop_unknown_state'))
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
@@ -164,7 +190,7 @@ if (!function_exists('display_cart')) {
 						foreach ($shiparray as $nowt => $shipclass){
 							if($shipclass!='F'){
 								if($pzone!=get_option('eshop_unknown_state'))
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzone' limit 1");
+									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 								else
 									$shipzone='zone'.$pzone;						
 								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
@@ -533,17 +559,36 @@ if (!function_exists('orderhandle')) {
 			$post_id=$wpdb->escape($_POST[$chk_postid]);
 			
 			$dlchking=$_POST['eshopident_'.$i];
+			//add opt sets
+			if(isset($_SESSION['shopcart'.$blog_id][$dlchking]['optset'])){
+				$oset=$qb=array();
+				$optings=unserialize($_SESSION['shopcart'.$blog_id][$dlchking]['optset']);
+				$opttable=$wpdb->prefix.'eshop_option_sets';
+				foreach($optings as $foo=>$opst){
+					$qb[]="id=$opst";
+				}
+				$qbs = implode(" OR ", $qb);
+				$otable=$wpdb->prefix.'eshop_option_sets';
+				$orowres=$wpdb->get_results("select name from $otable where $qbs ORDER BY id ASC");
+				foreach($orowres as $orow){
+					$oset[]=$orow->name;
+				}
+				$optset=$wpdb->escape(implode(', ',$oset));
+			}else{
+				$optset='';
+			}
+			
+			//end
+			
 			$thechk=$_SESSION['shopcart'.$blog_id][$dlchking]['option'];
 			$edown=split(' ',$thechk);
 			$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
 			if($dlchk!=''){
 				//there are downloads.
 				$queryitem=$wpdb->query("INSERT INTO $itemstable
-				(checkid, item_id,item_qty,item_amt,optname,post_id,down_id)values(
-				'$checkid',
-				'$item_id',
-				'$item_qty',
-				'$item_amt','$optname','$post_id','$dlchk');");
+				(checkid, item_id,item_qty,item_amt,optname,post_id,down_id,optsets)values(
+				'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id',
+				'$dlchk','$optset');");
 
 				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
 				//add to download orders table
@@ -565,11 +610,8 @@ if (!function_exists('orderhandle')) {
 
 			}else{
 				$queryitem=$wpdb->query("INSERT INTO $itemstable
-				(checkid, item_id,item_qty,item_amt,optname,post_id)values(
-				'$checkid',
-				'$item_id',
-				'$item_qty',
-				'$item_amt','$optname','$post_id');");
+				(checkid, item_id,item_qty,item_amt,optname,post_id,optsets)values(
+				'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$optset');");
 			}
 			$i++;
 

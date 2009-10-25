@@ -25,6 +25,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#glive">Going Live with eShop</a></li>
 <li><a href="#bover">Configuration</a></li>
 <li><a href="#img">Product Images</a></li>
+<li><a href="#optset">Option Sets</a></li>
 
 <li><a href="#aover">eShop Admin Pages</a></li>
 <li><a href="#pend">Why is an Order Still Pending?</a></li>
@@ -312,9 +313,15 @@ This is only triggered when someone visits the site.</p>
 <div class="wrap">
 <h2 id="img">Product Images</h2>
 <p>You can add and use any image to a product page. But for eShop to find and use that image in shortcodes and widgets that image must be associated with that page or post. This is easily achieved by ensuring you upload the image via the media toolbar when editing that page or post. That image is then associated with that page and eShop can find and use it.</p>
-
-
 </div>
+
+<div class="wrap">
+<h2 id="optset">Option Sets</h2>
+<p>Create any number of option sets, which can then be added to any number of products. There is no restriction on how many can be added to a product, or how many item you can have in an option set.</p>
+<p>Each option set can be a dropdown select box, or a series of checkboxes. Each option within a set can have additional price, which is added onto the default price for that item.</p>
+<p>Deleting an option set removes it from all products.</p>
+</div>
+
 <div class="wrap">
 <h2 id="aover">eShop Admin Pages</h2>
 

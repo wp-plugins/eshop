@@ -54,9 +54,9 @@ if (!function_exists('eshopShowform')) {
 		$table=$wpdb->prefix.'eshop_states';
 		$getstate=get_option('eshop_shipping_state');
 		if(get_option('eshop_show_allstates') != '1'){
-			$stateList=$wpdb->get_results("SELECT code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
+			$stateList=$wpdb->get_results("SELECT id,code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
 		}else{
-			$stateList=$wpdb->get_results("SELECT code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
+			$stateList=$wpdb->get_results("SELECT id,code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
 		}
 		if(sizeof($stateList)>0){
 			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').' '.$sreqd.'<br />
@@ -66,7 +66,7 @@ if (!function_exists('eshopShowform')) {
 			foreach($stateList as $code => $value){
 				if(isset($value['list'])) $li=$value['list'];
 				else $li='1';
-				$eshopstatelist[$li][$value['code']]=$value['stateName'];
+				$eshopstatelist[$li][$value['id']]=$value['stateName'];
 			}
 			$tablec=$wpdb->prefix.'eshop_countries';
 			foreach($eshopstatelist as $egroup =>$value){
@@ -161,7 +161,7 @@ if (!function_exists('eshopShowform')) {
 			}else{
 				$echo .='<input type="hidden" name="ship_state" value="" />';
 			}
-			$echo .= '<span class="ship_state"><label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
+			$echo .= '<span class="ship_altstate"><label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
 					 <input class="short" type="text" name="ship_altstate" value="'.$ship_altstate.'" id="ship_altstate" size="20" /></label><br /></span>';
 
 			$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
@@ -192,8 +192,26 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productid."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
-		/* DISCOUNT */
-		$amt=round($opt["price"], 2);
+		/* options */
+		$addoprice=0;
+		if(isset($opt['optset'])){
+			$oset=$qb=array();
+
+			$optings=unserialize($opt['optset']);
+			$opttable=$wpdb->prefix.'eshop_option_sets';
+			foreach($optings as $foo=>$opst){
+				$qb[]="id=$opst";
+			}
+			$qbs = implode(" OR ", $qb);
+			$otable=$wpdb->prefix.'eshop_option_sets';
+			$orowres=$wpdb->get_results("select price, id from $otable where $qbs ORDER BY id ASC");
+			foreach($orowres as $orow){
+				$addoprice+=$orow->price;
+			}
+			
+		}
+		
+		$amt=round(($opt["price"]+$addoprice), 2);
 		/*
 		if(is_discountable(calculate_total())!=0){
 			$discount=is_discountable(calculate_total())/100;
@@ -498,7 +516,7 @@ if (!function_exists('eshop_checkout')) {
 			}
 		}else{
 			if(isset($_POST['state']) && $_POST['altstate']==''){
-				$valid=checkAlpha($_POST['state']);
+				$valid=is_numeric($_POST['state']);
 				if($valid==FALSE){
 					$error.= '<li>'.__('<strong>State/County/Province</strong> - missing or incorrect.','eshop').'</li>';
 				}
@@ -672,7 +690,7 @@ if (!function_exists('eshop_checkout')) {
 					$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['address1']." ".$_POST['address2']."</li>\n";
 					$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['city']."</li>\n";
 					$qcode=$wpdb->escape($_POST['state']);
-					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 					if($_POST['altstate']!='')
 						$echoit.= "<li class=\"state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['altstate']."</li>\n";
 					elseif($qstate!='')
@@ -711,7 +729,7 @@ if (!function_exists('eshop_checkout')) {
 							$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$_POST['ship_address']."</li>\n";
 							$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$_POST['ship_city']."</li>\n";
 							$qcode=$wpdb->escape($_POST['ship_state']);
-							$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+							$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 							if($_POST['ship_altstate']!='')
 								$echoit.= "<li class=\"ship_state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$_POST['ship_altstate']."</li>\n";
 							elseif($qstate!='')
