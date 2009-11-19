@@ -68,7 +68,13 @@ function eshop_pay_widget($args) {
 		$eshopfiles=eshop_files_directory();
 		echo "\n".'<ul class="eshoppaywidget">'."\n";
 		foreach(get_option('eshop_method') as $k=>$eshoppayment){
-			echo '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
+			$eshoppayment_text=$eshoppayment;
+			if($eshoppayment_text=='cash'){
+				$eshopcash = get_option('eshop_cash');
+				if($eshopcash['rename']!='')
+					$eshoppayment_text=$eshopcash['rename'];
+			}
+			echo '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
 			$i++;
 		}
 		echo "</ul>\n";

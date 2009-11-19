@@ -8,6 +8,7 @@ if (!function_exists('display_cart')) {
 		global $wpdb, $blog_id;
 		$echo ='';
 		$check=0;
+		$sub_total=0;
 		$tempshiparray=array();
 		//this checks for an empty cart, may not be required but leaving in just in case.
 		foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
@@ -223,8 +224,8 @@ if (!function_exists('display_cart')) {
 			// display unset/update buttons
 			if($change == true){
 				$echo.= "<div class=\"cartopt\"><input type=\"hidden\" name=\"save\" value=\"true\" />\n"; 
-				$echo.= "<p><label for=\"unset\"><input type=\"submit\" class=\"button\" id=\"unset\" name=\"unset\" value=\"".__('Empty Cart','eshop')."\" /></label>";
-				$echo.= "<label for=\"update\"><input type=\"submit\" class=\"button\" id=\"update\" name=\"update\" value=\"".__('Update Cart','eshop')."\" /></label></p>\n";
+				$echo.= "<p><label for=\"update\"><input type=\"submit\" class=\"button\" id=\"update\" name=\"update\" value=\"".__('Update Cart','eshop')."\" /></label>";
+				$echo.= "<label for=\"unset\"><input type=\"submit\" class=\"button\" id=\"unset\" name=\"unset\" value=\"".__('Empty Cart','eshop')."\" /></label></p>\n";
 				$echo.= "</div>\n";
 			}
 			if ($change == 'true'){
@@ -510,134 +511,137 @@ if (!function_exists('orderhandle')) {
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
 		$processing=__('Processing&#8230;','eshop');
-		$query1=$wpdb->query("INSERT INTO $detailstable
-			(checkid, first_name, last_name,company,email,phone, address1, address2, city,
-			state, zip, country, reference, ship_name,ship_company,ship_phone, 
-			ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
-			custom_field,transid,edited,comments,paidvia)VALUES(
-			'$checkid',
-			'$first_name',
-			'$last_name',
-			'$company',
-			'$email',
-			'$phone',
-			'$address1',
-			'$address2',
-			'$city',
-			'$state',
-			'$zip',
-			'$country',
-			'$reference',
-			'$ship_name',
-			'$ship_company',
-			'$ship_phone',
-			'$ship_address',
-			'$ship_city',
-			'$ship_postcode',
-			'$ship_state',
-			'$ship_country',
-			'$custom_field',
-			'$processing',
-			NOW(),
-			'$comments',
-			'$paidvia'
-				);");
-		$i=1;
-		//this is here to generate just one code per order
-		$code=eshop_random_code(); 
-		while($i<=$_POST['numberofproducts']){
-			$chk_id='item_number_'.$i;
-			$chk_qty='quantity_'.$i;
-			$chk_amt='amount_'.$i;
-			//$chk_opt=$itemoption.$i;
-			$chk_opt='item_name_'.$i;
-			$chk_postid='postid_'.$i;
-			$item_id=$wpdb->escape($_POST[$chk_id]);
-			$item_qty=$wpdb->escape($_POST[$chk_qty]);
-			$item_amt=$wpdb->escape(str_replace(',', "", $_POST[$chk_amt]));;
-			$optname=$wpdb->escape($_POST[$chk_opt]);
-			$post_id=$wpdb->escape($_POST[$chk_postid]);
-			
-			$dlchking=$_POST['eshopident_'.$i];
-			//add opt sets
-			if(isset($_SESSION['shopcart'.$blog_id][$dlchking]['optset'])){
-				$oset=$qb=array();
-				$optings=unserialize($_SESSION['shopcart'.$blog_id][$dlchking]['optset']);
-				$opttable=$wpdb->prefix.'eshop_option_sets';
-				foreach($optings as $foo=>$opst){
-					$qb[]="id=$opst";
-				}
-				$qbs = implode(" OR ", $qb);
-				$otable=$wpdb->prefix.'eshop_option_sets';
-				$orowres=$wpdb->get_results("select name from $otable where $qbs ORDER BY id ASC");
-				foreach($orowres as $orow){
-					$oset[]=$orow->name;
-				}
-				$optset=$wpdb->escape(implode(', ',$oset));
-			}else{
-				$optset='';
-			}
-			
-			//end
-			
-			$thechk=$_SESSION['shopcart'.$blog_id][$dlchking]['option'];
-			$edown=split(' ',$thechk);
-			$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
-			if($dlchk!=''){
-				//there are downloads.
-				$queryitem=$wpdb->query("INSERT INTO $itemstable
-				(checkid, item_id,item_qty,item_amt,optname,post_id,down_id,optsets)values(
-				'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id',
-				'$dlchk','$optset');");
-
-				$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
-				//add to download orders table
-				$dloadtable=$wpdb->prefix.'eshop_download_orders';
-				//$email,$checkid already set
-				$producttable=$wpdb->prefix.'eshop_downloads';
-				$grabit=$wpdb->get_row("SELECT id,title, files FROM $producttable where id='$dlchk'");
-				$downloads = get_option('eshop_downloads_num');
-				$wpdb->query("INSERT INTO $dloadtable
-				(checkid, title,purchased,files,downloads,code,email)values(
+		$eshopching=$wpdb->get_var("SELECT checkid from $detailstable where checkid='$checkid' limit 1");
+		if($eshopching!=$checkid){
+			$query1=$wpdb->query("INSERT INTO $detailstable
+				(checkid, first_name, last_name,company,email,phone, address1, address2, city,
+				state, zip, country, reference, ship_name,ship_company,ship_phone, 
+				ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
+				custom_field,transid,edited,comments,paidvia)VALUES(
 				'$checkid',
-				'$grabit->title',
+				'$first_name',
+				'$last_name',
+				'$company',
+				'$email',
+				'$phone',
+				'$address1',
+				'$address2',
+				'$city',
+				'$state',
+				'$zip',
+				'$country',
+				'$reference',
+				'$ship_name',
+				'$ship_company',
+				'$ship_phone',
+				'$ship_address',
+				'$ship_city',
+				'$ship_postcode',
+				'$ship_state',
+				'$ship_country',
+				'$custom_field',
+				'$processing',
 				NOW(),
-				'$grabit->files',
-				'$downloads',
-				'$code',
-				'$email');"
-				);
+				'$comments',
+				'$paidvia'
+					);");
+			$i=1;
+			//this is here to generate just one code per order
+			$code=eshop_random_code(); 
+			while($i<=$_POST['numberofproducts']){
+				$chk_id='item_number_'.$i;
+				$chk_qty='quantity_'.$i;
+				$chk_amt='amount_'.$i;
+				//$chk_opt=$itemoption.$i;
+				$chk_opt='item_name_'.$i;
+				$chk_postid='postid_'.$i;
+				$item_id=$wpdb->escape($_POST[$chk_id]);
+				$item_qty=$wpdb->escape($_POST[$chk_qty]);
+				$item_amt=$wpdb->escape(str_replace(',', "", $_POST[$chk_amt]));;
+				$optname=$wpdb->escape($_POST[$chk_opt]);
+				$post_id=$wpdb->escape($_POST[$chk_postid]);
 
-			}else{
-				$queryitem=$wpdb->query("INSERT INTO $itemstable
-				(checkid, item_id,item_qty,item_amt,optname,post_id,optsets)values(
-				'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$optset');");
-			}
-			$i++;
+				$dlchking=$_POST['eshopident_'.$i];
+				//add opt sets
+				if(isset($_SESSION['shopcart'.$blog_id][$dlchking]['optset'])){
+					$oset=$qb=array();
+					$optings=unserialize($_SESSION['shopcart'.$blog_id][$dlchking]['optset']);
+					$opttable=$wpdb->prefix.'eshop_option_sets';
+					foreach($optings as $foo=>$opst){
+						$qb[]="id=$opst";
+					}
+					$qbs = implode(" OR ", $qb);
+					$otable=$wpdb->prefix.'eshop_option_sets';
+					$orowres=$wpdb->get_results("select name from $otable where $qbs ORDER BY id ASC");
+					foreach($orowres as $orow){
+						$oset[]=$orow->name;
+					}
+					$optset=$wpdb->escape(implode(', ',$oset));
+				}else{
+					$optset='';
+				}
 
-		}
-		$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
-		$querypostage=$wpdb->query("INSERT INTO  $itemstable 
-				(checkid, item_id,item_qty,item_amt)values(
-				'$checkid',
-				'postage',
-				'1',
-				'$postage');");
-		//update the discount codes used, and remove from remaining
-		$disctable=$wpdb->prefix.'eshop_discount_codes';
-		if(eshop_discount_codes_check()){
-			if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
-				$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
-				$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
-				
-				$remaining=$wpdb->get_var("SELECT remain FROM $disctable where disccode='$discvalid' && dtype!='2' && dtype!='5' limit 1");
-				//reduce remaining
-				if(is_numeric($remaining) && $remaining!='')			
-					$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
+				//end
+
+				$thechk=$_SESSION['shopcart'.$blog_id][$dlchking]['option'];
+				$edown=explode(' ',$thechk);
+				$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
+				if($dlchk!=''){
+					//there are downloads.
+					$queryitem=$wpdb->query("INSERT INTO $itemstable
+					(checkid, item_id,item_qty,item_amt,optname,post_id,down_id,optsets)values(
+					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id',
+					'$dlchk','$optset');");
+
+					$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
+					//add to download orders table
+					$dloadtable=$wpdb->prefix.'eshop_download_orders';
+					//$email,$checkid already set
+					$producttable=$wpdb->prefix.'eshop_downloads';
+					$grabit=$wpdb->get_row("SELECT id,title, files FROM $producttable where id='$dlchk'");
+					$downloads = get_option('eshop_downloads_num');
+					$wpdb->query("INSERT INTO $dloadtable
+					(checkid, title,purchased,files,downloads,code,email)values(
+					'$checkid',
+					'$grabit->title',
+					NOW(),
+					'$grabit->files',
+					'$downloads',
+					'$code',
+					'$email');"
+					);
+
+				}else{
+					$queryitem=$wpdb->query("INSERT INTO $itemstable
+					(checkid, item_id,item_qty,item_amt,optname,post_id,optsets)values(
+					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$optset');");
+				}
+				$i++;
+
 			}
-		}
-		if(get_option('eshop_status')!='live'){
-			echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+			$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
+			$querypostage=$wpdb->query("INSERT INTO  $itemstable 
+					(checkid, item_id,item_qty,item_amt)values(
+					'$checkid',
+					'postage',
+					'1',
+					'$postage');");
+			//update the discount codes used, and remove from remaining
+			$disctable=$wpdb->prefix.'eshop_discount_codes';
+			if(eshop_discount_codes_check()){
+				if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
+					$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
+					$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
+
+					$remaining=$wpdb->get_var("SELECT remain FROM $disctable where disccode='$discvalid' && dtype!='2' && dtype!='5' limit 1");
+					//reduce remaining
+					if(is_numeric($remaining) && $remaining!='')			
+						$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
+				}
+			}
+			if(get_option('eshop_status')!='live'){
+				echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+			}
 		}
 	}
 }

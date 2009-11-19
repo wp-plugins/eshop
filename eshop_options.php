@@ -185,8 +185,8 @@ function extraoptions($start){
 		?>
 		<tr>
 			<th id="eshopnumrow<?php echo $i; ?>" headers="eshopnum"><?php echo $i; ?></th>
-			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option[<?php echo $i; ?>]" value="<?php echo $opt; ?>" type="text" size="25" /></td>
-			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price[<?php echo $i; ?>]" value="<?php echo $price; ?>" type="text" size="6" /></td>
+			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option[<?php echo $i; ?>]" value="" type="text" size="25" /></td>
+			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price[<?php echo $i; ?>]" value="" type="text" size="6" /></td>
 		</tr>	
 		<?php
 		$i++; 

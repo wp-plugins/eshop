@@ -57,6 +57,7 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_webtopay';
 	$epages[] = 'eshop_payson';
 	$epages[] = 'eshop_authorizenet';
+	$epages[] = 'eshop_ideallite';
 	$epages[] = 'eshop_business';
 	$epages[] = 'eshop_from_email';
 	$epages[] = 'eshop_cart';

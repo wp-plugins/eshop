@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '4.0.2');
+define('ESHOP_VERSION', '4.1.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 4.0.2
+Version: 4.1.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -267,7 +267,7 @@ if (!function_exists('eshop_cron')) {
 if (!function_exists('eshop_show_cancel')) {
 	function eshop_show_cancel(){
 		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='cancel'){
-			$echo ="<h3 class=\"error\">".__('The order was canceled at PayPal.','eshop')."</h3>";
+			$echo ='<h3 class="error">'.__('The order was cancelled at PayPal.','eshop')."</h3>";
 			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 		}
 		return $echo;
@@ -348,9 +348,29 @@ if (!function_exists('eshop_show_success')) {
 					</form>';
 				}
 			}
+			// Start of TEMCEDIT-20091117-a
+		}elseif(isset($_GET['eshopaction']) && $_GET['eshopaction']=='idealliteipn' && isset($_GET['ideal']['status']) ){
+			if($_GET['ideal']['status'] == md5("SUCCESS") ) {
+					$echo ='<h3 class="success">'.__('Thank you for your order','eshop')." !</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has been succesfully recieved.','eshop').'<br />';
+					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
+			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
+					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "ERROR".','eshop').'<br />';
+					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+					$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
+			}elseif($_GET['ideal']['status'] == md5("CANCEL") ) {
+
+					$echo ='<h3 class="error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "CANCEL".','eshop').'<br />';
+					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+			}else{
+					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Please try checkout your order again.','eshop').'</p>';
+			}
+            // End of TEMCEDIT-20091117-a
 		}
-		
-		return $echo;
+ 		return $echo;
 	}
 }
 if (!function_exists('eshop_show_cart')) {
@@ -516,6 +536,10 @@ if (!function_exists('eshopdata')) {
 		}
 		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='authorizenetipn'){
 			include_once 'authorizenet.php';
+			//exit;
+		}
+		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='idealliteipn'){
+			include_once 'ideallite.php';
 			//exit;
 		}
 		//we need to buffer output on a few pages

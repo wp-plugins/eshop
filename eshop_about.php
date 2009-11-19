@@ -102,6 +102,8 @@ update_option('eshop_first_time','no');
   <li><a href="mailto:integrate@mokejimai.lt">Markas Krasovskis</a> - for coding the webtopay merchant gateway api.</li>
   <li><a href="http://donelliott.us/">Don Elliott Design</a> - donating to have the eProcessingNetwork merchant gateway added.</li>
   <li><a href="http://combobreaker.com/">Dan Remollino</a> - donating to have option sets added.</li>
+  <li><a href="http://www.grizzdesign.nl/">Timo Tijhof</a> - scripting the iDeal Lite payment gateway.</li>
+
 
   </ul>
 </div>
