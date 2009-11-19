@@ -1045,7 +1045,7 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
 		wp_mkdir_p( $eshop_goto );
-		$files=array('paypal','payson','cash','epn','webtopay','authorizenet');
+		$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite');
 		foreach ($files as $file){
 			if(!file_exists($eshop_goto.'/'.$file.'.png')){
 				//copy the files
