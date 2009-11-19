@@ -2,7 +2,6 @@
 if ('checkout.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 
-
 global $wpdb;
 
 if (!function_exists('eshopShowform')) {
@@ -238,14 +237,26 @@ if (!function_exists('eshopShowform')) {
 			foreach(get_option('eshop_method') as $k=>$eshoppayment){
 				$replace = array(".");
 				$eshoppayment = str_replace($replace, "", $eshoppayment);
-				$echo .='<li><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></label><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
+				$eshoppayment_text=$eshoppayment;
+				if($eshoppayment_text=='cash'){
+					$eshopcash = get_option('eshop_cash');
+					if($eshopcash['rename']!='')
+						$eshoppayment_text=$eshopcash['rename'];
+				}
+				$echo .='<li><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></label><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
 		}else{
 			foreach(get_option('eshop_method') as $k=>$eshoppayment){
 				$replace = array(".");
 				$eshoppayment = str_replace($replace, "", $eshoppayment);
-				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
+				$eshoppayment_text=$eshoppayment;
+				if($eshoppayment_text=='cash'){
+					$eshopcash = get_option('eshop_cash');
+					if($eshopcash['rename']!='')
+						$eshoppayment_text=$eshopcash['rename'];
+				}
+				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
 		}
@@ -404,9 +415,9 @@ if (!function_exists('eshop_checkout')) {
 		}else{
 			$pzone='';
 			if(get_option('eshop_shipping_zone')=='country'){
-				if($_POST['ship_country']!=''){
+				if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
 					$pzone=$_POST['ship_country'];
-				}else{
+				}elseif(isset($_POST['country']) && $_POST['country']!=''){
 					$pzone=$_POST['country'];
 				}
 			}else{
@@ -539,7 +550,6 @@ if (!function_exists('eshop_checkout')) {
 			}
 		}
 			
-			
 		if(!isset($_POST['eshop_payment'])){
 			$error.= '<li>'.__('You have not chosen a <strong>payment option</strong>.','eshop').'</li>';
 		}
@@ -591,82 +601,7 @@ if (!function_exists('eshop_checkout')) {
 				$_POST['amount']=$fprice;
 				$_POST['custom']=$date;
 				$_POST['numberofproducts']=sizeof($_SESSION['shopcart'.$blog_id]);
-/* to be removed if no errors reported.
-				//shipping - replicated here, but currently easier than a function
-				$shiparray=array();
-				foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
-					if(is_array($opt)){
-						switch(get_option('eshop_shipping')){
-						case '1'://( per quantity of 1, prices reduced for additional items )
-							for($i=1;$i<=$opt['qty'];$i++){
-								array_push($shiparray, $opt["pclas"]);
-							}
-							break;
-						case '2'://( once per shipping class no matter what quantity is ordered )
-							if(!in_array($opt["pclas"], $shiparray)) {
-								array_push($shiparray, $opt["pclas"]);
-							}
-							break;
-						case '3'://( one overall charge no matter how many are ordered )
-							if(!in_array($opt["pclas"], $shiparray)) {
-								array_push($shiparray, 'A');
-							}
-							break;
-						}
-					}
-				}
-				//shipping for form.
-				if(get_option('eshop_shipping_zone')=='country'){
-					$tablec=$wpdb->prefix.'eshop_countries';
-				}else{
-					$tablec=$wpdb->prefix.'eshop_states';
-				}
-				$table2=$wpdb->prefix.'eshop_shipping_rates';
-				$tempshiparray=array();
-				$shipping=0;
-				switch(get_option('eshop_shipping')){
-					case '1'://( per quantity of 1, prices reduced for additional items )
-						foreach ($shiparray as $nowt => $shipclass){
-							//add to temp array for shipping
-							if(!in_array($shipclass, $tempshiparray)) {
-								if($shipclass!='F'){
-									array_push($tempshiparray, $shipclass);
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
-									$shipping+=$shipcost;
-								}
-							}else{
-								if($shipclass!='F'){
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
-									$shipping+=$shipcost;
-								}
-							}
-						}
-						break;
-					case '2'://( once per shipping class no matter what quantity is ordered )
-						foreach ($shiparray as $nowt => $shipclass){
-							if(!in_array($shipclass, $tempshiparray)) {
-								array_push($tempshiparray, $shipclass);
-								if($shipclass!='F'){
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
-									$shipping+=$shipcost;
-								}
-							}
-						}
-						break;
-					case '3'://( one overall charge no matter how many are ordered )
-						$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $tablec WHERE code='$pzone' limit 1");
-						$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
-						$shipping+=$shipcost;
-						break;
-				}
-				//discount shipping
-				if(is_shipfree(calculate_total())) $shipping=0;
-				$_POST['shipping_1']=$shipping;
 
-*/
 				//shipping
 				if(isset($_SESSION['shipping'.$blog_id]))$shipping=$_SESSION['shipping'.$blog_id];
 				//discount shipping

@@ -88,7 +88,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 			list char(2) NOT NULL default '',
 			  PRIMARY KEY  (id),
 			KEY zone (zone)
-			);";
+			) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone,list) VALUES  
@@ -258,7 +258,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	zone4 float(6,2) NOT NULL default '0.00',
 	zone5 float(6,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 
@@ -289,7 +289,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	down_id int(11) NOT NULL default '0',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -331,7 +331,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -345,7 +345,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  purchases int(11) NOT NULL default '0',
 	    PRIMARY KEY  (id),
 	  KEY post_id (post_id,available,purchases)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -360,7 +360,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  downloads int(11) NOT NULL default '0',
 	  purchases int(11) NOT NULL default '0',
 	    PRIMARY KEY  (id)
-			);";
+			) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -377,7 +377,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		email varchar(255) NOT NULL default '',
 		  PRIMARY KEY  (id),
 		KEY code (code,email)
-		);";
+		) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -391,7 +391,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		list tinyint(1) NOT NULL default '1',
 		  PRIMARY KEY  (code),
 		KEY zone (zone)
-		);";
+		) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,country,zone) VALUES  
@@ -601,7 +601,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  qty int(5) NOT NULL default '0',
 	  xtra text NOT NULL,
 	  PRIMARY KEY  (post_id)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -618,7 +618,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  live char(3) NOT NULL default 'no',
 	  PRIMARY KEY  (id),
 	  UNIQUE KEY disccode (disccode)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -632,7 +632,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	price float(8,2) NOT NULL default '0.00',
 	weight float(8,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -643,7 +643,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	name varchar(255) NOT NULL default '',
 	type tinyint(1) NOT NULL default '0',
 	  PRIMARY KEY  (optid)
-	);";
+	) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 }
@@ -658,7 +658,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		`emailSubject` VARCHAR( 255 ) NOT NULL ,
 		`emailContent` TEXT NOT NULL ,
 		PRIMARY KEY ( `id` )
-		);";
+		) $charset_collate;";
 	error_log("creating table $table");
 	dbDelta($sql);
 	//enter new defauts:

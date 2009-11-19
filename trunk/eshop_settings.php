@@ -51,6 +51,18 @@ if(isset($_POST['submit'])){
 			$paysonpost['description']=$wpdb->escape($_POST['payson']['description']);
 			$paysonpost['minimum']=$wpdb->escape($_POST['payson']['minimum']);
 			update_option('eshop_payson',$paysonpost);
+			//ideallite
+			$ideallitepost['IDEAL_AQUIRER']=$wpdb->escape($_POST['ideallite']['IDEAL_AQUIRER']);
+			$ideallitepost['IDEAL_HASH_KEY']=$wpdb->escape($_POST['ideallite']['IDEAL_HASH_KEY']);
+			$ideallitepost['IDEAL_MERCHANT_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_MERCHANT_ID']);
+			$ideallitepost['IDEAL_SUB_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_SUB_ID']);
+			$ideallitepost['IDEAL_TEST_MODE']=$wpdb->escape($_POST['ideallite']['IDEAL_TEST_MODE']);
+			$ideallitepost['IDEAL_URL_CANCEL']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_CANCEL']);
+			$ideallitepost['IDEAL_URL_ERROR']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_ERROR']);
+			$ideallitepost['IDEAL_URL_SUCCESS']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_SUCCESS']);
+			$ideallitepost['idealownermail']=$wpdb->escape($_POST['ideallite']['idealownermail']);
+			$ideallitepost['idealdescription']=$wpdb->escape($_POST['ideallite']['idealdescription']);
+			update_option('eshop_ideallite',$ideallitepost);
 			//authorize.net
 			$authorizenetpost['email']=$wpdb->escape($_POST['authorizenet']['email']);
 			$authorizenetpost['id']=$wpdb->escape($_POST['authorizenet']['id']);
@@ -65,6 +77,8 @@ if(isset($_POST['submit'])){
 			update_option('eshop_epn',$epnpost);
 			//cash
 			$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
+			$cashpost['rename']=$wpdb->escape($_POST['cash']['rename']);
+
 			update_option('eshop_cash',$cashpost);
 			//webtopay
 			$webtopaypost['id']=$wpdb->escape($_POST['webtopay']['id']);
@@ -406,7 +420,32 @@ switch($action_status){
 		<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
-			$currencycodes=array('AUD'=>'Australian Dollars','CAD'=>'Canadian Dollars','EUR'=>'Euros','GBP'=>'Pounds Sterling ','JPY'=>'Yen ','USD'=>'U.S. Dollars','NZD'=>'New Zealand Dollar','CHF'=>'Swiss Franc','HKD'=>'Hong Kong Dollar ','SGD'=>'Singapore Dollar ','SEK'=>'Swedish Krona','DKK'=>'Danish Krone','PLN'=>'Polish Zloty','NOK'=>'Norwegian Krone','HUF'=>'Hungarian Forint','CZK'=>'Czech Koruna','ILS'=>'Israeli Shekel','MXN'=>'Mexican Peso','LVL'=>'Latvijas lats','LTL' => 'Lithuanian Litas','RM' => 'Ringgit Malaysia');
+			$currencycodes=array(
+			'GBP'=>'Pounds Sterling ',
+			'USD'=>'U.S. Dollars',
+			'EUR'=>'Euros',
+			'AUD'=>'Australian Dollars',
+			'CAD'=>'Canadian Dollars',
+			'CHF'=>'Swiss Franc',
+			'CZK'=>'Czech Koruna',
+			'DKK'=>'Danish Krone',
+			'EUR'=>'Euros',
+			'GBP'=>'Pounds Sterling ',
+			'HKD'=>'Hong Kong Dollar ',
+			'HUF'=>'Hungarian Forint',
+			'ILS'=>'Israeli Shekel',
+			'JPY'=>'Yen ',
+			'LTL' => 'Lithuanian Litas',
+			'LVL'=>'Latvijas lats',
+			'MXN'=>'Mexican Peso',
+			'NOK'=>'Norwegian Krone',
+			'NZD'=>'New Zealand Dollar',
+			'PLN'=>'Polish Zloty',
+			'RM' => 'Ringgit Malaysia',
+			'SEK'=>'Swedish Krona',
+			'SGD'=>'Singapore Dollar ',
+			'TL' => 'Turkish Lira'
+			);
 			foreach($currencycodes as $code=>$codename){
 				if($code == get_option('eshop_currency')){
 					$sel=' selected="selected"';
@@ -455,6 +494,19 @@ switch($action_status){
 			?>
 	</select><br />
 	</fieldset>
+	<fieldset><legend><?php _e('iDeal Lite','eshop'); ?></legend>
+	<?php $ideallite = get_option('eshop_ideallite'); ?>
+		<p class="cbox"><input id="eshop_methodb" name="eshop_method[]" type="checkbox" value="ideallite"<?php if(in_array('ideallite',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodb"><?php _e('Accept payment by iDeal Lite','eshop'); ?></label></p>
+		<label for="eshop_IDEAL_AQUIRER"><?php _e('Aquirer','eshop'); ?></label><input id="eshop_IDEAL_AQUIRER" name="ideallite[IDEAL_AQUIRER]" type="text" value="<?php echo $ideallite['IDEAL_AQUIRER']; ?>" size="40" maxlength="50" /><em><?php _e('Use Rabobank, ING Bank or Simulator','eshop'); ?></em><br />
+		<label for="eshop_IDEAL_HASH_KEY"><?php _e('Hash Key','eshop'); ?></label><input id="eshop_IDEAL_HASH_KEY" name="ideallite[IDEAL_HASH_KEY]" type="text" value="<?php echo $ideallite['IDEAL_HASH_KEY']; ?>" size="20" /><em><?php _e('For Simulator use "Password"','eshop'); ?></em><br />
+		<label for="eshop_IDEAL_MERCHANT_ID"><?php _e('Merchant ID','eshop'); ?></label><input id="eshop_IDEAL_MERCHANT_ID" name="ideallite[IDEAL_MERCHANT_ID]" type="text" value="<?php echo $ideallite['IDEAL_MERCHANT_ID']; ?>" size="40" /><em><?php _e('For Simulator use "123456789"','eshop'); ?></em><br />
+		<label for="eshop_IDEAL_SUB_ID"><?php _e('Sub ID','eshop'); ?></label><input id="eshop_IDEAL_SUB_ID" name="ideallite[IDEAL_SUB_ID]" type="text" value="<?php echo $ideallite['IDEAL_SUB_ID']; ?>" size="40" /><em><?php _e('Unless you know what you\'re doing. Leave this to "0"','eshop'); ?></em><br />
+		<label for="eshop_IDEAL_TEST_MODE"><?php _e('Test Mode','eshop'); ?></label><input id="eshop_IDEAL_TEST_MODE" name="ideallite[IDEAL_TEST_MODE]" type="text" value="<?php echo $ideallite['IDEAL_TEST_MODE']; ?>" size="20" maxlength="20" /><em><?php _e('Use "true" or "false"','eshop'); ?></em><br />
+		<br />
+		<label for="eshop_idealownermail"><?php _e('Email address','eshop'); ?></label><input id="eshop_idealownermail" name="ideallite[idealownermail]" type="text" value="<?php echo $ideallite['idealownermail']; ?>" size="40" maxlength="30" /><em><?php _e('Order notifications are sent to this address.','eshop'); ?></em><br />
+		<label for="eshop_idealdescription"><?php _e('Description','eshop'); ?></label><input id="eshop_idealdescription" name="ideallite[idealdescription]" type="text" value="<?php echo $ideallite['idealdescription']; ?>" size="40" maxlength="30" /><em><?php _e('Description for the iDEAL payment','eshop'); ?></em><br />
+		<br />
+	</fieldset>
 	<fieldset><legend><?php _e('eProcessingNetwork','eshop'); ?></legend>
 		<p><?php _e('<strong>Warning:</strong> All payments to eProcessingNetwork are in USD, irrespective of settings above. In test mode totals ending in a single cent are always failed.','eshop'); ?></p>
 		<?php $epn = get_option('eshop_epn'); ?>
@@ -468,6 +520,8 @@ switch($action_status){
 		<?php $eshopcash = get_option('eshop_cash'); ?>
 		<p class="cbox"><input id="eshop_methodd" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)get_option('eshop_method'))) echo ' checked="checked"'; ?> /><label for="eshop_methodd"><?php _e('Accept cash payments','eshop'); ?></label></p>
 		<label for="eshop_cashemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_cashemail" name="cash[email]" type="text" value="<?php echo $eshopcash['email']; ?>" size="30" maxlength="50" /><br />
+		<label for="eshop_cashrename"><?php _e('Change Cash name to','eshop'); ?></label><input id="eshop_cashrename" name="cash[rename]" type="text" value="<?php echo $eshopcash['rename']; ?>" size="30" maxlength="50" /><br />
+
 		</fieldset>
 		
 	<fieldset><legend><?php _e('Webtopay','eshop'); ?></legend>

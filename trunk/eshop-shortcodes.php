@@ -648,6 +648,13 @@ function eshop_show_payments(){
 		$eshopfiles=eshop_files_directory();
 		$echo.= "\n".'<ul class="eshop eshoppayoptions">'."\n";
 		foreach(get_option('eshop_method') as $k=>$eshoppayment){
+			$eshoppayment_text=$eshoppayment;
+			if($eshoppayment_text=='cash'){
+				$eshopcash = get_option('eshop_cash');
+				if($eshopcash['rename']!='')
+					$eshoppayment_text=$eshopcash['rename'];
+			}
+
 			$echo.= '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
 			$i++;
 		}
