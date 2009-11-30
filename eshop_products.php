@@ -37,7 +37,7 @@ function eshop_products_manager() {
 	///images
 	if(isset($_GET['change']) && is_numeric($_GET['change'])){
 		$change=$_GET['change'];
-		if(isset($_POST['submit']) && $_POST['submit']==__('Update','eshop')){
+		if(isset($_POST['submit'])){
 			//include 'cart-functions.php';
 			$_POST=sanitise_array($_POST);
 			if(isset($_POST['prodimg'])){

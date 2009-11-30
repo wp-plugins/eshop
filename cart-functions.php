@@ -895,6 +895,9 @@ if (!function_exists('eshop_download_the_product')) {
 				$chkresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && id='$id' && downloads!=0");
 				if($chkcount>0){
 					foreach($chkresult as $chkrow){
+						// make sure output buffering is disabled
+					   	ob_end_clean();
+
 						$item=$chkrow->files;
 						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$id' limit 1");
 						//update product with number of downloads made
@@ -943,6 +946,8 @@ if (!function_exists('eshop_download_the_product')) {
 						$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$drow->title' && files='$item' limit 1");
 					}
 				}	
+				// make sure output buffering is disabled
+				ob_end_clean();
 				// Create archive in memory
 				$test->create_archive();
 				// Send archive to user for download
