@@ -20,33 +20,42 @@ function eshop_widget($args) {
 	extract($args);
 	$options = get_option("eshop_widget");
 	$title = empty($options['title']) ? __('eShop Cart','eshop') : apply_filters('widget_title', $options['title']);
-
-	echo $before_widget;
-	echo $before_title.$title.$after_title;
-	$eshopsize=0;
-	if(isset($_SESSION['shopcart'.$blog_id])){
-		$eshopsize=sizeof($_SESSION['shopcart'.$blog_id]);
+	if($options['show']!='no'){
+		echo $before_widget;
+		echo $before_title.$title.$after_title;
+		$eshopsize=0;
+		if(isset($_SESSION['shopcart'.$blog_id])){
+			$eshopsize=sizeof($_SESSION['shopcart'.$blog_id]);
+		}
+		echo '<p class="eshopwidget"><span>'.$eshopsize.'</span> ',plural($eshopsize, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
+		if(isset($_SESSION['shopcart'.$blog_id])){
+			echo '<br /><a href="'.get_permalink(get_option('eshop_cart')).'">'.__('View Cart','eshop').'</a>';
+			echo '<br /><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('Checkout','eshop').'</a>';
+		}
+		echo '</p>'.$after_widget;
 	}
-	echo '<p class="eshopwidget"><span>'.$eshopsize.'</span> ',plural($eshopsize, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
-	if(isset($_SESSION['shopcart'.$blog_id])){
-		echo '<br /><a href="'.get_permalink(get_option('eshop_cart')).'">'.__('View Cart','eshop').'</a>';
-		echo '<br /><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('Checkout','eshop').'</a>';
-	}
-	echo '</p>'.$after_widget;
 }
 function eshop_control(){
   $options = get_option("eshop_widget");
 
   if (isset($_POST['eshop-Submit']) && $_POST['eshop-Submit']=='1') {
-    $options['title'] = strip_tags(stripslashes($_POST['eshop-WidgetTitle']));
+    $options['title'] = strip_tags(stripslashes($_POST['eshop-Widget']['title']));
+    $options['show'] = strip_tags(stripslashes($_POST['eshop-Widget']['show']));
+
     update_option("eshop_widget", $options);
   }
+  
 ?>
   <p>
     <label for="eshop-WidgetTitle"><?php _e('Title:'); ?></label>
-    <input type="text" id="eshop-WidgetTitle" name="eshop-WidgetTitle" value="<?php echo $options['title'];?>" />
+    <input type="text" id="eshop-Widgettitle" name="eshop-Widget[title]" value="<?php echo $options['title'];?>" />
     <input type="hidden" id="eshop-Submit" name="eshop-Submit" value="1" />
   </p>
+  <p><label for="eshop-WidgetShow"><?php _e('Show when empty','eshop'); ?></label>
+  		<select id="eshop-WidgetShow" name="eshop-Widget[show]">
+  		<option value="yes"<?php selected( $options['show'], 'yes' ); ?>><?php _e('Yes','eshop'); ?></option>
+  		<option value="no"<?php selected( $options['show'], 'no' ); ?>><?php _e('No','eshop'); ?></option>
+	</select></p>
 <?php
 }
 /* *******************************

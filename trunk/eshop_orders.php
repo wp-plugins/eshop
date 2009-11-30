@@ -666,7 +666,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 
 		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name."<br />\n";
 		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
-		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email."</a><br />\n";
+		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email.'</a> <small class="noprint">'.__('(sends a form email)','eshop')."</small><br />\n";
 		if('no' == get_option('eshop_downloads_only')){
 			echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->phone."</p>\n";
 
