@@ -94,7 +94,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 </tr>
 </thead>
 <tbody>
-<tr><th>[eshop_list_subpages]</th>	<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
+<tr><th>[eshop_list_subpages]</th>	<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>no</td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
 <tr class="alternate"><th>[eshop_list_featured]</th>	<td>eshopfeatured</td><td>no</td><td>no</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
 <tr><th>[eshop_list_new]</th>		<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr> 
 <tr class="alternate"><th>[eshop_random_products]</th><td>eshoprandomlist</td><td>no</td><td>no</td><td>6</td><td>6</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>yes</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td>0</td></tr> 
@@ -135,7 +135,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>sortby</code> example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possivle values: post_date, post_title or menu_order</li>
 <li><code>order</code> example: <em>order="ASC"</em> shows the results in ascending, or descending order. Possible values: ASC or DESC</li>
 <li><code>list</code> example: <em>list="no"</em> limits the display to 1 random product.</li>
-<li><code>id</code> example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only.</li>
+<li><code>id</code> example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only. For subpages, only one id can be used.</li>
 <li><code>imgsize</code> example: <em>imgsize="50"</em> would resize the image to 50% of its original width and height.</li>
 <li><code>excludes</code> example: <em>excludes="5,14"</em> allows you to exclude items from the list.</li>
 
@@ -454,12 +454,21 @@ php_value session.gc_maxlifetime 10800
 <div class="wrap">
 <h2 id="actnote">Notes on activation</h2>
 <p>When eShop is actiavted it adds database tables, and adds data where necessary to those, and native wordpress, tables. Additionally there are some <a href="#autop">automatically created pages</a>.</p>
-<p>To ensure updates to the plugin don't over write changes you have made ceratin directories and files are copied to new locations <strong>on the first activation only</strong>.</p>
+<p>To ensure updates to the plugin don't over write changes you have made certain directories and files are copied to new locations <strong>on the first activation only</strong>.</p>
 <ul>
 <li><strong>wp-content/eshop_downloads</strong> is created from plugins/eshop/downloads</li>
 <li><strong>wp-content/uploads/eshop_files</strong> is created from plugins/eshop/files</li>
 </ul>
 <p>So, for example, when you edit your style, the actual eshop.css file that is being amended is located in <strong>wp-content/uploads/eshop_files</strong>.</p>
+<p>The default pages for eShop are:</p>
+<ul>
+<li><strong>Shipping Rates</strong>: [eshop_show_shipping]</li>
+<li><strong>Shopping Cart</strong> : <code>[eshop_show_cart]</code></li>
+<li><strong>Checkout</strong> : <code>[eshop_show_checkout]</code></li>
+<li><strong>Thank you for your order</strong>:  <code>[eshop_show_success]</code></li>
+<li><strong>Cancelled order</strong> : <code>[eshop_show_cancel]</code></li>
+<li><strong>Downloads</strong> : <code>[eshop_show_downloads]</code></li>
+</ul>
 </div>
 
 <div class="wrap">

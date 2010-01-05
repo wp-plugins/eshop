@@ -84,6 +84,9 @@ if(isset($_POST['submit'])){
 			$webtopaypost['id']=$wpdb->escape($_POST['webtopay']['id']);
 			$webtopaypost['password']=$wpdb->escape($_POST['webtopay']['password']);
 			$webtopaypost['lang']=$wpdb->escape($_POST['webtopay']['lang']);
+			$webtopaypost['signature']=$wpdb->escape($_POST['webtopay']['signature']);
+			$webtopaypost['projectid']=$wpdb->escape($_POST['webtopay']['projectid']);
+
 			update_option('eshop_webtopay',$webtopaypost);
 			if(!is_array(get_option('eshop_method'))){
 				update_option('eshop_status',$wpdb->escape('testing'));
@@ -537,7 +540,13 @@ switch($action_status){
 			
 	<label for="eshop_webtopaylang"><?php _e('Webtopay language (ENG ESP EST FIN FRE GEO GER ITA LAV LIT NOR POL ROU RUS SPA SWE)','eshop'); ?></label>
 	<input id="eshop_webtopaylang" name="webtopay[lang]" type="text" value="<?php echo $eshopwebtopay['lang']; ?>" size="30" maxlength="50" /><br />
-			
+	
+	<label for="eshop_webtopayprojectid"><?php _e('Webtopay project ID','eshop'); ?></label>
+	<input id="eshop_webtopayprojectid" name="webtopay[projectid]" type="text" value="<?php echo $eshopwebtopay['projectid']; ?>" size="30" maxlength="50" /><br />
+	                        
+	<label for="eshop_webtopaysignature"><?php _e('Webtopay signature password','eshop'); ?></label>
+	<input id="eshop_webtopaysignature" name="webtopay[isignature]" type="text" value="<?php echo $eshopwebtopay['signature']; ?>" size="30" maxlength="50" /><br />
+	
 	</fieldset>
 	
 	<fieldset><legend><?php _e('Authorize.net','eshop'); ?></legend>
@@ -584,7 +593,7 @@ switch($action_status){
 	<tr>
 	<th headers="elevel"  id="row<?php echo $x ?>"><?php echo $x ?></th>
 	<td headers="elevel espend row<?php echo $x ?>"><label for="eshop_discount_spend<?php echo $x ?>"><?php _e('Spend','eshop'); ?></label><input id="eshop_discount_spend<?php echo $x ?>" name="eshop_discount_spend<?php echo $x ?>" type="text" value="<?php echo get_option("eshop_discount_spend$x"); ?>" size="5" /></td>
-	<td headers="elevel ediscount row<?php echo $x ?>"><label for="eshop_discount_value<?php echo $x ?>"><?php _e('Discount','eshop'); ?></label><input id="eshop_discount_value<?php echo $x ?>" name="eshop_discount_value<?php echo $x ?>" type="text" value="<?php echo get_option("eshop_discount_value$x"); ?>" size="5" maxlength="4" /></td>
+	<td headers="elevel ediscount row<?php echo $x ?>"><label for="eshop_discount_value<?php echo $x ?>"><?php _e('Discount','eshop'); ?></label><input id="eshop_discount_value<?php echo $x ?>" name="eshop_discount_value<?php echo $x ?>" type="text" value="<?php echo get_option("eshop_discount_value$x"); ?>" size="5" maxlength="5" /></td>
 	</tr>
 	<?php
 	}

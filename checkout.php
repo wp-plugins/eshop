@@ -295,7 +295,7 @@ if (!function_exists('eshop_checkout')) {
 		include_once(ABSPATH.'wp-includes/wp-db.php');
 		include_once WP_PLUGIN_DIR."/eshop/cart-functions.php";
 		if(isset($_POST['eshop_payment']))
-			$_SESSION['eshop_payment'.$blog_id]=$_POST['eshop_payment'];
+			$_SESSION['eshop_payment'.$blog_id]=preg_replace('/[^a-zA-Z0-9\-_]/','',$_POST['eshop_payment']);
 			
 		if(!isset($_SESSION['eshop_payment'.$blog_id])){
 			$paymentmethod='paypal';

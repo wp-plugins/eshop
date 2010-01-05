@@ -102,9 +102,41 @@ class webtopay_class {
 			$callbackURL = strtr($_POST['notify_url'], array('&amp;' => '&'));
 			
 			list($callbackURL, $getCallback) = explode('?', $callbackURL);
+						
+			# *************************************************
+			# -- How we create sign param --
+			$signFields = array( 
+				'merchantid' => $webtopay['id'], 
+				'orderid' => $_POST['RefNr'], 
+				'lang' => $webtopay['lang'], 
+				'amount' => (($Cost + $ExtraCost) * 100), 
+				'currency' => get_option('eshop_currency'), 
+				'accepturl' => get_permalink(get_option('eshop_cart_success')), 
+				'cancelurl' => get_permalink(get_option('eshop_checkout')), 
+				'callbackurl' => $callbackURL, 
+				'payment' => __('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop'), 
+				'country' => '', 
+				'logo' => '', 
+				'p_firstname' => $_POST['first_name'], 
+				'p_lastname' => $_POST['last_name'], 
+				'p_email' => $_POST['email'], 
+				'p_street' => $_POST['address1'].' '. $_POST['address2'], 
+				'p_city' => $_POST['city'], 
+				'p_state' => $_POST['state'], 
+				'p_zip' => $_POST['zip'], 
+				'p_countrycode' => $_POST['country'], 
+				'test'  => (get_option('eshop_status')=='live' ? 0 : 1)
+			);
 			
+			foreach ($signFields as $num => $value)
+				$dString .= trim($value) != '' ? sprintf("%03d", strlen($value)) . strtolower($value) : NULL;
+			
+			$sign = md5($dString . $webtopay['signature']);
+			# *************************************************
+						
 			$echortn.=' 
 			<input type="hidden" name="MerchantID" value="'.$webtopay['id'].'" />
+			<input type="hidden" name="ProjectID" value="'.$webtopay['projectid'].'" />
 			<input type="hidden" name="OrderID" value="'.$_POST['RefNr'].'" />
 			<input type="hidden" name="Lang" value="' . $webtopay['lang'] . '" />
 			<input type="hidden" name="Currency" value="' . get_option('eshop_currency') . '" />
@@ -126,6 +158,8 @@ class webtopay_class {
 			<input type="hidden" name="p_state" value="'.$_POST['state'].'">			
 			<input type="hidden" name="p_zip" value="'.$_POST['zip'].'">			
 			<input type="hidden" name="p_countrycode" value="'.$_POST['country'].'">	
+			
+			<input type="hidden" name="sign" value="'.$sign.'">	
 			
 			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
 			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
