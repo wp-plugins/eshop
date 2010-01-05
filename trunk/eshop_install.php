@@ -754,6 +754,11 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic w
 
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
+
+if ( get_option('eshop_version')=='' || get_option('eshop_version') < '4.1.9' ){
+	$table = $wpdb->prefix . "eshop_discount_codes";
+	$wpdb->query("ALTER TABLE ".$table." CHANGE `percent` `percent` float(4,2) NOT NULL DEFAULT '0'");
+}
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.9.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
@@ -768,6 +773,7 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.9.0' ){
 			$wpdb->query($sql);
 	}
 }
+
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.5.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `item_id` `item_id` VARCHAR( 255 ) NOT NULL DEFAULT''");

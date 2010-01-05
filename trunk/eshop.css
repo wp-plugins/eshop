@@ -341,6 +341,25 @@ p.submit.eshop,#filterzones p.submit{
 	border:0;
 	padding:0;
 }
+#eshopddata{
+	background-color: #fffeeb;
+		border-bottom-color: #ccc;
+		border-top-color: #ccc;
+		color: #555;
+		line-height: 29px;
+		font-size: 12px;
+		text-align: center;
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-top-width: 1px;
+	border-top-style: solid;
+}
+#eshopddata input{
+	background:#a00;
+	color:#fffff5;
+	border-color:#a00;
+}
+
 #shipformmethod{
 	line-height:2em;
 	margin-bottom:2em;

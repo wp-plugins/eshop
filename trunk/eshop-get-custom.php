@@ -58,11 +58,11 @@ function eshop_boing($pee,$short='no'){
 					$optarray[$myrow->optid]['item'][$x]['price']=$myrow->price;
 					$x++;
 				}
-				
+				$enumb=0;
 				foreach($optarray as $optsets){
 					switch($optsets['type']){
 						case '0'://select
-							$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].'">'.stripslashes(attribute_escape($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].'" name="optset[]">'."\n";
+							$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.'">'.stripslashes(attribute_escape($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.'" name="optset[]">'."\n";
 							foreach($optsets['item'] as $opsets){
 								if($opsets['price']!='0.00')
 									$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
@@ -82,12 +82,13 @@ function eshop_boing($pee,$short='no'){
 								$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
 							else
 								$addprice='';
-							$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].'i'.$ox.'">'.stripslashes(attribute_escape($opsets['label'])). $addprice.'</label></span>'."\n";
+							$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.'">'.stripslashes(attribute_escape($opsets['label'])). $addprice.'</label></span>'."\n";
 						}
 						$replace.="</fieldset>\n";
 						
 						break;
 					}
+					$enumb++;
 				
 				}
 			}
@@ -98,15 +99,25 @@ function eshop_boing($pee,$short='no'){
 				$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
 				for($i=1;$i<=$opt;$i++){
 					if(eshop_get_custom('Option '.$i)!=''){
-						$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price '.$i),2)).'</option>'."\n";
+						if(eshop_get_custom('Price '.$i)!='0.00')
+							$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price '.$i),2)).'</option>'."\n";
+						else
+							$replace.='<option value="Option '.$i.'">'.stripslashes(attribute_escape(eshop_get_custom('Option '.$i))).'</option>'."\n";
 					}
 				}
 				$replace.='</select></label>';
 			}else{
-				$replace.='
-				<input type="hidden" name="option" value="Option 1" />
-				<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price 1'),2)).'</span></span>
-				';
+				if(eshop_get_custom('Price 1')!='0.00'){
+					$replace.='
+					<input type="hidden" name="option" value="Option 1" />
+					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(eshop_get_custom('Price 1'),2)).'</span></span>
+					';
+				}else{
+					$replace.='
+					<input type="hidden" name="option" value="Option 1" />
+					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(attribute_escape(eshop_get_custom('Option 1'))).'</span></span>
+					';
+				}
 			}
 			if($short=='yes'){
 				$replace .='<input type="hidden" name="qty" value="1" />';

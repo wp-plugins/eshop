@@ -11,8 +11,9 @@ if (!function_exists('eshop_cart')) {
 		$error='';
 		//delete the session, empties the cart
 		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['shopcart'.$blog_id]))){
-			$_SESSION = array();
-			//session_destroy();
+			unset($_SESSION['shopcart'.$blog_id]);
+			unset($_SESSION['final_price'.$blog_id]);
+			unset($_SESSION['items'.$blog_id]);
 			$_POST['save']='false';
 		}
 		//on windows this check isn't working correctly, so I've added ==0 
@@ -175,7 +176,9 @@ if (!function_exists('eshop_cart')) {
 		}
 		//any errors will print here.
 		if($error!='') $echo.= $error;
-
+		if(sizeof($_SESSION['shopcart'.$blog_id])=='0'){
+			unset($_SESSION['shopcart'.$blog_id]);
+		}
 		if(isset($_SESSION['shopcart'.$blog_id])){
 			if((isset($_GET['eshopaction']) && $_GET['eshopaction']=='cancel') && !isset($_POST['save'])){
 				$echo.= "<h3>".__('The order was cancelled at','eshop')." ".get_option('eshop_method').".</h3>"; 

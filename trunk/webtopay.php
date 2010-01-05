@@ -125,18 +125,54 @@ switch ($_GET['eshopaction']) {
 	case 'webtopayipn': // webtopay server calling for paymen. confirm
     
 		//- SS2 check! Calling webtopay server or not -
-
-	    function goodRequest()
-	    {
-			$_SS2 = "";
-	        $pKeyP = base64_decode("LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlETHpDQ0FwaWdBd0lCQWdJQkFUQU5CZ2txaGtpRzl3MEJBUVVGQURCdE1Rc3dDUVlEVlFRR0V3Sk1WREVRDQpNQTRHQTFVRUJ4TUhWbWxzYm1sMWN6RWZNQjBHQTFVRUNoTVdSVlpRSUVsdWRHVnlibUYwYVc5dVlXd3NJRlZCDQpRakVQTUEwR0ExVUVBeE1HWlhad0xteDBNUm93R0FZSktvWklodmNOQVFrQkZndHBibVp2UUdWMmNDNXNkREFlDQpGdzB3T0RBM01ESXhNVFExTURWYUZ3MHdPVEEzTURJeE1UUTFNRFZhTUdVeEN6QUpCZ05WQkFZVEFreFVNUjh3DQpIUVlEVlFRS0V4WkZWbEFnU1c1MFpYSnVZWFJwYjI1aGJDd2dWVUZDTVJrd0Z3WURWUVFERXhCM2QzY3VkMlZpDQpkRzl3WVhrdVkyOXRNUm93R0FZSktvWklodmNOQVFrQkZndHBibVp2UUdWMmNDNXNkRENCbnpBTkJna3Foa2lHDQo5dzBCQVFFRkFBT0JqUUF3Z1lrQ2dZRUF4bEh5T3Z0THgxOVZDUCtaa1hkc0dYS3BGZzVnalc4V1d4UFh5MVlJDQpBTkxaZlhOYkpzRWRzbEUxeDBUdkRMVUU4WUxTaXRVaE9OSDRmVDBCdWVDM3ArRUlkZFdSK01VQ0tEcks0UzFDDQp2VWxta3JoMFU3dkg1OWZLbDc1Q09CR1ArUG9wZjBoamEvNnFpZUpWaHBqQ1VGa0ZCRHpwVjNjMzQyQm9aYWd5DQphVHNDQXdFQUFhT0I1akNCNHpBSkJnTlZIUk1FQWpBQU1Dd0dDV0NHU0FHRytFSUJEUVFmRmgxUGNHVnVVMU5NDQpJRWRsYm1WeVlYUmxaQ0JEWlhKMGFXWnBZMkYwWlRBZEJnTlZIUTRFRmdRVXlUWnBWY3JiVEllVjI2SkpoMkhZDQoxZlp4WUVBd2dZZ0dBMVVkSXdTQmdEQitvWEdrYnpCdE1Rc3dDUVlEVlFRR0V3Sk1WREVRTUE0R0ExVUVCeE1IDQpWbWxzYm1sMWN6RWZNQjBHQTFVRUNoTVdSVlpRSUVsdWRHVnlibUYwYVc5dVlXd3NJRlZCUWpFUE1BMEdBMVVFDQpBeE1HWlhad0xteDBNUm93R0FZSktvWklodmNOQVFrQkZndHBibVp2UUdWMmNDNXNkSUlKQU1nODM2c2cwWVltDQpNQTBHQ1NxR1NJYjNEUUVCQlFVQUE0R0JBRGY1MVlzOWVrQVlNdFZnS3NFMlFaWjhueDZUWnRTejFNN1ZYQ282DQp2U2hLWkI0TlRIM1AyRDNVaG42Y0hLZXMwVGJTWlZWQ2hsRE1ON2MwVjAzQUpXdzJrQlhram5iQTRLeDJxeUlJDQo4R1dlVW1CdmdHYVR4cmZnZXh2TXExN0NEVmVrbUE5ekJoK09FMVZ3THdrVUZmNStSMTRDQ1g4anhFdmRYcU1WDQpLL0dqDQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t");
-	        $pKey = openssl_pkey_get_public($pKeyP);
-	        if(!$pKey) return false;
-	        foreach($_GET As $key => $value) if($key!='_ss2') $_SS2 .= "{$value}|";
-	        $ok = openssl_verify($_SS2, base64_decode($_GET['_ss2']), $pKey);
-	        return ($ok === 1);
-	    }
+	
+		function getCert($cert = null) {
+			$fp = fsockopen("downloads.webtopay.com", 80, $errno, $errstr, 30);
+			if (!$fp)
+			    exit("Cert error: $errstr ($errno)<br />\n");
+			else {
+			    $out = "GET /download/" . ($cert ? $cert : 'public.key') . " HTTP/1.1\r\n";
+			    $out .= "Host: downloads.webtopay.com\r\n";
+			    $out .= "Connection: Close\r\n\r\n";
+			
+			    $content = '';
+			    
+			    fwrite($fp, $out);
+			    while (!feof($fp)) $content .= fgets($fp, 8192);
+			    fclose($fp);
+			    
+			    list($header, $content) = explode("\r\n\r\n", $content, 2);
 		
+			    return $content;
+			}
+		}
+		
+		function checkCert($cert = null) {
+		
+			$pKeyP = getCert($cert);
+		
+			if (!$pKeyP) return false;
+			        
+			$pKey = openssl_pkey_get_public($pKeyP);
+			         
+			if (!$pKey) return false;
+			        
+			$_SS2 = "";
+			
+			foreach ($_GET As $key => $value) if ($key!='_ss2') $_SS2 .= "{$value}|";
+			        
+			$ok = openssl_verify($_SS2, base64_decode($_GET['_ss2']), $pKey);
+			        
+			return ($ok === 1);
+		}
+		
+		function goodRequest()
+		{
+			if (checkCert()) return true;
+			
+			return checkCert('public_old.key');
+		}
+	 
 	    # --
 	       
 		if( goodRequest())
@@ -150,6 +186,12 @@ switch ($_GET['eshopaction']) {
 			$webtopay = get_option('eshop_webtopay'); 
 			$Key=$webtopay['id'];
 
+			if ($webtopay['id'] != $_GET['merchantid']) exit('Incorrect MerchantID!');
+			
+			if ($webtopay['projectid'] != $_GET['projectid'] && $webtopay['projectid'] > 0) exit('Incorrect ProjectID!');
+			
+			if ($_GET['status'] != '1') exit('Status not accepted: ' . $_GET['status']);
+			
 			$checked = $ps->ipn_data["refnr"];
 
 			$SQL = "select status from $detailstable where checkid='$checked' limit 1";

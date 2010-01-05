@@ -51,14 +51,7 @@ function eshop_discounts_manager() {
 	//new or edit
 	
 	if(isset($_POST['editid'])){
-		$eshop_id=$wpdb->escape(trim($_POST['editid']));
-		$eshop_code=$wpdb->escape(trim($_POST['eshop_code']));
-		$eshop_percent=$wpdb->escape($_POST['eshop_percent']);
-		$eshop_remain=$wpdb->escape($_POST['eshop_remain']);
-		$eshop_code_type=$wpdb->escape($_POST['eshop_code_type']);
-		$eshop_code_month=$wpdb->escape(trim($_POST['eshop_code_month']));
-		$eshop_code_day=$wpdb->escape(trim($_POST['eshop_code_day']));
-		$eshop_code_year=$wpdb->escape(trim($_POST['eshop_code_year']));
+		
 		if(isset($_POST['eshop_live']))
 			$eshop_live='yes';
 		else
@@ -106,7 +99,14 @@ function eshop_discounts_manager() {
 			//no errors!
 			//create date
 			$eshop_code_date=$eshop_code_year.'-'.$eshop_code_month.'-'.$eshop_code_day;
-		
+			$eshop_id=$wpdb->escape(trim($_POST['editid']));
+			$eshop_code=$wpdb->escape(trim($_POST['eshop_code']));
+			$eshop_percent=$wpdb->escape($_POST['eshop_percent']);
+			$eshop_remain=$wpdb->escape($_POST['eshop_remain']);
+			$eshop_code_type=$wpdb->escape($_POST['eshop_code_type']);
+			$eshop_code_month=$wpdb->escape(trim($_POST['eshop_code_month']));
+			$eshop_code_day=$wpdb->escape(trim($_POST['eshop_code_day']));
+			$eshop_code_year=$wpdb->escape(trim($_POST['eshop_code_year']));
 			if($eshop_id!='0'){
 				//edit
 				//$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$id"));
@@ -119,9 +119,8 @@ function eshop_discounts_manager() {
 				enddate='$eshop_code_date',
 				live='$eshop_live'
 				WHERE id='$eshop_id' limit 1";
-				$wpdb->query($wpdb->prepare($query));
+				$wpdb->query($query);
 				echo '<div class="updated fade"><p>'.__('Discount code details updated','eshop').'</p></div>';
-
 			}else{
 				//new
 				$query="INSERT INTO $disctable 

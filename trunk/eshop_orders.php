@@ -19,7 +19,27 @@ if (isset($_GET['action']) )
 else
 	$_GET['action']=$action_status = 'Pending';
 
-
+if(isset($_POST['eshopdeletedata'])){
+	$etable[]=$wpdb->prefix.'eshop_orders';
+	$etable[]=$wpdb->prefix.'eshop_download_orders';
+	$etable[]=$wpdb->prefix.'eshop_order_items';
+	foreach($etable as $detable){
+		$wpdb->query("TRUNCATE $detable");
+	}
+	echo '<p id="eshopddata">'.__('Records deleted','eshop').'</p>';
+	unset($_GET['eshopddata']);
+}
+if(isset($_GET['eshopddata'])){
+?>
+	<form action="" method="post" id="eshopddata" name="eshopddata">
+	<fieldset>
+	<input type="hidden" name="eshopdeletedata" value='1' />
+	<label for="esub"><?php _e('Delete all orders and reset all stats <small>(this action cannot be undone)</small>','eshop'); ?></label>
+	<span class="submit eshop"><input type="submit" value="<?php _e('Delete','eshop'); ?>" id="esub" name="submit" /></span>
+	</fieldset>
+</form>
+<?php
+}
 //admin note handling
 if(isset($_POST['eshop-adnote'])){
 	$dtable=$wpdb->prefix.'eshop_orders';
@@ -389,6 +409,16 @@ if (!function_exists('displaystats')) {
 			?>
 			<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
 			<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
+			</ul>
+			</div>
+			<hr class="eshopclear" />
+			<div class="eshop-stats-box">
+			<h3><?php _e('Delete all Data','eshop'); ?></h3>
+			<ul>
+			<?php
+				$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopddata=yes';
+			?>
+			<li><a href="<?php echo $dlpage; ?>"><?php _e('Delete all orders and reset all stats','eshop'); ?></a></li>
 			</ul>
 			</div>
 			<?php

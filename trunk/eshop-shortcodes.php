@@ -161,8 +161,13 @@ function eshop_list_alpha($atts){
 } 
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>''), $atts));
 	$echo='';
+	if($id!='')
+		$eshopid=$id;
+	else
+		$eshopid=$post->ID;
+		
 	$allowedsort=array('post_date','post_title','menu_order');
 	$allowedorder=array('ASC','DESC');
 	if(!in_array($sortby,$allowedsort)) 
@@ -186,12 +191,12 @@ function eshop_list_subpages($atts){
 	//my pager
 	include_once ("pager-class.php");
 	$range=10;
-	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent=$post->ID AND post_status='publish'");
+	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent=$eshopid AND post_status='publish'");
 	if($max>$show)
 		$max=$show;
 	if($max>0){
 		if(isset($_GET['viewall']))$records=$max;
-		$phpself=explode('?',get_permalink($post->ID));
+		$phpself=explode('?',get_permalink($eshopid));
 		$pager = new eshopPager( 
 			$max ,          //see above
 			$records,            // how many records to display at one time
@@ -206,7 +211,7 @@ function eshop_list_subpages($atts){
 	$args = array(
 	'post_type' => 'page',
 	'post_status' => null,
-	'post_parent' => $post->ID, // any parent
+	'post_parent' => $eshopid, // any parent
 	'orderby'=> $orderby,
 	'order'=> $order,
 	'numberposts' => $records, 
@@ -235,7 +240,7 @@ function eshop_list_subpages($atts){
 			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
 			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
 			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
+				$eecho .= '<li><a class="viewall" href="'.get_permalink($eshopid).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
 			}
 			$eecho .= '</ul>';
 			//$echo .= $eecho;

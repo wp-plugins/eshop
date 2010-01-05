@@ -3,8 +3,8 @@ Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.7
-Tested up to: 2.8.6
-Stable tag: 4.1.1
+Tested up to: 2.9.1
+Stable tag: 4.2.0
 
 An accessible Shopping Cart plugin.
 
@@ -33,6 +33,23 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 
 
 == Changelog == 
+
+Version 4.2.0
+
+* *added* notes about auto created pages to the help page
+* *added* another unique identifier for multipe option sets
+* *added* {DOWNLOADS} now hiden if no downloads are present.
+* *added* hide price if 0.00 for standard options.
+* *added* ability to delete all orders to reset stats from the stats page.
+* *added* ability to list sub page products from elsewhere for [eshop_list_subpages] only
+* *amended* csv download data now separates address/city/county/zip/country
+* *updated* discounts can now have decimal point values - only partially tested, use with caution.
+* *updated* webtopay functionality
+* *fixed* option set data fof customer emails and csv download.
+* *fixed* issue with zeroing and readding same product
+* *fixed* possible code injection bug in checkout.
+* *fixed* csv download data
+* *fixed* state/county/province in emails.
 
 Version 4.1.1
 

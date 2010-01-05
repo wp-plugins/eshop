@@ -19,6 +19,7 @@ if (!function_exists('display_cart')) {
 				}
 			}
 		}
+		
 		//therefore if cart exists and has products
 		if($check > 0){
 			//global $final_price, $sub_total;
@@ -719,7 +720,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		foreach($result as $myrow){
 			$value=$myrow->item_qty * $myrow->item_amt;
 			$total=$total+$value;
-			$itemid=$myrow->item_id;
+			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
 				$cart.= __('Shipping Charge:','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
@@ -744,7 +745,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$address.= "\n".__('Mailing Address:','eshop')."\n".$drow->address1.", ".$drow->address2."\n";
 			$address.= $drow->city."\n";
 			$qcode=$wpdb->escape($drow->state);
-			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 			if($qstate=='') $qstate=$drow->state;
 			$address.= $qstate."\n";
 			$address.= $drow->zip."\n";
@@ -765,7 +766,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$address.= $drow->ship_address."\n";
 				$address.= $drow->ship_city."\n";
 				$qcode=$wpdb->escape($drow->ship_state);
-				$sqstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE code='$qcode' limit 1");
+				$sqstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 				if($sqstate=='') $sqstate=$drow->ship_state;
 				$address.= $sqstate."\n";
 				$address.= $drow->ship_postcode."\n";
@@ -1169,6 +1170,8 @@ if (!function_exists('eshop_email_parse')) {
 		$this_email = str_replace('{CART}', $array['cart'], $this_email);
 		if($d=='yes')
 			$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
+		else
+			 $this_email = str_replace('{DOWNLOADS}', '', $this_email);
 		$this_email = str_replace('{ADDRESS}', $array['address'], $this_email);
 		$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
 		$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
