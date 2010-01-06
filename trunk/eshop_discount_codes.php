@@ -270,7 +270,7 @@ function eshop_discounts_manager() {
 		<th id="enddate"><?php _e('End Date','eshop'); ?></th>
 		<th id="used"><?php _e('Used','eshop'); ?></th>
 		<th id="active"><?php _e('Active?','eshop'); ?></th>
-		<th id="del"><?php _e('Delete','eshop'); ?></th>
+		<th id="delete"><?php _e('Delete','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -321,7 +321,7 @@ function eshop_discounts_manager() {
 			<td headers="active numb'.$calt.'">'.$myrow->live.'</td>
 			<td headers="delete numb'.$calt.'">'.$delete.'</td>'
 
-			."</td></tr>\n";
+			."</tr>\n";
 		}
 		echo "</tbody></table></div>\n";
 	}
