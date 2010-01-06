@@ -64,7 +64,9 @@ function eshop_discounts_manager() {
 			$eshop_percent=$_POST['eshop_percent'];
 		else
 			$eshop_percent='';
-			
+		$eshop_code_month=$_POST['eshop_code_month'];
+		$eshop_code_day=$_POST['eshop_code_day'];
+		$eshop_code_year=$_POST['eshop_code_year'];
 		//error check - first check if discount
 		switch($eshop_code_type){
 			case '':
