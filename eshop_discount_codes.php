@@ -56,7 +56,15 @@ function eshop_discounts_manager() {
 			$eshop_live='yes';
 		else
 			$eshop_live='no';
-
+		if(isset($_POST['eshop_code_type']))
+			$eshop_code_type=$_POST['eshop_code_type'];
+		else
+			$eshop_code_type='';
+		if(isset($_POST['eshop_percent']))
+			$eshop_percent=$_POST['eshop_percent'];
+		else
+			$eshop_percent='';
+			
 		//error check - first check if discount
 		switch($eshop_code_type){
 			case '':
@@ -82,13 +90,22 @@ function eshop_discounts_manager() {
 				break;
 		}
 		//standard errors
+		if(isset($_POST['eshop_code']))
+			$eshop_code=$_POST['eshop_code'];
+		else
+			$eshop_code=='';
+			
 		if($eshop_code=='')
 			$error[]=__('You must specify a code','eshop');
 		
+		if(isset($_POST['eshop_remain']))
+			$eshop_remain=$_POST['eshop_remain'];
+		else
+			$eshop_remain='';
+			
 		if((!is_numeric($eshop_remain) || $eshop_remain<0) && $eshop_remain!='')
 			$error[]=__('How many times can this be used - must be numeric, or blank','eshop');
 		
-
 		if(isset($error)){
 			echo '<div class="error fade"><p>'.__('There were some errors:','eshop').'</p>';
 			echo '<ul>';
