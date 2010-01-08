@@ -405,7 +405,10 @@ if (!function_exists('displaystats')) {
 			<h3><?php _e('Download Data','eshop'); ?></h3>
 			<ul>
 			<?php
-				$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopdl=yes';
+			if(!isset($_GET['eshopdl']))
+				$dlpage=$phpself.'&amp;eshopdl=yes';
+			else
+				$dlpage=$phpself;
 			?>
 			<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
 			<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
@@ -416,7 +419,10 @@ if (!function_exists('displaystats')) {
 			<h3><?php _e('Delete all Data','eshop'); ?></h3>
 			<ul>
 			<?php
-				$dlpage=$phpself.'?page='.$_GET['page'].'&amp;eshopddata=yes';
+			if(!isset($_GET['eshopddata']))
+				$dlpage=$phpself.'&amp;eshopddata=yes';
+			else
+				$dlpage=$phpself;
 			?>
 			<li><a href="<?php echo $dlpage; ?>"><?php _e('Delete all orders and reset all stats','eshop'); ?></a></li>
 			</ul>
