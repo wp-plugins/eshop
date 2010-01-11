@@ -5,10 +5,12 @@ if ('cart.php' == basename($_SERVER['SCRIPT_FILENAME']))
 if (!function_exists('eshop_cart')) {
 	function eshop_cart($_POST){
 		global $wpdb, $blog_id;
-
 		$echo='';
 		include "cart-functions.php";
 		$error='';
+		//cache
+		eshop_cache();
+		
 		//delete the session, empties the cart
 		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['shopcart'.$blog_id]))){
 			unset($_SESSION['shopcart'.$blog_id]);

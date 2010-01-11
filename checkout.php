@@ -291,6 +291,8 @@ if (!function_exists('eshopShowform')) {
 if (!function_exists('eshop_checkout')) {
  	function eshop_checkout($_POST){
  		global $blog_id;
+ 		//cache
+		eshop_cache();
 		$echoit='';
 		include_once(ABSPATH.'wp-includes/wp-db.php');
 		include_once WP_PLUGIN_DIR."/eshop/cart-functions.php";

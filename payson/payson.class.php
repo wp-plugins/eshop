@@ -81,16 +81,15 @@ class payson_class {
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$payson = get_option('eshop_payson'); 
 			$Key=$payson['key'];
-			$Cost=$_POST['amount']-$_POST['shipping_1'];
+			$Cost=str_replace(',','',$_POST['amount'])-str_replace(',','',$_POST['shipping_1']);
 			$ExtraCost=$_POST['shipping_1'];
 			$desc = str_replace($replace, " ", $payson['description']);
 			if($_POST['amount']<$payson['minimum']){
-				$adjust=$payson['minimum']-$_POST['amount'];
+				$adjust=str_replace(',','',$payson['minimum'])-str_replace(',','',$_POST['amount']);
 				$Cost=$Cost+$adjust;
 				$desc .= ' '.sprintf(__('Payson minimum of %s SEK applied.','eshop'),$payson['minimum']);
 			}
-			
-			$Cost=number_format($Cost, 2, ',', '');
+			$Cost=number_format($Cost, 2, ',', ',');
 			$ExtraCost=number_format($ExtraCost, 2, ',', '');
 			$OkUrl=$_POST['notify_url'];
 			$GuaranteeOffered='1';

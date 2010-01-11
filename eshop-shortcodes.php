@@ -452,6 +452,8 @@ function eshop_list_featured($atts){
 }
 function eshop_list_random($atts){
 	global $wpdb, $post;
+	//cache
+	eshop_cache();
 	$paged=$post;
 	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
