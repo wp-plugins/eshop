@@ -2,6 +2,8 @@
 if (!function_exists('eshop_downloads')) {
 	function eshop_downloads($_POST){
 		global $wpdb;
+		//cache
+		eshop_cache();
 		$table = $wpdb->prefix ."eshop_downloads";
 		$ordertable = $wpdb->prefix ."eshop_download_orders";
 		$dir_upload = eshop_download_directory();

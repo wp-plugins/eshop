@@ -1180,4 +1180,12 @@ if (!function_exists('eshop_email_parse')) {
 		return $this_email;
 	}
 }
+if (!function_exists('eshop_cache')) {
+	function eshop_cache(){
+	  	if(!defined('DONOTCACHEPAGE')){
+	  		//wpsupercache
+			define("DONOTCACHEPAGE", "true");
+		}
+	}
+}
 ?>
