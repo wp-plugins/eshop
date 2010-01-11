@@ -7,7 +7,7 @@ define('ESHOP_VERSION', '4.2.4');
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 4.2.3
+Version: 4.2.4
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
