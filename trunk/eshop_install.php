@@ -55,11 +55,14 @@ add_option('eshop_show_stock','no');
 add_option('eshop_first_time', 'yes');
 add_option('eshop_downloads_only', 'no');
 add_option('eshop_search_img', 'no');
-add_option('eshop_fold_menu', 'yes');
+add_option('eshop_fold_menu', 'no');
 add_option('eshop_downloads_hideall','no');
 add_option('eshop_show_sku','no');
+add_option('eshop_hide_addinfo','yes');
 add_option('eshop_hide_addinfo','');
 add_option('eshop_hide_shipping','');
+add_option('eshop_set_cacheability','no');
+
 //new for 3.
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
 	delete_option('eshop_sudo_cat');
@@ -642,6 +645,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	optid int(11) NOT NULL auto_increment,
 	name varchar(255) NOT NULL default '',
 	type tinyint(1) NOT NULL default '0',
+	description TEXT NOT NULL ,
 	  PRIMARY KEY  (optid)
 	) $charset_collate;";
 	error_log("creating table $table");
@@ -754,6 +758,20 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic w
 
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
+
+//added in 4.2.5
+	$table = $wpdb->prefix . "eshop_option_names";
+		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+		$add_field = TRUE;
+		foreach ($tablefields as $tablefield) {
+			if(strtolower($tablefield->Field)=='description') {
+				$add_field = FALSE;
+			}
+		}
+		if ($add_field) {
+			$sql="ALTER TABLE `".$table."` ADD `description` TEXT NOT NULL";
+			$wpdb->query($sql);
+	}
 
 if ( get_option('eshop_version')=='' || get_option('eshop_version') < '4.1.9' ){
 	$table = $wpdb->prefix . "eshop_discount_codes";

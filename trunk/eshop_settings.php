@@ -248,6 +248,7 @@ if(isset($_POST['submit'])){
 			update_option('eshop_cart_nostock',$wpdb->escape($_POST['eshop_cart_nostock']));
 			update_option('eshop_credits',$wpdb->escape($_POST['eshop_credits']));
 			update_option('eshop_fold_menu',$wpdb->escape($_POST['eshop_fold_menu']));
+			update_option('eshop_hide_cartco',$wpdb->escape($_POST['eshop_hide_cartco']));
 			update_option('eshop_stock_control',$wpdb->escape($_POST['eshop_stock_control']));
 			update_option('eshop_show_stock',$wpdb->escape($_POST['eshop_show_stock']));
 			update_option('eshop_search_img',$wpdb->escape($_POST['eshop_search_img']));
@@ -259,6 +260,7 @@ if(isset($_POST['submit'])){
 			update_option('eshop_tandc',$wpdb->escape($_POST['eshop_tandc']));
 			update_option('eshop_tandc_use',$wpdb->escape($_POST['eshop_tandc_use']));
 			update_option('eshop_tandc_id',$wpdb->escape($_POST['eshop_tandc_id']));
+			update_option('eshop_set_cacheability',$wpdb->escape($_POST['eshop_set_cacheability']));
 
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
@@ -444,7 +446,7 @@ switch($action_status){
 			'NOK'=>'Norwegian Krone',
 			'NZD'=>'New Zealand Dollar',
 			'PLN'=>'Polish Zloty',
-			'RM' => 'Ringgit Malaysia',
+			'MYR' => 'Ringgit Malaysia',
 			'SEK'=>'Swedish Krona',
 			'SGD'=>'Singapore Dollar ',
 			'TL' => 'Turkish Lira'
@@ -730,7 +732,7 @@ switch($action_status){
 <fieldset><legend><?php _e('Product Options','eshop'); ?></legend>
 <label for="eshop_options_num"><?php _e('Options per product','eshop'); ?></label><input id="eshop_options_num" name="eshop_options_num" type="text" value="<?php echo get_option('eshop_options_num'); ?>" size="5" /><br />
 <label for="eshop_cart_nostock"><?php _e('Out of Stock message','eshop'); ?></label><input id="eshop_cart_nostock" name="eshop_cart_nostock" type="text" value="<?php echo get_option('eshop_cart_nostock'); ?>" size="30" /><br />
-<label for="eshop_stock_control"><?php _e('Stock Control','eshop'); ?></label>
+<label for="eshop_stock_control"><?php _e('Stock Control','eshop')._e(' <small>(Warning: setting this will make all products have zero stock, each one will have to be set manually.</small>)','eshop'); ?></label>
 	<select name="eshop_stock_control" id="eshop_stock_control">
 	<?php
 	if('yes' == get_option('eshop_stock_control')){
@@ -864,6 +866,18 @@ switch($action_status){
 	}
 	?>
 	</select><br />
+	<label for="eshop_hide_cartco"><?php _e('Hide cart and checkout pages until items are in cart.','eshop'); ?></label>
+		<select name="eshop_hide_cartco" id="eshop_hide_cartco">
+		<?php
+		if('yes' == get_option('eshop_hide_cartco')){
+			echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+			echo '<option value="no">'.__('No','eshop').'</option>';
+		}else{
+			echo '<option value="yes">'.__('Yes','eshop').'</option>';
+			echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+		}
+		?>
+	</select><br />
 </fieldset>
 
 <fieldset><legend><?php _e('Search Results','eshop'); ?></legend>
@@ -906,8 +920,20 @@ switch($action_status){
 <fieldset><legend><?php _e('Cron','eshop'); ?></legend>
 <label for="eshop_cron_email"><?php _e('Cron Email address','eshop'); ?></label><input id="eshop_cron_email" name="eshop_cron_email" type="text" value="<?php echo get_option('eshop_cron_email'); ?>" size="30" /><br />
 </fieldset>
-
-
+<fieldset><legend><?php _e('Cacheability','eshop'); ?></legend>
+<label for="eshop_set_cacheability"><?php _e('Disable WP Supercache for eShop pages including cart, checkout and pages using shortcodes.','eshop'); ?></label>
+	<select name="eshop_set_cacheability" id="eshop_set_cacheability">
+	<?php
+	if('yes' == get_option('eshop_set_cacheability')){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
+</fieldset>
 <p class="submit">
 <input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
 </p>

@@ -109,9 +109,11 @@ if(isset($_POST['delete'])){
 	$epages[] = 'eshop_show_sku';
 	$epages[] = 'eshop_hide_addinfo';
 	$epages[] = 'eshop_hide_shipping';
+	$epages[] = 'eshop_hide_cartco';
 	$epages[] = 'eshop_tandc';
 	$epages[] = 'eshop_tandc_id';
 	$epages[] = 'eshop_tandc_use';
+	$epages[] = 'eshop_set_cacheability';
 	for ($x=1;$x<=3;$x++){
 		$epages[]='eshop_discount_spend'.$x;
 		$epages[]='eshop_discount_value'.$x;

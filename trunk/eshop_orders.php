@@ -26,6 +26,10 @@ if(isset($_POST['eshopdeletedata'])){
 	foreach($etable as $detable){
 		$wpdb->query("TRUNCATE $detable");
 	}
+	$dltable = $wpdb->prefix ."eshop_downloads";
+	$wpdb->query("UPDATE $dltable set downloads='0',purchases='0'");
+	$stktable = $wpdb->prefix ."eshop_stock";
+	$wpdb->query("UPDATE $stktable set purchases='0'");
 	echo '<p id="eshopddata">'.__('Records deleted','eshop').'</p>';
 	unset($_GET['eshopddata']);
 }
