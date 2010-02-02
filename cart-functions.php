@@ -807,7 +807,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 if (!function_exists('eshop_add_excludes')) {
 	function eshop_add_excludes($excludes) {
 		global $blog_id;
-		if(!isset($_SESSION['shopcart'.$blog_id])){
+		if(!isset($_SESSION['shopcart'.$blog_id]) && get_option('eshop_hide_cartco')=='yes'){
 			$excludes[]=get_option('eshop_cart');
 			$excludes[]=get_option('eshop_checkout');
 		}
@@ -1182,7 +1182,7 @@ if (!function_exists('eshop_email_parse')) {
 }
 if (!function_exists('eshop_cache')) {
 	function eshop_cache(){
-	  	if(!defined('DONOTCACHEPAGE')){
+	  	if(!defined('DONOTCACHEPAGE') && get_option('eshop_set_cacheability')=='yes'){
 	  		//wpsupercache
 			define("DONOTCACHEPAGE", "true");
 		}

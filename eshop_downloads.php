@@ -293,7 +293,7 @@ function eshop_downloads_manager() {
 		}else{
 			$records='10';
 		}
-
+$records='1';
 		if(isset($_GET['viewall']))$records=$max;
 		$pager = new eshopPager( 
 			$max ,          //see above
@@ -368,9 +368,6 @@ function eshop_downloads_manager() {
 		 </tbody>
 		</table>
 	<?php
-
-	//fix the uri for pagination?
-	//$_SERVER['REQUEST_URI']= preg_replace('/&edit=.*/','',$_SERVER['REQUEST_URI']);
 	   //paginate
 	echo '<div class="paginate"><p>';//<p class="checkers">Bulk:<a href="javascript:checkedAll(\'downloadlist\', true)" title="Select all of the checkboxes above">Check</a><span class="offset"> | </span><a href="javascript:checkedAll(\'downloadlist\', false)" title="Deselect all of the checkboxes above">Uncheck</a></p><p>';
 		if($pager->_pages > 1){
@@ -381,7 +378,7 @@ function eshop_downloads_manager() {
 		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
 		//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
 		if($pager->_pages >= 2){
-			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;viewall=yes">'.__('View All &raquo;','eshop').'</a>';
+			echo ' &raquo; <a class="pag-view" href="?page=eshop_downloads.php&amp;_p=1&amp;viewall=yes">'.__('View All &raquo;','eshop').'</a>';
 		}
 		echo '</p></div>';
 	}else{

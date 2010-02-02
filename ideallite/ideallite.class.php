@@ -90,7 +90,7 @@ class ideallite_class {
 		foreach ($this->fields as $name => $value) {
 			$echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
 		}
-		$refid=uniqid(rand());
+		$refid=uniqid();
 		$echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
 		$echo.='<label for="ppsubmit"><small>'.__('<strong>Note:</strong> Submit to finalize order at iDeal.','eshop').'</small><br />
 		<input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="'.__('Proceed to Checkout &raquo;','eshop').'" /></label>';

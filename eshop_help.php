@@ -444,6 +444,8 @@ php_value session.gc_maxlifetime 10800
 <p>If you use this plugin and you experience problems with eShop functionality, you may have to deactivate it. Sorry.</p>
 <h3>Maintenance Mode plugin</h3>
 <p>Maintenance Mode would have to be deactivated when testing eShop, otherwise Paypal can not interact with the site.</p>
+<h3>WP Supercahe</h3>
+<p>eShop has been amended to try and work with this cache plugin, however it will not work correctly when using widgets.</p>
 </div>
 
 <div class="wrap">

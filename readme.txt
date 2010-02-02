@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.7
 Tested up to: 2.9.1
-Stable tag: 4.2.4
+Stable tag: 4.3.0
 
 An accessible Shopping Cart plugin.
 
@@ -32,7 +32,30 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * and much much more
 
 
+== Upgrade Notice == 
+
+**Last major update before WordPress 3 is released**
+
+
+== Screenshots ==
+
+Not currently available.
+
 == Changelog == 
+
+Version 4.3
+
+**Last major update before WordPress 3 is released**
+
+* *added* eshop hide sub pages - off by default not on (for new users only)
+* *added* Option sets can now have descriptions.
+* *added* optional hide shopping cart link until items in cart (does not affect widget)
+* *fixed* ideallite.class - small alteration to solve some purchaseId 's being created that were too long.
+* *fixed* Malaysian Ringgit changed from from "RM " to "MYR" 
+* *added* note about turning stock control on - could cause all items to have 0 stock
+* *added* ability to add a donotcache for WP Supercahe - should only affect eShop pages. Does not play nicely for widgets though.
+* *fixed* download pagination issues
+* *fixed* delete stats should now work correctly.
 
 Version 4.2.4
 

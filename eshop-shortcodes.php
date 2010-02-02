@@ -50,6 +50,7 @@ function eshop_empty_cart($atts, $content = '') {
 }
 function eshop_list_alpha($atts){
 	global $wpdb, $post,$wp_rewrite;
+	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>''), $atts));
 	//a-z listing
 	$letter_array = range('A','Z');
@@ -161,6 +162,7 @@ function eshop_list_alpha($atts){
 } 
 function eshop_list_subpages($atts){
 	global $wpdb, $post;
+	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>''), $atts));
 	$echo='';
 	if($id!='')
@@ -265,6 +267,7 @@ function eshop_list_subpages($atts){
 }
 function eshop_list_new($atts){
 	global $wpdb, $post;
+	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
 	$echo='';
 	//my pager
@@ -343,6 +346,7 @@ function eshop_list_new($atts){
 } 
 function eshop_best_sellers($atts){
 	global $wpdb, $post;
+	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
 	$echo='';
 	//my pager
@@ -428,6 +432,7 @@ function eshop_best_sellers($atts){
 } 
 function eshop_list_featured($atts){
 	global $wpdb, $post;
+	eshop_cache();
 	$paged=$post;
 	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>''), $atts));
 	$allowedsort=array('post_date','post_title','menu_order');
@@ -492,6 +497,7 @@ function eshop_list_random($atts){
 }
 function eshop_show_product($atts){
 	global $wpdb, $post;
+	eshop_cache();
 	$paged=$post;
 	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no','imgsize'=>''), $atts));
 	if($id!=0){
@@ -609,6 +615,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 }
 function eshop_show_discounts(){
 	$edisc=array();
+	eshop_cache();
 	$currsymbol=get_option('eshop_currency_symbol');
 	$shipdisc=get_option('eshop_discount_shipping');
 	for ($x=1;$x<=3;$x++){
@@ -650,6 +657,7 @@ function eshop_show_discounts(){
 }
 function eshop_show_payments(){
 	$echo='';
+	eshop_cache();
 	if(is_array(get_option('eshop_method'))){
 		$i=1;
 		$eshopfiles=eshop_files_directory();
@@ -672,6 +680,7 @@ function eshop_show_payments(){
 
 function eshop_show_shipping($atts) { 
 	global $wpdb;
+	eshop_cache();
 	extract(shortcode_atts(array('shipclass'=>'A,B,C,D,E,F'), $atts));
 	$shipclasses = explode(",", $shipclass);
 	$dtable=$wpdb->prefix.'eshop_shipping_rates';
@@ -772,6 +781,7 @@ if (!function_exists('eshop_show_zones')) {
      */
     function eshop_show_zones() { 
 		global $wpdb;
+		eshop_cache();
 		if('country' == get_option('eshop_shipping_zone')){
 			//countries
 			$tablec=$wpdb->prefix.'eshop_countries';
@@ -860,6 +870,7 @@ if (!function_exists('eshop_show_zones')) {
 }
 function eshop_addtocart(){
 	global $wpdb, $post;
+	eshop_cache();
 	include_once( 'eshop-get-custom.php' );
 	return eshop_boing('');
 }

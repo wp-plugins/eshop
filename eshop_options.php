@@ -46,8 +46,8 @@ if (isset($_POST['delete'])) {
 	}
 	$name=$_POST['name'];
 	$type=$_POST['type'];
-	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d' where optid='%d'",$name,$type,$optid));
-
+	$description=$_POST['description'];
+	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Updated','eshop').'</p>';
 }
 
@@ -66,7 +66,8 @@ if (isset($_POST['eaddopt'])) {
 	}
 	$name=$_POST['name'];
 	$type=$_POST['type'];
-	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d' where optid='%d'",$name,$type,$optid));
+	$description=$_POST['description'];
+	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Created','eshop').'</p>';
 	createform($opttable);
 }elseif (isset($_POST['create'])) {
@@ -84,6 +85,7 @@ if (isset($_POST['eaddopt'])) {
 	$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
 	$ename=$egrab->name;
 	$etype=$egrab->type;
+	$edesc=$egrab->description;
 	$checkrows=sizeof($myrowres);
 	if($checkrows!=0){
 		echo "<p>".__('<strong>Warning:</strong> Changing these will affect <strong>all</strong> products using these options','eshop')."</p>";
@@ -109,9 +111,11 @@ if (isset($_POST['eaddopt'])) {
 			<select id="type" name="type">
 			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
 			<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
-			</select>
+			</select><br />
+			<label for="edesc">Description</label>
+			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(attribute_escape($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
-			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(attribute_escape($ename)); ?></caption>
+			<caption><?php _e('Options for','eshop'); ?><?php echo stripslashes(attribute_escape($ename)); ?></caption>
 			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
 		<tbody>
 	<?php
@@ -166,7 +170,9 @@ function createoptions($optid,$name){
 	<select id="type" name="type">
 	<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
 	<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
-	</select>
+	</select><br />
+	<label for="edesc">Description</label>
+	<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(attribute_escape($edesc)); ?></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(attribute_escape($name)); ?></caption>
 	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
