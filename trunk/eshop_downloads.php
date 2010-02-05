@@ -293,7 +293,7 @@ function eshop_downloads_manager() {
 		}else{
 			$records='10';
 		}
-$records='1';
+
 		if(isset($_GET['viewall']))$records=$max;
 		$pager = new eshopPager( 
 			$max ,          //see above
