@@ -32,27 +32,35 @@ function eshop_inner_custom_box($post) {
         $sku = get_post_meta( $_REQUEST[ 'post' ], '_Sku' );
         if(isset($sku[ 0 ]))
        		$sku = stripslashes(attribute_escape($sku[ 0 ]));
+       	else
+       		$sku='';
 
         $prod=get_post_meta( $_REQUEST[ 'post' ], '_Product Description' );
         if(isset($prod[ 0 ]))
-       	 $prod=stripslashes(attribute_escape($prod[ 0 ]));
-
+       	 	$prod=stripslashes(attribute_escape($prod[ 0 ]));
+		else
+       		$prod='';
         $shiprate = get_post_meta( $_REQUEST[ 'post' ], '_Shipping Rate' );
         if(isset($shiprate[ 0 ]))
-       	 $shiprate = attribute_escape($shiprate[ 0 ]);
-
+       	 	$shiprate = attribute_escape($shiprate[ 0 ]);
+		else
+			$shiprate='';
         $featured = get_post_meta( $_REQUEST[ 'post' ], '_Featured Product' );
         if(isset($featured[ 0 ]))
-       	 $featured = attribute_escape($featured[ 0 ]);
-
+       	 	$featured = attribute_escape($featured[ 0 ]);
+		else
+			$featured='No';
         $stkav = get_post_meta( $_REQUEST[ 'post' ], '_Stock Available' );
         if(isset($stkav[ 0 ]))
-      	  $stkav = attribute_escape($stkav[ 0 ]);
-
+      	  	$stkav = attribute_escape($stkav[ 0 ]);
+		else
+			$stkav='No';
         $stkqty = get_post_meta( $_REQUEST[ 'post' ], '_Stock Quantity' );
         if(isset($stkqty[ 0 ]))
         	$stkqty = attribute_escape($stkqty[ 0 ]);
-        
+        else
+        	$stkqty='';
+       
         $optsets = get_post_meta( $_REQUEST[ 'post' ], '_eshoposets' );
 		if($optsets!='')
         	$osets = $optsets[ 0 ];
@@ -91,14 +99,19 @@ function eshop_inner_custom_box($post) {
 				$opt = get_post_meta( $_REQUEST[ 'post' ], '_Option '.$i );
 				if(isset($opt[ 0 ]))
 					$opt = stripslashes(attribute_escape($opt[ 0 ]));
-
+				else
+					$opt='';
 				$price = get_post_meta( $_REQUEST[ 'post' ], '_Price '.$i );
 				if(isset($price[ 0 ]))
 					$price = stripslashes(attribute_escape($price[ 0 ]));
+				else
+					$price='';
 				
 				$downl = get_post_meta( $_REQUEST[ 'post' ], '_Download '.$i );
 				if(isset($downl[ 0 ]))
 					$downl = attribute_escape($downl[ 0 ]);
+				else
+					$downl='';
 		   }else{
 			   $opt=$price=$downl='';
 		   }

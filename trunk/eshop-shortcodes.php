@@ -17,6 +17,7 @@ add_shortcode('eshop_empty_cart', 'eshop_empty_cart');
 add_shortcode('eshop_list_alpha', 'eshop_list_alpha');
 add_shortcode('eshop_cart_items','eshop_cart_items');
 add_shortcode('eshop_addtocart','eshop_addtocart');
+add_shortcode('eshop_welcome','eshop_welcome');
 
 function eshop_cart_items($atts){
 	global $blog_id;
@@ -873,5 +874,25 @@ function eshop_addtocart(){
 	eshop_cache();
 	include_once( 'eshop-get-custom.php' );
 	return eshop_boing('');
+}
+function eshop_welcome($atts, $content = ''){
+	global $blog_id;
+	extract(shortcode_atts(array('before'=>'','returning'=>'','guest'=>'','after'=>''), $atts));
+	$echo='';
+	if($before!='')
+		$echo.=$before.' ';
+	if(isset($_COOKIE["eshopcart"])){
+		if($returning!='')
+			$echo.=$returning.' ';
+		$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
+		$echo .=$crumbs['first_name'].' '.$crumbs['last_name'];
+	}else{
+		$echo.=$guest.' ';
+	}
+	if($content!='')
+		$echo.=$content.' ';	
+	if($after!='')
+		$echo.=' '.$after;
+	return $echo;
 }
 ?>

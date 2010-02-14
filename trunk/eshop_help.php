@@ -158,6 +158,11 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_cart_items]</code> A simple shortcode for use in templates via the <code>do_shortcode</code> function. In its simplest form it displays the number of items in the cart. It can be adjusted with the following attributes <code>before</code> and <code>after</code>, which can be used to insert text before and after the cart size.
 <code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty.
 <li><code>[eshop_addtocart]</code> will enable the add to cart form to appear anywhere on a product page. By default the form appears after the content. (not fully tested - please let me know if it causes problems).
+<li><code>[eshop_welcome]</code> print a simple name of the customer. You can use the following attributes: <code>before</code> - which could be used to add mark up, <code>returning</code> - perhaps use a phrase like welcome back, <code>guest</code> - the phrase you would like to use for a guest, <code>after</code> - again could be used to close the markup.<br />
+This has also been written for use in templates, add something like:
+<code>&lt;?php 
+echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' returning='Welcome back' guest='Hello Guest' after='&lt;/span&gt;']");
+?&gt;</code>
 </ol>
 <h3>Notes</h3>
 <p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
