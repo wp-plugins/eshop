@@ -14,7 +14,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 ?>
 <div id="eshoppage">
 <div class="wrap">
-<h2>Help</h2>
+<div id="eshopicon" class="icon32"></div><h2>Help</h2>
 <p>This is some basic helpful information about the shopping cart admin.</p>
 <h3>Sections</h3>
 <ul>
@@ -95,6 +95,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 </thead>
 <tbody>
 <tr><th>[eshop_list_subpages]</th>	<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>no</td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
+<tr><th>[eshop_list_cat_tags]</th>	<td>eshopcats</td><td>no</td><td>no</td><td>100</td><td>10</td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
+
 <tr class="alternate"><th>[eshop_list_featured]</th>	<td>eshopfeatured</td><td>no</td><td>no</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>post_title</td><td>ASC</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr>
 <tr><th>[eshop_list_new]</th>		<td>eshopsubpages</td><td>no</td><td>no</td><td>100</td><td>10</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td></tr> 
 <tr class="alternate"><th>[eshop_random_products]</th><td>eshoprandomlist</td><td>no</td><td>no</td><td>6</td><td>6</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>yes</td><td><img src="<?php echo WP_PLUGIN_URL; ?>/eshop/no.png" alt="Not available" height="16px" width="16px" /></td><td>100</td><td>0</td></tr> 
@@ -106,6 +108,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <dl class="eshop-def">
 <dt><code>[eshop_list_subpages]</code></dt>
 <dd>This displays a list of pages with products and is ideal for use on a Department page.</dd>
+<dt><code>[eshop_list_cat_tags]</code></dt>
+<dd>Displays a list of products with tags or categories. This has 2 extra attributes <em>type</em> where you can have values of 'cat','category_name','tag' &amp; 'tag_id'. <em>find</em> is where you add what you want to find, multiple values can be added separated by a comma.</dd>
 <dt><code>[eshop_list_featured]</code></dt>
 <dd>This displays products that have been as set as a Featured product. Suggested use for this is on the main Online Shop page.</dd>
 <dt><code>[eshop_list_new]</code></dt>
@@ -132,7 +136,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>form</code> example: <em>form="yes"</em> to add the shortened add to cart form.</li>
 <li><code>show</code> example: <em>show="10"</em> limits the display to 10 products.</li>
 <li><code>records</code> example: <em>records="5"</em> limits the number of products shown 'per page' to 5.</li>
-<li><code>sortby</code> example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possivle values: post_date, post_title or menu_order</li>
+<li><code>sortby</code> example: <em>sortby="post_title"</em> shows the pages in alphabetical order. Possible values: post_date, post_title or menu_order</li>
 <li><code>order</code> example: <em>order="ASC"</em> shows the results in ascending, or descending order. Possible values: ASC or DESC</li>
 <li><code>list</code> example: <em>list="no"</em> limits the display to 1 random product.</li>
 <li><code>id</code> example: <em>id="25"</em> or <em>id="25,29,52"</em> shows specific products only. For subpages, only one id can be used.</li>
@@ -150,13 +154,14 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 
 <h3>Extra</h3>
 <ol class="eshop-shortcodes">
+
 <li><code>[eshop_show_discounts]</code> This displays a table of discounts and a paragraph for the free shipping discount. This will only show if set.</li>
 <li><code>[eshop_show_shipping]</code> (automatically added to the Shipping Rates page) can now be amended via the attribute 
 <code>shipclass</code>. example <em>shipclass='A,B,F'</em> would only display shipping classes A, B and F (dependant on the shipping rate calculation used).</li>
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 <li><code>[eshop_cart_items]</code> A simple shortcode for use in templates via the <code>do_shortcode</code> function. In its simplest form it displays the number of items in the cart. It can be adjusted with the following attributes <code>before</code> and <code>after</code>, which can be used to insert text before and after the cart size.
-<code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty.
+<code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty. <code>showwhat</code> is also available to show either number of <em>items</em>, <em>qty</em> total or <em>both</em>;
 <li><code>[eshop_addtocart]</code> will enable the add to cart form to appear anywhere on a product page. By default the form appears after the content. (not fully tested - please let me know if it causes problems).
 <li><code>[eshop_welcome]</code> print a simple name of the customer. You can use the following attributes: <code>before</code> - which could be used to add mark up, <code>returning</code> - perhaps use a phrase like welcome back, <code>guest</code> - the phrase you would like to use for a guest, <code>after</code> - again could be used to close the markup.<br />
 This has also been written for use in templates, add something like:
@@ -170,6 +175,7 @@ echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' ret
 <div class="wrap">
 <h2 id="test">eShop Testing</h2>
 <p>To test eShop with Paypal you need to have an account on <a href="https://developer.paypal.com/">Paypal Sandbox</a>. You will need to create and utilise email addresses for the 'seller' and 'buyer' within the sandbox when you test the cart. To make test purchases whilst in test mode you have to be logged into Wordpress <strong>and</strong> Paypal Sandbox.</p>
+<p>The redirect page when in testing mode does not automatically redirect, this is to give you chance to style that page if needed.</p>
 <p>Testing with <a href="https://www.payson.se/Default.aspx">Payson</a> just requires a standard Payson account.</p>
 </div>
 <div class="wrap">
@@ -218,24 +224,19 @@ echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' ret
 
 <h4>Product Listings</h4>
 <p><strong>Show add to cart forms on WordPress post listings</strong> -  <strong>Warning</strong> activating this can invalidate your site!. By default eShop will not add forms, even if specified by a shortcode, to WordPress post listing pages. By enabling this option the add to cart form will be added, where possible to all posts, in category listings, search results, etc.</p>
-<p>The following Product Listings options have now been deprecated, and replaced by shortcodes (see above).</p>
-<ul>
-<li><del>Featured and department product sort order</del></li>
-<li><del>Random products to display</del></li>
-<li><del>Department Products to display</del></li>
-</ul>
+
 
 <h4>Cart Options</h4>
 <p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>
 
 <h4>Sub Pages</h4>
-<p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop). <strong>Warning</strong> this affect all sub page listings on your site.</p>
+<p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop). <strong>Warning</strong> this affects all sub page listings on your site.</p>
 
 <h4>Search Results</h4>
 <p><strong>Add image to search results</strong> - if used eShop will add an image to the search results page for any post or page or product pages only.</p>
 
 <h4>Credits</h4> 
-<p><strong>Display eShop credit</strong> allows you to hide the '<em>Powered by eShop</em>' credit that appears on various pages in your shop. Disabling this will still add a hidden <abbr title="Hypertext MarkUp Language">HTML</abbr> comment to the page.</p>
+<p><strong>Display eShop credits</strong> allows you to hide the '<em>Powered by eShop</em>' credit that appears on various pages in your shop. Disabling this will still add a hidden <abbr title="Hypertext MarkUp Language">HTML</abbr> comment to the page.</p>
 
 <h4>Cron</h4>
 <p>Cron automatically sends out a daily email to the specified address if there are any outstanding, or pending, orders.
@@ -317,7 +318,7 @@ This is only triggered when someone visits the site.</p>
 </div>
 <div class="wrap">
 <h2 id="img">Product Images</h2>
-<p>You can add and use any image to a product page. But for eShop to find and use that image in shortcodes and widgets that image must be associated with that page or post. This is easily achieved by ensuring you upload the image via the media toolbar when editing that page or post. That image is then associated with that page and eShop can find and use it.</p>
+<p>You can add and use any image to a product page. Just use the thumbnail feature from within WrdPress, this is found on the edit post/page screen.</p>
 </div>
 
 <div class="wrap">
@@ -455,7 +456,7 @@ php_value session.gc_maxlifetime 10800
 
 <div class="wrap">
 <h2 id="comp">Compatability</h2>
-<p>eShop has been written for Wordpress 2.5 and up, and is not compatible with earlier versions.</p>
+<p>eShop has been written for Wordpress 2.9 and up, and is not compatible with earlier versions.</p>
 </div>
 
 <div class="wrap">
@@ -476,6 +477,7 @@ php_value session.gc_maxlifetime 10800
 <li><strong>Cancelled order</strong> : <code>[eshop_show_cancel]</code></li>
 <li><strong>Downloads</strong> : <code>[eshop_show_downloads]</code></li>
 </ul>
+<p>If you are experiencing an issue with an eShop notice telling you to deactivate/reactivate your plugin, try deactivating it, uploading an image via the WP media library, and then reactivating eShop.</p> 
 </div>
 
 <div class="wrap">

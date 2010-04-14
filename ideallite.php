@@ -23,8 +23,9 @@
 */
 
 
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -35,20 +36,15 @@ include_once (WP_PLUGIN_DIR.'/eshop/ideallite/index.php');
 require_once(WP_PLUGIN_DIR.'/eshop/ideallite/ideallite.class.php');  // include the class file
 $p = new ideallite_class;             // initiate an instance of the class
 
-$this_script = get_option('siteurl');
-global $wp_rewrite;
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+$this_script = site_url();
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
 
 // iDeal Stuff
-	$ideallite = get_option('eshop_ideallite'); 
+	$ideallite = $eshopoptions['ideallite']; 
 	// Set ideallite variables
 		if(!empty($ideallite['IDEAL_HASH_KEY'])) {
 			$p->sHashKey = $ideallite['IDEAL_HASH_KEY'];
@@ -96,9 +92,12 @@ if(get_option('eshop_checkout')!=''){
 		
 	
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -106,7 +105,7 @@ switch ($_GET['eshopaction']) {
 		header('Pragma: no-cache'); //HTTP/1.0
 
 		//enters all the data into the database
-		$ideallite = get_option('eshop_ideallite'); 
+		$ideallite = $eshopoptions['ideallite']; 
 				
 		$checkid=md5($_POST['RefNr']);
 		
@@ -151,8 +150,9 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 		$traxid = $p->sTransactionId;
 		$_POST['custom']=$traxid;
 		
-		if(get_option('eshop_status')=='live'){
-			$p->ideallite_url = 'http://www.google.com/the-real-bank-site.html';     // ideallite url
+		if($eshopoptions['status']=='live'){
+			//$p->ideallite_url = 'http://www.google.com/the-real-bank-site.html';     // ideallite url
+			$p->ideallite_url =$p->sUrlAquirer;//why was it crippled?
 		}else{
 			$p->ideallite_url = 'https://www.ideal-simulator.nl/lite/';   // testing ideallite url
 		}
@@ -180,18 +180,13 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
-
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=idealliteipn';
+		if($eshopoptions['cart_success']!=''){
+				$ilink=add_query_arg('eshopaction','idealliteipn',get_permalink($eshopoptions['cart_success']));
 			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=idealliteipn';
-			}
-		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=idealliteipn';
+				die('<p>'.$derror.'</p>');
 		}
+		
 		$p->add_field('notify_url', $ilink);
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
@@ -215,7 +210,7 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 			$p->add_field($name, $value);
 		}
 	
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_ideallite_post(); // submit the fields to ideallite
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
@@ -246,7 +241,7 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 		  $ps->ipn_data["$field"] = $value;
 		}
 
-		$ideallite = get_option('eshop_ideallite'); 
+		$ideallite = $eshopoptions['ideallite']; 
 		
 		$urlTransactionId = $_GET['ideal']['trxid'];
 		$urlEntranceCode = $_GET['ideal']['ec'];
@@ -285,7 +280,7 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 			//
 			if(strcasecmp($sStatus, 'SUCCESS') === 0) {
 				//Set transaction IDs
-				if(get_option('eshop_status')=='live'){
+				if($eshopoptions['status']=='live'){
 					$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
 					$subject = __('iDeal -','eshop');
 				}else{
@@ -377,7 +372,7 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 	
 					$etable=$wpdb->prefix.'eshop_emails';
 					//grab the template
-					$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='4' AND emailUse='1') OR id='1'  order by id DESC limit 1");
+					$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='9' AND emailUse='1') OR id='1'  order by id DESC limit 1");
 					$this_email = stripslashes($thisemail->emailContent);
 					// START SUBST
 					$csubject=stripslashes($thisemail->emailSubject);
@@ -399,8 +394,8 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 			// Payment was marked by iDEAL as ERROR, or was CANCELed (statuscode = $sStatus)
 			//
 			else{
-				$ideallite = get_option('eshop_ideallite'); 
-				if(get_option('eshop_status')=='live'){
+				$ideallite = $eshopoptions['ideallite']; 
+				if($eshopoptions['status']=='live'){
 					$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
 					$subject = __('iDeal -','eshop');
 				}else{
@@ -432,7 +427,7 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 					$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 					$subject .=__("Invalid and Failed Payment",'eshop');
 				}
-				$subject .=" Ref:".$ps->ipn_data['RefNr'];
+				$subject .=__(" Ref:",'eshop').$ps->ipn_data['RefNr'];
 				// email to business a complete copy of the notification from ideallite to keep!!!!!
 				 $to = $ideallite['idealownermail'];    //  your email
 				 $body =  __("An instant payment notification was received",'eshop')."\n";

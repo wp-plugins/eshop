@@ -1,19 +1,19 @@
 <?php
 // Setup class
 require_once(WP_PLUGIN_DIR.'/eshop/epn/epn.class.php');  // include the class file
-global $wpdb;
+global $wpdb,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
 $ps = new epn_class; 
 foreach ($_REQUEST as $field=>$value) { 
   $ps->ipn_data["$field"] = $value;
 }
-$epn = get_option('eshop_epn'); 
+$epn = $eshopoptions['epn']; 
 if(isset($ps->ipn_data['ID'])){
 	$checked=md5($ps->ipn_data['ID']);
 	if(isset($_POST['approved']) && isset($_GET['epn']) && $_GET['epn']=='ok' && $_POST['approved']=='Y'){
 		$eshopdosend='yes';
 
-		if(get_option('eshop_status')=='live'){
+		if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($ps->ipn_data['transid']);
 			$subject = __('epn IPN -','eshop');
 		}else{
@@ -99,7 +99,7 @@ if(isset($ps->ipn_data['ID'])){
 		}
 	}elseif(isset($_POST['approved']) && isset($_GET['epn']) && $_GET['epn']=='fail' && $_POST['approved']=='N'){
 		$eshopdosend='yes';
-		if(get_option('eshop_status')=='live'){
+		if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($ps->ipn_data['auth_response']);
 			$subject = __('epn IPN -','eshop');
 		}else{
@@ -116,7 +116,7 @@ if(isset($ps->ipn_data['ID'])){
 		$echo.='<p>'.__('Your payment was not accepted at eProcessingNetwork and your order has been cancelled','eshop').'</p>';
 	}
 	if(isset($eshopdosend) && $eshopdosend=='yes'){
-		$subject .=" Ref:".$ps->ipn_data['ID'];
+		$subject .=__(" Ref:",'eshop').$ps->ipn_data['ID'];
 		// email to business a complete copy of the notification from epn to keep!!!!!
 		$array=eshop_rtn_order_details($checked);
 		$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';

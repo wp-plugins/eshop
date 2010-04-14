@@ -49,7 +49,7 @@ function eshop_contains_files(){
 }
 
 function eshop_downloads_manager() {
-	global $wpdb;
+	global $wpdb,$eshopoptions;
 	$table = $wpdb->prefix ."eshop_downloads";
 	$ordertable = $wpdb->prefix ."eshop_download_orders";
 	$dir_upload=eshop_download_directory();
@@ -202,7 +202,7 @@ function eshop_downloads_manager() {
 			</table>
 			<?php
 			$metatable=$wpdb->prefix ."postmeta";
-			for($x=1;$x<=get_option('eshop_options_num');$x++){
+			for($x=1;$x<=$eshopoptions['options_num'];$x++){
 				$metakeys[]="meta_key='_Download ".$x."'";
 			}
 			if(sizeof($metakeys)>0)
@@ -253,7 +253,6 @@ function eshop_downloads_manager() {
 		}
 	}else{
 	//first page you see
-		include_once ("pager-class.php");
 		$cda=$cdd=$cta=$cdwa=$cpa=$cia='';
 		if(isset($_GET['by'])){
 			switch ($_GET['by']) {
@@ -288,24 +287,36 @@ function eshop_downloads_manager() {
 		}
 		$range=10;
 		$max = $wpdb->get_var("SELECT COUNT(id) FROM $table WHERE id > 0");
-		if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
-			$records=get_option('eshop_records');
+		if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
+			$records=$eshopoptions['records'];
 		}else{
 			$records='10';
 		}
-
-		if(isset($_GET['viewall']))$records=$max;
-		$pager = new eshopPager( 
-			$max ,          //see above
-			$records,            // how many records to display at one time
-			@$_GET['_p'] 	//this is the current page no carried via _GET
-		);
-	
-		$pager->set_range($range);
-		$thispage=$pager->get_limit();
-		$c=$pager->get_limit_offset();
-	if($max>0){
-		$myrowres=$wpdb->get_results("Select * From $table $sortby LIMIT $thispage");
+		if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
+		else $epage='1';
+		if(!isset($_GET['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
+		if($max>0){
+		$myrowres=$wpdb->get_results("Select * From $table $sortby LIMIT $offset, $records");
 		//work out totals for quick stats
 		$total=0;
 		$purchased=0;
@@ -316,9 +327,9 @@ function eshop_downloads_manager() {
 		}
 	?>
 	<div class="wrap">
-		<h2><?php _e('Downloadable Products','eshop'); ?></h2>
+		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<?php
-		$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
+		$apge=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ia"'.$cia.'>'.__('ID Number','eshop').'</a></li>';
@@ -356,7 +367,7 @@ function eshop_downloads_manager() {
 		   $alt = ($calt % 2) ? '' : ' class="alt"';
 		   echo "<tr".$alt.">\n";
 		   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
-		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop_downloads.php&amp;edit='.$row->id.'" title="edit details for '.$row->title.'">'.$label."</a></td>\n";
+		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop_downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
 		   echo '<td headers="edsize redid'.$row->id.'">'.eshop_read_filesize($size)."</td>\n";
 		   echo '<td headers="edstatus redid'.$row->id.'">'.eshop_check_brokenlink($filepath)."</td>\n";
 		   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";
@@ -368,23 +379,28 @@ function eshop_downloads_manager() {
 		 </tbody>
 		</table>
 	<?php
-	   //paginate
-	echo '<div class="paginate"><p>';//<p class="checkers">Bulk:<a href="javascript:checkedAll(\'downloadlist\', true)" title="Select all of the checkboxes above">Check</a><span class="offset"> | </span><a href="javascript:checkedAll(\'downloadlist\', false)" title="Deselect all of the checkboxes above">Uncheck</a></p><p>';
-		if($pager->_pages > 1){
-			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+	//paginate
+		echo '<div class="paginate">';;
+		if($records!=$max){
+			$eecho = $page_links;
 		}
-		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
-		//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
-		if($pager->_pages >= 2){
-			echo ' &raquo; <a class="pag-view" href="?page=eshop_downloads.php&amp;_p=1&amp;viewall=yes">'.__('View All &raquo;','eshop').'</a>';
+		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
+		//$thispage=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'].'&amp;viewall=yes';
+		if(isset($eecho)){
+			$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
+			echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
 		}
-		echo '</p></div>';
+		echo '<br /></div>';
+	
+		//end
 	}else{
 	?>
 		<div class="wrap">
-		<h2><?php _e('Downloadable Products','eshop'); ?></h2>
+		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<p><?php _e('You currently have no downloadable products','eshop'); ?>.</p>
 		
 	<?php
@@ -441,7 +457,7 @@ function eshop_downloads_manager() {
 			}
 			?>
 			</ul>
-			<p><a href="<?php echo wp_specialchars($_SERVER['REQUEST_URI']).'&amp;eshop_orphan'; ?>"><?php _e('Add all unknown download files','eshop'); ?></a></p>
+			<p><a href="<?php echo esc_url($_SERVER['REQUEST_URI']).'&amp;eshop_orphan'; ?>"><?php _e('Add all unknown download files','eshop'); ?></a></p>
 			</div>
 			<?php
 		}

@@ -72,14 +72,15 @@ class payson_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to payson.
-      $payson = get_option('eshop_payson');
+      global $eshopoptions;
+      $payson = $eshopoptions['payson'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	     <p>'. __('If you are not automatically redirected to Payson, please use the <em>Proceed to Payson</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->payson_url.'">
           <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
-			$payson = get_option('eshop_payson'); 
+			$payson = $eshopoptions['payson']; 
 			$Key=$payson['key'];
 			$Cost=str_replace(',','',$_POST['amount'])-str_replace(',','',$_POST['shipping_1']);
 			$ExtraCost=$_POST['shipping_1'];
@@ -89,7 +90,7 @@ class payson_class {
 				$Cost=$Cost+$adjust;
 				$desc .= ' '.sprintf(__('Payson minimum of %s SEK applied.','eshop'),$payson['minimum']);
 			}
-			$Cost=number_format($Cost, 2, ',', ',');
+			$Cost=number_format($Cost, 2, ',', '');
 			$ExtraCost=number_format($ExtraCost, 2, ',', '');
 			$OkUrl=$_POST['notify_url'];
 			$GuaranteeOffered='1';

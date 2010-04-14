@@ -3,8 +3,9 @@
  * PHP Payson IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
 */
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -17,22 +18,19 @@ $p = new webtopay_class;             // initiate an instance of the class
 
 $p->webtopay_url = 'https://www.webtopay.com/pay/';     // webtopay url
 
-$this_script = get_option('siteurl');
-global $wp_rewrite;
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+$this_script = site_url();
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
-
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	
     	//auto-redirect bits
@@ -41,7 +39,7 @@ switch ($_GET['eshopaction']) {
 		header('Pragma: no-cache'); //HTTP/1.0
 
 		//enters all the data into the database
-		$webtopay = get_option('eshop_webtopay'); 
+		$webtopay = $eshopoptions['webtopay']; 
 
 		$Cost = $_POST['amount']-$_POST['shipping_1'];
 		$ExtraCost = $_POST['shipping_1'];
@@ -81,18 +79,14 @@ switch ($_GET['eshopaction']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
 
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=webtopayipn';
-			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=webtopayipn';
-			}
+		if($eshopoptions['cart_success']!=''){
+			$ilink=add_query_arg('eshopaction','webtopayipn',get_permalink($eshopoptions['cart_success']));
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=webtopayipn';
+			die('<p>'.$derror.'</p>');
 		}
+		
 		$p->add_field('notify_url', $ilink);
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
@@ -116,7 +110,7 @@ switch ($_GET['eshopaction']) {
 			$p->add_field($name, $value);
 		}
 	
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_webtopay_post(); // submit the fields to webtopay
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
@@ -183,7 +177,7 @@ switch ($_GET['eshopaction']) {
 			  $ps->ipn_data["$field"] = $value;
 			}
 	
-			$webtopay = get_option('eshop_webtopay'); 
+			$webtopay = $eshopoptions['webtopay']; 
 			$Key=$webtopay['id'];
 
 			if ($webtopay['id'] != $_GET['merchantid']) exit('Incorrect MerchantID!');
@@ -241,7 +235,7 @@ switch ($_GET['eshopaction']) {
 			}
 			
 			if($eshopdosend=='yes'){
-				$subject .=" Ref:".$ps->ipn_data['RefNr'];
+				$subject .=__(" Ref:",'eshop').$ps->ipn_data['RefNr'];
 				// email to business a complete copy of the notification from webtopay to keep!!!!!
 				$array=eshop_rtn_order_details($checked);
 				$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';

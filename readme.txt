@@ -2,9 +2,9 @@
 Contributors: Rich Pedley
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
-Requires at least: 2.7
-Tested up to: 2.9.1
-Stable tag: 4.3.2
+Requires at least: 2.9
+Tested up to: 3.0
+Stable tag: 5.0.0
 
 An accessible Shopping Cart plugin.
 
@@ -32,9 +32,9 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * and much much more
 
 
-== Upgrade Notice == 
+== Upgrade Notice ==
 
-**4.3.0 is the last major update before WordPress 3 is released**
+Version 5 completely removes all associated thumbnails, reset them via the thumbnail option on the post/page edit screen. Additionally this release may contain bugs - please ensure you back up the database before upgrading!
 
 
 == Screenshots ==
@@ -42,6 +42,14 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 Not currently available.
 
 == Changelog == 
+
+Version 5.0.0
+
+* *all* files amended and many small bug fixes implemented.
+* *all* data is now stored differently in the database - please ensure you backup your database before upgrading to this version.
+* *changed* method for thumbnails, this affects all users upgrading. Please use the thumbnail option on the post/page edit screen. Previous thumbnail image are _not_ used.
+* *added* to help with the above a default image has been included for products with no thumbnail.
+* *added* eshop_list_cat_tags shortcode, listing for products by category and tags. See help page for more details. The functionality has also been added into the the eShop product widget.
 
 Version 4.3.2
 

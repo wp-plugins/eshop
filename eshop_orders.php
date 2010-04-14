@@ -15,7 +15,7 @@ else {
 global $wpdb;
 
 if (isset($_GET['action']) )
-	$action_status = attribute_escape($_GET['action']);
+	$action_status = esc_attr($_GET['action']);
 else
 	$_GET['action']=$action_status = 'Pending';
 
@@ -59,9 +59,9 @@ if(isset($_POST['eshop-adnote'])){
 
 if (!function_exists('displayorders')) {
 	function displayorders($type){
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		//these should be global, but it wasn't working *sigh*
-		$phpself=wp_specialchars($_SERVER['REQUEST_URI']);
+		$phpself=esc_url($_SERVER['REQUEST_URI']);
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		
@@ -77,8 +77,6 @@ if (!function_exists('displayorders')) {
 			}
 		}
 		
-		//pager for when you have lots and lots of orders :)
-		include_once ("pager-class.php");
 		$cda=$cdd=$ctn=$cca=$cna='';
 		if(isset($_GET['by'])){
 			switch ($_GET['by']) {
@@ -108,29 +106,40 @@ if (!function_exists('displayorders')) {
 			$sortby='ORDER BY custom_field ASC';
 		}
 		
-		$range=10;
 		$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
 		if($max>0){
-			if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
-				$records=get_option('eshop_records');
+			if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
+				$records=$eshopoptions['records'];
 			}else{
 				$records='10';
 			}
-			if(isset($_GET['viewall']))$records=$max;
-
-			$pager = new eshopPager( 
-				$max ,          //see above
-				$records,            // how many records to display at one time
-				@$_GET['_p'] 	//this is the current page no carried via _GET
-			);
-
-			$pager->set_range($range);
-			$thispage=$pager->get_limit();
-			$c=$pager->get_limit_offset();
+			if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
+			else $epage='1';
+			if(!isset($_GET['eshopall'])){
+				$page_links = paginate_links( array(
+					'base' => add_query_arg( '_p', '%#%' ),
+					'format' => '',
+					'total' => ceil($max / $records),
+					'current' => $epage,
+					'type'=>'array'
+					));
+				$offset=($epage*$records)-$records;
+			}else{
+				$page_links = paginate_links( array(
+					'base' => add_query_arg( '_p', '%#%' ),
+					'format' => '',
+					'total' => ceil($max / $records),
+					'current' => $epage,
+					'type'=>'array',
+					'show_all' => true,
+				));
+				$offset='0';
+				$records=$max;
+			}
 			//
-			$myrowres=$wpdb->get_results("Select * From $dtable where status='$type' $sortby LIMIT $thispage");
+			$myrowres=$wpdb->get_results("Select * From $dtable where status='$type' $sortby LIMIT $offset, $records");
 			$calt=0;
-			$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'];
+			$apge=esc_url($_SERVER['PHP_SELF'].'?page='.$_GET['page'].'&amp;action='.$_GET['action']);
 			echo '<ul id="eshopsubmenu">';
 			echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascending','eshop').'</a></li>';
@@ -154,7 +163,7 @@ if (!function_exists('displayorders')) {
 			<th id="price">'.__('Price','eshop').'</th>
 			<th id="downloads">'.__('Contains Downloads','eshop').'</th>
 			<th id="transid">'.__('Transaction ID','eshop').'</th>
-			<th id="bulk" title="Bulk operations">'.__('Bulk','eshop').'</th></tr></thead><tbody>'."\n";
+			<th id="bulk"><input type="checkbox" value="" name="checkAllAuto" id="checkAllAuto" /><label for="checkAllAuto">'.__('Bulk','eshop').'</label></th></tr></thead><tbody>'."\n";
 			$move=array();
 			foreach($myrowres as $myrow){
 				//total + products
@@ -185,7 +194,7 @@ if (!function_exists('displayorders')) {
 					}else{
 						$company='';
 					}
-					$currsymbol=get_option('eshop_currency_symbol');
+					$currsymbol=$eshopoptions['currency_symbol'];
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$c.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
@@ -201,20 +210,22 @@ if (!function_exists('displayorders')) {
 			}
 			echo "</tbody></table></div>\n";
 			//paginate
-				echo '<div class="paginate"><p class="checkers">'.__('Bulk:','eshop').'<a href="javascript:checkedAll(\'orderstatus\', true)" title="'.__('Select all of the checkboxes above','eshop').'">'.__('Check','eshop').'</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="'.__('Deselect all of the checkboxes above','eshop').'">'.__('Uncheck','eshop').'</a></p><p>';
-					if($pager->_pages > 1){
-						echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-					}else{
-						echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
-					}
-					echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
-					//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
-					if($pager->_pages >= 2){
-						echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="'.$status.' '.__('orders','eshop').'">'.__('View All &raquo','eshop').';</a>';
-					}
-					echo '</p></div>';
+				echo '<div class="paginate">';
+				if($records!=$max){
+					$eecho = $page_links;
+				}
+				echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+					number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+					number_format_i18n( min( $epage * $records, $max ) ),
+					number_format_i18n( $max)
+				);
+				if(isset($eecho)){
+					$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
+					echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+				}
+				//echo '<p class="checkers">'.__('Bulk:','eshop').'<a href="javascript:checkedAll(\'orderstatus\', true)" title="'.__('Select all of the checkboxes above','eshop').'">'.__('Check','eshop').'</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="'.__('Deselect all of the checkboxes above','eshop').'">'.__('Uncheck','eshop').'</a></p>';
+				echo '<br /></div>';
 			//end
-			
 			
 			//moved order status box
 				?>
@@ -239,7 +250,7 @@ if (!function_exists('displayorders')) {
 			
 			if($type=='Deleted'){
 			?>
-				<div id="eshopformleft"><form id="ordersdelete" action="<?php echo wp_specialchars($_SERVER['REQUEST_URI']); ?>" method="post">
+				<div id="eshopformleft"><form id="ordersdelete" action="<?php echo esc_url($_SERVER['REQUEST_URI']); ?>" method="post">
 				<fieldset><legend><?php _e('Complete Order Deletion','eshop'); ?></legend>
 				<p class="submit eshop"><label for="dhours"><?php _e('Orders that are ','eshop'); ?>
 				<select name="dhours" id="dhours">
@@ -271,32 +282,31 @@ if (!function_exists('displayorders')) {
 }
 if (!function_exists('displaystats')) {
 	function displaystats(){
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		include 'eshop_statistics.php';
 		//these should be global, but it wasn't working *sigh*
-		$phpself=wp_specialchars($_SERVER['REQUEST_URI']);
+		$phpself=esc_url($_SERVER['REQUEST_URI']);
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$metatable=$wpdb->prefix.'postmeta';
 		$poststable=$wpdb->prefix.'posts';
-		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit')");
+		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status = 'publish'");
 		$stocked = $wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = '_Option 1'
+		WHERE meta.meta_key = '_eshop_product'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
-		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		AND posts.post_status = 'publish'
 		ORDER BY meta.post_id");
 
 		$countprod=$countfeat=0;
 		foreach($stocked as $stock){
-			$fcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='_Featured Product'");
-			if($fcount=='Yes'){
+		    $eshop_product=get_post_meta( $stock->post_id, '_eshop_product',true );
+		    if($eshop_product['featured']='Yes')
 				$countfeat++;
-			}
-			$pcount = $wpdb->get_var("SELECT meta_value FROM $metatable where post_id='$stock->post_id' and meta_key='_Stock Available'");
-			if($pcount=='Yes'){
+			$stkav=get_post_meta( $stock->post_id, '_eshop_stock',true );
+			if($stkav=='1'){
 				$countprod++;
 			}
 		}
@@ -368,8 +378,8 @@ if (!function_exists('displaystats')) {
 			echo '<li><strong>'.$max.'</strong> '.$type.' '.eshop_plural($max,__('order','eshop'),__('orders','eshop')).'</li>';
 		}
 		echo '</ul></div>';
-		if(is_array(get_option('eshop_method'))){
-			$paytype=get_option('eshop_method');
+		if(is_array($eshopoptions['method'])){
+			$paytype=$eshopoptions['method'];
 			?>
 			<div class="eshop-stats-box">
 			<h3><?php _e('Merchant Gateways Usage','eshop'); ?></h3>
@@ -453,6 +463,7 @@ $dtable=$wpdb->prefix.'eshop_orders';
 $itable=$wpdb->prefix.'eshop_order_items';
 $stable=$wpdb->prefix.'eshop_states';
 $ctable=$wpdb->prefix.'eshop_countries';
+$eshopoptions = get_option('eshop_plugin_settings');
 
 /*
 ##########
@@ -530,7 +541,7 @@ if(isset($_GET['view'])){
 	die ('<h2 class="error">'.__('Error','eshop').'</h2>');
 }
 
-echo '<h2>'.$state."</h2>\n";
+echo '<div id="eshopicon" class="icon32"></div><h2>'.$state."</h2>\n";
 echo '<ul class="subsubsub">';
 if(current_user_can('eShop_admin'))
 	$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
@@ -622,7 +633,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 	$total=0;
 	$calt=0;
-	$currsymbol=get_option('eshop_currency_symbol');
+	$currsymbol=$eshopoptions['currency_symbol'];
 	?>
 	<div class="orders tablecontainer">
 	<p><?php _e('Transaction ID:','eshop'); ?> <strong><?php echo $transid; ?></strong></p>
@@ -707,7 +718,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name."<br />\n";
 		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
 		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email.'</a> <small class="noprint">'.__('(sends a form email)','eshop')."</small><br />\n";
-		if('no' == get_option('eshop_downloads_only')){
+		if('no' == $eshopoptions['downloads_only']){
 			echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->phone."</p>\n";
 
 			echo '<h5>'.__('Address','eshop').'</h5>';
@@ -732,11 +743,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 			echo $qcountry."</address></p>";
-			if(get_option('eshop_shipping_zone')=='country'){
+			if($eshopoptions['shipping_zone']=='country'){
 				$qzone=$countryzone;
 			}else{
 				$qzone=$statezone;
-				if($statezone=='') $qzone=get_option('eshop_unknown_state');
+				if($statezone=='') $qzone=$eshopoptions['unknown_state'];
 			}
 			echo '<p>'.__('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p></div>\n";
 			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
@@ -762,11 +773,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 				echo $qcountry."</address></p>";
-				if(get_option('eshop_shipping_zone')=='country'){
+				if($eshopoptions['shipping_zone']=='country'){
 					$qzone=$countryzone;
 				}else{
 					$qzone=$statezone;
-					if($statezone=='') $qzone=get_option('eshop_unknown_state');
+					if($statezone=='') $qzone=$eshopoptions['unknown_state'];
 				}
 				echo '<p>'. __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p></div>\n";
 			}

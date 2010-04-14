@@ -16,8 +16,9 @@
  *  I possibly could.  Please email me with questions, comments, and suggestions.
  *  See the header of paypal.class.php for additional resources and information.
 */
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -29,8 +30,7 @@ require_once(WP_PLUGIN_DIR.'/eshop/paypal/paypal.class.php');  // include the cl
 $p = new paypal_class;             // initiate an instance of the class
 
 
-
-if(get_option('eshop_status')=='live'){
+if($eshopoptions['status']=='live'){
 	$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
 }else{
 	$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';   // testing paypal url
@@ -38,23 +38,20 @@ if(get_option('eshop_status')=='live'){
 
 // setup a variable for this script (ie: 'http://www.micahcarrick.com/paypal.php')
 //e.g. $this_script = 'http://'.$_SERVER['HTTP_HOST'].htmlentities($_SERVER['PHP_SELF']);
-$this_script = get_option('siteurl');
-global $wp_rewrite;
-
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+$this_script = site_url();
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
 
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -63,17 +60,17 @@ switch ($_GET['eshopaction']) {
 
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
-		$checkid=md5(get_option('eshop_business').$token.number_format($_SESSION['final_price'.$blog_id],2));
+		$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
 		//
 		orderhandle($_POST,$checkid);
 		$_POST['custom']=$token;
 		$p = new paypal_class; 
-		if(get_option('eshop_status')=='live'){
+		if($eshopoptions['status']=='live'){
 			$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
 		}else{
 			$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';   // testing paypal url
 		}
-		if('no'==get_option('eshop_paypal_noemail')){
+		if('no'==$eshopoptions['paypal_noemail']){
 			unset($_POST['email']);
 		}
 		$echoit.=$p->eshop_submit_paypal_post($_POST);
@@ -100,37 +97,25 @@ switch ($_GET['eshopaction']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
-		$p->add_field('business', get_option('eshop_business'));
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$slink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=success';
-			}else{
-				$slink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=success';
-			}
+		$p->add_field('business', $eshopoptions['business']);
+		if($eshopoptions['cart_success']!=''){
+			$slink=add_query_arg('eshopaction','success',get_permalink($eshopoptions['cart_success']));
 		}else{
-			$slink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=success';
+			die('<p>'.$derror.'</p>');
 		}
-		if(get_option('eshop_cart_cancel')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$clink=get_permalink(get_option('eshop_cart_cancel')).'?eshopaction=cancel';
-			}else{
-				$clink=get_permalink(get_option('eshop_cart_cancel')).'&amp;eshopaction=cancel';
-			}
+		if($eshopoptions['cart_cancel']!=''){
+			$clink=add_query_arg('eshopaction','cancel',get_permalink($eshopoptions['cart_cancel']));
 		}else{
-			$clink=get_permalink(get_option('eshop_cart')).'&amp;action=cancel';
+			die('<p>'.$eshopoptions['cart_cancel'].$derror.'</p>');
 		}
+		
 		$p->add_field('return', $slink);
 		$p->add_field('cancel_return', $clink);
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=paypalipn';
-			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=paypalipn';
-			}
+		if($eshopoptions['cart_success']!=''){
+			$ilink=add_query_arg('eshopaction','paypalipn',get_permalink($eshopoptions['cart_success']));
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=paypalipn';
+			die('<p>'.$derror.'</p>');
 		}
 		$p->add_field('notify_url', $ilink);
 
@@ -162,13 +147,13 @@ switch ($_GET['eshopaction']) {
 
 		
 		//settings in paypal/index.php to change these
-		$p->add_field('currency_code',get_option('eshop_currency')); //['USD,GBP,JPY,CAD,EUR']
-		$p->add_field('lc',get_option('eshop_location'));
+		$p->add_field('currency_code',$eshopoptions['currency']); //['USD,GBP,JPY,CAD,EUR']
+		$p->add_field('lc',$eshopoptions['location']);
 		$p->add_field('cmd','_ext-enter');
 		$p->add_field('redirect_cmd','_cart');
 		$p->add_field('upload','1');
 		//$p->add_field('address_override','1');//causes errors :(
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_paypal_post(); // submit the fields to paypal
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
@@ -184,7 +169,7 @@ switch ($_GET['eshopaction']) {
 		// membership, etc.  
 		$_SESSION = array();
       	session_destroy();
-      	if(get_option('eshop_status')=='live'){
+      	if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($_POST['txn_id']);
 		}else{
 			$txn_id = "TEST-".$wpdb->escape($_POST['txn_id']);
@@ -212,7 +197,7 @@ switch ($_GET['eshopaction']) {
 	  		/* commented out until i can think of a way to get this to work :(  -Rich
 	  		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']);
 	  		$tstatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
-	  		if(get_option('eshop_status')=='live'){
+	  		if($eshopoptions['status']=='live'){
 	  			$txn_id = 'Cancelled-'.$wpdb->escape($p->ipn_data['txn_id']);
 	  		}else{
 	  			$txn_id = "TEST-Cancelled-".$wpdb->escape($p->ipn_data['txn_id']);
@@ -251,7 +236,7 @@ switch ($_GET['eshopaction']) {
 			$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');
 			}else{
@@ -269,7 +254,7 @@ switch ($_GET['eshopaction']) {
 				}
 			}
 			//check reciever email is correct - we will use business for now
-			if($p->ipn_data['receiver_email']!= get_option('eshop_business')){
+			if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
 				$txn_id = __("Fraud-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
 				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
@@ -324,7 +309,7 @@ switch ($_GET['eshopaction']) {
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
-			 $to = get_option('eshop_business');    //  your email
+			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
@@ -363,7 +348,7 @@ switch ($_GET['eshopaction']) {
       	}else{
       		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');
 			}else{
@@ -379,18 +364,18 @@ switch ($_GET['eshopaction']) {
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("INVALID Payment",'eshop');	
-				$extradetails .= __("The order may be a duplicate, and Paypal has reported an invalid payment.",'eshop');	
+				$extradetails .= __("Paypal has reported an invalid payment.",'eshop');	
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Invalid and Failed Payment",'eshop');
-				$extradetails .= __("The order may be a duplicate, and Paypal has reported an invalid, and failed payment.",'eshop');
+				$extradetails .= __("Paypal has reported an invalid, and failed payment.",'eshop');
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
 					$extradetails .= __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 
 			}
-			$subject .=" Ref:".$p->ipn_data['txn_id'];
+			$subject .=__(" Ref:",'eshop').$p->ipn_data['txn_id'];
 			// email to business a complete copy of the notification from paypal to keep!!!!!
-			 $to = get_option('eshop_business');    //  your email
+			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__('from','eshop')." ".$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
@@ -399,7 +384,7 @@ switch ($_GET['eshopaction']) {
 			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
 			 $headers=eshop_from_address();
 			 wp_mail($to, $subject, $body, $headers);
-			}
+		}
       	break;
  }     
 ?>

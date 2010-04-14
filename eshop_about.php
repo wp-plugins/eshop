@@ -1,7 +1,9 @@
 <?php
 if ('eshop_about.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-     
+    
+$eshopoptions = get_option('eshop_plugin_settings');
+
 /*
 See eshop.php for information and license terms
 */
@@ -12,12 +14,36 @@ else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
 //so that user is no longer auto redirected to this page.
-if('yes'==get_option('eshop_first_time')){
+if('yes'==$eshopoptions['first_time']){
 	echo'<div id="message" class="updated fade"><p>'.__('This page is normally accessible via the <strong>About</strong> link.','eshop').'</p></div>'."\n";
 }
-update_option('eshop_first_time','no');
+$eshopoptions['first_time']='no';
+update_option('eshop_plugin_settings',$eshopoptions);
 ?>
 <div id="eshoppage">
+<div class="wrap">
+ <div id="eshopicon" class="icon32"></div><h2 id="donate">eShop Donations</h2>
+ <p>Feeling generous? then please dig deep and donate as much as you can afford!</p>
+ <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
+ <input type="hidden" name="cmd" value="_xclick" />
+ <input type="hidden" name="business" value="mypaypal@blackwidows.co.uk" />
+ <input type="hidden" name="item_name" value="eShop donation" />
+ <input type="hidden" name="buyer_credit_promo_code" value="" />
+ <input type="hidden" name="buyer_credit_product_category" value="" />
+ <input type="hidden" name="buyer_credit_shipping_method" value="" />
+ <input type="hidden" name="buyer_credit_user_address_change" value="" />
+ <input type="hidden" name="no_shipping" value="0" />
+ <input type="hidden" name="no_note" value="1" />
+ <input type="hidden" name="currency_code" value="GBP" />
+ <input type="hidden" name="tax" value="0" />
+ <input type="hidden" name="lc" value="GB" />
+ <input type="hidden" name="bn" value="PP-DonationsBF" />
+ <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" name="submit" alt="Donate via paypal" />
+ <img src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" alt="" />
+</form>
+
+  <p class="thanks">Thank you very much!</p>
+</div>
 <div class="wrap">
  <h2>About eShop</h2>
   <p>eShop is simple accessible shopping cart plugin for WordPress that provides basic support for online payments through PayPal.</p>
@@ -57,30 +83,6 @@ update_option('eshop_first_time','no');
 	</li>
 	</ul>
 	
-</div>
-
-<div class="wrap">
- <h2 id="donate">eShop Donations</h2>
- <p>Feeling generous? then please dig deep and donate as much as you can afford!</p>
- <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
- <input type="hidden" name="cmd" value="_xclick" />
- <input type="hidden" name="business" value="mypaypal@blackwidows.co.uk" />
- <input type="hidden" name="item_name" value="eShop donation" />
- <input type="hidden" name="buyer_credit_promo_code" value="" />
- <input type="hidden" name="buyer_credit_product_category" value="" />
- <input type="hidden" name="buyer_credit_shipping_method" value="" />
- <input type="hidden" name="buyer_credit_user_address_change" value="" />
- <input type="hidden" name="no_shipping" value="0" />
- <input type="hidden" name="no_note" value="1" />
- <input type="hidden" name="currency_code" value="GBP" />
- <input type="hidden" name="tax" value="0" />
- <input type="hidden" name="lc" value="GB" />
- <input type="hidden" name="bn" value="PP-DonationsBF" />
- <input type="image" src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" name="submit" alt="Donate via paypal" />
- <img src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" alt="" />
-</form>
-
-  <p class="thanks">Thank you very much!</p>
 </div>
 
 <div class="wrap">

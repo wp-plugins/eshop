@@ -147,7 +147,7 @@ form.dlproduct label {
 /*********** OTHER ***************/
 /* no bullets */
 #content .eshop li,
-#content ul.eshopfeatured li,#content ul.eshopfeatured li,#content ul.eshopsubpages li,
+#content ul.eshopfeatured li,#content ul.eshopfeatured li,#content ul.eshopsubpages li,ul.eshopcats li,
 #content ul.eshoprandomlist li,#content ul.eshopshowproduct li,#content ul.eshoppanels li,
 #content fieldset.eshoppayvia li,
 #content .pagfoot ul li,#content ul.continue-proceed li {

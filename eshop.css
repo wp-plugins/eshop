@@ -1,5 +1,7 @@
 /*  eShop Admin styles  */
-
+#eshopicon{
+	background:url("eshop32.png") no-repeat transparent;
+}
 /* sub menu*/
 #eshopsubmenu li {
   display : inline;
@@ -376,11 +378,8 @@ p.submit.eshop,#filterzones p.submit{
 	margin-right:1em;
 	width:45%;
 }
-#eshoposetc h4{
-
-}
 #eshoposets{ 
-	border: 1px solid #587800; 
+	border: 1px solid #a6a6a6; 
 	list-style: none; 
 	height: 8em; 
 	overflow: auto; 
@@ -444,21 +443,32 @@ p.delete small {
 div.paginate {
   margin : 5px 2px;
   border : 1px solid #bbb;
-  background-color : #fbfbfb;
-  font-size : 90%;
 }
 
-div.paginate p { 
-  color : #333;
-  margin : 5px 10px 10px;
-  padding : 0; 
-  line-height : 2em;
+/* pagination */
+.paginate {
+	margin:5px 2px;
+	font-size:90%;
 }
-
-div.paginate p span {
-  font-weight : bold;
+.paginate p { 
+	padding:0; 
+	line-height:2em;
 }
-
+.paginate p span {
+	font-weight:bold;
+}
+.paginate ul {
+	margin:0;
+	padding:0;
+}
+.paginate ul li {
+	float:left;
+	padding:0 4px;
+	margin-right:5px;
+}
+.paginate ul li a {
+	display:block;
+}
 div.paginate a, a.return {
   background-color : #eee;
   border : 1px solid #999;
@@ -478,13 +488,13 @@ div.paginate a.pag-view {
 }
 
 div.paginate p.checkers {
-  float : right;
+  text-align:right;
   padding : 0;
   margin-top : 8px;
 }
 
 div.paginate p.checkers a {
-  margin-left : 6px;
+  margin-right : 6px;
 }
 
 /* email forms */
@@ -545,7 +555,7 @@ br.clearbr {
   top : -9000px;
   left : -9000px;
 }
-table.hidealllabels label{
+table.hidealllabels tr td label{
 	position : absolute;
 	top : -9000px;
   	left : -9000px;
@@ -623,21 +633,6 @@ fieldset#baseothers fieldset{
 }
 /* end eShop CSS */
 
-/* upgrade nag */
-
-#eshop-update-nag{
-	background-color: #fffeeb;
-	border-bottom-color: #ccc;
-	border-top-color: #ccc;
-	color: #555;
-	line-height: 29px;
-	font-size: 12px;
-	text-align: center;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-top-width: 1px;
-	border-top-style: solid;
-}
 
 /* order details page tidy up */
 .orderaddress, .paypalmemo{

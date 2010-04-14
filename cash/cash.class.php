@@ -72,14 +72,15 @@ class cash_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to cash.
-      $cash = get_option('eshop_cash');
+      global $eshopoptions;
+      $cash = $eshopoptions['cash'];
 		$echortn ='<div id="process">
          <p><strong>'. __('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	     <p>'. __('If you are not automatically redirected, please use the <em>Proceed</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->cash_url.'">
           <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
-			$cash = get_option('eshop_cash'); 
+			$cash = $eshopoptions['cash']; 
 			$refid=$_POST['RefNr'];
 			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
 			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />

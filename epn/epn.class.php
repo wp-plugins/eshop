@@ -72,21 +72,22 @@ class epn_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to epn.
-      $epn = get_option('eshop_epn');
+      global $eshopoptions;
+      $epn = $eshopoptions['epn'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	     <p>'. __('If you are not automatically redirected to eProcessingNetwork, please use the <em>Proceed to eProcessingNetwork</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->epn_url.'">
           <p>';
 		$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
-		$epn = get_option('eshop_epn'); 
+		$epn = $eshopoptions['epn']; 
 		$Cost=$_POST['amount'];
 		$desc = str_replace($replace, " ", $epn['description']);
 		$address=$_POST['address1'].' '. $_POST['address2'];
 		$ReturnApprovedURL=$_POST['ReturnApprovedURL'];
 		$ReturnDeclinedURL=$_POST['ReturnDeclinedURL'];
 		$refid=$_POST['RefNr'];
-		if(get_option('eshop_status')!='live'){
+		if($eshopoptions['status']!='live'){
 			$epn['id']='080880';
 		}
 		$echortn.='
