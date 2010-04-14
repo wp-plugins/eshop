@@ -3,8 +3,10 @@
  * PHP Paypal IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
 */
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
+
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 $_POST=sanitise_array($_POST);
@@ -15,33 +17,31 @@ require_once(WP_PLUGIN_DIR.'/eshop/authorizenet/authorizenet.class.php');  // in
 $p = new authorizenet_class;             // initiate an instance of the class
 //https://secure.authorize.net/gateway/transact.dll
 //developer test only "https://test.authorize.net/gateway/transact.dll";
-if(get_option('eshop_status')=='live'){
+if($eshopoptions['status']=='live'){
 	$p->authorizenet_url = 'https://secure.authorize.net/gateway/transact.dll';     // authorizenet url
 }else{
 	$p->authorizenet_url = 'https://secure.authorize.net/gateway/transact.dll';   // testing authorizenet url
 }
 //only reqd for the developer
-$authorizenet = get_option('eshop_authorizenet'); 
+$authorizenet = $eshopoptions['authorizenet']; 
 $authemail=$authorizenet['email'];
 if($authemail=='elfin@elfden.co.uk')
 	$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
 
-$this_script = get_option('siteurl');
-global $wp_rewrite;
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+$this_script = site_url();
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
 
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -49,7 +49,7 @@ switch ($_GET['eshopaction']) {
 		header('Pragma: no-cache'); //HTTP/1.0
 		
 		//enters all the data into the database
-		$authorizenet = get_option('eshop_authorizenet'); 
+		$authorizenet = $eshopoptions['authorizenet']; 
 		$Key=$authorizenet['key'];
 		$LID=$authorizenet['id'];
 		$secret=$authorizenet['secret'];
@@ -73,13 +73,13 @@ switch ($_GET['eshopaction']) {
 		$p->add_field('x_fp_sequence',$sequence);
 		$p->add_field('x_fp_timestamp',$timestamp);
 		$p->add_field('x_fp_hash',$fingerprint);
-		if(get_option('eshop_status')=='live'){
+		if($eshopoptions['status']=='live'){
 			$p->authorizenet_url = 'https://secure.authorize.net/gateway/transact.dll';     // authorizenet url
 		}else{
 			$p->authorizenet_url = 'https://secure.authorize.net/gateway/transact.dll';   // testing authorizenet url
 		}
 		//only reqd for the developer
-		$authorizenet = get_option('eshop_authorizenet'); 
+		$authorizenet = $eshopoptions['authorizenet']; 
 		$authemail=$authorizenet['email'];
 		if($authemail=='elfin@elfden.co.uk')
 			$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
@@ -108,17 +108,11 @@ switch ($_GET['eshopaction']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
-
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=authorizenetipn';
-			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=authorizenetipn';
-			}
+		if($eshopoptions['cart_success']!=''){
+			$ilink=add_query_arg('eshopaction','authorizenetipn',get_permalink($eshopoptions['cart_success']));
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=authorizenetipn';
+			die('<p>'.$derror.'</p>');
 		}
 		$p->add_field('x_relay_URL', $ilink);
 
@@ -143,7 +137,7 @@ switch ($_GET['eshopaction']) {
 			$p->add_field($name, $value);
 		}
 	
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_authorizenet_post(); // submit the fields to authorizenet
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
@@ -176,7 +170,7 @@ switch ($_GET['eshopaction']) {
 		  $ps->ipn_data["$field"] = $value;
 		}
 
-		$authorizenet = get_option('eshop_authorizenet'); 
+		$authorizenet = $eshopoptions['authorizenet']; 
 		$LID=$authorizenet['id'];
 		$secret=$authorizenet['secret'];
 		$transid=$ps->ipn_data['x_trans_id'];
@@ -187,7 +181,7 @@ switch ($_GET['eshopaction']) {
 		$ps->ipn_data["mycheckmd5"]=strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount)));
 		$ps->ipn_data["mycheckedid"]=$checked;
 		if('1' == $_REQUEST["x_response_code"] && $ps->ipn_data["mycheckmd5"]==$ps->ipn_data["x_MD5_Hash"]){
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($ps->ipn_data['x_trans_id']);
 				$subject = __('authorizenet IPN -','eshop');
 			}else{
@@ -291,10 +285,10 @@ switch ($_GET['eshopaction']) {
 			}
 
 		}else{
-			$authorizenet = get_option('eshop_authorizenet'); 
+			$authorizenet = $eshopoptions['authorizenet']; 
 			$Key=$authorizenet['key'];
 			//$checked=$ps->ipn_data["x_MD5_Hash"];	
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($ps->ipn_data['x_trans_id']);
 				$subject = __('authorizenet IPN -','eshop');
 			}else{
@@ -312,7 +306,7 @@ switch ($_GET['eshopaction']) {
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Invalid and Failed Payment",'eshop');
 			}
-			$subject .=" Ref:".$ps->ipn_data['x_trans_id'];
+			$subject .=__(" Ref:",'eshop').$ps->ipn_data['x_trans_id'];
 			// email to business a complete copy of the notification from authorizenet to keep!!!!!
 			 $to = $authorizenet['email'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";

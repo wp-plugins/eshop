@@ -11,17 +11,16 @@ xmlns:c="http://base.google.com/cns/1.0">
 <description>Product feed for '.get_bloginfo_rss('name').'</description>
 <generator>eShop: Accessible e-commerce plugin for Wordpress</generator>'."\n";
 
-global $wpdb;
+global $wpdb,$eshopoptions;
 $metatable=$wpdb->prefix.'postmeta';
 $poststable=$wpdb->prefix.'posts';
 
 $myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = '_Stock Available'
-		AND meta.meta_value != 'No' AND meta.meta_value !='' AND meta.meta_value >'0'
+		WHERE meta.meta_key = '_eshop_product'
 		AND posts.ID = meta.post_id
-		AND (posts.post_type != 'revision' && posts.post_type != 'inherit')
+		AND posts.post_status = 'publish'
 		ORDER BY meta.post_id");
 $x=0;
 foreach($myrowres as $row){
@@ -36,6 +35,12 @@ foreach($myrowres as $row){
 */
 foreach($grabit as $foo=>$k){
 	foreach($k as $bar=>$v){
+		if($bar=='_eshop_product'){
+			$x=unserialize($v[0]);
+			foreach($x as $nowt=>$val){
+				$array[$foo][$nowt]=$val;
+			}
+		}
 		foreach($v as $nowt=>$val){
 			$array[$foo][$bar]=$val;
 		}
@@ -43,12 +48,12 @@ foreach($grabit as $foo=>$k){
 }
 
 //set up defaults
-$basecondition=get_option('eshop_base_condition');
-$basebrand=get_option('eshop_base_brand');
-$baseptype=get_option('eshop_base_ptype');
-$baseexpiry=get_option('eshop_base_expiry');
+$basecondition=$eshopoptions['base_condition'];
+$basebrand=$eshopoptions['base_brand'];
+$baseptype=$eshopoptions['base_ptype'];
+$baseexpiry=$eshopoptions['base_expiry'];
 $basedate=date('Y-m-d',mktime(0, 0, 0, date("m") , date("d")+$baseexpiry, date("Y")));
-$basepayment=get_option('eshop_base_payment');
+$basepayment=$eshopoptions['base_payment'];
 $basepayments = explode(",", $basepayment);
 foreach($array as $foo=>$grabit){
 	//for the title
@@ -65,9 +70,13 @@ foreach($array as $foo=>$grabit){
 	//automatic data
 	$baselink=get_permalink($rid);
 	$baseid=$rid;
-	$baseprice=$grabit['_Price 1'];
-	$attachment = $wpdb->get_var("SELECT ID FROM $wpdb->posts where post_parent= ".$rid." and post_type = 'attachment' limit 1");
-	$baseimg=wp_get_attachment_url($attachment);
+	$baseprice=$grabit['products']['1']['price'];
+	if (has_post_thumbnail( $rid ) ) {
+		$grabimg=get_post_thumbnail_id($rid);
+		$src=wp_get_attachment_image_src($grabimg);
+		$baseimg =$src['0'];
+	}	
+	
 	$basedescription=get_the_excerpt();
 	//$basecondition=$basebrand=$baseptype=$basedate=$baseimg=$baseean=$baseisbn=$basempn=$baseqty='';
 	//individual set product data

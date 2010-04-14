@@ -16,7 +16,7 @@ function eshop_template_email(){
 	}
 ?>
 <div class="wrap">
-<h2><?php _e('eShop Email Templates','eshop'); ?></h2>
+<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Email Templates','eshop'); ?></h2>
  <p><?php _e('Use this page to modify your default email templates','eshop'); ?>.</p> 
 <table class="eshop widefat" summary="available email templates">
 <thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="blank"><?php _e('Template?', 'eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
@@ -25,7 +25,7 @@ function eshop_template_email(){
 if(isset($_GET['eshoptemplate'])) $eshoptemplate=$_GET['eshoptemplate'];
 else $eshoptemplate='1';
 $thisemail=$wpdb->get_results("Select * From $table");
-$phpself=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
+$phpself=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 $x=1;
 foreach($thisemail as $this_email){
 	$active='';

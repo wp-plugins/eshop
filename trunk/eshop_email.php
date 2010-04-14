@@ -12,7 +12,7 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-global $wpdb;
+global $wpdb,$eshopoptions;
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 
 // Back to our regularly scheduled script :)
@@ -54,31 +54,31 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	// START SUBST
 	$this_email = eshop_email_parse($this_email,$array);
 	$this_email = str_replace('&#8230;', '...', $this_email);
-// For system email - get_option('eshop_business') is called for below, twice
-	if(get_option('eshop_business')!=''){
-		$from=get_option('eshop_business');
+// For system email - 
+	if($eshopoptions['business']!=''){
+		$from=$eshopoptions['business'];
 	}else{
 		//nicked from wp_mail function!
 		$from="system@" . preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME']));
 	}
 	?>
-	<div id="eshopemailform"><form id="emailer" action="<?php echo wp_specialchars($_SERVER['REQUEST_URI']);?>" method="post">
+	<div id="eshopemailform"><form id="emailer" action="<?php echo esc_url($_SERVER['REQUEST_URI']);?>" method="post">
 	<fieldset><legend><?php _e('Send a notification to:','eshop'); ?> <strong><?php echo $email; ?></strong></legend>
 	<label for="from"><?php _e('Select a reply-to address:','eshop'); ?><br />
     <select class="pointer" name="from" id="from">
 	<?php
-	if(get_option('eshop_from_email')!=''){
+	if($eshopoptions['from_email']!=''){
 	?>
-		<option value="<?php echo get_option('eshop_from_email'); ?>"><?php echo get_option('eshop_from_email'); ?></option>
+		<option value="<?php echo $eshopoptions['from_email']; ?>"><?php echo $eshopoptions['from_email']; ?></option>
 	<?php
 	}
-	if(get_option('eshop_business')!=''){
+	if($eshopoptions['business']!=''){
 	?>
-		<option value="<?php echo get_option('eshop_business'); ?>"><?php echo get_option('eshop_business'); ?></option>
+		<option value="<?php echo $eshopoptions['business']; ?>"><?php echo $eshopoptions['business']; ?></option>
 	<?php
 	}
-    if(get_option('eshop_sysemails')!=''){
-		$sysmailex=explode("\n",get_option('eshop_sysemails'));
+    if($eshopoptions['sysemails']!=''){
+		$sysmailex=explode("\n",$eshopoptions['sysemails']);
 		while (list(, $sysMail) = each($sysmailex)) {	
 			echo '<option value="'.$sysMail.'">'.$sysMail.'</option>'."\n";  
 		} 

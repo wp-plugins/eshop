@@ -72,7 +72,8 @@ class authorizenet_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to authorize.net.
-      $authorizenet = get_option('eshop_authorizenet');
+      global $eshopoptions;
+      $authorizenet = $eshopoptions['authorizenet'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	     <p>'. __('If you are not automatically redirected to authorize.net, please use the <em>Proceed to Authorize.net</em> button.','eshop').'</p>
@@ -88,7 +89,7 @@ class authorizenet_class {
 			<input type="hidden" name="x_relay_URL" value="'.$relayURL.'" />
 			<input type="hidden" name="x_version" value="3.1" />
 			';
-			if(get_option('eshop_status')!='live'){
+			if($eshopoptions['status']!='live'){
 			 $echortn.='<input type="hidden" name="x_test_request" value="TRUE" />';
 			}
 			//convert from paypal to authorize.net

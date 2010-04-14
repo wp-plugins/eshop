@@ -3,8 +3,9 @@
  * PHP Payson IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
 */
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -15,28 +16,26 @@ include_once (WP_PLUGIN_DIR.'/eshop/payson/index.php');
 require_once(WP_PLUGIN_DIR.'/eshop/payson/payson.class.php');  // include the class file
 $p = new payson_class;             // initiate an instance of the class
 
-if(get_option('eshop_status')=='live'){
+if($eshopoptions['status']=='live'){
 	$p->payson_url = 'https://www.payson.se/merchant/default.aspx';     // payson url
 }else{
 	$p->payson_url = 'https://www.payson.se/testagent/default.aspx';   // testing payson url
 }
 
-$this_script = get_option('siteurl');
-global $wp_rewrite;
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+$this_script = site_url();
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
 
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -44,7 +43,7 @@ switch ($_GET['eshopaction']) {
 		header('Pragma: no-cache'); //HTTP/1.0
 
 		//enters all the data into the database
-		$payson = get_option('eshop_payson'); 
+		$payson = $eshopoptions['payson']; 
 		$Key=$payson['key'];
 		$Cost=$_POST['amount']-$_POST['shipping_1'];
 		$ExtraCost=$_POST['shipping_1'];
@@ -61,7 +60,7 @@ switch ($_GET['eshopaction']) {
 		orderhandle($_POST,$checkid);
 		$_POST['custom']=$token;
 		$p = new payson_class; 
-		if(get_option('eshop_status')=='live'){
+		if($eshopoptions['status']=='live'){
 			$p->payson_url = 'https://www.payson.se/merchant/default.aspx';     // payson url
 		}else{
 			$p->payson_url = 'https://www.payson.se/testagent/default.aspx';   // testing payson url
@@ -90,17 +89,11 @@ switch ($_GET['eshopaction']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
-
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=paysonipn';
-			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=paysonipn';
-			}
+		if($eshopoptions['cart_success']!=''){
+			$ilink=add_query_arg('eshopaction','paysonipn',get_permalink($eshopoptions['cart_success']));
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=paysonipn';
+			die('<p>'.$derror.'</p>');
 		}
 		$p->add_field('notify_url', $ilink);
 
@@ -125,7 +118,7 @@ switch ($_GET['eshopaction']) {
 			$p->add_field($name, $value);
 		}
 	
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_payson_post(); // submit the fields to payson
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
@@ -156,7 +149,7 @@ switch ($_GET['eshopaction']) {
 		  $ps->ipn_data["$field"] = $value;
 		}
 
-		$payson = get_option('eshop_payson'); 
+		$payson = $eshopoptions['payson']; 
 		$Key=$payson['key'];
 		$strOkURL = $ps->ipn_data["OkURL"];
 		$strRefNr = $ps->ipn_data["RefNr"];
@@ -166,7 +159,7 @@ switch ($_GET['eshopaction']) {
 		$checked=md5($strRefNr);
 		$eshopdosend='yes';
 		if($token == $_REQUEST["MD5"]){
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
 				$subject = __('Payson IPN -','eshop');
 			}else{
@@ -268,7 +261,7 @@ switch ($_GET['eshopaction']) {
 			}
 
 		}else{
-			$payson = get_option('eshop_payson'); 
+			$payson = $eshopoptions['payson']; 
 			$Key=$payson['key'];
 			$strOkURL = $_POST["OkURL"];
 			$strRefNr = $_POST["RefNr"];
@@ -276,7 +269,7 @@ switch ($_GET['eshopaction']) {
 			$strTestMD5String = $strOkURL . $strPaysonRef . $Key;
 			$token = md5($strTestMD5String);
 			$checked=md5($token);	
-			if(get_option('eshop_status')=='live'){
+			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
 				$subject = __('Payson IPN -','eshop');
 			}else{
@@ -294,7 +287,7 @@ switch ($_GET['eshopaction']) {
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Invalid and Failed Payment",'eshop');
 			}
-			$subject .=" Ref:".$ps->ipn_data['RefNr'];
+			$subject .=__(" Ref:",'eshop').$ps->ipn_data['RefNr'];
 			// email to business a complete copy of the notification from payson to keep!!!!!
 			 $to = $payson['email'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";

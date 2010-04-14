@@ -1,7 +1,7 @@
 <?php
 if (!function_exists('eshop_downloads')) {
 	function eshop_downloads($_POST){
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		//cache
 		eshop_cache();
 		$table = $wpdb->prefix ."eshop_downloads";
@@ -21,7 +21,7 @@ if (!function_exists('eshop_downloads')) {
 			if($dlcount>0){
 				$tsize=0;
 				$x=0;
-				if($dlcount>1 && get_option('eshop_downloads_hideall') != 'yes'){
+				if($dlcount>1 && $eshopoptions['downloads_hideall'] != 'yes'){
 					$echo .= '<p class="jdl"><a href="#dlall">'.__('Download all files','eshop').'</a></p>';
 				}
 				$dlresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
@@ -46,12 +46,11 @@ if (!function_exists('eshop_downloads')) {
 					<label for="ro'.$x.'">'.__('Number of downloads remaining','eshop').'</label>
 					<input type="text" readonly="readonly" name="ro" class="ro" id="ro'.$x.'" value="'.$dlrow->downloads.'" />
 					<span class="buttonwrap"><input type="submit" class="button" id="submit'.$x.'" name="Submit" value="'.__('Download','eshop').' '.$dltitle.'" /></span>
-					</fieldset></form>
-					';
+					</fieldset></form>';
 					$x++;
 					$size=0;
 				}
-				if($dlcount>1 && get_option('eshop_downloads_hideall') != 'yes'){
+				if($dlcount>1 && $eshopoptions['downloads_hideall'] != 'yes'){
 					//download all form.
 					$echo.='
 					<form method="post" action="" id="dlall" class="eshop"><fieldset>

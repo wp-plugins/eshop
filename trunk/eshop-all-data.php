@@ -1,7 +1,7 @@
 <?php
 if(!isset($_SESSION))
 	session_start();
-global $wpdb;
+global $wpdb,$eshopoptions;
 //tables used
 $dtable=$wpdb->prefix.'eshop_orders';
 $itable=$wpdb->prefix.'eshop_order_items';
@@ -108,7 +108,7 @@ foreach($dquery as $drow){
 		$thecity=$drow->city;
 		$thezip=$drow->zip;
 
-		if(get_option('eshop_shipping_zone')=='country'){
+		if($eshopoptions['shipping_zone']=='country'){
 			$qzone=$countryzone;
 		}else{
 			$qzone=$statezone;
@@ -129,7 +129,7 @@ foreach($dquery as $drow){
 		$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 		$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 		$shipcountry=$qcountry;
-		if(get_option('eshop_shipping_zone')=='country'){
+		if($eshopoptions['shipping_zone']=='country'){
 			$qzone=$countryzone;
 		}else{
 			$qzone=$statezone;

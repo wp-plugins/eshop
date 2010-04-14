@@ -27,7 +27,7 @@ function eshop_small_stats($stock,$limit=5){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop_orders.php&amp;action=Stats&amp;dlid='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
+				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop_downloads.php&edit='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
 				echo '<td headers="eddown'.$rand.' redid'.$row->id.'">'.$row->downloads."</td>\n";
 				echo '<td headers="edpurch'.$rand.' redid'.$row->id.'">'.$row->purchases."</td>\n";
 				echo '</tr>'."\n";
@@ -38,7 +38,7 @@ function eshop_small_stats($stock,$limit=5){
 		default:
 			$mypages=$wpdb->get_results("SELECT $wpdb->posts.ID,$wpdb->posts.post_title, stk.purchases
 			from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-			WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+			WHERE $wpdb->postmeta.meta_key='_eshop_stock' 
 			AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 			order by stk.purchases DESC LIMIT $limit");
 			echo '<table class="widefat"><caption>'.__('Top Sellers','eshop').'</caption>';
@@ -47,7 +47,7 @@ function eshop_small_stats($stock,$limit=5){
 			foreach($mypages as $page){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
-				echo '<tr'.$alt.'><td id="repid'.$page->ID.'" headers="edprod'.$rand.'"><a href="page.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a></td><td headers="edpurch'.$rand.' repid'.$page->ID.'">'.$page->purchases.'</td></tr>'."\n";
+				echo '<tr'.$alt.'><td id="repid'.$page->ID.'" headers="edprod'.$rand.'"><a href="post.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a></td><td headers="edpurch'.$rand.' repid'.$page->ID.'">'.$page->purchases.'</td></tr>'."\n";
 			}
 			echo '</tbody></table>';
 		break;

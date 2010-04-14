@@ -4,20 +4,21 @@ if ('cart.php' == basename($_SERVER['SCRIPT_FILENAME']))
 
 if (!function_exists('eshop_cart')) {
 	function eshop_cart($_POST){
-		global $wpdb, $blog_id;
+		global $wpdb, $blog_id,$wp_query,$eshopoptions;
 		$echo='';
 		include "cart-functions.php";
 		$error='';
 		//cache
 		eshop_cache();
-		
+	
 		//delete the session, empties the cart
-		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['shopcart'.$blog_id]))){
-			unset($_SESSION['shopcart'.$blog_id]);
+		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['eshopcart'.$blog_id]))){
+			unset($_SESSION['eshopcart'.$blog_id]);
 			unset($_SESSION['final_price'.$blog_id]);
 			unset($_SESSION['items'.$blog_id]);
 			$_POST['save']='false';
 		}
+	
 		//on windows this check isn't working correctly, so I've added ==0 
 		if (get_magic_quotes_gpc()) {
 			$_COOKIE = stripslashes_array($_COOKIE);
@@ -27,27 +28,26 @@ if (!function_exists('eshop_cart')) {
 			$_REQUEST = stripslashes_array($_REQUEST);
 		}
 		$_POST=sanitise_array($_POST);
-
 		//if adding a product to the cart
-		if(isset($_POST['qty']) && !isset($_POST['save']) && (!ctype_digit(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
+		if(isset($_POST['qty']) && !isset($_POST['save']) && (!is_numeric(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
 			$qty=$_POST['qty']=1;
 			$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 		}
+		if(isset($_POST['postid'])){
+			$stkav=get_post_meta( $_POST['postid'], '_eshop_stock',true );
+    		$eshop_product=get_post_meta( $_POST['postid'], '_eshop_product',true );
+    	}
 		if(isset($_POST['option']) && !isset($_POST['save'])){
-			$option='_'.$_POST['option'];
+			$edown=$getprice=$option=$_POST['option'];
 			$qty=$_POST['qty'];
 			$pclas=$_POST['pclas'];
 			$productid=$pid=$_POST['pid'];
 			$pname=$_POST['pname'];
-			$getprice='_Price '.ltrim($option,'_Option ');
 			/* if download option then it must be free shipping */
 			$postid=$wpdb->escape($_POST['postid']);
-			$edown='_Download '.ltrim($option,'_Option ');
-			$dlchk=get_post_meta($postid,$edown, true);
+			$dlchk=$eshop_product['products'][$option]['download'];
 			if($dlchk!='')	$pclas='F';
-			//////////////////////////////
-			$table=$wpdb->prefix.'postmeta';
-			$iprice= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$getprice' AND post_id='$postid'");
+			$iprice= $eshop_product['products'][$option]['price'];
 			if($iprice==''){
 				$error='<p><strong class="error">'.__('Error: That product is currently not available.','eshop').'</strong></p>';
 				$option=$_POST['option']='';
@@ -72,58 +72,50 @@ if (!function_exists('eshop_cart')) {
 		$needle=array(" ",".","-","_");
 		$identifier=str_replace($needle,"",$identifier);
 		
-		if(isset($_SESSION['shopcart'.$blog_id][$identifier])){
-			$testqty=$_SESSION['shopcart'.$blog_id][$identifier]['qty']+$qty;
-			$stkav = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Available' );
-			$stkav = attribute_escape($stkav[ 0 ]);
-
-			$stkqty = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Quantity' );
-			$stkqty = attribute_escape($stkqty[ 0 ]);
-
-			$eshopid=$_SESSION['shopcart'.$blog_id][$identifier]['postid'];
+		if(isset($_SESSION['eshopcart'.$blog_id][$identifier])){
+			$testqty=$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+$qty;
+			$stkqty = $eshop_product['qty'];
+			$eshopid=$_SESSION['eshopcart'.$blog_id][$identifier]['postid'];
 			//recheck stkqty
 			$stocktable=$wpdb->prefix ."eshop_stock";
 			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
 			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
 				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-			}elseif('yes' == get_option('eshop_stock_control') && ($stkav!='Yes' || $stkqty<$testqty)){
+			}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
 				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 			}else{
-				$_SESSION['shopcart'.$blog_id][$identifier]['qty']+=$qty;
+				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
 			}
 
 		}elseif($identifier!=''){
 			$postid=$wpdb->escape($_POST['postid']);
-			$table=$wpdb->prefix.'postmeta';
-			$item= $wpdb->get_var("SELECT meta_value FROM $table WHERE meta_key='$option' AND post_id='$postid'");
-			$_SESSION['shopcart'.$blog_id][$identifier]['postid']=$postid;
+			$item=$eshop_product['products'][$option]['option'];
+
+			$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
 			$testqty=$qty;
-			$stkav = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Available' );
-			$stkav = attribute_escape($stkav[ 0 ]);
-			$stkqty = get_post_meta( $_SESSION['shopcart'.$blog_id][$identifier]['postid'], '_Stock Quantity' );
-			$stkqty = attribute_escape($stkqty[ 0 ]);
+			$stkqty = $eshop_product['qty'];
 			//recheck stkqty
 			$stocktable=$wpdb->prefix ."eshop_stock";
 			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid");
 			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
 				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-			}elseif('yes' == get_option('eshop_stock_control') && ($stkav!='Yes' || $stkqty<$testqty)){
+			}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
 				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
-				$_SESSION['shopcart'.$blog_id][$identifier]['qty']=$stkqty;
+				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
 			}else{
-				$_SESSION['shopcart'.$blog_id][$identifier]['qty']=$qty;
+				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
 			}
 			
-			$_SESSION['shopcart'.$blog_id][$identifier]['item']=$item;
-			$_SESSION['shopcart'.$blog_id][$identifier]['option']=stripslashes($option);
-			$_SESSION['shopcart'.$blog_id][$identifier]['pclas']=stripslashes($pclas);
-			$_SESSION['shopcart'.$blog_id][$identifier]['pid']=$pid;
-			$_SESSION['shopcart'.$blog_id][$identifier]['pname']=stripslashes($pname);
-			$_SESSION['shopcart'.$blog_id][$identifier]['price']=$iprice;
+			$_SESSION['eshopcart'.$blog_id][$identifier]['item']=$item;
+			$_SESSION['eshopcart'.$blog_id][$identifier]['option']=stripslashes($option);
+			$_SESSION['eshopcart'.$blog_id][$identifier]['pclas']=stripslashes($pclas);
+			$_SESSION['eshopcart'.$blog_id][$identifier]['pid']=$pid;
+			$_SESSION['eshopcart'.$blog_id][$identifier]['pname']=stripslashes($pname);
+			$_SESSION['eshopcart'.$blog_id][$identifier]['price']=$iprice;
 			if(isset($_POST['optset'])){
-				$_SESSION['shopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
+				$_SESSION['eshopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
 			}
 			
 		}
@@ -139,34 +131,29 @@ if (!function_exists('eshop_cart')) {
 		}
 		
 		//update products in the cart
-		if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['shopcart'.$blog_id])){
+		if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
 		
-			foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
+			foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
 				$needle=array(" ",".");
 				$sessproductid=str_replace($needle,"_",$productid);
 				foreach ($_POST as $key => $value){
 					if($key==$sessproductid){
 						foreach ($value as $notused => $qty){
 							if($qty=="0"){
-								unset($_SESSION['shopcart'.$blog_id][$productid]);
+								unset($_SESSION['eshopcart'.$blog_id][$productid]);
 							}else{
-								$stkav = get_post_meta( $_SESSION['shopcart'.$blog_id][$productid]['postid'], '_Stock Available' );
-								$stkav = attribute_escape($stkav[ 0 ]);
-
-								$stkqty = get_post_meta( $_SESSION['shopcart'.$blog_id][$productid]['postid'], '_Stock Quantity' );
-								$stkqty = attribute_escape($stkqty[ 0 ]);
-								
-								$eshopid=$_SESSION['shopcart'.$blog_id][$productid]['postid'];
+								$stkqty = $eshop_product['qty'];
+								$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
 								//recheck stkqty
 								$stocktable=$wpdb->prefix ."eshop_stock";
 								$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
     							if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 								if(!ctype_digit(trim($qty))|| strlen($qty)>3){
 									$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-								}elseif('yes' == get_option('eshop_stock_control') && ($stkav!='Yes' || $stkqty<$qty)){
+								}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='Yes' || $stkqty<$qty)){
 									$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 								}else{
-									$_SESSION['shopcart'.$blog_id][$productid]['qty'] =$qty;
+									$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
 								}
 							}
 						}
@@ -178,23 +165,21 @@ if (!function_exists('eshop_cart')) {
 		}
 		//any errors will print here.
 		if($error!='') $echo.= $error;
-		if(sizeof($_SESSION['shopcart'.$blog_id])=='0'){
-			unset($_SESSION['shopcart'.$blog_id]);
+		if(sizeof($_SESSION['eshopcart'.$blog_id])=='0'){
+			unset($_SESSION['eshopcart'.$blog_id]);
 		}
-		if(isset($_SESSION['shopcart'.$blog_id])){
-			if((isset($_GET['eshopaction']) && $_GET['eshopaction']=='cancel') && !isset($_POST['save'])){
-				$echo.= "<h3>".__('The order was cancelled at','eshop')." ".get_option('eshop_method').".</h3>"; 
+		if(isset($_SESSION['eshopcart'.$blog_id])){
+			if((isset($wp_query->query_vars['eshopaction']) && urldecode($wp_query->query_vars['eshopaction'])=='cancel') && !isset($_POST['save'])){
+				$echo.= "<h3>".__('The order was cancelled at','eshop')." ".$eshopoptions['method'].".</h3>"; 
 				$echo.= '<p>'.__('We have not deleted the contents of your shopping cart in case you may want to edit its content.','eshop').'</p>';
 			}
-			if(get_option('eshop_shop_page')!=''){
-				$return=get_permalink(get_option('eshop_shop_page'));
-			}elseif(isset($_POST['purl'])){
-				$return=wp_specialchars($_POST['purl']);
+			if($eshopoptions['shop_page']!=''){
+				$return=get_permalink($eshopoptions['shop_page']);
 			}else{
-				$return=get_option('siteurl');
+				$return=esc_attr( stripslashes( wp_get_referer() ) );
 			}
-			$echo.= display_cart($_SESSION['shopcart'.$blog_id],'true', get_option('eshop_checkout'));
-			$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li><li><a href="'.get_permalink(get_option('eshop_checkout')).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
+			$echo.= display_cart($_SESSION['eshopcart'.$blog_id],'true', $eshopoptions['checkout']);
+			$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
 		}else{
 			//can be altered as desired.
 			$echo.= '<p><strong class="error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';

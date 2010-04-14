@@ -30,172 +30,8 @@ class eshop_multi_sort {
 }
 
 function eshop_products_manager() {
-	global $wpdb, $user_ID;
+	global $wpdb, $user_ID,$eshopoptions;
 	get_currentuserinfo();
-	include_once ("pager-class.php");
-	$eshopprodimg='_eshop_prod_img';
-	///images
-	if(isset($_GET['change']) && is_numeric($_GET['change'])){
-		$change=$_GET['change'];
-		if(isset($_POST['submit'])){
-			//include 'cart-functions.php';
-			$_POST=sanitise_array($_POST);
-			if(isset($_POST['prodimg'])){
-				$prodimg=$wpdb->escape($_POST['prodimg']);
-			}else{
-				$prodimg='';
-			}
-
-			//enter in db - delete old record first, 
-			delete_post_meta( $change, $eshopprodimg );
-			add_post_meta( $change, $eshopprodimg, $prodimg);
-			//so will always be successful!
-			echo'<div id="message" class="updated fade"><p>'.__('The Listing Image for this product has been updated.','eshop').'</p></div>'."\n";
-		}
-		$proddataimg=get_post_meta($change,$eshopprodimg,true);
-		?>
-		<div class="wrap">
-		<h2><?php _e('Products','eshop'); ?></h2>
-		<p><?php _e('A reference table for identifying products.','eshop'); ?></p>
-		<?php
-
-		//sort by switch statement
-		$sortby='id';
-		$csf=' class="current"';
-
-		$numoptions=get_option('eshop_options_num');
-		$metatable=$wpdb->prefix.'postmeta';
-
-		$calt=0;
-		$currsymbol=get_option('eshop_currency_symbol');
-		$x=0;
-		//add in post id( doh! )
-		$grabit[$x]=get_post_custom($change);
-		$grabit[$x]['id']=array($change);
-		$x++;
-
-		/*
-		* remove the bottom array to try and flatten
-		* could be rather slow, but easier than trying to create
-		* a different method, at least for now!
-		*/
-		foreach($grabit as $foo=>$k){
-			foreach($k as $bar=>$v){
-				foreach($v as $nowt=>$val){
-					$grab[$foo][$bar]=$val;
-				}
-			}
-		}
-		?>	
-		<table id="listing" summary="<?php _e('Product listing','eshop'); ?>">
-		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
-		<thead>
-		<tr>
-		<th id="sku"><?php _e('Sku','eshop'); ?></th>
-		<th id="page"><?php _e('Page','eshop'); ?></th>
-		<th id="desc"><?php _e('Description','eshop'); ?></th>
-		<th id="down"><?php _e('Download','eshop'); ?></th>
-		<th id="feat"><?php _e('Featured','eshop'); ?></th>
-		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
-		<th id="imga"><?php _e('Current Image','eshop'); ?></th>
-		</tr>
-		</thead>
-		<tbody>
-		<?php
-		foreach($grab as $foo=>$grabit){
-			if($grabit['_Price 1']!=''){
-				//get page title
-				$ptitle=get_post($grabit['id']);
-				//get download file title
-				$pdown='';
-				//check if downloadable product
-				for($i=1;$i<=get_option('eshop_options_num');$i++){
-					if($grabit["_Download ".$i]!=''){
-						$dltable=$wpdb->prefix.'eshop_downloads';
-						$fileid=$grabit["_Download ".$i];
-						$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-						$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
-					}
-				}
-				if($pdown=='') $pdown='No';
-				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
-				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';
-				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
-				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
-				echo '<td headers="feat sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
-
-				echo '<td headers="opt sku'.$calt.'">';
-				for($i=1;$i<=$numoptions;$i++){
-					if($grabit['_Option '.$i]!=''){
-						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
-						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($grabit['_Price '.$i],2)).'<br />';
-					}
-				}
-				echo '</td>';
-				echo '<td>';
-				$imgs= eshop_get_images($change);
-				$x=1;
-				if(is_array($imgs)){
-					if($proddataimg==''){
-						foreach($imgs as $k=>$v){
-							$x++;
-							echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
-							break;
-						}
-					}else{
-						foreach($imgs as $k=>$v){
-							if($proddataimg==$v['url']){
-								$x++;
-								echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
-								break;
-							}
-						}
-					}
-				}
-				if($x==1){
-					echo '<p>'.__('Not available.','eshop').'</p>';
-				}
-				echo '</td>'."\n";
-				echo '</tr>'."\n";
-			}
-			?>
-		</tbody>
-		</table>
-		<?php
-		}
-		echo '<h3>'.__('Associated Images','eshop').'</h3>'."\n";
-
-		$id=$grabit['id'];
-		echo '<form method="post" action="" id="eshop-gbase-alt">'."\n";
-		echo '<fieldset><legend>'.__('Choose Image','eshop').'</legend>'."\n";
-
-		$imgs= eshop_get_images($change);
-		$x=1;
-		if(is_array($imgs)){
-			foreach($imgs as $k=>$v){
-				if($proddataimg==$v['url']){
-					$selected=' checked="checked"';
-				}else{
-					$selected='';
-				}
-				echo '<p class="ebaseimg"><input type="radio" value="'.$v['url'].'" name="prodimg" id="prodimg'.$x.'"'.$selected.' /><label for="prodimg'.$x.'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></label></p>'."\n"; 
-				$x++;
-			}
-		}
-		if($x==1){//in theory will never show - but just in case...
-			echo '<p>'.__('No images found that were associated with this page, and hence cannot be associated with the product.','eshop').'</p>';
-		}
-		?>
-		</fieldset>
-		<p class="submit"><input type="submit" class="button-primary" name="submit" value="<?php _e('Update') ?>" /></p>
-		<?php
-		echo '</form></div>';
-	}else{
-			
-	///images end
 	//add in if current user can here
 	if(current_user_can('eShop_admin')){
 		$eshopfilter='all';
@@ -204,15 +40,16 @@ function eshop_products_manager() {
 		}
 		?>
 		<div class="wrap">
-		<h2><?php _e('Authors','eshop'); ?></h2>
+		<div id="eshopicon" class="icon32"></div><h2><?php _e('Authors','eshop'); ?></h2>
 		<?php if(isset($msg)) echo '<div class="updated fade"><p>'.$msg.'</p></div>'; ?>
 		<form action="" method="post" class="eshop filtering">
-		<p><label for="filter"><?php _e('Show products for','eshop'); ?></label><select name="eshopfilter" id="eshopfilter">
+		<p><label for="eshopfilter"><?php _e('Show products for','eshop'); ?></label><select name="eshopfilter" id="eshopfilter">
 		<?php
 		echo eshop_authors($eshopfilter);
 		?>
 		</select><input type="submit" name="eshopfiltering" id="submit"  class="submit button-primary" value="Filter" /></p>
 		</form>
+		</div>
 	<?php
 	}
 	?>
@@ -226,25 +63,25 @@ function eshop_products_manager() {
 	if(isset($_GET['by'])){
 		switch ($_GET['by']) {
 			case'sa'://date descending
-				$sortby='_Sku';
+				$sortby='sku';
 				$csa=' class="current"';
 				break;
-			case'sb'://company name alphabetically
-				$sortby='_Product Description';
+			case'sb'://description alphabetically
+				$sortby='description';
 				$csb=' class="current"';
 				break;
 			case'sc'://name alphabetically (last name)
-				$sortby='_Shipping Rate';
+				$sortby='shiprate';
 				$csc=' class="current"';
 				break;
 			
-			case'sd'://stock availability no longer works
-				$sortby='_Stock Quantity';
+			case'sd'://stock availability 
+				$sortby='qty';
 				$csd=' class="current"';
 				break;
 		
 			case'se'://transaction id numerically
-				$sortby='_Featured Product';
+				$sortby='featured';
 				$cse=' class="current"';
 				break;
 			case'sf'://date ascending
@@ -267,30 +104,42 @@ function eshop_products_manager() {
 	}else{
 		$addtoq="AND posts.post_author = $user_ID ";
 	}
-	$numoptions=get_option('eshop_options_num');
+	$numoptions=$eshopoptions['options_num'];
 	$metatable=$wpdb->prefix.'postmeta';
 	$poststable=$wpdb->prefix.'posts';
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_Option 1' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND (posts.post_type != 'revision' && posts.post_type != 'inherit') ".$addtoq);
-	if(get_option('eshop_records')!='' && is_numeric(get_option('eshop_records'))){
-		$records=get_option('eshop_records');
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status = 'publish' ".$addtoq);
+	if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
+		$records=$eshopoptions['records'];
 	}else{
 		$records='10';
 	}
-	
-	if(isset($_GET['viewall']))$records=$max;
-	$pager = new eshopPager( 
-		$max ,          //see above
-		$records,            // how many records to display at one time
-		@$_GET['_p'] 	//this is the current page no carried via _GET
-	);
-
-	$pager->set_range($range);
-	$thispage=$pager->get_limit();
-	$c=$pager->get_limit_offset();
+	if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
+		else $epage='1';
+		if(!isset($_GET['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+	}
 	
 	if($max>0){
-		$apge=wp_specialchars($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
+		$apge=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
@@ -315,21 +164,21 @@ function eshop_products_manager() {
 		$myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = '_Option 1'
+		WHERE meta.meta_key = '_eshop_product'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
-		AND (posts.post_type != 'revision' && posts.post_type != 'inherit') 
 		$addtoq
-		ORDER BY meta.post_id  LIMIT $thispage");
+		ORDER BY meta.post_id  LIMIT $offset, $records");
 
 		$calt=0;
-		$currsymbol=get_option('eshop_currency_symbol');
+		$currsymbol=$eshopoptions['currency_symbol'];
 		$x=0;
 		//add in post id( doh! )
 		foreach($myrowres as $row){
 			$grabit[$x]=get_post_custom($row->post_id);
 			$grabit[$x]['id']=array($row->post_id);
 			$x++;
+			
 		}
 		/*
 		* remove the bottom array to try and flatten
@@ -338,6 +187,12 @@ function eshop_products_manager() {
 		*/
 		foreach($grabit as $foo=>$k){
 			foreach($k as $bar=>$v){
+				if($bar=='_eshop_product'){
+					$x=unserialize($v[0]);
+					foreach($x as $nowt=>$val){
+						$array[$foo][$nowt]=$val;
+					}
+				}
 				foreach($v as $nowt=>$val){
 					$array[$foo][$bar]=$val;
 				}
@@ -346,7 +201,7 @@ function eshop_products_manager() {
 		//then sort it how we want.
 		$B = new eshop_multi_sort;
 		$B->aData = $array;
-		$B->aSortkeys = array($sortby);
+		$B->aSortkeys =  array($sortby);
 		$B->sort();
 		$grab=$B->aData;
 	?>	
@@ -370,8 +225,10 @@ function eshop_products_manager() {
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
+			$eshop_product=unserialize($grabit['_eshop_product']);
+			$stkav=$grabit['_eshop_stock'];
 			$pdownloads='no';
-			if($grabit['_Price 1']!=''){
+			if($eshop_product['products']['1']['price']!=''){
 			//reset array
 				$purcharray=array();
 				//get page title
@@ -380,11 +237,11 @@ function eshop_products_manager() {
 				//get download file title
 				$pdown='';
 				//check if downloadable product
-				for($i=1;$i<=get_option('eshop_options_num');$i++){
-					if($grabit['_Option '.$i]!=''){
-						if($grabit["_Download ".$i]!=''){
+				for($i=1;$i<=$eshopoptions['options_num'];$i++){
+					if($eshop_product['products'][$i]['option']!=''){
+						if($eshop_product['products'][$i]['download']!=''){
 							$dltable=$wpdb->prefix.'eshop_downloads';
-							$fileid=$grabit["_Download ".$i];
+							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
 							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
 							$pdownloads='yes';
@@ -400,26 +257,26 @@ function eshop_products_manager() {
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['_Sku'].'</td>';
+				echo '<td id="sku'.$calt.'" headers="sku">'.$eshop_product['sku'].'</td>';
 				echo '<td headers="ids sku'.$calt.'">'.$getid.'</td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$getid.'" title="id: '.$getid.'">'.$posttitle.'</a></td>';
-				echo '<td headers="desc sku'.$calt.'">'.stripslashes(attribute_escape($grabit['_Product Description'])).'</td>';
+				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
-				echo '<td headers="ship sku'.$calt.'">'.$grabit['_Shipping Rate'].'</td>';
+				echo '<td headers="ship sku'.$calt.'">'.$eshop_product['shiprate'].'</td>';
 				$stocktable=$wpdb->prefix ."eshop_stock";
 				$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
-				if($grabit['_Stock Available']=='No'){
+				if($stkav=='0'){
 					$available='No';
-				}elseif($grabit['_Stock Available']=='Yes' && $available==''){
+				}elseif($stkav=='1' && $available==''){
 					$available=__('not set','eshop');
 				}
 				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 				$purcharray=array();
 				$dltable = $wpdb->prefix ."eshop_downloads";
-				for($i=1;$i<=get_option('eshop_options_num');$i++){
-					if($grabit['_Option '.$i]!=''){
-						if($grabit["_Download ".$i]!=''){
-							$fileid=$grabit["_Download ".$i];
+				for($i=1;$i<=$eshopoptions['options_num'];$i++){
+					if($eshop_product['products'][$i]['option']!=''){
+						if($eshop_product['products'][$i]['download']!=''){
+							$fileid=$eshop_product['products'][$i]['download'];
 							$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
 							if($purchases!='')
 								$purcharray[]=$purchases;
@@ -435,46 +292,33 @@ function eshop_products_manager() {
 					}
 					if($pdownloads=='no') break;
 				}
-				if($grabit['_Featured Product']=='')$grabit['_Featured Product']='no';
+				if($eshop_product['featured']=='')
+					$feat='no';
+				else
+					$feat='yes';
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
-				echo '<td headers="ftrd sku'.$calt.'">'.$grabit['_Featured Product'].'</td>';
+				echo '<td headers="ftrd sku'.$calt.'">'.$feat.'</td>';
 
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
-					if($grabit['_Option '.$i]!=''){
-						echo stripslashes(attribute_escape($grabit['_Option '.$i]));
-						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($grabit['_Price '.$i],2)).'<br />';
+					if($eshop_product['products'][$i]['option']!=''){
+						echo stripslashes(esc_attr($eshop_product['products'][$i]['option']));
+						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshop_product['products'][$i]['price'],2)).'<br />';
 					}
 				}
 				echo '</td>';
 				echo '<td headers="associmg sku'.$calt.'">';
-				
-				$proddataimg=get_post_meta($getid,$eshopprodimg,true);
-
-				$imgs= eshop_get_images($getid);
-				$x=1;
-
-				if(is_array($imgs)){
-					echo '<a href="admin.php?page=eshop_products.php&amp;change='.$grabit['id'].'" title="'.__('Change image for','eshop').' '.$grabit['_Sku'].'">';
-					if($proddataimg==''){
-						foreach($imgs as $k=>$v){
-							$x++;
-							echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
-							break;
-						}
-					}else{
-						foreach($imgs as $k=>$v){
-							if($proddataimg==$v['url']){
-								$x++;
-								echo '<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n"; 
-								break;
-							}
-						}
-					}
-					echo '</a>';
+				$w=get_option('thumbnail_size_w');
+				$h=get_option('thumbnail_size_h');
+				if($imgsize!=''){
+					$w=round(($w*$imgsize)/100);
+					$h=round(($h*$imgsize)/100);
 				}
-				if($x==1){
-					echo '<p>'.__('Not available.','eshop').'</p>';
+				if (has_post_thumbnail( $getid ) ) {
+					 echo '<a class="itemref" href="'.get_permalink($getid).'" title="view page">'.get_the_post_thumbnail( $getid, array($w, $h)).'</a>'."\n";
+				}else{
+					$eimage=eshop_files_directory();
+					 echo '<a class="itemref" href="'.get_permalink($getid).'" title="view page"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 				}
 				echo '</td>';
 				echo '</tr>'."\n";
@@ -486,24 +330,26 @@ function eshop_products_manager() {
 		</table>
 		<?php
 		//paginate
-		echo '<div class="paginate"><p>';
-		if($pager->_pages > 1){
-			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			echo $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
-		}
-		echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ',__('&laquo; First Page','eshop'),__('Last Page &raquo;','eshop')).'';
-		//echo $pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>',' &raquo; ').'<br />';
-		if($pager->_pages >= 2){
-			echo ' &raquo; <a class="pag-view" href="'.wp_specialchars($_SERVER['REQUEST_URI']).'&amp;_p=1&amp;action='.$_GET['action'].'&amp;viewall=yes" title="'.$status.' '.__('orders','eshop').'">'.__('View All &raquo;','eshop').'</a>';
-		}
-		echo '</p></div>';
+		echo '<div class="paginate">';;
+			if($records!=$max){
+				$eecho = $page_links;
+			}
+			echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+				number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+				number_format_i18n( min( $epage * $records, $max ) ),
+				number_format_i18n( $max)
+			);
+			if(isset($eecho)){
+				$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
+				echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			}
+			echo '<br /></div>';
+
 		//end
 	}else{	
 		echo '<p>'.__('There are no products available.','eshop').'</p>';
 	}
 	echo '</div>';
-}
 	eshop_show_credits();
 }
 function eshop_authors($filter=''){

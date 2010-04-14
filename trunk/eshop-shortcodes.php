@@ -3,6 +3,7 @@ add_shortcode('eshop_list_featured', 'eshop_list_featured');
 add_shortcode('eshop_best_sellers', 'eshop_best_sellers');
 add_shortcode('eshop_list_new', 'eshop_list_new');
 add_shortcode('eshop_list_subpages', 'eshop_list_subpages');
+add_shortcode('eshop_list_cat_tags', 'eshop_list_cat_tags');
 add_shortcode('eshop_random_products', 'eshop_list_random');
 add_shortcode('eshop_show_cancel', 'eshop_show_cancel');
 add_shortcode('eshop_show_cart', 'eshop_show_cart');
@@ -21,128 +22,137 @@ add_shortcode('eshop_welcome','eshop_welcome');
 
 function eshop_cart_items($atts){
 	global $blog_id;
-	extract(shortcode_atts(array('before'=>'','after'=>'','hide'=>'no'), $atts));
-	$echo='';
+	extract(shortcode_atts(array('before'=>'','after'=>'','hide'=>'no','showwhat'=>'both'), $atts));
+	$eecho='';
 	if($before!='')
-		$echo.=$before.' ';
+		$eecho.=$before.' ';
+	if(isset($_SESSION['eshopcart'.$blog_id]) || $hide=='no'){
+		$eshopsize=0;
+		$eshopqty=0;
+		if(isset($_SESSION['eshopcart'.$blog_id])){
+			$eshopsize=sizeof($_SESSION['eshopcart'.$blog_id]);
+			foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
+				$eshopqty+=$eshopwop['qty'];
+			}
+		}
 		
-	if(isset($_SESSION['shopcart'.$blog_id]))
-		$echo.=sizeof($_SESSION['shopcart'.$blog_id]);
-	elseif($hide=='no')
-		$echo.='0';
-	else
-		$eshopsize='';
+		if($showwhat=='items' || $showwhat=='both'){
+			$eecho .='<span>'.$eshopsize.'</span> '.eshop_plural($eshopsize, __('product','eshop'), __('products','eshop') ).' '.__('in cart','eshop').'.';
+		}
+		if($showwhat=='qty' || $showwhat=='both'){
+			if($showwhat=='both') $eecho.= '<br />';
+			$eecho .='<span>'.$eshopqty.'</span> '.eshop_plural($eshopqty, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
+		}
+		$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+		$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 		
+	}
+	
 	if($after!='')
-		$echo.=' '.$after;
-		
-	if(isset($eshopsize))
-		return;
-	else 
-		return $echo;
+		$eecho.=' '.$after;
+	
+	return $eecho;
 }
 
 function eshop_empty_cart($atts, $content = '') {
 	global $blog_id;
-	if(isset($_SESSION['shopcart'.$blog_id])){
+	if(isset($_SESSION['eshopcart'.$blog_id])){
 		$content='';
 	}
 	return $content;
 }
 function eshop_list_alpha($atts){
-	global $wpdb, $post,$wp_rewrite;
+	global $wpdb, $post,$wp_rewrite,$wp_query;
 	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>''), $atts));
 	//a-z listing
 	$letter_array = range('A','Z');
 	$fullarray=$letter_array;
 	$fullarray[]='num';
-	$usedaz=$wpdb->get_results("SELECT DISTINCT UPPER(LEFT(post_title,1)) as letters FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' ORDER BY letters");
-	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	$usedaz=$wpdb->get_results("SELECT DISTINCT UPPER(LEFT(post_title,1)) as letters FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' ORDER BY letters");
+	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	foreach($usedaz as $usethis){
 		$used[]=$usethis->letters;
 	}
-	if(!isset($_GET['eshopaz']) || !in_array($_GET['eshopaz'],$fullarray)){
-		$_GET['eshopaz']='a';
+	if(isset($wp_query->query_vars['eshopaz'])) {
+   	 	$eshopaz = urldecode($wp_query->query_vars['eshopaz']);
+   	}
+	if(!isset($eshopaz) || !in_array($eshopaz,$fullarray)){
+		$eshopaz='a';
 		$dbletter='A';
 	}
 	$econtain='<ul class="eshop eshopaz">';
-	$thispage=get_permalink($post->ID);
-	if( $wp_rewrite->using_permalinks()){
-		$thispage=get_permalink($post->ID).'?eshopaz=';
-	}else{
-		$thispage=get_permalink($post->ID).'&amp;eshopaz=';
-	}
-
+	$thisispage=get_permalink($post->ID);
 	foreach ($letter_array as $letter) {
 		if (in_array($letter, $used)){
-			if(isset($_GET['eshopaz']) && strtoupper($_GET['eshopaz'])==$letter){
+			if(isset($eshopaz) && strtoupper($eshopaz)==$letter){
 				$addclass=' class="current"';
 				$dbletter=$letter;
-			}else
+			}else{
 				$addclass='';
-			$econtain.= '<li'.$addclass.'><a href="'.$thispage.$letter.'">'.$letter . "</a></li>\n";
-		}else $econtain.= '<li><span>'.$letter."</span></li>\n";
+			}
+			$thispage=add_query_arg('eshopaz',$letter,$thisispage);
+			$econtain.= '<li'.$addclass.'><a href="'.$thispage.'">'.$letter . "</a></li>\n";
+		}else{
+			$econtain.= '<li><span>'.$letter."</span></li>\n";
+		}
 	}
-	if(isset($_GET['eshopaz']) && $_GET['eshopaz']=='num' && $usednum>0 )
-		$econtain.= '<li class="current"><a href="'.$thispage.'num">0-9</a></li>'."\n";
-	elseif ($usednum>0)
-		$econtain.= '<li><a href="'.$thispage.'num">0-9</a></li>'."\n";
-	else
+	if(isset($eshopaz) && $eshopaz=='num' && $usednum>0 ){
+		$thispage=add_query_arg('eshopaz','num',$thisispage);
+		$econtain.= '<li class="current"><a href="'.$thispage.'">0-9</a></li>'."\n";
+	}elseif ($usednum>0){
+		$thispage=add_query_arg('eshopaz','num',$thisispage);
+		$econtain.= '<li><a href="'.$thispage.'">0-9</a></li>'."\n";
+	}else{
 	 	$econtain.= '<li><span>0-9</span></li>'."\n";
-
+	}
 	$econtain.="</ul>\n";
 	if(in_array($dbletter,$letter_array))
 		$qbuild=" AND UPPER(LEFT(post_title,1))='$dbletter'";
-	elseif(isset($_GET['eshopaz']) && $_GET['eshopaz']=='num')
+	elseif(isset($eshopaz) && $eshopaz=='num')
 		$qbuild=" AND UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9'";
-	//my pager
-	include_once ("pager-class.php");
-	$range=10;
-	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild");
+	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild");
 	if($max>0){
-
-		if(isset($_GET['viewall']))$records=$max;
-
-		$phpself=explode('?',get_permalink($post->ID));
-		$pager = new eshopPager( 
-			$max ,          //see above
-			$records,            // how many records to display at one time
-			@$_GET['_p'],	//this is the current page no. carried via _GET
-			array('php_self'=>$phpself[0])
-		);
-
-		$pager->set_range($range);
-		$offset=$pager->get_limit_offset();
+		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+		else $epage='1';
+		if(!isset($wp_query->query_vars['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
 	}
+	
+	
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate"><p>';
-		if($pager->_pages > 1){
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		$echo = '<div class="paginate">';
+		if($records!=$max){
+			$eecho = $page_links;
 		}
-		$echo .= '</p>';
-		//set up correct link
-		$permalink = get_option('permalink_structure');
-		if('' != $permalink)
-			$bits='?';
-		else
-			$bits='&amp;';
-		if($pager->_pages > 1){
-			$eecho =  '<ul>';
-			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
-			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
-			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
-			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
-			}
-			$eecho .= '</ul>';
-			//$echo .= $eecho;
-		}
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
+			
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
@@ -153,16 +163,19 @@ function eshop_list_alpha($atts){
 		}
 
 		if(isset($eecho)){
-			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+			$thispage=add_query_arg('eshopall','yes',$thisispage);
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
 		return $econtain.$echo;
 	} 
+	
 	return $econtain .'<p>'. __('No products found for that letter or number.','eshop').'</p>';
 } 
 function eshop_list_subpages($atts){
-	global $wpdb, $post;
+	global $wpdb, $post,$wp_query;
 	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>''), $atts));
 	$echo='';
@@ -191,24 +204,34 @@ function eshop_list_subpages($atts){
 		$order='ASC';
 	
 	
-	//my pager
-	include_once ("pager-class.php");
-	$range=10;
-	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent=$eshopid AND post_status='publish'");
+
+	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent='$eshopid' AND post_status='publish'");
 	if($max>$show)
 		$max=$show;
 	if($max>0){
-		if(isset($_GET['viewall']))$records=$max;
-		$phpself=explode('?',get_permalink($eshopid));
-		$pager = new eshopPager( 
-			$max ,          //see above
-			$records,            // how many records to display at one time
-			@$_GET['_p'],	//this is the current page no. carried via _GET
-			array('php_self'=>$phpself[0])
-		);
-
-		$pager->set_range($range);
-		$offset=$pager->get_limit_offset();
+		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+		else $epage='1';
+		if(!isset($wp_query->query_vars['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
 	}
 	if(!isset($offset)) $offset='0';
 	$args = array(
@@ -224,30 +247,15 @@ function eshop_list_subpages($atts){
 
 	if($pages) {
 		//paginate
-		$echo .= '<div class="paginate"><p>';
-		if($pager->_pages > 1){
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		$echo .= '<div class="paginate">';
+		if($records!=$max){
+			$eecho = $page_links;
 		}
-		$echo .= '</p>';
-		//set up correct link
-		$permalink = get_option('permalink_structure');
-		if('' != $permalink)
-			$bits='?';
-		else
-			$bits='&amp;';
-		if($pager->_pages > 1){
-			$eecho =  '<ul>';
-			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
-			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
-			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
-			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($eshopid).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
-			}
-			$eecho .= '</ul>';
-			//$echo .= $eecho;
-		}
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
@@ -258,7 +266,114 @@ function eshop_list_subpages($atts){
 		}
 		
 		if(isset($eecho)){
-			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+			$thispage=add_query_arg('eshopall','yes',$thisispage);
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+		}else{
+			$echo .= '<br class="pagfoot" />';
+		}
+		return $echo;
+	} 
+	return;
+}
+function eshop_list_cat_tags($atts){
+	global $wpdb, $post,$wp_query;
+	eshop_cache();
+	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag'), $atts));
+	$echo='';
+	$allowedtype=array('cat','category_name','tag','tag_id');
+	if(!in_array($type,$allowedtype))  $type='tag';
+	
+	$allowedsort=array('post_date','post_title','menu_order');
+	$allowedorder=array('ASC','DESC');
+	if(!in_array($sortby,$allowedsort)) 
+		$sortby='post_title';
+	switch($sortby){
+		case ('post_date'):
+			$orderby='date';
+			break;
+		case ('menu_order'):
+			$orderby='menu_order';
+			break;
+		case ('post_title'):
+		default:
+			$orderby='title';
+			break;
+	}
+	if(!in_array($order,$allowedorder)) 
+		$order='ASC';
+	
+	
+	$args = array(
+	'post_type' => 'post',
+	'post_status' => null,
+	$type => $find
+	); 
+	$max = sizeof(query_posts($args));
+	if($max>$show)
+		$max=$show;
+	if($max>0){
+		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+		else $epage='1';
+		if(!isset($wp_query->query_vars['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
+	}
+	if(!isset($offset)) $offset='0';
+	$args = array(
+	'post_type' => 'post',
+	'post_status' => null,
+	$type => $find, 
+	'meta_key'=>'_eshop_product',
+	'orderby'=> $orderby,
+	'order'=> $order,
+	'numberposts' => $records, 
+	'offset' => $offset,
+	); 
+	$pages = query_posts($args);
+	wp_reset_query();
+	if($pages) {
+		//paginate
+		$echo .= '<div class="paginate">';
+		if($records!=$max){
+			$eecho = $page_links;
+		}
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
+		$echo .= '</div>';
+		//end
+		if($panels=='no'){
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+		}else{
+			if($class=='eshopsubpages') $class='eshoppanels';
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+		}
+		
+		if(isset($eecho)){
+			$thispage=add_query_arg('eshopall','yes',$thisispage);
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -267,66 +382,52 @@ function eshop_list_subpages($atts){
 	return;
 }
 function eshop_list_new($atts){
-	global $wpdb, $post;
+	global $wpdb, $post,$wp_query;
 	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
 	$echo='';
-	//my pager
-	include_once ("pager-class.php");
-	$range=10;
-	//$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_status='publish' limit 0,$show");
-	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	if($max>$show)
 		$max=$show;
 	if($max>0){
-
-		if(isset($_GET['viewall']))$records=$max;
-
-		$phpself=explode('?',get_permalink($post->ID));
-		$pager = new eshopPager( 
-			$max ,          //see above
-			$records,            // how many records to display at one time
-			@$_GET['_p'],	//this is the current page no. carried via _GET
-			array('php_self'=>$phpself[0])
-		);
-
-		$pager->set_range($range);
-		$offset=$pager->get_limit_offset();
-		if($records>$show)
-			$records=$show;
-		if($pager->curr > 1 && $show % $records > 0 && $show % $records < $records)
-			$records=$show % $records;
-
+		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+		else $epage='1';
+		if(!isset($wp_query->query_vars['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
 	}
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
 
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate"><p>';
-		if($pager->_pages > 1){
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		$echo = '<div class="paginate">';
+		if($records!=$max){
+			$eecho = $page_links;
 		}
-		$echo .= '</p>';
-		//set up correct link
-		$permalink = get_option('permalink_structure');
-		if('' != $permalink)
-			$bits='?';
-		else
-			$bits='&amp;';
-		if($pager->_pages > 1){
-			$eecho =  '<ul>';
-			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
-			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
-			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
-			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
-			}
-			$eecho .= '</ul>';
-			//$echo .= $eecho;
-		}
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
@@ -337,7 +438,9 @@ function eshop_list_new($atts){
 		}
 
 		if(isset($eecho)){
-			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+			$thispage=add_query_arg('eshopall','yes',$thisispage);
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -346,73 +449,60 @@ function eshop_list_new($atts){
 	return;
 } 
 function eshop_best_sellers($atts){
-	global $wpdb, $post;
+	global $wpdb, $post,$wp_query;
 	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
 	$echo='';
-	//my pager
-	include_once ("pager-class.php");
-	$range=10;
 	$stktable=$wpdb->prefix.'eshop_stock';
 	$max=$wpdb->get_var("SELECT COUNT($wpdb->postmeta.post_id)
 		from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-		WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+		WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
 	if($max>$show)
 		$max=$show;
 	if($max>0){
-
-		if(isset($_GET['viewall']))$records=$max;
-
-		$phpself=explode('?',get_permalink($post->ID));
-		$pager = new eshopPager( 
-			$max ,          //see above
-			$records,            // how many records to display at one time
-			@$_GET['_p'],	//this is the current page no. carried via _GET
-			array('php_self'=>$phpself[0])
-		);
-
-		$pager->set_range($range);
-		$offset=$pager->get_limit_offset();
-		if($records>$show)
-			$records=$show;
-		if($pager->curr > 1 && $show % $records > 0 && $show % $records < $records)
-			$records=$show % $records;
-
+		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+		else $epage='1';
+		if(!isset($wp_query->query_vars['eshopall'])){
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array'
+				));
+			$offset=($epage*$records)-$records;
+		}else{
+			$page_links = paginate_links( array(
+				'base' => add_query_arg( '_p', '%#%' ),
+				'format' => '',
+				'total' => ceil($max / $records),
+				'current' => $epage,
+				'type'=>'array',
+				'show_all' => true,
+			));
+			$offset='0';
+			$records=$max;
+		}
 	}
 	if(!isset($offset)) $offset='0';
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title 
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-	WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' 
+	WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 	order by stk.purchases DESC limit $offset,$records");
 
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate"><p>';
-		if($pager->_pages > 1){
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span> &#8212; Displaying results <span>{FROM}</span> to <span>{TO}</span> of <span>{TOTAL}</span>','eshop')). '<br />';
-		}else{
-			$echo .= $pager->get_title(__('Viewing page <span>{CURRENT}</span> of <span>{MAX}</span>','eshop')). '<br />';
+		$echo = '<div class="paginate">';
+		if($records!=$max){
+			$eecho = $page_links;
 		}
-		$echo .= '</p>';
-		//set up correct link
-		$permalink = get_option('permalink_structure');
-		if('' != $permalink)
-			$bits='?';
-		else
-			$bits='&amp;';
-		if($pager->_pages > 1){
-			$eecho =  '<ul>';
-			$eecho .=  $pager->get_prev('<li><a href="{LINK_HREF}">'.__('Prev','eshop').'</a></li>');
-			$eecho .=  '<li>'.$pager->get_range('<a href="{LINK_HREF}">{LINK_LINK}</a>','</li><li>').'</li>';
-			$eecho .=  $pager->get_next('<li><a href="{LINK_HREF}">'.__('Next','eshop').'</a></li>');  		
-			if($pager->_pages >= 2){
-				$eecho .= '<li><a class="viewall" href="'.get_permalink($post->ID).$bits.'_p=1&amp;viewall=yes">'.__('View All','eshop').'</a></li>';
-			}
-			$eecho .= '</ul>';
-			//$echo .= $eecho;
-		}
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			number_format_i18n( min( $epage * $records, $max ) ),
+			number_format_i18n( $max)
+		);
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
@@ -423,7 +513,9 @@ function eshop_best_sellers($atts){
 		}
 
 		if(isset($eecho)){
-			$echo .= '<div class="paginate pagfoot">'.$eecho.'</div>';
+			$thispage=add_query_arg('eshopall','yes',$thisispage);
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -442,7 +534,7 @@ function eshop_list_featured($atts){
 		$sortby='post_title';
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_Featured Product' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 	if($pages) {
 		if($panels=='no'){
 			$echo = eshop_listpages($pages,$class,$form,$imgsize);
@@ -450,6 +542,7 @@ function eshop_list_featured($atts){
 			if($class=='eshopfeatured') $class='eshoppanels';
 			$echo = eshop_listpanels($pages,$class,$form,$imgsize);
 		}
+		$echo .= '<br class="pagfoot" />';
 		$post=$paged;
 		return $echo;
 	} 
@@ -481,7 +574,7 @@ function eshop_list_random($atts){
 		$subquery= ' AND '.implode(' AND ',$subq);
 	}
 	
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
 
 	if($pages) {
 		if($panels=='no'){
@@ -505,7 +598,7 @@ function eshop_show_product($atts){
 		$pages=array();
 		$theids = explode(",", $id);
 		foreach($theids as $thisid){
-			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_Stock Available' AND $wpdb->postmeta.meta_value='Yes' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($pages,$thispage['0']);
 		}
@@ -530,28 +623,18 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize){
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-
 		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
-		//grab image or choose first image uploaded for that page
-		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
-		$imgs= eshop_get_images($post->ID,$imgsize);
-		$x=1;
-		if(is_array($imgs)){
-			if($proddataimg==''){
-				foreach($imgs as $k=>$v){
-					$x++;
-					$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>'."\n";
-					break;
-				}
-			}else{
-				foreach($imgs as $k=>$v){
-					if($proddataimg==$v['url']){
-						$x++;
-						$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /></a>'."\n";
-						break;
-					}
-				}
-			}
+		$w=get_option('thumbnail_size_w');
+		$h=get_option('thumbnail_size_h');
+		if($imgsize!=''){
+			$w=round(($w*$imgsize)/100);
+			$h=round(($h*$imgsize)/100);
+		}
+		if (has_post_thumbnail( $post->ID ) ) {
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+		}else{
+			$eimage=eshop_files_directory();
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 		}
 		//this line stops the addtocart form appearing.
 		remove_filter('the_content', 'eshop_boing');
@@ -577,29 +660,18 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-
 		$echo .= '<li><a href="'.get_permalink($post->ID).'">';
-		//grab image  or choose first image uploaded for that page
-		$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
-			
-		$imgs= eshop_get_images($post->ID,$imgsize);
-		$x=1;
-		if(is_array($imgs)){
-			if($proddataimg==''){
-				foreach($imgs as $k=>$v){
-					$x++;
-					$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /><br />';
-					break;
-				}
-			}else{
-				foreach($imgs as $k=>$v){
-					if($proddataimg==$v['url']){
-						$x++;
-						$echo .='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" /><br />';
-						break;
-					}
-				}
-			}
+		$w=get_option('thumbnail_size_w');
+		$h=get_option('thumbnail_size_h');
+		if($imgsize!=''){
+			$w=round(($w*$imgsize)/100);
+			$h=round(($h*$imgsize)/100);
+		}
+		if (has_post_thumbnail( $post->ID ) ) {
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+		}else{
+			$eimage=eshop_files_directory();
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 		}
 		$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
 		include_once( 'eshop-get-custom.php' );
@@ -615,13 +687,14 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 	return $echo;
 }
 function eshop_show_discounts(){
+	global $eshopoptions;
 	$edisc=array();
 	eshop_cache();
-	$currsymbol=get_option('eshop_currency_symbol');
-	$shipdisc=get_option('eshop_discount_shipping');
+	$currsymbol=$eshopoptions['currency_symbol'];
+	$shipdisc=$eshopoptions['discount_shipping'];
 	for ($x=1;$x<=3;$x++){
-		if(get_option('eshop_discount_spend'.$x)!='')
-			$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
+		if($eshopoptions['discount_spend'.$x]!='')
+			$edisc[$eshopoptions['discount_spend'.$x]]=$eshopoptions['discount_value'.$x];
 	}
 	$echo ='';
 	$discarray=sizeof($edisc);
@@ -652,21 +725,22 @@ function eshop_show_discounts(){
 	}
 	if($shipdisc>0){
 		$echo .='
-		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format(get_option('eshop_discount_shipping'),2)).'</span></p>';
+		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshopoptions['discount_shipping'],2)).'</span></p>';
 	}
 	return $echo;
 }
 function eshop_show_payments(){
+	global $eshopoptions;
 	$echo='';
 	eshop_cache();
-	if(is_array(get_option('eshop_method'))){
+	if(is_array($eshopoptions['method'])){
 		$i=1;
 		$eshopfiles=eshop_files_directory();
 		$echo.= "\n".'<ul class="eshop eshoppayoptions">'."\n";
-		foreach(get_option('eshop_method') as $k=>$eshoppayment){
+		foreach($eshopoptions['method'] as $k=>$eshoppayment){
 			$eshoppayment_text=$eshoppayment;
 			if($eshoppayment_text=='cash'){
-				$eshopcash = get_option('eshop_cash');
+				$eshopcash = $eshopoptions['cash'];
 				if($eshopcash['rename']!='')
 					$eshoppayment_text=$eshopcash['rename'];
 			}
@@ -680,13 +754,13 @@ function eshop_show_payments(){
 }
 
 function eshop_show_shipping($atts) { 
-	global $wpdb;
+	global $wpdb, $eshopoptions;
 	eshop_cache();
 	extract(shortcode_atts(array('shipclass'=>'A,B,C,D,E,F'), $atts));
 	$shipclasses = explode(",", $shipclass);
 	$dtable=$wpdb->prefix.'eshop_shipping_rates';
 	$query=$wpdb->get_results("SELECT * from $dtable");
-	$currsymbol=get_option('eshop_currency_symbol');
+	$currsymbol=$eshopoptions['currency_symbol'];
 
 	$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'" class="eshop">';
 	$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
@@ -694,7 +768,7 @@ function eshop_show_shipping($atts) {
 	$eshopshiptable.='<tbody>'."\n";
 	$x=1;
 	$calt=0;
-	switch (get_option('eshop_shipping')){
+	switch ($eshopoptions['shipping']){
 		case '1':// ( per quantity of 1, prices reduced for additional items )
 
 			$query=$wpdb->get_results("SELECT * from $dtable ORDER BY class ASC, items ASC");
@@ -769,7 +843,7 @@ function eshop_show_shipping($atts) {
 	$eshopshiptable.='</tbody>'."\n";
 	$eshopshiptable.='</table>'."\n";
 
-	if('yes' == get_option('eshop_show_zones')){
+	if('yes' == $eshopoptions['show_zones']){
 		$eshopshiptable.=eshop_show_zones();
 	}
 	return $eshopshiptable;
@@ -781,9 +855,9 @@ if (!function_exists('eshop_show_zones')) {
      * returns a table of the ones, state or country depending on what is chosen.
      */
     function eshop_show_zones() { 
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		eshop_cache();
-		if('country' == get_option('eshop_shipping_zone')){
+		if('country' == $eshopoptions['shipping_zone']){
 			//countries
 			$tablec=$wpdb->prefix.'eshop_countries';
 			$List=$wpdb->get_results("SELECT code,country FROM $tablec GROUP BY list,country",ARRAY_A);
@@ -819,8 +893,8 @@ if (!function_exists('eshop_show_zones')) {
 			//each time re-request from the database
 			// state list from db
 			$table=$wpdb->prefix.'eshop_states';
-			$getstate=get_option('eshop_shipping_state');
-			if(get_option('eshop_show_allstates') != '1'){
+			$getstate=$eshopoptions['shipping_state'];
+			if($eshopoptions['show_allstates'] != '1'){
 				$stateList=$wpdb->get_results("SELECT code,stateName FROM $table WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
 			}else{
 				$stateList=$wpdb->get_results("SELECT code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
@@ -894,5 +968,142 @@ function eshop_welcome($atts, $content = ''){
 	if($after!='')
 		$echo.=' '.$after;
 	return $echo;
+}
+
+function eshop_show_cancel(){
+	global $wp_query;
+	if(isset($wp_query->query_vars['eshopaction'])) {
+		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
+		if($eshopaction=='cancel'){
+			$echo ='<h3 class="error">'.__('The order was cancelled at PayPal.','eshop')."</h3>";
+			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
+			return $echo;
+		}
+	}
+	return;
+}
+
+
+function eshop_show_success(){
+	global $wpdb,$eshopoptions;
+	//cache
+	eshop_cache();
+	$echo='';
+	global $wp_query;
+	if(isset($wp_query->query_vars['eshopaction'])) {
+		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
+		if($eshopaction=='success' && isset($_POST['txn_id'])){
+			$detailstable=$wpdb->prefix.'eshop_orders';
+			$dltable=$wpdb->prefix.'eshop_download_orders';
+			if($eshopoptions['status']=='live'){
+				$txn_id = $wpdb->escape($_POST['txn_id']);
+			}else{
+				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
+			}
+			$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+			$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+
+			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
+				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
+				if($row->email!='' && $row->code!=''){
+					//display form only if there are downloads!
+						$echo = '<form method="post" class="dform" action="'.get_permalink($eshopoptions['show_downloads']).'">
+					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+					<input name="code" type="hidden" value="'.$row->code.'" /> 
+					<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
+					</form>';
+				}
+			}
+		}elseif($eshopaction=='success' && isset($_GET['epn'])){
+			include_once (WP_PLUGIN_DIR.'/eshop/epn/process.php');
+			if(isset($_GET['epn']) && $_GET['epn']=='ok' && isset($_POST['transid'])){
+				$detailstable=$wpdb->prefix.'eshop_orders';
+				$dltable=$wpdb->prefix.'eshop_download_orders';
+				if($eshopoptions['status']=='live'){
+					$txn_id = $wpdb->escape($_POST['transid']);
+				}else{
+					$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['transid']);
+				}
+				$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+				$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
+
+				if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
+					$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
+					if($row->email!='' && $row->code!=''){
+						//display form only if there are downloads!
+							$echo = '<form method="post" class="dform" action="'.get_permalink($eshopoptions['show_downloads']).'">
+						<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+						<input name="code" type="hidden" value="'.$row->code.'" /> 
+						<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
+						</form>';
+					}
+				}
+			}
+		}
+		elseif($eshopaction=='authorizenetipn'){
+			// because authorize.net handles things differently... have to add this in here
+			$detailstable=$wpdb->prefix.'eshop_orders';
+			$dltable=$wpdb->prefix.'eshop_download_orders';
+			if($eshopoptions['status']=='live'){
+				$txn_id = $wpdb->escape($_POST['x_trans_id']);
+			}else{
+				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['x_trans_id']);
+			}
+			$checked=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' order by id DESC limit 1");
+
+			$checkstatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' && downloads='yes' limit 1");
+			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checked!=''){
+				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checked' and downloads>0 limit 1");
+				if($row->email!='' && $row->code!=''){
+					//display form only if there are downloads!
+						$echo = '<form method="post" class="dform" action="'.get_permalink($eshopoptions['show_downloads']).'">
+					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
+					<input name="code" type="hidden" value="'.$row->code.'" /> 
+					<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
+					</form>';
+				}
+			}
+			// Start of TEMCEDIT-20091117-a
+		}elseif($eshopaction=='idealliteipn' && isset($_GET['ideal']['status']) ){
+			if($_GET['ideal']['status'] == md5("SUCCESS") ) {
+					$echo ='<h3 class="success">'.__('Thank you for your order','eshop')." !</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has been succesfully recieved.','eshop').'<br />';
+					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
+			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
+					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "ERROR".','eshop').'<br />';
+					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+					$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
+			}elseif($_GET['ideal']['status'] == md5("CANCEL") ) {
+
+					$echo ='<h3 class="error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "CANCEL".','eshop').'<br />';
+					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+			}else{
+					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo.= '<p>'.__('Please try checkout your order again.','eshop').'</p>';
+			}
+			// End of TEMCEDIT-20091117-a
+		}
+		return $echo;
+	}
+}
+
+
+function eshop_show_cart() {
+	include_once 'cart.php';
+	return eshop_cart($_POST);
+}
+
+
+function eshop_show_checkout(){
+	include_once 'checkout.php';
+	return eshop_checkout($_POST);
+}
+
+
+function eshop_show_downloads(){
+	include_once 'purchase-downloads.php';
+	return eshop_downloads($_POST);
 }
 ?>

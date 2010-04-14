@@ -17,7 +17,7 @@ $optsettable=$wpdb->prefix.'eshop_option_sets';
 
 ?>
 <div class="wrap">
-<h2><?php _e('Option Sets','eshop'); ?></h2>
+<div id="eshopicon" class="icon32"></div><h2><?php _e('Option Sets','eshop'); ?></h2>
 <?php
 if(isset($_GET['optid']) && !isset($_POST['delete']) && !isset($_POST['eaddopt'])){
 ?>
@@ -96,9 +96,9 @@ if (isset($_POST['eaddopt'])) {
 		$tbody.="<tr>\n".
 		'<th id="eshopnumrow'.$i.'" headers="eshopnum">'.$i.'</th>
 		<td headers="eshopoption eshopnumrow'.$i.'"><label for="eshop_option_'.$i.'">'. __('Option','eshop').' '.$i.'</label>
-		<input id="eshop_option_'.$i.'" name="eshop_option['.$i.']" value="'.stripslashes(attribute_escape($myrow->optname)).'" type="text" size="25" /></td>
+		<input id="eshop_option_'.$i.'" name="eshop_option['.$i.']" value="'.stripslashes(esc_attr($myrow->optname)).'" type="text" size="25" /></td>
 		<td headers="eshopprice eshopnumrow'.$i.'"><label for="eshop_price_'.$i.'">'.__('Price','eshop').' '.$i.'</label>
-		<input id="eshop_price_'.$i.'" name="eshop_price['.$i.']" value="'.stripslashes(attribute_escape($myrow->price)).'" type="text" size="6" /></td>'.
+		<input id="eshop_price_'.$i.'" name="eshop_price['.$i.']" value="'.stripslashes(esc_attr($myrow->price)).'" type="text" size="6" /></td>'.
 		"</tr>\n";
 		$i++;
 	}
@@ -106,16 +106,16 @@ if (isset($_POST['eaddopt'])) {
 		<form id="eshopoptionsets" action="" method="post">
 			<fieldset>
 			<input type = "hidden" name="optid" id="optid" value = "<?php echo $optid; ?>" />
-			<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(attribute_escape($ename)); ?>" size="35"/>
+			<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/>
 			<label for="type"><?php _e('Set display type','eshop'); ?></label>
 			<select id="type" name="type">
 			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
 			<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
 			</select><br />
 			<label for="edesc">Description</label>
-			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(attribute_escape($edesc)); ?></textarea>
+			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
-			<caption><?php _e('Options for','eshop'); ?><?php echo stripslashes(attribute_escape($ename)); ?></caption>
+			<caption><?php _e('Options for','eshop'); ?><?php echo stripslashes(esc_attr($ename)); ?></caption>
 			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
 		<tbody>
 	<?php
@@ -145,7 +145,7 @@ function createform($opttable){
 		<ul class="optionlist">
 		<?php
 		foreach($myrowres as $row){
-			echo '<li><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(attribute_escape($row->name))."</a></li>\n";
+			echo '<li><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></li>\n";
 		}
 		echo "</ul>";
 	}
@@ -165,16 +165,16 @@ function createoptions($optid,$name){
 	<form id="eshopoptionsets" action="" method="post">
 	<fieldset>
 	<input type = "hidden" name="optid" id="optid" value = "<?php echo $optid; ?>" />
-	<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(attribute_escape($name)); ?>" size="35"/>
+	<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($name)); ?>" size="35"/>
 	<label for="type"><?php _e('Set display type','eshop'); ?></label>
 	<select id="type" name="type">
 	<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
 	<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
 	</select><br />
 	<label for="edesc">Description</label>
-	<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(attribute_escape($edesc)); ?></textarea>
+	<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
-	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(attribute_escape($name)); ?></caption>
+	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($name)); ?></caption>
 	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
 	<tbody>
 	<?php extraoptions(1); ?>

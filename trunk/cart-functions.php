@@ -5,13 +5,13 @@ if ('cart-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
 if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
 		//The cart display.
-		global $wpdb, $blog_id;
+		global $wpdb, $blog_id,$eshopoptions;
 		$echo ='';
 		$check=0;
 		$sub_total=0;
 		$tempshiparray=array();
 		//this checks for an empty cart, may not be required but leaving in just in case.
-		foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
+		foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
 			//foreach($opt as $option=>$qty){
 			if(is_array($opt)){
 				foreach($opt as $qty){
@@ -25,7 +25,7 @@ if (!function_exists('display_cart')) {
 			//global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
-				$echo.= '<form action="'.get_permalink(get_option('eshop_cart')).'" method="post" class="eshop eshopcart">';
+				$echo.= '<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop eshopcart">';
 			}
 			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
 			<caption>'.__('Shopping Cart','eshop').'</caption>
@@ -38,8 +38,8 @@ if (!function_exists('display_cart')) {
 			//display each item as a table row
 			$calt=0;
 			$shipping=0;
-			$currsymbol=get_option('eshop_currency_symbol');
-			foreach ($_SESSION['shopcart'.$blog_id] as $productid => $opt){
+			$currsymbol=$eshopoptions['currency_symbol'];
+			foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
 				$addoprice=0;
 				if(is_array($opt)){
 					$key=$opt['option'];
@@ -47,31 +47,19 @@ if (!function_exists('display_cart')) {
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$echo.= "\n<tr".$alt.">";
 					/* test image insertion */
-					$eimg='';
-					if(is_numeric(get_option('eshop_image_in_cart'))){
-						$eshopprodimg='_eshop_prod_img';
-						$proddataimg=get_post_meta($opt['postid'],$eshopprodimg,true);
-						$imgs= eshop_get_images($opt['postid'],get_option('eshop_image_in_cart'));
-						$x=1;
-						if(is_array($imgs)){
-							if($proddataimg==''){
-								foreach($imgs as $k=>$v){
-									$x++;
-									$eimg='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'; 
-									break;
-								}
-							}else{
-								foreach($imgs as $k=>$v){
-									if($proddataimg==$v['url']){
-										$x++;
-										$eimg='<img src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'; 
-										break;
-									}
-								}
-							}
+					if(is_numeric($eshopoptions['image_in_cart'])){
+						$imgsize=$eshopoptions['image_in_cart'];
+						$w=get_option('thumbnail_size_w');
+						$h=get_option('thumbnail_size_h');
+						if($imgsize!=''){
+							$w=round(($w*$imgsize)/100);
+							$h=round(($h*$imgsize)/100);
 						}
-						if($x==1){
-							$eimg='';
+						if (has_post_thumbnail( $post->ID ) ) {
+							$eimg='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+						}else{
+							$eimage=eshop_files_directory();
+							$eimg='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 						}
 					}
 					/* end */
@@ -90,7 +78,7 @@ if (!function_exists('display_cart')) {
 						$x=0;
 						foreach($orowres as $orow){
 							$oset[]=$orow->name;
-							$addoprice+=$orow->price;
+							$addoprice=$addoprice+$orow->price;
 							$x++;
 						}
 						$optset='('.implode(', ',$oset).')';
@@ -139,7 +127,7 @@ if (!function_exists('display_cart')) {
 			// we can only work out shipping after that point
 			if($pzone!=''){
 				//shipping for cart.
-				if(get_option('eshop_shipping_zone')=='country'){
+				if($eshopoptions['shipping_zone']=='country'){
 					$table=$wpdb->prefix.'eshop_countries';
 					$dacode='code';
 				}else{
@@ -147,14 +135,14 @@ if (!function_exists('display_cart')) {
 					$dacode='id';
 				}
 				$table2=$wpdb->prefix.'eshop_shipping_rates';
-				switch(get_option('eshop_shipping')){
+				switch($eshopoptions['shipping']){
 					case '1'://( per quantity of 1, prices reduced for additional items )
 						foreach ($shiparray as $nowt => $shipclass){
 							//add to temp array for shipping
 							if(!in_array($shipclass, $tempshiparray)) {
 								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
-									if($pzone!=get_option('eshop_unknown_state'))
+									if($pzone!=$eshopoptions['unknown_state'])
 										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
@@ -163,7 +151,7 @@ if (!function_exists('display_cart')) {
 								}
 							}else{
 								if($shipclass!='F'){
-									if($pzone!=get_option('eshop_unknown_state'))
+									if($pzone!=$eshopoptions['unknown_state'])
 										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
@@ -178,7 +166,7 @@ if (!function_exists('display_cart')) {
 							if(!in_array($shipclass, $tempshiparray)) {
 								array_push($tempshiparray, $shipclass);
 								if($shipclass!='F'){
-									if($pzone!=get_option('eshop_unknown_state'))
+									if($pzone!=$eshopoptions['unknown_state'])
 										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 									else
 										$shipzone='zone'.$pzone;
@@ -191,7 +179,7 @@ if (!function_exists('display_cart')) {
 					case '3'://( one overall charge no matter how many are ordered )
 						foreach ($shiparray as $nowt => $shipclass){
 							if($shipclass!='F'){
-								if($pzone!=get_option('eshop_unknown_state'))
+								if($pzone!=$eshopoptions['unknown_state'])
 									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
 								else
 									$shipzone='zone'.$pzone;						
@@ -208,9 +196,9 @@ if (!function_exists('display_cart')) {
 				
 				$echo.= '<tr class="alt">
 				<th headers="cartItem" id="scharge" class="leftb">'.__('Shipping','eshop');
-				if(get_option('eshop_cart_shipping')!=''){
-					$ptitle=get_post(get_option('eshop_cart_shipping'));
-					$echo.=' <small>(<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
+				if($eshopoptions['cart_shipping']!=''){
+					$ptitle=get_post($eshopoptions['cart_shipping']);
+					$echo.=' <small>(<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
 				}
 				$echo.='</th>
 				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
@@ -236,7 +224,7 @@ if (!function_exists('display_cart')) {
 			//if cart is empty - display a message - this is only a double check and should never be hit
 			$echo.= "<p class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</p>\n";
 		}
-		if(get_option('eshop_status')!='live'){
+		if($eshopoptions['status']!='live'){
 			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
 		}
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
@@ -248,13 +236,13 @@ if (!function_exists('display_cart')) {
 if (!function_exists('calculate_price')) {
 	function calculate_price(){
 		global $blog_id;
-		$thecart=$_SESSION['shopcart'.$blog_id];
+		$thecart=$_SESSION['eshopcart'.$blog_id];
 		// sum total price for all items in shopping shopcart
 		$price = 0.0;
 
 		if(is_array($thecart)){
 			foreach ($thecart as $productid => $opt){
-				$price+=$opt['price'];
+				$price=$price+$opt['price'];
 			}
 		}
 		return number_format($price, 2);
@@ -263,12 +251,12 @@ if (!function_exists('calculate_price')) {
 if (!function_exists('calculate_total')) {
 	function calculate_total(){
 		global $blog_id;
-		$thecart=$_SESSION['shopcart'.$blog_id];
+		$thecart=$_SESSION['eshopcart'.$blog_id];
 		// sum total price for all items in shopping shopcart
 		$price = 0;
 		if(is_array($thecart)){
 			foreach ($thecart as $productid => $opt){
-				$price+=($opt['price']*$opt['qty']);
+				$price=$price+($opt['price']*$opt['qty']);
 			}
 		}
 		return $price;
@@ -277,15 +265,15 @@ if (!function_exists('calculate_total')) {
 if (!function_exists('calculate_items')) {
 	function calculate_items(){
 		global $blog_id;
-		if(isset($_SESSION['shopcart'.$blog_id])){
-			$thecart=$_SESSION['shopcart'.$blog_id];
+		if(isset($_SESSION['eshopcart'.$blog_id])){
+			$thecart=$_SESSION['eshopcart'.$blog_id];
 			// sum total items in shopping shopcart
 			$items = 0;
 			if(is_array($thecart))	{
 				foreach ($thecart as $productid => $opt){
 					if(is_array($opt)){
 						foreach($opt as $option=>$qty){
-							$items += $qty;
+							$items = $items+$qty;
 						}
 					}
 				}
@@ -297,7 +285,7 @@ if (!function_exists('calculate_items')) {
 }
 if (!function_exists('is_discountable')) {
 	function is_discountable($total){
-		global $blog_id;
+		global $blog_id,$eshopoptions;
 		$percent=0;
 		//check for 
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -306,8 +294,8 @@ if (!function_exists('is_discountable')) {
 				return apply_eshop_discount_code('discount');
 		}
 		for ($x=1;$x<=3;$x++){
-			if(get_option('eshop_discount_spend'.$x)!='')
-				$edisc[get_option('eshop_discount_spend'.$x)]=get_option('eshop_discount_value'.$x);
+			if($eshopoptions['discount_spend'.$x]!='')
+				$edisc[$eshopoptions['discount_spend'.$x]]=$eshopoptions['discount_value'.$x];
 		}
 		if(isset($edisc) && is_array($edisc)){
 			krsort($edisc);
@@ -323,13 +311,13 @@ if (!function_exists('is_discountable')) {
 
 if (!function_exists('is_shipfree')) {
 	function is_shipfree($total){
-		global $blog_id;
+		global $blog_id,$eshopoptions;
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('shipping'))
 				return true;
 		}
-		$amt=get_option('eshop_discount_shipping');
+		$amt=$eshopoptions['discount_shipping'];
 		if($amt!='' && $amt <= $total)
 			return true;
 		
@@ -473,7 +461,7 @@ if (!function_exists('checkPhone')) {
 if (!function_exists('orderhandle')) {
 	function orderhandle($_POST,$checkid){
 		//This function puts the order into the db.
-		global $wpdb, $blog_id;
+		global $wpdb, $blog_id,$eshopoptions;
 		//$wpdb->show_errors();
 		if (get_magic_quotes_gpc()) {
 			$_POST=stripslashes_array($_POST);
@@ -564,9 +552,9 @@ if (!function_exists('orderhandle')) {
 
 				$dlchking=$_POST['eshopident_'.$i];
 				//add opt sets
-				if(isset($_SESSION['shopcart'.$blog_id][$dlchking]['optset'])){
+				if(isset($_SESSION['eshopcart'.$blog_id][$dlchking]['optset'])){
 					$oset=$qb=array();
-					$optings=unserialize($_SESSION['shopcart'.$blog_id][$dlchking]['optset']);
+					$optings=unserialize($_SESSION['eshopcart'.$blog_id][$dlchking]['optset']);
 					$opttable=$wpdb->prefix.'eshop_option_sets';
 					foreach($optings as $foo=>$opst){
 						$qb[]="id=$opst";
@@ -584,7 +572,7 @@ if (!function_exists('orderhandle')) {
 
 				//end
 
-				$thechk=$_SESSION['shopcart'.$blog_id][$dlchking]['option'];
+				$thechk=$_SESSION['eshopcart'.$blog_id][$dlchking]['option'];
 				$edown=explode(' ',$thechk);
 				$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
 				if($dlchk!=''){
@@ -600,7 +588,7 @@ if (!function_exists('orderhandle')) {
 					//$email,$checkid already set
 					$producttable=$wpdb->prefix.'eshop_downloads';
 					$grabit=$wpdb->get_row("SELECT id,title, files FROM $producttable where id='$dlchk'");
-					$downloads = get_option('eshop_downloads_num');
+					$downloads = $eshopoptions['downloads_num'];
 					$wpdb->query("INSERT INTO $dloadtable
 					(checkid, title,purchased,files,downloads,code,email)values(
 					'$checkid',
@@ -621,10 +609,11 @@ if (!function_exists('orderhandle')) {
 
 			}
 			$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
+			$postage_name=__('postage','eshop');
 			$querypostage=$wpdb->query("INSERT INTO  $itemstable 
 					(checkid, item_id,item_qty,item_amt)values(
 					'$checkid',
-					'postage',
+					'$postage_name',
 					'1',
 					'$postage');");
 			//update the discount codes used, and remove from remaining
@@ -640,7 +629,7 @@ if (!function_exists('orderhandle')) {
 						$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
 				}
 			}
-			if(get_option('eshop_status')!='live'){
+			if($eshopoptions['status']!='live'){
 				echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
 			}
 		}
@@ -655,7 +644,7 @@ if (!function_exists('stripslashes_array')) {
 if (!function_exists('sanitise_array')) {
 	//sanitises input array!
 	function sanitise_array($array) {
-		return is_array($array) ? array_map('sanitise_array', $array) : wp_specialchars($array,ENT_QUOTES);
+		return is_array($array) ? array_map('sanitise_array', $array) : esc_attr($array);
 	}
 }
 if(!function_exists('eshop_build_cookie')) {
@@ -695,7 +684,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 	suitable for emailing.
 	*/
 	function eshop_rtn_order_details($checkid){
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$stable=$wpdb->prefix.'eshop_states';
@@ -714,7 +703,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$contact=$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 		$total=0;
-		$currsymbol=get_option('eshop_currency_symbol');
+		$currsymbol=$eshopoptions['currency_symbol'];
 		$cart.=__('Transaction id:','eshop').' '.$transid."\n";
 		$containsdownloads=0;
 		foreach($result as $myrow){
@@ -795,7 +784,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		if($containsdownloads>0){
 			$downtable=$wpdb->prefix.'eshop_download_orders';
 			$chkcode= $wpdb->get_var("SELECT code FROM $downtable WHERE checkid='$drow->checkid' && email='$drow->email'");
-			$downloads=get_permalink(get_option('eshop_show_downloads'))."\n";
+			$downloads=get_permalink($eshopoptions['show_downloads'])."\n";
 			$downloads.=__('Email:','eshop').' '.$drow->email."\n";
 			$downloads.=__('Code:','eshop').' '.$chkcode."\n";
 		}
@@ -806,30 +795,26 @@ if (!function_exists('eshop_rtn_order_details')) {
 
 if (!function_exists('eshop_add_excludes')) {
 	function eshop_add_excludes($excludes) {
-		global $blog_id;
-		if(!isset($_SESSION['shopcart'.$blog_id]) && get_option('eshop_hide_cartco')=='yes'){
-			$excludes[]=get_option('eshop_cart');
-			$excludes[]=get_option('eshop_checkout');
+		global $blog_id,$eshopoptions;
+		if(!isset($_SESSION['eshopcart'.$blog_id]) && $eshopoptions['hide_cartco']=='yes'){
+			$excludes[]=$eshopoptions['cart'];
+			$excludes[]=$eshopoptions['checkout'];
 		}
-		$excludes[]=get_option('eshop_show_downloads');
-		$excludes[]=get_option('eshop_cart_success');
-		$excludes[]=get_option('eshop_cart_cancel');
+		$excludes[]=$eshopoptions['show_downloads'];
+		$excludes[]=$eshopoptions['cart_success'];
+		$excludes[]=$eshopoptions['cart_cancel'];
 		return $excludes;
 	}
 }
-if (!function_exists('fold_page_menus')) {
-	function fold_page_menus($exclusions = "") {
-		//left in for backwards compatability
-	}
-}
+
 if (!function_exists('eshop_fold_menus')) {
 	function eshop_fold_menus($exclusions = "") {
-		global $post, $wpdb;
+		global $post, $wpdb,$eshopoptions;
 		//code taken from fold page menu plugin and adapted
 		if (isset($post->ID))
 			$id=$post->ID;
 		else
-			$id=get_option('eshop_cart');//fix to hide menus on other pages
+			$id=$eshopoptions['cart'];//fix to hide menus on other pages
 		$x = $id;
 		$inclusions = "(post_parent <> " . strval($x) . ")";
 		do {
@@ -879,7 +864,7 @@ if (!function_exists('eshop_random_code')) {
 }
 if (!function_exists('eshop_download_the_product')) {
 	function eshop_download_the_product($_POST){
-		global $wpdb;
+		global $wpdb,$eshopoptions;
 		$table = $wpdb->prefix ."eshop_downloads";
 		$ordertable = $wpdb->prefix ."eshop_download_orders";
 		$dir_upload = eshop_download_directory();
@@ -971,8 +956,9 @@ if (!function_exists('eshop_show_credits')) {
 if (!function_exists('eshop_visible_credits')) {
 	function eshop_visible_credits($pee){
 		//for front end
+		global $eshopoptions;
 		$version = explode(".", ESHOP_VERSION);
-		if('yes' == get_option('eshop_credits')){
+		if('yes' == $eshopoptions['credits']){
 			 echo '<p class="creditline">'.__('Powered by','eshop').' <a href="http://www.quirm.net/" title="'.__('Created by','eshop').' Rich Pedley">eShop</a>
 		<dfn title="'.__('Version','eshop').' '.ESHOP_VERSION.'">v.'.$version[0].'</dfn></p> ';
 		}else{
@@ -983,21 +969,22 @@ if (!function_exists('eshop_visible_credits')) {
 }
 if (!function_exists('eshop_show_extra_links')) {
 	function eshop_show_extra_links(){
+		global $eshopoptions;
 		$xtralinks='';
-		if(get_option('eshop_cart_shipping')!='' && get_option('eshop_downloads_only')!='yes'){
-			$ptitle=get_post(get_option('eshop_cart_shipping'));
-			$xtralinks.='<a href="'.get_permalink(get_option('eshop_cart_shipping')).'">'.$ptitle->post_title.'</a>, ';
+		if($eshopoptions['cart_shipping']!='' && $eshopoptions['downloads_only']!='yes'){
+			$ptitle=get_post($eshopoptions['cart_shipping']);
+			$xtralinks.='<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.$ptitle->post_title.'</a>, ';
 		}
-		if(get_option('eshop_xtra_privacy')!=''){
-			$ptitle=get_post(get_option('eshop_xtra_privacy'));
+		if($eshopoptions['xtra_privacy']!=''){
+			$ptitle=get_post($eshopoptions['xtra_privacy']);
 			if($ptitle->post_title!=''){
-				$xtralinks.='<a href="'.get_permalink(get_option('eshop_xtra_privacy')).'">'.$ptitle->post_title.'</a>, ';
+				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_privacy']).'">'.$ptitle->post_title.'</a>, ';
 			}
 		}
-		if(get_option('eshop_xtra_help')!=''){
-			$ptitle=get_post(get_option('eshop_xtra_help'));
+		if($eshopoptions['xtra_help']!=''){
+			$ptitle=get_post($eshopoptions['xtra_help']);
 			if($ptitle->post_title!=''){
-				$xtralinks.='<a href="'.get_permalink(get_option('eshop_xtra_help')).'">'.$ptitle->post_title.'</a>, ';
+				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_help']).'">'.$ptitle->post_title.'</a>, ';
 			}
 		}
 		
@@ -1030,110 +1017,38 @@ if (!function_exists('eshop_files_directory')) {
     }
 }
 
-if (!function_exists('eshop_get_images')) {
-	function eshop_get_images($pID,$cartsize=''){
-		$attargs = array(
-			'post_type' => 'attachment',
-			'numberposts' => null,
-			'post_status' => null,
-			'post_parent' => $pID
-			); 
-		$attachments = get_posts($attargs);
-		$echo='';
-		if ($attachments) {
-			$echo=array();
-			$x=0;
-			foreach ($attachments as $attachment) {
-				if ( substr($attachment->post_mime_type, 0, 5) == 'image' ) {
-					$img_url= wp_get_attachment_thumb_url($attachment->ID);
-					/*
-					//this section has been removed - its causing problems with wp2.5+ and hopefully is no longer required.
-					$chkimg=wp_get_attachment_url($attachment->ID);
-					if($img_url==$chkimg){
-						$img_url = preg_replace('!(\.[^.]+)?$!', __('.thumbnail') . '$1', $img_url, 1);
-					}else{
-						$img_url = wp_get_attachment_thumb_url($attachment->ID);
-					}
-					*/
-					@list($width, $height) = getimagesize($img_url);
-					if($cartsize!='' && is_numeric($cartsize)){
-						$width=round(($width*$cartsize)/100);
-						$height=round(($height*$cartsize)/100);
-					}
-					$echo[$x]['url']=$img_url;
-					$echo[$x]['alt']=apply_filters('the_title', $attachment->post_title);
-					//if there was an error we still want to show the picture!
-					if($height=='' || $width=='')
-						$echo[$x]['size']='';
-					else
-						$echo[$x]['size']='height="'.$height.'" width="'.$width.'"';
-					$x++;
-				}
-			}
-		}
-		return $echo;
-	}
-}
 if (!function_exists('eshop_from_address')) {
 	function eshop_from_address(){
-		if(get_option('eshop_from_email')!=''){
-			$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_from_email').">\n";
-		}elseif(get_option('eshop_business')!=''){
-			$headers='From: '.get_bloginfo('name').' <'.get_option('eshop_business').">\n";
+		global $eshopoptions;
+		if($eshopoptions['from_email']!=''){
+			$headers='From: '.get_bloginfo('name').' <'.$eshopoptions['from_email'].">\n";
+		}elseif($eshopoptions['business']!=''){
+			$headers='From: '.get_bloginfo('name').' <'.$eshopoptions['business'].">\n";
 		}else{
 			$headers='';
 		}
 		return $headers;
 	}
 }
-if (!function_exists('eshop_delete_img')) {
-	function eshop_delete_img($rootimg){
-		global $wpdb;
-		$pieces = explode("/", $rootimg);
-		$eshopprodimg='_eshop_prod_img';
-		$chkeshop = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM $wpdb->postmeta WHERE meta_key = '$eshopprodimg'"));
-		foreach($chkeshop as $row){
-			$bits = explode("/", $row->meta_value);
-			if(end($pieces) == end($bits)){
-				delete_post_meta( $row->post_id, $eshopprodimg );
-			}
-		}
-		return($postid);
-	}
-}
+
 if (!function_exists('eshop_excerpt_img')) {
 	function eshop_excerpt_img($output){
-		global $post;
+		global $post,$eshopoptions;
 		$echo='';
 		if(is_search()){
-			$eshopprodimg='_eshop_prod_img';
-			//grab image or choose first image uploaded for that page
-			$proddataimg=get_post_meta($post->ID,$eshopprodimg,true);
 			$isaproduct=get_post_meta($post->ID,'_Price 1',true);
-			$imgs= eshop_get_images($post->ID);
-			$x=1;
-			if(is_array($imgs)){
-				if($proddataimg=='' && get_option('eshop_search_img') == 'all'){
-					foreach($imgs as $k=>$v){
-						$x++;
-						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-						break;
-					}
-				}elseif($proddataimg=='' && get_option('eshop_search_img') == 'yes' && $isaproduct!=''){
-					foreach($imgs as $k=>$v){
-						$x++;
-						$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-						break;
-					}
-				}else{
-					foreach($imgs as $k=>$v){
-						if($proddataimg==$v['url']){
-							$x++;
-							$echo .='<img class="eshop_search_img" src="'.$v['url'].'" '.$v['size'].' alt="'.$v['alt'].'" />'."\n";
-							break;
-						}
-					}
-				}
+			$w=get_option('thumbnail_size_w');
+			$h=get_option('thumbnail_size_h');
+			if (has_post_thumbnail( $post->ID ) ) {
+				$eimg =get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
+			}else{
+				$eimage=eshop_files_directory();
+				$eimg ='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
+			}
+			if($eshopoptions['search_img'] == 'all'){
+					$echo .=$eimg;
+			}elseif($eshopoptions['search_img'] == 'yes' && $isaproduct!=''){
+				$echo .=$eimg;
 			}
 		}
 		return $echo.$output;
@@ -1142,7 +1057,8 @@ if (!function_exists('eshop_excerpt_img')) {
 
 if (!function_exists('eshop_update_nag')) {
 	function eshop_update_nag() {
-		if ( get_option('eshop_version')!='' && get_option('eshop_version') >= ESHOP_VERSION )
+		global $eshopoptions;
+		if ( $eshopoptions['version']!='' && $eshopoptions['version'] >= ESHOP_VERSION )
 			return false;
 
 		if ( current_user_can('manage_options') )
@@ -1150,7 +1066,7 @@ if (!function_exists('eshop_update_nag')) {
 		else
 			$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
 
-		echo "<div id='eshop-update-nag'>$msg</div>";
+		echo "<div id='update-nag'>$msg</div>";
 	}
 }
 
@@ -1182,10 +1098,48 @@ if (!function_exists('eshop_email_parse')) {
 }
 if (!function_exists('eshop_cache')) {
 	function eshop_cache(){
-	  	if(!defined('DONOTCACHEPAGE') && get_option('eshop_set_cacheability')=='yes'){
+		global $eshopoptions;
+	  	if(!defined('DONOTCACHEPAGE') && $eshopoptions['set_cacheability']=='yes'){
 	  		//wpsupercache
 			define("DONOTCACHEPAGE", "true");
 		}
+	}
+}
+if (!function_exists('create_eshop_error')) {
+	//old method
+	function create_eshop_error($error){ ?>
+		<div class="error fade"><?php echo $error; ?></div>
+	<?php
+	}
+}
+if (!function_exists('eshop_check_error')) {
+	function eshop_check_error() {
+		if(isset($_GET['eshop_message']))
+			return eshop_error_message($_GET['eshop_message']);
+	}
+}
+if (!function_exists('eshop_error')) {
+	function eshop_error($loc) {
+ 		return add_query_arg( 'eshop_message', 1, $loc );
+	}
+}
+if (!function_exists('eshop_price_error')) {
+	function eshop_price_error($loc) {
+ 		return add_query_arg( 'eshop_message', 2, $loc );
+	}
+}
+if (!function_exists('eshop_error_message')) {
+	function eshop_error_message($num){ 
+		$messages=array(
+		'1'=> __('Stock Available not set, please fill in all details.','eshop'),
+		'2'=> __('Price incorrect, please only enter a numeric value.','eshop')
+		);
+		if(array_key_exists($num, $messages)){
+		?>
+		<div class="error fade"><p><?php echo $messages[$num]; ?></p></div>
+		<?php
+		}
+
 	}
 }
 ?>

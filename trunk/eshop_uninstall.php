@@ -12,7 +12,7 @@ else {
 }
 global $wpdb;
 
-echo '<div class="wrap"><h2>'.__('eShop Uninstall','eshop').'</h2>';
+echo '<div class="wrap"><div id="eshopicon" class="icon32"></div><h2>'.__('eShop Uninstall','eshop').'</h2>';
 
 if(isset($_POST['delete'])){
 	echo '<h3>'.__('Confirm uninstall of eShop','eshop').'</h3>';
@@ -26,7 +26,7 @@ if(isset($_POST['delete'])){
 	<?php
 }elseif(isset($_POST['uninstall'])){
 	//required for deleting meta - grab bfore its deleted
-	$numoptions=get_option('eshop_options_num');
+	$numoptions=$eshopoptions['options_num'];
 	echo '<ul>';
 
 	//tables
@@ -53,96 +53,13 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
 
 	//options
-	$epages[] = 'eshop_addtocart_image';
-	$epages[] = 'eshop_webtopay';
-	$epages[] = 'eshop_payson';
-	$epages[] = 'eshop_authorizenet';
-	$epages[] = 'eshop_ideallite';
-	$epages[] = 'eshop_business';
-	$epages[] = 'eshop_from_email';
-	$epages[] = 'eshop_cart';
-	$epages[] = 'eshop_cart_cancel';
-	$epages[] = 'eshop_cart_nostock';
-	$epages[] = 'eshop_cart_shipping';
-	$epages[] = 'eshop_cart_success';
-	$epages[] = 'eshop_checkout';
-	$epages[] = 'eshop_credits';
-	$epages[] = 'eshop_cron_email';
-	$epages[] = 'eshop_currency';
-	$epages[] = 'eshop_currency_symbol';
-	$epages[] = 'eshop_downloads_num';
-	$epages[] = 'eshop_first_time';
-	$epages[] = 'eshop_location';
-	$epages[] = 'eshop_method';
-	$epages[] = 'eshop_options_num';
-	$epages[] = 'eshop_records';
-	$epages[] = 'eshop_shipping';
-	$epages[] = 'eshop_shipping_zone';
-	$epages[] = 'eshop_show_downloads';
-	$epages[] = 'eshop_show_stock'; 
-	$epages[] = 'eshop_show_zones';
-	$epages[] = 'eshop_status'; 
-	$epages[] = 'eshop_stock_control'; 
-	$epages[] = 'eshop_style';
-	$epages[] = 'eshop_sysemails'; 
-	$epages[] = 'eshop_unknown_state';
-	$epages[] = 'eshop_xtra_help'; 
-	$epages[] = 'eshop_xtra_privacy'; 
-	$epages[] = 'eshop_downloads_only';
-	$epages[] = 'eshop_fold_menu';
-	$epages[] = 'eshop_widget';
-	$epages[] = 'eshop_pay_widget';
-	$epages[] = 'eshop_search_img';
-	$epages[] = 'eshop_version';
-	$epages[] = 'eshop_image_in_cart';
-	$epages[] = 'eshop_shipping_state';
-	$epages[] = 'eshop_shop_page';
-	$epages[] = 'eshop_base_brand';
-	$epages[] = 'eshop_base_condition';
-	$epages[] = 'eshop_base_expiry';
-	$epages[] = 'eshop_base_payment';
-	$epages[] = 'eshop_base_ptype';
-	$epages[] = 'eshop_cash';
-	$epages[] = 'eshop_epn';
-	$epages[] = 'eshop_products_widgets';
-	$epages[] = 'eshop_show_allstates';
-	$epages[] = 'eshop_show_sku';
-	$epages[] = 'eshop_hide_addinfo';
-	$epages[] = 'eshop_hide_shipping';
-	$epages[] = 'eshop_hide_cartco';
-	$epages[] = 'eshop_tandc';
-	$epages[] = 'eshop_tandc_id';
-	$epages[] = 'eshop_tandc_use';
-	$epages[] = 'eshop_set_cacheability';
-	for ($x=1;$x<=3;$x++){
-		$epages[]='eshop_discount_spend'.$x;
-		$epages[]='eshop_discount_value'.$x;
-	}
-	$epages[]='eshop_discount_shipping';
-	$epages[]='eshop_show_forms';
-	$epages[]='eshop_downloads_hideall';
-	$epages[]='eshop_paypal_noemail';
-	
-	foreach($epages as $epage){
-		delete_option($epage);
-	}
+	delete_option('eshop_plugin_settings');
 	echo '<li>'.__('Options - deleted','eshop').'</li>';
 
 	//meta values
-	$eshopmetaary[]= '_Sku';
-	$eshopmetaary[]= '_Product Description';
-	$eshopmetaary[]= '_Shipping Rate';
-	$eshopmetaary[]= '_Featured Product';
-	$eshopmetaary[]= '_Stock Available';
-	$eshopmetaary[]= '_Stock Quantity';
-	$eshopmetaary[]= '_eshop_prod_img';
-	$eshopmetaary[]= '_eshoposets';
-
-	for($i=1;$i<=$numoptions;$i++){
-		$eshopmetaary[]= '_Option '.$i;
-		$eshopmetaary[]= '_Price '.$i;
-		$eshopmetaary[]= '_Download '.$i;
-	}
+	$eshopmetaary[]= '_eshop_product';
+	$eshopmetaary[]= '_eshop_stock';
+	$eshopmetaary[]= '_eshop_featured';
 
 	foreach( $eshopmetaary as $eshopmeta) {
 		delete_post_meta_by_key($eshopmeta);
@@ -175,9 +92,17 @@ if(isset($_POST['delete'])){
 		echo '<li>'.__('eShop template files deleted','eshop').'</li>';
 	}
 	//unregister widgets
-	unregister_sidebar_widget('eshopcart');
-	unregister_sidebar_widget('eshop_payments');
-	eshop_products_unregister();
+	unregister_sidebar_widget('eshop_widget');
+	unregister_sidebar_widget('eshop_pay_widget');
+	unregister_sidebar_widget('eshop_products_widget');
+	unregister_widget('eshop_widget');
+	unregister_widget('eshop_pay_widget');
+	unregister_widget('eshop_products_widget');
+	delete_option('widget_eshop_widget');
+	delete_option('widget_eshop_pay_widget');
+	delete_option('widget_eshop_products_widget');
+	echo '<li>'.__('Widgets - deleted','eshop').'</li>';
+
 	//clear the cron
 	wp_clear_scheduled_hook('eshop_event');
 	//remove eshop capability
@@ -217,21 +142,5 @@ function remove_eshop_caps() {
 		$role = get_role('editor');
 		if ($role !== NULL)
 			$role->remove_cap('eShop');
-}
-function eshop_products_unregister() {
-	if ( !$options = get_option('eshop_products_widgets') )
-		$options = array();
-
-	$registered = false;
-	foreach ( array_keys($options) as $o ) {
-		// Old widgets can have null values for some reason
-		if ( !isset($options[$o]['show_what']) ) // we used 'something' above in our exampple.  Replace with with whatever your real data are.
-			continue;
-		// $id should look like {$id_base}-{$o}
-		$id = "eshop-prod-$o"; // Never never never translate an id
-		$registered = true;
-		unregister_sidebar_widget( $id );
-	}
-
 }
 ?>

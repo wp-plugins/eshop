@@ -11,7 +11,7 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-global $wpdb;
+global $wpdb,$eshopoptions;
 //had to recreate these 2 functions here - the include didn't work!
 //only use after magic quote check
 if (!function_exists('stripslashes_this')) {
@@ -22,7 +22,7 @@ if (!function_exists('stripslashes_this')) {
 //sanitises input array!
 if (!function_exists('sanitise_this')) {
 	function sanitise_this($array) {
-		return is_array($array) ? array_map('sanitise_this', $array) : wp_specialchars($array,ENT_QUOTES);
+		return is_array($array) ? array_map('sanitise_this', $array) : esc_html($array);
 	}
 }
 if (get_magic_quotes_gpc()) {
@@ -34,7 +34,7 @@ if (get_magic_quotes_gpc()) {
 }
 
 if (isset($_GET['eshopaction']) )
-	$action_status = attribute_escape($_GET['eshopaction']);
+	$action_status = esc_attr($_GET['eshopaction']);
 else
 	$_GET['eshopaction']=$action_status = 'shipping';
 
@@ -43,14 +43,16 @@ else
 $dtable=$wpdb->prefix.'eshop_states';
 
 if(isset($_POST['submitstate'])){
-	update_option('eshop_shipping_state',$wpdb->escape($_POST['eshop_shipping_state']));
+	$eshopoptions = get_option('eshop_plugin_settings');
+	$eshopoptions['shipping_state']=$wpdb->escape($_POST['eshop_shipping_state']);
 	if(!isset($_POST['eshop_show_allstates']))$_POST['eshop_show_allstates']='0';
-	update_option('eshop_show_allstates',$wpdb->escape($_POST['eshop_show_allstates']));
+	$eshopoptions['show_allstates']=$wpdb->escape($_POST['eshop_show_allstates']);
+	update_option('eshop_plugin_settings',$eshopoptions);
 
 }
 
 $echosub= '<ul class="subsubsub">';
-$stati=array('shipping'=>__('Shipping Rates','eshop'),'countries' => __('Countries','eshop'),'states'=>get_option('eshop_shipping_state').' '.__('State/County/Province','eshop'));
+$stati=array('shipping'=>__('Shipping Rates','eshop'),'countries' => __('Countries','eshop'),'states'=>$eshopoptions['shipping_state'].' '.__('State/County/Province','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
@@ -121,7 +123,7 @@ case ('countries'):
 	}
 	?>
 	<div class="wrap">
-	<h2><?php _e('Country Shipping Zones','eshop'); ?></h2>
+	<div id="eshopicon" class="icon32"></div><h2><?php _e('Country Shipping Zones','eshop'); ?></h2>
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 2 letter state abbreviation, followed by &#8220;Country Name,&#8221; then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('&#8220;List&#8221; promotes that country to appear at the top of the list.','eshop'); ?></p>
@@ -231,7 +233,7 @@ case ('states'):
 					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
 				}else{
 					//all must be ok
-					$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".get_option('eshop_shipping_state')."')";
+					$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$eshopoptions['shipping_state']."')";
 					$wpdb->query($buildit);
 				}
 			}elseif($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='' && !isset($_POST['delete'][$i])){
@@ -259,15 +261,15 @@ case ('states'):
 	if($error!=''){
 		echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid:','eshop').'<ul>'.$error.'</ul></div>'."\n";
 	}elseif(isset($_POST['submit'])){
-		echo'<div id="message" class="updated fade"><p>'.get_option('eshop_shipping_state').' '.__('Specific Shipping Zones changed successfully','eshop').'.</p></div>'."\n";
+		echo'<div id="message" class="updated fade"><p>'.$eshopoptions['shipping_state'].' '.__('Specific Shipping Zones changed successfully','eshop').'.</p></div>'."\n";
 	}
 	//each time re-request from the database
-	$getstate=get_option('eshop_shipping_state');
+	$getstate=$eshopoptions['shipping_state'];
 
 	$query=$wpdb->get_results("SELECT * from $dtable WHERE list='$getstate' ORDER BY stateName");
 	?>
 	<div class="wrap">
-	<h2><?php echo get_option('eshop_shipping_state').' '.__('State/County/Province Shipping Zones','eshop'); ?></h2>
+	<div id="eshopicon" class="icon32"></div><h2><?php echo $eshopoptions['shipping_state'].' '.__('State/County/Province Shipping Zones','eshop'); ?></h2>
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 4 letter(maximum usual is 2) abbreviation and must be unique, followed by &#8220;Name&#8221;, then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('Example: AZ, Arizona,4','eshop'); ?></p>
@@ -280,7 +282,7 @@ case ('states'):
 		$ctable=$wpdb->prefix.'eshop_countries';
 		$currentlocations=$wpdb->get_results("SELECT * from $ctable ORDER BY country");
 		foreach ($currentlocations as $row){
-			if($row->code == get_option('eshop_shipping_state')){
+			if($row->code == $eshopoptions['shipping_state']){
 				$sel=' selected="selected"';
 			}else{
 				$sel='';
@@ -289,7 +291,7 @@ case ('states'):
 		}
 		?>
 	</select><br />
-	<input id="eshop_show_allstates" name="eshop_show_allstates" type="checkbox" value="1"<?php if(get_option('eshop_show_allstates')) echo ' checked="checked"'; ?> /> <label for="eshop_show_allstates"><?php _e('Use All','eshop'); ?></label>
+	<input id="eshop_show_allstates" name="eshop_show_allstates" type="checkbox" value="1"<?php if($eshopoptions['show_allstates']) echo ' checked="checked"'; ?> /> <label for="eshop_show_allstates"><?php _e('Use All','eshop'); ?></label>
 	<p class="submit"><input type="submit" id="submitstate" name="submitstate" value="<?php _e('Submit','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
@@ -345,10 +347,12 @@ default:
 	$error='';
 
 	if(isset($_POST['shipmethod'])){
-		update_option('eshop_shipping',$wpdb->escape($_POST['eshop_shipping']));
-		update_option('eshop_shipping_zone',$wpdb->escape($_POST['eshop_shipping_zone']));
-		update_option('eshop_show_zones',$wpdb->escape($_POST['eshop_show_zones']));
-		update_option('eshop_unknown_state',$wpdb->escape($_POST['eshop_unknown_state']));
+		$eshopoptions = get_option('eshop_plugin_settings');
+		$eshopoptions['shipping']=$wpdb->escape($_POST['eshop_shipping']);
+		$eshopoptions['shipping_zone']=$wpdb->escape($_POST['eshop_shipping_zone']);
+		$eshopoptions['show_zones']=$wpdb->escape($_POST['eshop_show_zones']);
+		$eshopoptions['unknown_state']=$wpdb->escape($_POST['eshop_unknown_state']);
+		update_option('eshop_plugin_settings',$eshopoptions);
 	}
 	if(isset($_POST['submit'])){
 		foreach($_POST as $k=>$v){
@@ -371,7 +375,7 @@ default:
 		echo'<div id="message" class="updated fade"><p>'.__('Shipping Rates changed successfully.','eshop').'</p></div>'."\n";
 	}
 	echo '<div class="wrap">';
-	echo '<h2>'.__('Shipping Rates','eshop').'</h2>'."\n";
+	echo '<div id="eshopicon" class="icon32"></div><h2>'.__('Shipping Rates','eshop').'</h2>'."\n";
 	?>
 	<?php echo $echosub; ?>
 	<p><?php _e('The following are the shipping rates by class and zone.','eshop'); ?></p>
@@ -381,7 +385,7 @@ default:
 	<?php
 	for($i=1;$i<=3;$i++){
 		$selected='';
-		if($i == get_option('eshop_shipping')){$selected=' checked="checked"';}
+		if($i == $eshopoptions['shipping']){$selected=' checked="checked"';}
 		if($i==1){
 			$extra=' <small>'.__('( per quantity of 1, prices reduced for additional items )','eshop').'</small>';
 		}elseif($i==2){
@@ -395,7 +399,7 @@ default:
 	<label for="eshop_shipping_zone"><?php _e('Shipping Zones by','eshop'); ?></label>
 	<select id="eshop_shipping_zone" name="eshop_shipping_zone">
 	<?php
-	if('country' == get_option('eshop_shipping_zone')){
+	if('country' == $eshopoptions['shipping_zone']){
 		echo '<option value="country" selected="selected">'.__('Country','eshop').'</option>';
 		echo '<option value="state">'.__('State/County/Province','eshop').'</option>';
 	}else{
@@ -409,7 +413,7 @@ default:
 		<?php
 		for($i=1;$i<=5;$i++){
 		?>
-			<option value="<?php echo $i; ?>"<?php if($i==get_option('eshop_unknown_state')) echo ' selected="selected"'; ?>><?php echo $i; ?></option>
+			<option value="<?php echo $i; ?>"<?php if($i==$eshopoptions['unknown_state']) echo ' selected="selected"'; ?>><?php echo $i; ?></option>
 		<?php
 		}
 		?>
@@ -417,7 +421,7 @@ default:
 	<label for="eshop_show_zones"><?php _e('Show Shipping Zones on Shipping Page','eshop'); ?></label>
 	<select id="eshop_show_zones" name="eshop_show_zones">
 	<?php
-	if('yes' == get_option('eshop_show_zones')){
+	if('yes' == $eshopoptions['show_zones']){
 		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
 		echo '<option value="no">'.__('No','eshop').'</option>';
 	}else{
@@ -445,7 +449,7 @@ default:
 	</tr>
 	<?php
 	/* although this could be condensed, I'll split each method up for ease and future expansion */
-	switch (get_option('eshop_shipping')){
+	switch ($eshopoptions['shipping']){
 		case '1':// ( per quantity of 1, prices reduced for additional items )
 			$x=1;
 			$calt=0;

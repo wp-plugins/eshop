@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '4.3.2');
+define('ESHOP_VERSION', '5.0.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
-Description: The accessible PayPal shopping cart for WordPress 2.5 and above.
-Version: 4.3.2
+Description: The accessible shopping cart for WordPress 3.0 and above.
+Version: 5.0.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -29,38 +29,61 @@ Author URI: http://quirm.net/
 */
 
 load_plugin_textdomain('eshop', PLUGINDIR . '/' . plugin_basename(dirname(__FILE__)));
-
-$eshoplevel='eShop';
-
+//grab all options here in one go
+$eshopoptions = get_option('eshop_plugin_settings');
+/* eShop ADMIN STUFF HERE */
+add_action('admin_init', 'eshop_admin_init');
+add_action('admin_menu', 'eshop_admin');
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook
      */
     function eshop_admin() {    
-        if (function_exists('add_menu_page')) {
-        	global $eshoplevel,$wp_version;
-        	//goto stats page
-            add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
-            add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop_admin_orders_stats');
-            add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop_orders.php'),'eshop_admin_orders');
-      	   	add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop_shipping.php'),'eshop_admin_shipping');
-      	    add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop_products.php'), 'eshop_admin_products');
-      	    add_submenu_page('eshop.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop_options.php'), 'eshop_admin_options');
-      	    add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop_downloads.php'), 'eshop_admin_downloads');
-      	    add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop_discount_codes.php'), 'eshop_discount_codes');
-      	    add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop_base.php'), 'eshop_admin_base');
-			add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop_templates.php'),'eshop_admin_templates');
-      	    add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop_about.php'), 'eshop_admin_about');
-      	    add_submenu_page('eshop.php',__('eShop Help','eshop'),__('Help','eshop'), 'eShop', basename('eshop_help.php'), 'eshop_admin_help');
-			
-			add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_style.php'),'eshop_admin_style');
-			add_management_page(__('eShop Base Feed','eshop'), __('eShop Base Feed','eshop'),'eShop_admin', basename('eshop_base_create_feed.php'),'eshop_admin_base_create_feed');
-			add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_settings.php'),'eshop_admin_settings');
-      		add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop_uninstall.php'),'eshop_admin_uninstall');
-      	}        
+		global $wp_version;
+		//goto stats page
+		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
+		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop_admin_orders_stats');
+		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop_orders.php'),'eshop_admin_orders');
+		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop_shipping.php'),'eshop_admin_shipping');
+		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop_products.php'), 'eshop_admin_products');
+		$page[]=add_submenu_page('eshop.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop_options.php'), 'eshop_admin_options');
+		$page[]=add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop_downloads.php'), 'eshop_admin_downloads');
+		$page[]=add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop_discount_codes.php'), 'eshop_discount_codes');
+		$page[]=add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop_base.php'), 'eshop_admin_base');
+		$page[]=add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop_templates.php'),'eshop_admin_templates');
+		$page[]=add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop_about.php'), 'eshop_admin_about');
+		$page[]=add_submenu_page('eshop.php',__('eShop Help','eshop'),__('Help','eshop'), 'eShop', basename('eshop_help.php'), 'eshop_admin_help');
+
+		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_style.php'),'eshop_admin_style');
+		$page[]=add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_settings.php'),'eshop_admin_settings');
+		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+		foreach ($page as $paged){
+			add_action('admin_print_styles-' . $paged, 'eshop_admin_styles');
+		}
+    
     }
 }
+if (!function_exists('eshop_admin_init')) {
+	function eshop_admin_init(){
+		/* Register our stylesheet. */
+		wp_register_style('eShopAdminStyles', WP_PLUGIN_URL . '/eshop/eshop.css');
+		wp_register_style('eShopAdminPrint', WP_PLUGIN_URL . '/eshop/eshop-print.css','','','print');
+		wp_register_script('eShopCheckAll', WP_PLUGIN_URL . '/eshop/eshopcheckall.js', array('jquery'));
+		wp_enqueue_style('eShopAdminStyles');
 
+	}
+}
+
+if (!function_exists('eshop_admin_styles')) {
+	function eshop_admin_styles(){
+		/*
+		 * It will be called only on your plugin pages, enqueue our stylesheet here
+		 */
+		wp_enqueue_style('eShopAdminPrint');
+		wp_enqueue_script('eShopCheckAll');
+
+	}
+}
 if (!function_exists('eshop_admin_uninstall')) {
 	/**
 	 * display the uninstall page.
@@ -99,14 +122,15 @@ if (!function_exists('eshop_admin_orders_stats')) {
      * display the order stats.
      */
      function eshop_admin_orders_stats() {
+     	global $eshopoptions;
      	//redirect to install instructions on first visit only
-		 if('no'==get_option('eshop_first_time')){
+		 if('no'==$eshopoptions['first_time']){
 			$_GET['action']='Stats';
 			include 'eshop_orders.php';
 		 }else{
 			include 'eshop_about.php';
 		 }
-		}
+	}
 }
 
 if (!function_exists('eshop_admin_orders')) {
@@ -195,7 +219,6 @@ if (!function_exists('eshop_discount_codes')) {
          eshop_discounts_manager();
      }
 }
-////////////////eshop base test////////////
 if (!function_exists('eshop_admin_base')) {
     /**
      * display products.
@@ -224,8 +247,11 @@ if (!function_exists('eshop_admin_base_create_feed')) {
      }
 }
 ////////////////////////////////////////////
-
-
+/* INSTALL UNINSTALL */
+/* activations */
+register_activation_hook(__FILE__,'eshop_install');
+/*deactivation*/
+register_deactivation_hook( __FILE__, 'eshop_deactivate' );
 
 if (!function_exists('eshop_install')) {
     /**
@@ -246,16 +272,17 @@ if (!function_exists('eshop_deactivate')) {
     	wp_clear_scheduled_hook('eshop_event');
     }
 }
-//cron
+
+/* cron */
 add_action('eshop_event', 'eshop_cron');
 if (!function_exists('eshop_cron')) {
 	function eshop_cron(){
-		global $wpdb;
-		if(get_option('eshop_cron_email')!=''){
+		global $wpdb,$eshopoptions;
+		if($eshopoptions['cron_email']!=''){
 			$dtable=$wpdb->prefix.'eshop_orders';
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Completed' OR status='Waiting'");
 			if($max>0){
-				$to = get_option('eshop_cron_email');    //  your email
+				$to = $eshopoptions['cron_email'];    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
 				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
 				$headers=eshop_from_address();
@@ -265,138 +292,13 @@ if (!function_exists('eshop_cron')) {
 		}
 	}
 }
-if (!function_exists('eshop_show_cancel')) {
-	function eshop_show_cancel(){
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='cancel'){
-			$echo ='<h3 class="error">'.__('The order was cancelled at PayPal.','eshop')."</h3>";
-			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
-		}
-		return $echo;
-	}
-}
-if (!function_exists('eshop_show_success')) {
-	function eshop_show_success(){
-		global $wpdb;
-		//cache
-		eshop_cache();
-		$echo='';
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='success' && isset($_POST['txn_id'])){
-			$detailstable=$wpdb->prefix.'eshop_orders';
-			$dltable=$wpdb->prefix.'eshop_download_orders';
-			if(get_option('eshop_status')=='live'){
-				$txn_id = $wpdb->escape($_POST['txn_id']);
-			}else{
-				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
-			}
-			$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-			$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-
-			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
-				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
-				if($row->email!='' && $row->code!=''){
-					//display form only if there are downloads!
-						$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
-					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
-					<input name="code" type="hidden" value="'.$row->code.'" /> 
-					<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
-					</form>';
-				}
-			}
-		}elseif(isset($_GET['eshopaction']) && $_GET['eshopaction']=='success' && isset($_GET['epn'])){
-			include_once (WP_PLUGIN_DIR.'/eshop/epn/process.php');
-			if(isset($_GET['epn']) && $_GET['epn']=='ok' && isset($_POST['transid'])){
-				$detailstable=$wpdb->prefix.'eshop_orders';
-				$dltable=$wpdb->prefix.'eshop_download_orders';
-				if(get_option('eshop_status')=='live'){
-					$txn_id = $wpdb->escape($_POST['transid']);
-				}else{
-					$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['transid']);
-				}
-				$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-				$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
-
-				if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checkid!=''){
-					$row=$wpdb->get_row("select email,code from $dltable where checkid='$checkid' and downloads>0 limit 1");
-					if($row->email!='' && $row->code!=''){
-						//display form only if there are downloads!
-							$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
-						<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
-						<input name="code" type="hidden" value="'.$row->code.'" /> 
-						<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
-						</form>';
-					}
-				}
-			}
-		}
-		elseif(isset($_GET['eshopaction']) && $_GET['eshopaction']=='authorizenetipn'){
-			// because authorize.net handles things differently... have to add this in here
-			$detailstable=$wpdb->prefix.'eshop_orders';
-			$dltable=$wpdb->prefix.'eshop_download_orders';
-			if(get_option('eshop_status')=='live'){
-				$txn_id = $wpdb->escape($_POST['x_trans_id']);
-			}else{
-				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['x_trans_id']);
-			}
-			$checked=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' order by id DESC limit 1");
-
-			$checkstatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' && downloads='yes' limit 1");
-			if(($checkstatus=='Sent' || $checkstatus=='Completed') && $checked!=''){
-				$row=$wpdb->get_row("select email,code from $dltable where checkid='$checked' and downloads>0 limit 1");
-				if($row->email!='' && $row->code!=''){
-					//display form only if there are downloads!
-						$echo = '<form method="post" class="dform" action="'.get_permalink(get_option('eshop_show_downloads')).'">
-					<p class="submit"><input name="email" type="hidden" value="'.$row->email.'" /> 
-					<input name="code" type="hidden" value="'.$row->code.'" /> 
-					<span class="buttonwrap"><input type="submit" id="submit" class="button" name="Submit" value="'.__('View your downloads','eshop').'" /></span></p>
-					</form>';
-				}
-			}
-			// Start of TEMCEDIT-20091117-a
-		}elseif(isset($_GET['eshopaction']) && $_GET['eshopaction']=='idealliteipn' && isset($_GET['ideal']['status']) ){
-			if($_GET['ideal']['status'] == md5("SUCCESS") ) {
-					$echo ='<h3 class="success">'.__('Thank you for your order','eshop')." !</h3>";
-					$echo.= '<p>'.__('Your iDEAL payment has been succesfully recieved.','eshop').'<br />';
-					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
-			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
-					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
-					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "ERROR".','eshop').'<br />';
-					$echo.= __('Please try checkout your order again.','eshop').'</p>';
-					$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
-			}elseif($_GET['ideal']['status'] == md5("CANCEL") ) {
-
-					$echo ='<h3 class="error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
-					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "CANCEL".','eshop').'<br />';
-					$echo.= __('Please try checkout your order again.','eshop').'</p>';
-			}else{
-					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
-					$echo.= '<p>'.__('Please try checkout your order again.','eshop').'</p>';
-			}
-            // End of TEMCEDIT-20091117-a
-		}
- 		return $echo;
-	}
-}
-if (!function_exists('eshop_show_cart')) {
-	function eshop_show_cart() {
-		include_once 'cart.php';
-		return eshop_cart($_POST);
-	}
-}
-if (!function_exists('eshop_show_checkout')) {
-	function eshop_show_checkout(){
-		include_once 'checkout.php';
-		return eshop_checkout($_POST);
-	}
-}
-if (!function_exists('eshop_show_downloads')) {
-	function eshop_show_downloads(){
-		include_once 'purchase-downloads.php';
-		return eshop_downloads($_POST);
-	}
-}
+/* includes */
 include_once 'cart-functions.php';
 include_once( 'eshop-shortcodes.php' );
 // shortcodes now defined in that file
+/* the widget */
+include_once 'eshop_widget.php';
+
 //add credits
 add_action('wp_footer', 'eshop_visible_credits');
 
@@ -418,77 +320,111 @@ if (!function_exists('eshop_contains')) {
         }
     }   
 }
-if (!function_exists('eshop_admin_head')) {
-    /**
-     * javascript functions & stylesheet to be included in the ADMIN WP head
-     */
-    function eshop_admin_head() {
-        echo '   <link title="eShop Admin Styles" rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop.css" type="text/css" media="screen" />'."\n";
-        echo '   <link rel="stylesheet" href="' . WP_PLUGIN_URL . '/eshop/eshop-print.css" type="text/css" media="print" />'."\n";
-		echo '   <script type="text/javascript">
-     //<![CDATA[
-      function checkedAll (id, checked) {
-	  var el = document.getElementById(id);
-	  for (var i = 0; i < el.elements.length; i++) {
-	  el.elements[i].checked = checked;
-        }
-      }
-    //]]> 
-    </script>'."\n";
-	}
-}
-if (!function_exists('eshop_wp_head')) {
-    /**
-     * javascript functions & stylesheet to be included in the FRONT END WP head
-     */
-    function eshop_wp_head() {
-    	$eshopurl=eshop_files_directory();
-    	if(@file_exists(TEMPLATEPATH.'/eshop.css')) {
-			echo '<link rel="stylesheet" href="'.get_stylesheet_directory_uri().'/eshop.css" type="text/css" media="screen" />'."\n";	
-		}elseif(get_option('eshop_style')=='yes'){
-        	echo '<link rel="stylesheet" href="' . $eshopurl['1'] . 'eshop.css" type="text/css" media="screen" />'."\n";
-        }
-       
-       if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='redirect'){
-        	//only add necessary javascript if on the correct page
-        	//this automatically submit the redirect form
-        	//wish it was a bit quicker, but that is paypals fault.
-        	if(get_option('eshop_status')=='live'){
-        		echo '<script src="'.$eshopurl['1'].'eshop-onload.js" type="text/javascript"></script>';
-        	}
+
+if (!function_exists('eshop_pre_wp_head')) {
+    function eshop_pre_wp_head() {
+    	global $wp_query;
+		if(isset($wp_query->query_vars['eshopaction'])) {
+   	 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
+		   	if($eshopaction=='success'){
+		   		//destroy cart
+				$_SESSION = array();
+				//session_destroy();
+			}
+			//we need to buffer output on a few pages
+			if($eshopaction=='redirect'){
+				ob_start();
+			}
+			if($eshopaction=='webtopayipn'){
+				include_once 'webtopay.php';
+				exit;
+			}
+			if($eshopaction=='paypalipn'){
+				include_once 'paypal.php';
+				exit;
+			}
+			if($eshopaction=='paysonipn'){
+				include_once 'payson.php';
+				//exit;
+			}
+			if($eshopaction=='authorizenetipn'){
+				include_once 'authorizenet.php';
+				//exit;
+			}
+			if($eshopaction=='idealliteipn'){
+				include_once 'ideallite.php';
+				//exit;
+			}
 		}
-		
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='success'){
-			$_SESSION = array();
-			session_destroy();
+		if(isset($_POST['eshopident_1'])){
+			ob_start();
 		}
 		
     }
 }
+if (!function_exists('eshop_wp_head_add')) {
+    /**
+     * javascript functions
+     */
+    function eshop_wp_head_add() {
+    	global $wp_query,$eshopoptions;
+    	$eshopurl=eshop_files_directory();
+		if(isset($wp_query->query_vars['eshopaction'])) {
+   	 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
+		   	if($eshopaction=='redirect'){
+				//this automatically submits the redirect form
+				if($eshopoptions['status']=='live'){
+					wp_register_script('eShopSubmit', $eshopurl['1'].'eshop-onload.js', array('jquery'));
+					wp_enqueue_script('eShopSubmit');
+				}
+			}
+		}
+		
+    }
+}
+/**
+ * eshop wordpress actions
+ */
+if (!function_exists('add_eshop_query_vars')) {
+	function add_eshop_query_vars($aVars) {
+		$aVars[] = "eshopaction";    // represents the name of the product category as shown in the URL
+		$aVars[] = "eshopaz";
+		$aVars[] = "eshopall";
+		$aVars[] = "_p";
+		return $aVars;
+	}
+}
+add_filter('query_vars', 'add_eshop_query_vars');
+add_action('wp', 'eshop_pre_wp_head');
+add_action('wp_print_scripts', 'eshop_wp_head_add');
 
+add_action('wp_print_styles', 'eshop_stylesheet');
+if (!function_exists('eshop_stylesheet')) {
+	function eshop_stylesheet() {
+		global $eshopoptions;
+		$eshopurl=eshop_files_directory();
+		if(@file_exists(STYLESHEETPATH.'/eshop.css')) {
+			$myStyleUrl = get_stylesheet_directory_uri().'/eshop.css';
+			$myStyleFile=STYLESHEETPATH.'/eshop.css';
+		}elseif($eshopoptions['style']=='yes'){
+			$myStyleUrl = $eshopurl['1'] . 'eshop.css';
+			$myStyleFile=$eshopurl['0'] . 'eshop.css';
+		}
+		if ( file_exists($myStyleFile) ) {
+			wp_register_style('myStyleSheets', $myStyleUrl);
+			wp_enqueue_style( 'myStyleSheets');
+		}
+	}
+}
 //this automatically hides the relevant pages
-include_once ('cart-functions.php');
+
 add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 //fold the page menu as it is likely to get long...
 //this can be removed in a theme by using remove_filter...
 //add option to make it settable
-
-if(get_option('eshop_fold_menu') == 'yes'){
+if($eshopoptions['fold_menu'] == 'yes'){
 	add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
 }
-
-/**
- * eshop wordpress actions
- */
-add_action('admin_head', 'eshop_admin_head');
-add_action('wp_head', 'eshop_wp_head');
-add_action('admin_menu', 'eshop_admin');
-
-/* activations */
-register_activation_hook(__FILE__,'eshop_install');
-
-/*deactivation*/
-register_deactivation_hook( __FILE__, 'eshop_deactivate' );
 
 /**
 * eshop download products - need to process afore page is rendered
@@ -499,14 +435,12 @@ if (isset($_POST['eshoplongdownloadname'])){
 	eshop_download_the_product($_POST); 
 }
 
-
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-custom-fields.php' );
 
 //displays the add to cart form
 include_once( 'eshop-get-custom.php' );
 add_filter('the_content', 'eshop_boing');
-
 
 add_action('init','eshopdata');
 if (!function_exists('eshopdata')) {
@@ -525,44 +459,16 @@ if (!function_exists('eshopdata')) {
 				include 'eshop_base_feed.php';
 			}
 		}
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='webtopayipn'){
-			include_once 'webtopay.php';
-			exit;
-		}
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='paypalipn'){
-			include_once 'paypal.php';
-			exit;
-		}
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='paysonipn'){
-			include_once 'payson.php';
-			//exit;
-		}
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='authorizenetipn'){
-			include_once 'authorizenet.php';
-			//exit;
-		}
-		if(isset($_GET['eshopaction']) && $_GET['eshopaction']=='idealliteipn'){
-			include_once 'ideallite.php';
-			//exit;
-		}
-		//we need to buffer output on a few pages
-		if((isset($_GET['eshopaction']) && $_GET['eshopaction']=='redirect')||(isset($_POST['postid_1']))){
-			ob_start();
-		}
+		
 	}
 }
-/* the widget */
-include_once 'eshop_widget.php';
-
-//this checks images upon deletion, if eshop is using them - it deletes the reference - cool huh!
-add_filter('wp_delete_file','eshop_delete_img');
 
 //add images to the search page if set
-if('no' != get_option('eshop_search_img')){
+if('no' != $eshopoptions['search_img']){
 	add_filter('the_excerpt','eshop_excerpt_img');
 	add_filter('the_content','eshop_excerpt_img');
 }
 
-
 add_action( 'admin_notices', 'eshop_update_nag');
+add_theme_support('post-thumbnails');
 ?>

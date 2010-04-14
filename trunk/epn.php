@@ -3,8 +3,10 @@
  * PHP ePN IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
 */
-global $wpdb;
+global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
+$derror=__('There appears to have been an error, please contact the site admin','eshop');
+
 
 //sanitise
 include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -17,22 +19,21 @@ $p = new epn_class;             // initiate an instance of the class
 
 $p->epn_url = 'https://www.eProcessingNetwork.com/cgi-bin/dbe/order.pl';     // epn url
 
-$this_script = get_option('siteurl');
+$this_script = site_url();
 global $wp_rewrite;
-if(get_option('eshop_checkout')!=''){
-	if( $wp_rewrite->using_permalinks()){
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'?eshopaction=redirect';
-	}else{
-		$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
-	}
+if($eshopoptions['checkout']!=''){
+	$p->autoredirect=add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout']));
 }else{
-	$p->autoredirect=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=redirect';
+	die('<p>'.$derror.'</p>');
 }
 
 // if there is no action variable, set the default action of 'process'
-if (empty($_GET['eshopaction'])) $_GET['eshopaction'] = 'process';  
+if(!isset($wp_query->query_vars['eshopaction']))
+	$eshopaction='process';
+else
+	$eshopaction=$wp_query->query_vars['eshopaction'];
 
-switch ($_GET['eshopaction']) {
+switch ($eshopaction) {
     case 'redirect':
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
@@ -69,20 +70,12 @@ switch ($_GET['eshopaction']) {
       
       /****** The order has already gone into the database at this point ******/
       
-		global $wp_rewrite,$blog_id;
-
 		//goes direct to this script as nothing needs showing on screen.
-		if(get_option('eshop_cart_success')!=''){
-			if( $wp_rewrite->using_permalinks()){
-				$ilink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=success&amp;epn=ok';
-				$idlink=get_permalink(get_option('eshop_cart_success')).'?eshopaction=success&amp;epn=fail';
-			}else{
-				$ilink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=success&amp;epn=ok';
-				$idlink=get_permalink(get_option('eshop_cart_success')).'&amp;eshopaction=success&amp;epn=fail';
-			}
+		if($eshopoptions['cart_success']!=''){
+			$ilink=add_query_arg(array('eshopaction'=>'success','epn'=>'ok'),get_permalink($eshopoptions['cart_success']));
+			$idlink=add_query_arg(array('eshopaction'=>'success','epn'=>'fail'),get_permalink($eshopoptions['cart_success']));
 		}else{
-			$ilink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=success&amp;epn=ok';
-			$idlink=get_permalink(get_option('eshop_checkout')).'&amp;eshopaction=success&amp;epn=fail';
+			die('<p>'.$derror.'</p>');
 		}
 		$p->add_field('ReturnApprovedURL', $ilink);
 		$p->add_field('ReturnDeclinedURL', $idlink);
@@ -108,7 +101,7 @@ switch ($_GET['eshopaction']) {
 			$p->add_field($name, $value);
 		}
 
-		if(get_option('eshop_status')!='live' && is_user_logged_in()||get_option('eshop_status')=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_epn_post(); // submit the fields to epn
     	}
       	break;

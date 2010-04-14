@@ -8,7 +8,7 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
 
-if(!eshop_create_dirs()){
+if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp_content directory is writable before the plugin can be activated.','eshop')); 
 }
@@ -35,51 +35,154 @@ eshop_caps();
 /***
 * default options(mainly for settings) go here
 */
-add_option('eshop_style', 'yes');
-add_option('eshop_records','10');
-add_option('eshop_options_num','3');
-add_option('eshop_downloads_num','3');
-add_option('eshop_cart_nostock','Out of Stock');
-add_option('eshop_status', 'testing');
-add_option('eshop_currency_symbol','&pound;');
-add_option('eshop_currency','GBP');
-add_option('eshop_location','GB');
-add_option('eshop_shipping', '1');
-add_option('eshop_shipping_zone', 'country');
-add_option('eshop_shipping_state', 'GB');
-add_option('eshop_unknown_state', '5');
-add_option('eshop_show_zones','no');
-add_option('eshop_credits', 'yes');
-add_option('eshop_stock_control','no');
-add_option('eshop_show_stock','no');
-add_option('eshop_first_time', 'yes');
-add_option('eshop_downloads_only', 'no');
-add_option('eshop_search_img', 'no');
-add_option('eshop_fold_menu', 'no');
-add_option('eshop_downloads_hideall','no');
-add_option('eshop_show_sku','no');
-add_option('eshop_hide_addinfo','yes');
-add_option('eshop_hide_addinfo','');
-add_option('eshop_hide_shipping','');
-add_option('eshop_set_cacheability','no');
+function eshop_option_setup() {
+	$new_options = array(
+		'addtocart_image'=>'',
+		'base_brand'=>'',
+		'base_condition'=>'',
+		'base_expiry'=>'',
+		'base_payment'=>'',
+		'base_ptype'=>'',
+		'business'=>'',
+		'cart'=>'',
+		'cart_cancel'=>'',
+		'cart_nostock'=>'Out of Stock',
+		'cart_shipping'=>'',
+		'cart_success'=>'',
+		'checkout'=>'',
+		'credits'=> 'yes',
+		'cron_email'=>'',
+		'currency_symbol'=>'&pound;',
+		'currency'=>'GBP',
+		'discount_shipping'=>'',
+		'discount_spend1'=>'',
+		'discount_value1'=>'',
+		'discount_spend2'=>'',
+		'discount_value2'=>'',
+		'discount_spend3'=>'',
+		'discount_value3'=>'',
+		'downloads_hideall'=>'no',
+		'downloads_num'=>'3',
+		'downloads_only'=> 'no',
+		'first_time'=> 'yes',
+		'fold_menu'=> 'no',
+		'from_email'=>'',
+		'hide_addinfo'=>'yes',
+		'hide_cartco'=>'',
+		'hide_shipping'=>'',
+		'image_in_cart'=>'',
+		'location'=>'GB',
+		'method'=>array('paypal'),
+		'options_num'=>'3',
+		'paypal_noemail'=>'',
+		'records'=>'',
+		'search_img'=> 'no',
+		'set_cacheability'=>'no',
+		'shipping_state'=> 'GB',
+		'shipping_zone'=> 'country',
+		'shipping'=> '1',
+		'shop_page'=>'',
+		'show_allstates'=>'',
+		'show_downloads'=>'',
+		'show_forms'=>'',
+		'show_sku'=>'no',
+		'show_stock'=>'no',
+		'show_zones'=>'no',
+		'status'=> 'testing',
+		'stock_control'=>'no',
+		'style' => 'yes',
+		'sysemails' =>'',
+		'tandc'=>'',
+		'tandc_id'=>'',
+		'tandc_use'=>'',
+		'unknown_state'=> '5',
+		'version'=>'',
+		'xtra_help' =>'',
+		'xtra_privacy' =>'',
+		//payments:
+		'cash' =>'',
+		'payson' =>'',
+		'ideallite' =>'',
+		'authorizenet' =>'',
+		'epn' =>'',
+		'webtopay' =>''
+	);
 
-//new for 3.
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.1.9' ){
-	delete_option('eshop_sudo_cat');
-	delete_option('eshop_random_num');
-	delete_option('eshop_pagelist_num');
+	// if old options exist, update to new system only need pre 5.0
+	foreach( $new_options as $key => $value ) {
+		$existing = get_option( 'eshop_' . $key );
+		$new_options[$key] = $existing;
+		delete_option( 'eshop_' . $key );
+	}
+	add_option( 'eshop_plugin_settings', $new_options );
 }
+eshop_option_setup();
+//do same for post meta
 
-//new for 2.14.x
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' )
-	delete_option('eshop_method','paypal');
+function eshop_postmeta_setup() {
+	$eshopoptions = get_option('eshop_plugin_settings');
+	$new_options = array(
+	'_Sku'=>'sku',
+	'_Product Description'=>'description',
+	'_Shipping Rate'=>'shiprate',
+	'_Featured Product'=>'featured',
+	'_Stock Quantity'=>'qty',
+	'_eshoposets'=>'optset');	
+	//add on options and prices into the mix
+	$numoptions=$eshopoptions['options_num'];
+	if(!is_numeric($numoptions)) $numoptions='3';
+	for($i=1;$i<=$numoptions;$i++){
+		$new_options['_Option '.$i]=array($i=>'option');
+		$new_options['_Price '.$i]=array($i=>'price');
+		$new_options['_Download '.$i]=array($i=>'download');
+	}
+	//go through every page and post
+	$args = array(
+		'post_type' => 'any',
+		'numberposts' => -1,
+		); 
+	
+	//add in transfer from prod download to _download here
+	$allposts = get_posts($args);
+	foreach( $allposts as $postinfo) {
+		//if(get_post_meta($postinfo->ID, '_eshop_product')!='')
+		//	break;
+		foreach($new_options as $oldfield=>$newfield){
+			$eshopvalue=get_post_meta($postinfo->ID, $oldfield,true);
+			if(is_array($newfield)){
+				foreach($newfield as $k=>$v){
+					$thenew_options['products'][$k][$v]=$eshopvalue;
+				}
+			}else{
+				$thenew_options[$newfield]=$eshopvalue;
+			}
+			if($oldfield=='_Featured Product' && $eshopvalue=='Yes'){
+				add_post_meta( $postinfo->ID, '_eshop_featured', 'Yes');
+			}
+		}
+		if($thenew_options['sku']!='' && $thenew_options['description']!='' && $thenew_options['products']['1']['option']!='' && $thenew_options['products']['1']['price']!=''){
+			add_post_meta( $postinfo->ID, '_eshop_product', $thenew_options);
+		}
+		$stock=get_post_meta($postinfo->ID, '_Stock Available',true);
+		if(trim($stock)=='Yes'){
+			add_post_meta( $postinfo->ID, '_eshop_stock', '1');
+		}
+	}
+	//just make sure they are all gone
+	foreach($new_options as $oldfield=>$newfield){
+		delete_post_meta_by_key($oldfield);
+	}
+	delete_post_meta_by_key('_Stock Available');
+	delete_post_meta_by_key('_eshop_prod_img');
 
-add_option('eshop_method',array('paypal'));
+	/* post meta end */
+}
+eshop_postmeta_setup();
 
-
+$eshopoptions = get_option('eshop_plugin_settings');
 $table = $wpdb->prefix . "eshop_states";
 //new for 2.13.0
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.12.9' )
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '2.12.9' )
 	$wpdb->query("DROP TABLE $table");
 	
 if ($wpdb->get_var("show tables like '$table'") != $table) {
@@ -645,7 +748,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	optid int(11) NOT NULL auto_increment,
 	name varchar(255) NOT NULL default '',
 	type tinyint(1) NOT NULL default '0',
-	description TEXT NOT NULL ,
+	description TEXT NOT NULL DEFAULT '',
 	  PRIMARY KEY  (optid)
 	) $charset_collate;";
 	error_log("creating table $table");
@@ -758,26 +861,47 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic w
 
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
+if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic iDeal Lite email','$esubject')"); 
 
-//added in 4.2.5
+//added in 5.0
+
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.0.0' ){
 	$table = $wpdb->prefix . "eshop_option_names";
-		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
-		$add_field = TRUE;
-		foreach ($tablefields as $tablefield) {
-			if(strtolower($tablefield->Field)=='description') {
-				$add_field = FALSE;
-			}
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='description') {
+			$add_field = FALSE;
 		}
-		if ($add_field) {
-			$sql="ALTER TABLE `".$table."` ADD `description` TEXT NOT NULL";
-			$wpdb->query($sql);
 	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` CHANGE `description` `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL";
+		$wpdb->query($sql);
+	}
+}
+//added in 4.2.5
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '4.2.5' ){
+	$table = $wpdb->prefix . "eshop_option_names";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='description') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `description` TEXT NOT NULL default ''";
+		$wpdb->query($sql);
+	}
+}
 
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '4.1.9' ){
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '4.1.9' ){
 	$table = $wpdb->prefix . "eshop_discount_codes";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `percent` `percent` float(4,2) NOT NULL DEFAULT '0'");
 }
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.9.0' ){
+
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '3.9.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
 		$add_field = TRUE;
@@ -792,11 +916,11 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.9.0' ){
 	}
 }
 
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.5.0' ){
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '3.5.0' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `item_id` `item_id` VARCHAR( 255 ) NOT NULL DEFAULT''");
 }
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '3.0.2' ){
 //prior to 3.1
 //this portion removed due to problems.
 /*
@@ -820,7 +944,7 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '3.0.2' ){
 	$wpdb->query("ALTER TABLE ".$table." CHANGE `status` `status` SET( 'Sent', 'Completed', 'Pending', 'Failed', 'Deleted', 'Waiting' ) DEFAULT 'Pending' NOT NULL");
 }
 
-if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' ){
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '2.13.9' ){
 	// lumping all changes prior to 3.0.0
 	/* db changes */
 	$table = $wpdb->prefix ."eshop_base_products";
@@ -893,39 +1017,6 @@ if ( get_option('eshop_version')=='' || get_option('eshop_version') < '2.13.9' )
 	$sql="ALTER TABLE `".$table."` CHANGE `state` `state` VARCHAR(100) NOT NULL default ''";
 	$sql="ALTER TABLE `".$table."` CHANGE `ship_state` `ship_state` VARCHAR(100) NOT NULL default ''";
 	$wpdb->query($sql);
-
-	/*update all post meta to new post meta */
-	$eshop_old_postmeta=array('Sku','Product Description','Product Download','Shipping Rate','Featured Product','Stock Available','Stock Quantity');
-	//add on options and prices into the mix
-
-	$numoptions=get_option('eshop_options_num');
-	if(!is_numeric($numoptions)) $numoptions='3';
-	for($i=1;$i<=$numoptions;$i++){
-		$eshop_old_postmeta[]='Option '.$i;
-		$eshop_old_postmeta[]='Price '.$i;
-	}
-	//go through every page and post
-	$args = array(
-		'post_type' => 'any',
-		'numberposts' => -1,
-		); 
-	//add in transfer from prod download to _download here
-	$allposts = get_posts($args);
-	foreach( $allposts as $postinfo) {
-		foreach($eshop_old_postmeta as $field){
-			$eshopvalue=get_post_meta($postinfo->ID, $field,true);
-			if($eshopvalue!=''){
-				add_post_meta( $postinfo->ID, '_'.$field, $eshopvalue);
-				delete_post_meta($postinfo->ID, $field);
-			}
-		 }
-		if(get_post_meta($postinfo->ID, '_Product Download',true)!=''){
-			$eshopvalue=get_post_meta($postinfo->ID, '_Product Download',true);
-			add_post_meta( $postinfo->ID, '_Download 1', $eshopvalue);
-		}
-		delete_post_meta($postinfo->ID, '_Product Download');
-	}
-	/* post meta end */
 }
 
 
@@ -943,38 +1034,38 @@ $num=0;
 $pages[$num]['name'] = 'shopping-cart';
 $pages[$num]['title'] = 'Shopping Cart';
 $pages[$num]['tag'] = '[eshop_show_cart';
-$pages[$num]['option'] = 'eshop_cart';
+$pages[$num]['option'] = 'cart';
 
 $num++;
 $pages[$num]['name'] = 'checkout';
 $pages[$num]['title'] = 'Checkout';
 $pages[$num]['tag'] = '[eshop_show_checkout';
-$pages[$num]['option'] = 'eshop_checkout';
+$pages[$num]['option'] = 'checkout';
 
 $num++;
 $pages[$num]['name'] = 'thank-you';
 $pages[$num]['title'] = 'Thank You for your order';
 $pages[$num]['tag'] = '[eshop_show_success';
-$pages[$num]['option'] = 'eshop_cart_success';
+$pages[$num]['option'] = 'cart_success';
 
 $num++;
 $pages[$num]['name'] = 'cancelled-order';
 $pages[$num]['title'] = 'Cancelled Order';
 $pages[$num]['tag'] = '[eshop_show_cancel';
-$pages[$num]['option'] = 'eshop_cart_cancel';
+$pages[$num]['option'] = 'cart_cancel';
 
 $num++;
 $pages[$num]['name'] = 'shipping-rates';
 $pages[$num]['title'] = 'Shipping Rates';
 $pages[$num]['tag'] = '[eshop_show_shipping';
-$pages[$num]['option'] = 'eshop_cart_shipping';
+$pages[$num]['option'] = 'cart_shipping';
 $pages[$num]['top'] = 'yes';
 
 $num++;
 $pages[$num]['name'] = 'downloads';
 $pages[$num]['title'] = 'Downloads';
 $pages[$num]['tag'] = '[eshop_show_downloads';
-$pages[$num]['option'] = 'eshop_show_downloads';
+$pages[$num]['option'] = 'show_downloads';
 $pages[$num]['top'] = 'yes';
 
 $newpages = false;
@@ -1011,11 +1102,11 @@ foreach($pages as $page) {
 			$first_id = $post_id;
 		}
 		$wpdb->query("UPDATE $qtable SET guid = '" . get_permalink($post_id) . "' WHERE ID = '$post_id'");
-		update_option($page['option'],  $post_id);
+		$eshopoptions[$page['option']]=$post_id;
 		$newpages = true;
 		$i++;
 	}else{
-	  update_option($page['option'],  $check_page['ID']);
+		$eshopoptions[$page['option']]=$check_page['ID'];
 	}
 }
 if($newpages == true){
@@ -1037,45 +1128,60 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		$eshop_from=$plugin_dir.'/eshop/files';
 		if(!file_exists($eshop_goto.'/eshop.css')){
-			wp_mkdir_p( $eshop_goto );
-			if ($handle = opendir($eshop_from)) {
-				/* This is the correct way to loop over the directory. */
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-						chmod($eshop_goto.'/'.$file,0666);
+			if(wp_mkdir_p( $eshop_goto )){
+				if ($handle = opendir($eshop_from)) {
+					/* This is the correct way to loop over the directory. */
+					while (false !== ($file = readdir($handle))) {
+						if($file!='' && $file!='.' && $file!='..'){
+							copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+							chmod($eshop_goto.'/'.$file,0666);
+						}
 					}
+					closedir($handle);
 				}
-				closedir($handle);
+			}else{
+				return false;
 			}
+		}
+		if($eshopoptions['version']<='5.0.0'){
+			copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
+			chmod($eshop_goto.'/noimage.png',0666);
+			copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
+			chmod($eshop_goto.'/eshop-onload.js',0666);
 		}
 		//downloads
 		$eshop_goto=$upload_dir.'/../eshop_downloads';
 		$eshop_from=$plugin_dir.'/eshop/downloads';
 		if(!file_exists($eshop_goto.'/.htaccess')){
-			wp_mkdir_p( $eshop_goto );
-			if ($handle = opendir($eshop_from)) {
-				/* This is the correct way to loop over the directory. */
-				while (false !== ($file = readdir($handle))) {
-					if($file!='' && $file!='.' && $file!='..'){
-						copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-						chmod($eshop_goto.'/'.$file,0666);
+			if(wp_mkdir_p( $eshop_goto )){
+				if ($handle = opendir($eshop_from)) {
+					/* This is the correct way to loop over the directory. */
+					while (false !== ($file = readdir($handle))) {
+						if($file!='' && $file!='.' && $file!='..'){
+							copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+							chmod($eshop_goto.'/'.$file,0666);
+						}
 					}
+					closedir($handle);
 				}
-				closedir($handle);
+			}else{
+				return false;
 			}
 		}
 		//pay images
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
-		wp_mkdir_p( $eshop_goto );
-		$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite');
-		foreach ($files as $file){
-			if(!file_exists($eshop_goto.'/'.$file.'.png')){
-				//copy the files
-				copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
-				chmod($eshop_goto.'/'.$file.'.png',0666);
+		if(wp_mkdir_p( $eshop_goto )){
+			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite');
+			foreach ($files as $file){
+				if(!file_exists($eshop_goto.'/'.$file.'.png')){
+					//copy the files
+					copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
+					chmod($eshop_goto.'/'.$file.'.png',0666);
+				}
 			}
+		}else{
+			return false;
 		}
 		return true;
 	}
@@ -1084,5 +1190,6 @@ function eshop_create_dirs(){
 $eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
 wp_schedule_event($eshoptime, 'daily', 'eshop_event');
 /* version number store - add/update */
-update_option('eshop_version', ESHOP_VERSION);
+$eshopoptions['version']=ESHOP_VERSION;
+update_option('eshop_plugin_settings', $eshopoptions);
 ?>

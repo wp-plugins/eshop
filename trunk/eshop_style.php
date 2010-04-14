@@ -13,7 +13,9 @@ function eshop_process_style($styleFile) {
 		} 
 	}
 	if(!empty($_POST['usestyle'])){
-		update_option('eshop_style',$wpdb->escape($_POST['usestyle']));
+		$eshopoptions = get_option('eshop_plugin_settings');
+		$eshopoptions['style']=$wpdb->escape($_POST['usestyle']);
+		update_option('eshop_plugin_settings',$eshopoptions);
 		if($_POST['usestyle']=='yes'){
 			$use=__('Default style has been applied.','eshop');
 		}else{
@@ -27,6 +29,7 @@ function eshop_process_style($styleFile) {
 function eshop_form_admin_style(){
 	//make sure options exist for the style page
 	//config options
+	global $eshopoptions;
      $eshopurl=eshop_files_directory();
 
     $styleFile = $eshopurl['0'].'eshop.css';
@@ -37,7 +40,7 @@ function eshop_form_admin_style(){
  	}
 ?>
 <div class="wrap">
-<h2><?php _e('eShop Styles','eshop'); ?></h2>
+<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Styles','eshop'); ?></h2>
  <p><?php _e('Use this page to modify your default styling','eshop'); ?>.</p> 
 </div>
 <div class="wrap">
@@ -54,7 +57,7 @@ echo '</p>';
  <fieldset>
   <legend><?php _e('Use Default Style','eshop'); ?></legend>
   <?php
-  if(get_option('eshop_style')=='yes'){
+  if($eshopoptions['style']=='yes'){
   	$yes=' checked="checked"';
   	$no='';
   }else{
@@ -82,11 +85,11 @@ $echo=split('/\* =='.$eshopver[0].'== \*/',$file);
 <div class="wrap">
 <h2><?php _e('Style Editor','eshop'); ?></h2>
 <?php
-if(get_option('eshop_style')=='yes'  && $echo[1]!='' && isset($_GET['viewcss'])){
+if($eshopoptions['style']=='yes'  && $echo[1]!='' && isset($_GET['viewcss'])){
 	echo '<h3 id="eshopcss">Recent default style additions</h3>';
 	echo '<p>You can copy and paste this into your existing stylesheet.</p>';
 	echo '<div class="eshopnewstyle"><pre>'.$echo[1].'</pre></div>';
-}elseif(get_option('eshop_style')=='yes' && $echo[1]!=''){
+}elseif($eshopoptions['style']=='yes' && $echo[1]!=''){
 	echo '<p>There may be new <a href="themes.php?page=eshop_style.php&amp;viewcss#eshopcss" title="view style updates">style available</a></p>';
 }
 ?>

@@ -171,10 +171,10 @@ function eshop_discounts_manager() {
 	}
 	?>
 	<div class="wrap">
-	<h2><?php _e('eShop Discount Codes','eshop'); ?></h2>
+	<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Discount Codes','eshop'); ?></h2>
 	<div id="eshopdisccodesform">
 	<?php echo $eshop_suggest; ?>
-	<form id="eshopdisccodes" action="<?php echo wp_specialchars($_SERVER['REQUEST_URI']);?>" method="post">
+	<form id="eshopdisccodes" action="<?php echo esc_url($_SERVER['REQUEST_URI']);?>" method="post">
 		<fieldset><legend><?php echo $legtext; ?></legend>
 			<p><label for="eshop_code_type"><?php _e('Discount type','eshop'); ?></label>
 			<select name="eshop_code_type" id="eshop_code_type">
@@ -205,7 +205,7 @@ function eshop_discounts_manager() {
 				if($eshop_code_date!='')
 					$eshopdate=$eshop_code_date;
 
-				list($eshop_code_year, $eshop_code_month, $eshop_code_day) = split('[/.-]', $eshopdate);
+				list($eshop_code_year, $eshop_code_month, $eshop_code_day) = explode('-', $eshopdate);
 
 
 				for($i=date('Y');$i<=date('Y')+5;$i++){

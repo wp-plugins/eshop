@@ -103,16 +103,16 @@ class ideallite_class {
 		// The user will briefly see a message on the screen that reads:
 		// "Please wait, your order is being processed..." and then immediately
 		// is redirected to ideallite.
-		$ideallite = get_option('eshop_ideallite');
+		global $eshopoptions;
+		$ideallite = $eshopoptions['ideallite'];
 				
-			
 		$echortn='<div id="process">
 			<p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	  	<p>'. __('If you are not automatically redirected to iDeal, please use the <em>Proceed to iDeal</em> button.','eshop').'</p>
 			<form method="post" id="eshopgateway" class="eshop" action="' . $this->escapeHtml($this->sUrlAquirer) . '">
  			<p>';
 			
-			$ideallite = get_option('eshop_ideallite');
+			$ideallite = $eshopoptions['ideallite'];
 			
 			$echortn.='
 			<input type="hidden" name="merchantID" value="'.$this->sMerchantId.'" />

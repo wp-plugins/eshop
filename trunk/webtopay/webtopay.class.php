@@ -72,7 +72,8 @@ class webtopay_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to webtopay.
-      $webtopay = get_option('eshop_webtopay');
+      global $eshopoptions;
+      $webtopay = $eshopoptions['webtopay'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
 	     <p>'. __('If you are not automatically redirected to webtopay, please use the <em>Proceed to webtopay</em> button.','eshop').'</p>
@@ -80,7 +81,7 @@ class webtopay_class {
           <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
           	
-			$webtopay = get_option('eshop_webtopay'); 
+			$webtopay = $eshopoptions['webtopay']; 
 			
 			$Cost = $_POST['amount']-$_POST['shipping_1'];
 			
@@ -110,9 +111,9 @@ class webtopay_class {
 				'orderid' => $_POST['RefNr'], 
 				'lang' => $webtopay['lang'], 
 				'amount' => (($Cost + $ExtraCost) * 100), 
-				'currency' => get_option('eshop_currency'), 
-				'accepturl' => get_permalink(get_option('eshop_cart_success')), 
-				'cancelurl' => get_permalink(get_option('eshop_checkout')), 
+				'currency' => $eshopoptions['currency'], 
+				'accepturl' => get_permalink($eshopoptions['cart_success']), 
+				'cancelurl' => get_permalink($eshopoptions['checkout']), 
 				'callbackurl' => $callbackURL, 
 				'payment' => __('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop'), 
 				'country' => '', 
@@ -125,7 +126,7 @@ class webtopay_class {
 				'p_state' => $_POST['state'], 
 				'p_zip' => $_POST['zip'], 
 				'p_countrycode' => $_POST['country'], 
-				'test'  => (get_option('eshop_status')=='live' ? 0 : 1)
+				'test'  => ($eshopoptions['status']=='live' ? 0 : 1)
 			);
 			
 			foreach ($signFields as $num => $value)
@@ -139,13 +140,13 @@ class webtopay_class {
 			<input type="hidden" name="ProjectID" value="'.$webtopay['projectid'].'" />
 			<input type="hidden" name="OrderID" value="'.$_POST['RefNr'].'" />
 			<input type="hidden" name="Lang" value="' . $webtopay['lang'] . '" />
-			<input type="hidden" name="Currency" value="' . get_option('eshop_currency') . '" />
+			<input type="hidden" name="Currency" value="' . $eshopoptions['currency'] . '" />
 			
 			<input type="hidden" name="Amount" value="'. (($Cost + $ExtraCost) * 100) .'" />
 			
-			<input type="hidden" name="AcceptURL" value="'.get_permalink(get_option('eshop_cart_success')).'" />
+			<input type="hidden" name="AcceptURL" value="'.get_permalink($eshopoptions['cart_success']).'" />
 			
-			<input type="hidden" name="CancelUrl" value="'.get_permalink(get_option('eshop_checkout')).'" />
+			<input type="hidden" name="CancelUrl" value="'.get_permalink($eshopoptions['checkout']).'" />
 			<input type="hidden" name="CallbackURL" value="'.$callbackURL.'" />
 			
 			<input type="hidden" name="PayText" value="'.__('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop').'" />
@@ -181,7 +182,7 @@ class webtopay_class {
 			}
 			
 			$echortn.=' 			
-			<input type="hidden" name="test" value="'.(get_option('eshop_status')=='live' ? 0 : 1).'" />
+			<input type="hidden" name="test" value="'.($eshopoptions['status']=='live' ? 0 : 1).'" />
 
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to webtopay &raquo;','eshop').'" /></p>
 	     </form>
