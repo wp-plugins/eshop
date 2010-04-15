@@ -28,7 +28,7 @@ function eshop_boing($pee,$short='no'){
 			$replace .= '
 			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart">
 			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(esc_attr($eshop_product['description'])).'</span></legend>';
-			$theid=sanitize_file_name($eshop_product['Sku']);
+			$theid=sanitize_file_name($eshop_product['sku']);
 			//option sets
 			$optsets = $eshop_product['optset'];
 			if(is_array($optsets)){	
@@ -91,28 +91,28 @@ function eshop_boing($pee,$short='no'){
 				$opt=$eshopoptions['options_num'];
 				$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
 				for($i=1;$i<=$opt;$i++){
-					$opt=$eshop_product['products'][$i]['option'];
+					$option=$eshop_product['products'][$i]['option'];
 					$price=$eshop_product['products'][$i]['price'];
-					if($opt!=''){
+					if($option!=''){
 						if($price!='0.00')
-							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($opt)).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
+							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
 						else
-							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($opt)).'</option>'."\n";
+							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
 					}
 				}
 				$replace.='</select></label>';
 			}else{
-				$opt=$eshop_product['products']['1']['option'];
+				$option=$eshop_product['products']['1']['option'];
 				$price=$eshop_product['products']['1']['price'];
 				if($price!='0.00'){
 					$replace.='
 					<input type="hidden" name="option" value="1" />
-					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($opt)).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
+					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
 					';
 				}else{
 					$replace.='
 					<input type="hidden" name="option" value="1" />
-					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($opt)).'</span></span>
+					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span></span>
 					';
 				}
 			}

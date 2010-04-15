@@ -111,7 +111,8 @@ function eshop_option_setup() {
 	// if old options exist, update to new system only need pre 5.0
 	foreach( $new_options as $key => $value ) {
 		$existing = get_option( 'eshop_' . $key );
-		$new_options[$key] = $existing;
+		if($existing!='')
+			$new_options[$key] = $existing;
 		delete_option( 'eshop_' . $key );
 	}
 	add_option( 'eshop_plugin_settings', $new_options );

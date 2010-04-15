@@ -660,7 +660,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$echo .= '<li><a href="'.get_permalink($post->ID).'">';
+		$echo .= '<li>';
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
@@ -673,7 +673,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 			$eimage=eshop_files_directory();
 			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 		}
-		$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
+		$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
 		include_once( 'eshop-get-custom.php' );
 		if($form=='yes'){
 			$short='yes';
