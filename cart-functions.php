@@ -55,11 +55,11 @@ if (!function_exists('display_cart')) {
 							$w=round(($w*$imgsize)/100);
 							$h=round(($h*$imgsize)/100);
 						}
-						if (has_post_thumbnail( $post->ID ) ) {
-							$eimg='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+						if (has_post_thumbnail( $opt['postid'] ) ) {
+							$eimg='<a class="itemref" href="'.get_permalink($opt['postid']).'">'.get_the_post_thumbnail( $opt['postid'], array($w, $h)).'</a>'."\n";
 						}else{
 							$eimage=eshop_files_directory();
-							$eimg='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+							$eimg='<a class="itemref" href="'.get_permalink($opt['postid']).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 						}
 					}
 					/* end */

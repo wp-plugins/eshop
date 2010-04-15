@@ -115,7 +115,7 @@ if (isset($_POST['eaddopt'])) {
 			<label for="edesc">Description</label>
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
-			<caption><?php _e('Options for','eshop'); ?><?php echo stripslashes(esc_attr($ename)); ?></caption>
+			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($ename)); ?></caption>
 			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
 		<tbody>
 	<?php

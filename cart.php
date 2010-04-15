@@ -150,8 +150,8 @@ if (!function_exists('eshop_cart')) {
     							if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 								if(!ctype_digit(trim($qty))|| strlen($qty)>3){
 									$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-								}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='Yes' || $stkqty<$qty)){
-									$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+								}elseif('yes' == $eshopoptions['stock_control'] &&  $stkqty<$qty){
+									$error='<p><strong class="error">'.$qty.' - '.$stkqty.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 								}else{
 									$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
 								}

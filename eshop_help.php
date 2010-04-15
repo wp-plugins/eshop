@@ -461,7 +461,7 @@ php_value session.gc_maxlifetime 10800
 
 <div class="wrap">
 <h2 id="actnote">Notes on activation</h2>
-<p>When eShop is actiavted it adds database tables, and adds data where necessary to those, and native wordpress, tables. Additionally there are some <a href="#autop">automatically created pages</a>.</p>
+<p>When eShop is activated it adds database tables, and adds data where necessary to those, and native wordpress, tables. Additionally there are some <a href="#autop">automatically created pages</a>.</p>
 <p>To ensure updates to the plugin don't over write changes you have made certain directories and files are copied to new locations <strong>on the first activation only</strong>.</p>
 <ul>
 <li><strong>wp-content/eshop_downloads</strong> is created from plugins/eshop/downloads</li>
