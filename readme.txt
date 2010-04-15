@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.0.1
+Stable tag: 5.0.2
 
 An accessible Shopping Cart plugin.
 
@@ -42,6 +42,10 @@ Version 5 completely removes all associated thumbnails, reset them via the thumb
 Not currently available.
 
 == Changelog == 
+
+Version 5.0.2
+
+* *fixed* pagination issue when viewing all products
 
 Version 5.0.1
 
