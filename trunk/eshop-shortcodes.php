@@ -203,8 +203,7 @@ function eshop_list_subpages($atts){
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
 	
-	
-
+	$thisispage=get_permalink($post->ID);
 	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent='$eshopid' AND post_status='publish'");
 	if($max>$show)
 		$max=$show;
@@ -303,7 +302,7 @@ function eshop_list_cat_tags($atts){
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
 	
-	
+	$thisispage=get_permalink($post->ID);
 	$args = array(
 	'post_type' => 'post',
 	'post_status' => null,
@@ -416,7 +415,7 @@ function eshop_list_new($atts){
 	}
 	if(!isset($offset)) $offset='0';
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
-
+	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
 		$echo = '<div class="paginate">';
@@ -491,7 +490,7 @@ function eshop_best_sellers($atts){
 	WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 	order by stk.purchases DESC limit $offset,$records");
-
+	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
 		$echo = '<div class="paginate">';
