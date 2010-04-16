@@ -201,6 +201,8 @@ function eshop_downloads_manager() {
 			 </tbody>
 			</table>
 			<?php
+			/*
+			****taken this out for now...****
 			$metatable=$wpdb->prefix ."postmeta";
 			for($x=1;$x<=$eshopoptions['options_num'];$x++){
 				$metakeys[]="meta_key='_Download ".$x."'";
@@ -220,6 +222,8 @@ function eshop_downloads_manager() {
 				}
 				echo '</ul>';
 			}
+			*/
+			$checkproduct=0;
 			?>
 			<form method="post" action="" id="downloadedit">
 			<fieldset><legend><?php _e('Amend File details','eshop'); ?></legend>
@@ -238,7 +242,12 @@ function eshop_downloads_manager() {
 			?>
 				<div class="wrap">
 				<h2><?php _e('Delete','eshop'); ?></h2>
+				<?php
+				/*
 				<p><?php _e('You can only delete this file if it is <strong>not</strong> associated with a product page.','eshop'); ?></p>
+				*/
+				?>
+				<p><?php _e('Warning: this file may be attached to a product, delete with care.','eshop'); ?></p>
 				<form method="post" action="" id="downloaddelete">
 				<input type="hidden" name="delid" value="<?php echo $row->id; ?>" />
 				<p class="submit"><input type="submit" name="editdelete" value="<?php _e('Delete File','eshop'); ?> '<?php echo $row->title; ?>'" class="button" /></p>

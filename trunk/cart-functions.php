@@ -573,8 +573,14 @@ if (!function_exists('orderhandle')) {
 				//end
 
 				$thechk=$_SESSION['eshopcart'.$blog_id][$dlchking]['option'];
-				$edown=explode(' ',$thechk);
-				$dlchk=get_post_meta($post_id,'_Download '.$edown[1], true);
+				if(strpos($thechk,' ')===true){
+					$edown=explode(' ',$thechk);
+					$edl=$edown[1];
+				}else{
+					$edl=$thechk;
+				}
+				$eshop_product=get_post_meta( $post_id, '_eshop_product',true );
+				$dlchk=$eshop_product['products'][$edl]['download'];
 				if($dlchk!=''){
 					//there are downloads.
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
@@ -1131,7 +1137,7 @@ if (!function_exists('eshop_price_error')) {
 if (!function_exists('eshop_error_message')) {
 	function eshop_error_message($num){ 
 		$messages=array(
-		'1'=> __('Stock Available not set, please fill in all details.','eshop'),
+		'1'=> __('Stock Available not set, as all details were not filled in.','eshop'),
 		'2'=> __('Price incorrect, please only enter a numeric value.','eshop')
 		);
 		if(array_key_exists($num, $messages)){
