@@ -85,8 +85,8 @@ class eshop_widget extends WP_Widget {
 			</select><br />
 			<label for="<?php echo $this->get_field_id('showwhat'); ?>"><?php _e('What to show','eshop'); ?></label>
 			<select id="<?php echo $this->get_field_id('showwhat'); ?>" name="<?php echo $this->get_field_name('showwhat'); ?>">
-			<option value="items"<?php selected( $showwhat, 'items' ); ?>><?php _e('Total Items','eshop'); ?></option>
-			<option value="qty"<?php selected( $showwhat, 'qty' ); ?>><?php _e('Total Qty','eshop'); ?></option>
+			<option value="items"<?php selected( $showwhat, 'items' ); ?>><?php _e('Total number of different products','eshop'); ?></option>
+			<option value="qty"<?php selected( $showwhat, 'qty' ); ?>><?php _e('Total number of different items','eshop'); ?></option>
 			<option value="both"<?php selected( $showwhat, 'both' ); ?>><?php _e('Both','eshop'); ?></option>
 			</select>
 		</p>
@@ -339,7 +339,7 @@ function eshopw_list_featured($atts){
 			break;
 	}
 
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND $wpdb->postmeta.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);

@@ -318,7 +318,7 @@ This is only triggered when someone visits the site.</p>
 </div>
 <div class="wrap">
 <h2 id="img">Product Images</h2>
-<p>You can add and use any image to a product page. Just use the thumbnail feature from within WrdPress, this is found on the edit post/page screen.</p>
+<p>You can add and use any image to a product page. Just use the thumbnail feature from within WordPress, this is found on the edit post/page screen.</p>
 </div>
 
 <div class="wrap">
