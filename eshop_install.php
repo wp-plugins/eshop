@@ -10,7 +10,7 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 
 if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
-	wp_die(__('ERROR! eShop requires that the wp_content directory is writable before the plugin can be activated.','eshop')); 
+	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
 }
 
 /** create capability */

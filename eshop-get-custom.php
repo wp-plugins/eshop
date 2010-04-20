@@ -52,37 +52,39 @@ function eshop_boing($pee,$short='no'){
 					$x++;
 				}
 				$enumb=0;
-				foreach($optarray as $optsets){
-					switch($optsets['type']){
-						case '0'://select
-							$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.'" name="optset[]">'."\n";
+				if(is_array($optarray)){
+					foreach($optarray as $optsets){
+						switch($optsets['type']){
+							case '0'://select
+								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.'" name="optset[]">'."\n";
+								foreach($optsets['item'] as $opsets){
+									if($opsets['price']!='0.00')
+										$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
+									else
+										$addprice='';
+									$replace.='<option value="'.$opsets['id'].'">'.stripslashes(esc_attr($opsets['label'])).$addprice.'</option>'."\n";
+								}
+								$replace.="</select></span>\n";
+								break;
+
+							case '1'://checkbox
+							$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
+							$ox=0;
 							foreach($optsets['item'] as $opsets){
+								$ox++;
 								if($opsets['price']!='0.00')
 									$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
 								else
 									$addprice='';
-								$replace.='<option value="'.$opsets['id'].'">'.stripslashes(esc_attr($opsets['label'])).$addprice.'</option>'."\n";
+								$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
 							}
-							$replace.="</select></span>\n";
+							$replace.="</fieldset>\n";
+
 							break;
-						
-						case '1'://checkbox
-						$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
-						$ox=0;
-						foreach($optsets['item'] as $opsets){
-							$ox++;
-							if($opsets['price']!='0.00')
-								$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
-							else
-								$addprice='';
-							$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
 						}
-						$replace.="</fieldset>\n";
-						
-						break;
+						$enumb++;
+
 					}
-					$enumb++;
-				
 				}
 			}
 

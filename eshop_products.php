@@ -292,10 +292,10 @@ function eshop_products_manager() {
 					}
 					if($pdownloads=='no') break;
 				}
-				if($eshop_product['featured']=='')
-					$feat='no';
+				if($eshop_product['featured']=='Yes')
+					$feat=__('Yes','eshop');
 				else
-					$feat='yes';
+					$feat=__('No','eshop');
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
 				echo '<td headers="ftrd sku'.$calt.'">'.$feat.'</td>';
 
