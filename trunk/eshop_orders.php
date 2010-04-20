@@ -303,7 +303,7 @@ if (!function_exists('displaystats')) {
 		$countprod=$countfeat=0;
 		foreach($stocked as $stock){
 		    $eshop_product=get_post_meta( $stock->post_id, '_eshop_product',true );
-		    if($eshop_product['featured']='Yes')
+		    if($eshop_product['featured']=='Yes')
 				$countfeat++;
 			$stkav=get_post_meta( $stock->post_id, '_eshop_stock',true );
 			if($stkav=='1'){

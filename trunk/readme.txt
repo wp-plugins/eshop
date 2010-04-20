@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.0.3
+Stable tag: 5.0.4
 
 An accessible Shopping Cart plugin.
 
@@ -34,6 +34,9 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 
 == Upgrade Notice ==
 
+= 5.0.4 =
+Please remember to backup db before upgrading. 
+
 =5.0.3=
 backup db before upgrading - this version attempts to fix eShop downloadable not showing as downloadable in customer orders.
 
@@ -45,6 +48,14 @@ backup db before upgrading, thumbnails will have to be re-added to products via 
 Not currently available.
 
 == Changelog == 
+
+Version 5.0.4
+
+* *fixed* featured product count on stats page
+* *fixed* featured products on products page
+* *fixed* eshop downloads page on editing information, now stays on that page.
+* *fixed* issue with deleting option sets
+* *fixed* downloads can only be deleted when download is not assocaited with a product.
 
 Version 5.0.3
 

@@ -480,17 +480,17 @@ if(!isset($_GET['change'])){
 		}
 		?>
 		<label for="basebrand"><?php _e('Brand <small>The brand name of the product</small>','eshop'); ?></label>
-		<input type="text" name="basebrand" id="basebrand" value="<?php echo wp_specialchars($basedata->brand); ?>" />
+		<input type="text" name="basebrand" id="basebrand" value="<?php echo esc_html($basedata->brand); ?>" />
 		<label for="baseean"><?php _e('EAN <small>European Article Number is a 13 digit number often below the bar code of the item.</small>','eshop'); ?></label>
-		<input type="text" name="baseean" id="baseean" value="<?php echo wp_specialchars($basedata->ean); ?>" />
+		<input type="text" name="baseean" id="baseean" value="<?php echo esc_html($basedata->ean); ?>" />
 		<label for="baseisbn"><?php _e('ISBN <small>The unique 10- or 13-digit number assigned to every printed book.</small>','eshop'); ?></label>
-		<input type="text" name="baseisbn" id="baseisbn" value="<?php echo wp_specialchars($basedata->isbn); ?>" />
+		<input type="text" name="baseisbn" id="baseisbn" value="<?php echo esc_html($basedata->isbn); ?>" />
 		<label for="basempn"><?php _e('MPN <small>Manufacturer\'s Part Number is a unique code determined by the manufacturer for that product.</small>','eshop'); ?></label>
-		<input type="text" name="basempn" id="basempn" value="<?php echo wp_specialchars($basedata->mpn); ?>" />
+		<input type="text" name="basempn" id="basempn" value="<?php echo esc_html($basedata->mpn); ?>" />
 		<label for="baseptype"><?php _e('Product type <small>The type of product being offered.</small>','eshop'); ?></label>
-		<input type="text" name="baseptype" id="baseptype" value="<?php echo wp_specialchars($basedata->ptype); ?>" />
+		<input type="text" name="baseptype" id="baseptype" value="<?php echo esc_html($basedata->ptype); ?>" />
 		<label for="baseqty"><?php _e('Quantity','eshop'); ?></label>
-		<input type="text" name="baseqty" id="baseqty" value="<?php echo wp_specialchars($basedata->qty); ?>" />
+		<input type="text" name="baseqty" id="baseqty" value="<?php echo esc_html($basedata->qty); ?>" />
 	  <label for="basecondition"><?php _e('Condition <small>the condition of this product</small>','eshop'); ?></label>
 	  <select name="basecondition" id="basecondition">
 		<?php

@@ -15,7 +15,28 @@ function eshop_read_filesize($size){
   	return substr($size,0,strpos($size,'.')+3).$iec[$i];
   }
 }
-
+function checkfordownloads($id){
+	global $wpdb;
+	//hopefully returns postids of products that have downloads
+	$metatable=$wpdb->prefix ."postmeta";
+	$ret=0;
+	$inthese=array();
+	$myrows=$wpdb->get_results("SELECT post_id,meta_value FROM $metatable WHERE meta_key='_eshop_product'");
+	foreach($myrows as $chek){
+		$chk=maybe_unserialize($chek->meta_value);
+		if(is_array($chk['products'])){
+			foreach($chk['products'] as $foo=>$v){
+				foreach($v as $k=>$d){
+					if($k=='download' && $d==$id){
+						$ret='1';
+						$inthese[]=$chek->post_id;
+					}
+				}
+			}
+		}
+	}
+	return array($ret,$inthese);
+}
 function eshop_check_brokenlink($file){
 	$file_exists = @fopen($file, "r");
 
@@ -132,7 +153,6 @@ function eshop_downloads_manager() {
 			$query= 'UPDATE '.$table.' SET title = "'.$wpdb->escape($_POST['title']).'", downloads = "'.$wpdb->escape($_POST['downloads']).'", purchases = "'.$wpdb->escape($_POST['purchases']).'"  WHERE id = "'.$wpdb->escape($_POST['id']).'"';
 			$wpdb->query("$query");
 			echo '<div id="message" class="updated fade"><p>'.__('File updated successfully','eshop').'</p></div>';
-			unset($_GET['edit']);
 		}else{
 			//error handling
 			if($_POST['title']==''){
@@ -166,7 +186,6 @@ function eshop_downloads_manager() {
 		//ie exists
 			//echo '<div id="message" class="updated fade"><p>found it</p></div>';
 			$row=$wpdb->get_row("SELECT * FROM $table WHERE id =$id");
-			
 			?>
 			<div class="wrap">
 			<h2><?php _e('Edit File details','eshop'); ?></h2>
@@ -201,29 +220,19 @@ function eshop_downloads_manager() {
 			 </tbody>
 			</table>
 			<?php
-			/*
-			****taken this out for now...****
-			$metatable=$wpdb->prefix ."postmeta";
-			for($x=1;$x<=$eshopoptions['options_num'];$x++){
-				$metakeys[]="meta_key='_Download ".$x."'";
-			}
-			if(sizeof($metakeys)>0)
-				$meta_keys='('.implode(' OR ',$metakeys). ') AND';
-			else
-				$meta_keys='';
-			
-			$checkproduct = $wpdb->get_var("SELECT COUNT(post_id) FROM $metatable WHERE ".$meta_keys." meta_value='$id'");
-			if($checkproduct>0){
-				$myrows=$wpdb->get_results("SELECT DISTINCT post_id FROM $metatable WHERE ".$meta_keys." meta_value='$id'");
+			$pchk=checkfordownloads($id);
+			if($pchk['0']=='1'){
 				echo '<p class="productassociation">'.__('This file is associated with the following product pages:','eshop').'</p>';
 				echo '<ul class="productpages">';
-				foreach($myrows as $myrow){
-					echo '<li><a href="page.php?action=edit&amp;post='.$myrow->post_id.'" title="edit '.get_the_title($myrow->post_id).'">'.get_the_title($myrow->post_id).'</a></li>';
+				foreach($pchk['1'] as $myrow){
+					echo '<li><a href="page.php?action=edit&amp;post='.$myrow.'" title="edit '.get_the_title($myrow).'">'.get_the_title($myrow).'</a></li>';
 				}
 				echo '</ul>';
+				?>
+				<p><?php _e('You can only delete this file if it is <strong>not</strong> associated with a product page.','eshop'); ?></p>
+				<?php
 			}
-			*/
-			$checkproduct=0;
+			
 			?>
 			<form method="post" action="" id="downloadedit">
 			<fieldset><legend><?php _e('Amend File details','eshop'); ?></legend>
@@ -238,16 +247,10 @@ function eshop_downloads_manager() {
 			</form>
 			</div>
 			<?php
-			if($checkproduct==0){
+			if($pchk['0']=='0'){
 			?>
 				<div class="wrap">
 				<h2><?php _e('Delete','eshop'); ?></h2>
-				<?php
-				/*
-				<p><?php _e('You can only delete this file if it is <strong>not</strong> associated with a product page.','eshop'); ?></p>
-				*/
-				?>
-				<p><?php _e('Warning: this file may be attached to a product, delete with care.','eshop'); ?></p>
 				<form method="post" action="" id="downloaddelete">
 				<input type="hidden" name="delid" value="<?php echo $row->id; ?>" />
 				<p class="submit"><input type="submit" name="editdelete" value="<?php _e('Delete File','eshop'); ?> '<?php echo $row->title; ?>'" class="button" /></p>
