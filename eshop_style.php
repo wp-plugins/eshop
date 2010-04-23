@@ -29,11 +29,11 @@ function eshop_process_style($styleFile) {
 function eshop_form_admin_style(){
 	//make sure options exist for the style page
 	//config options
-	global $eshopoptions;
-     $eshopurl=eshop_files_directory();
-
+	$eshopurl=eshop_files_directory();
     $styleFile = $eshopurl['0'].'eshop.css';
     $style=eshop_process_style($styleFile);
+    $eshopoptions = get_option('eshop_plugin_settings');
+
     if(!is_writeable($styleFile)) {
   			echo ' <div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The css file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
 	   		</div>'."\n";

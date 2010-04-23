@@ -105,8 +105,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <li><a href="http://donelliott.us/">Don Elliott Design</a> - donating to have the eProcessingNetwork merchant gateway added.</li>
   <li><a href="http://combobreaker.com/">Dan Remollino</a> - donating to have option sets added.</li>
   <li><a href="http://www.grizzdesign.nl/">Timo Tijhof</a> - scripting the iDeal Lite payment gateway.</li>
-
-
+  <li><em>José María Sancho de Ávila</em> - donating for the product reference page updates.</li>
   </ul>
 </div>
 </div>

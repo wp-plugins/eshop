@@ -64,7 +64,7 @@ function eshop_empty_cart($atts, $content = '') {
 function eshop_list_alpha($atts){
 	global $wpdb, $post,$wp_rewrite,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>'','links'=>'yes'), $atts));
 	//a-z listing
 	$letter_array = range('A','Z');
 	$fullarray=$letter_array;
@@ -156,10 +156,10 @@ function eshop_list_alpha($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopalpha') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 
 		if(isset($eecho)){
@@ -177,7 +177,7 @@ function eshop_list_alpha($atts){
 function eshop_list_subpages($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>'','links'=>'yes'), $atts));
 	$echo='';
 	if($id!='')
 		$eshopid=$id;
@@ -258,10 +258,10 @@ function eshop_list_subpages($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopsubpages') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 		
 		if(isset($eecho)){
@@ -278,7 +278,7 @@ function eshop_list_subpages($atts){
 function eshop_list_cat_tags($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag','links'=>'yes'), $atts));
 	$echo='';
 	$allowedtype=array('cat','category_name','tag','tag_id');
 	if(!in_array($type,$allowedtype))  $type='tag';
@@ -363,10 +363,10 @@ function eshop_list_cat_tags($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopsubpages') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 		
 		if(isset($eecho)){
@@ -383,7 +383,7 @@ function eshop_list_cat_tags($atts){
 function eshop_list_new($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes'), $atts));
 	$echo='';
 	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	if($max>$show)
@@ -430,10 +430,10 @@ function eshop_list_new($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopsubpages') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 
 		if(isset($eecho)){
@@ -450,7 +450,7 @@ function eshop_list_new($atts){
 function eshop_best_sellers($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes'), $atts));
 	$echo='';
 	$stktable=$wpdb->prefix.'eshop_stock';
 	$max=$wpdb->get_var("SELECT COUNT($wpdb->postmeta.post_id)
@@ -505,10 +505,10 @@ function eshop_best_sellers($atts){
 		$echo .= '</div>';
 		//end
 		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopbestsellers') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 
 		if(isset($eecho)){
@@ -526,7 +526,7 @@ function eshop_list_featured($atts){
 	global $wpdb, $post;
 	eshop_cache();
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','links'=>'yes'), $atts));
 	$allowedsort=array('post_date','post_title','menu_order');
 	$allowedorder=array('ASC','DESC');
 	if(!in_array($sortby,$allowedsort)) 
@@ -536,10 +536,10 @@ function eshop_list_featured($atts){
 	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 	if($pages) {
 		if($panels=='no'){
-			$echo = eshop_listpages($pages,$class,$form,$imgsize);
+			$echo = eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopfeatured') $class='eshoppanels';
-			$echo = eshop_listpanels($pages,$class,$form,$imgsize);
+			$echo = eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 		$echo .= '<br class="pagfoot" />';
 		$post=$paged;
@@ -553,7 +553,7 @@ function eshop_list_random($atts){
 	//cache
 	eshop_cache();
 	$paged=$post;
-	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0'), $atts));
+	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0','links'=>'yes'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
 		$class='eshoprandomproduct';
 	}
@@ -577,10 +577,10 @@ function eshop_list_random($atts){
 
 	if($pages) {
 		if($panels=='no'){
-			$echo = eshop_listpages($pages,$class,$form,$imgsize);
+			$echo = eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshoprandomlist') $class='eshoppanels';
-				$echo = eshop_listpanels($pages,$class,$form,$imgsize);
+				$echo = eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
 		$post=$paged;
 		return $echo;
@@ -592,7 +592,7 @@ function eshop_show_product($atts){
 	global $wpdb, $post;
 	eshop_cache();
 	$paged=$post;
-	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no','imgsize'=>''), $atts));
+	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no','imgsize'=>'','links'=>'yes'), $atts));
 	if($id!=0){
 		$pages=array();
 		$theids = explode(",", $id);
@@ -603,10 +603,10 @@ function eshop_show_product($atts){
 		}
 		if(sizeof($pages)>0){//if nothing found - don't do this
 			if($panels=='no'){
-				$echo = eshop_listpages($pages,$class,$form,$imgsize);
+				$echo = eshop_listpages($pages,$class,$form,$imgsize,$links);
 			}else{
 				if($class=='eshopshowproduct') $class='eshoppanels';
-				$echo = eshop_listpanels($pages,$class,$form,$imgsize);
+				$echo = eshop_listpanels($pages,$class,$form,$imgsize,$links);
 			}
 			$post=$paged;
 			return $echo;
@@ -615,14 +615,18 @@ function eshop_show_product($atts){
 	}
 	return;
 }
-function eshop_listpages($subpages,$eshopclass,$form,$imgsize){
+function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
 	global $wpdb, $post;
 	$paged=$post;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
+		if($links=='yes')
+			$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
+		else
+			$echo .= '<li>'.apply_filters("the_title",$post->post_title);
+
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
@@ -630,10 +634,18 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize){
 			$h=round(($h*$imgsize)/100);
 		}
 		if (has_post_thumbnail( $post->ID ) ) {
-			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+			if($links=='yes')
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+			else
+				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
+
 		}else{
 			$eimage=eshop_files_directory();
-			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+			if($links=='yes')
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+			else
+				$echo .='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
+
 		}
 		//this line stops the addtocart form appearing.
 		remove_filter('the_content', 'eshop_boing');
@@ -652,7 +664,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize){
 	return $echo;
 }
 
-function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
+function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links){
 	global $wpdb, $post;
 	$paged=$post;
 	$eshopprodimg='_eshop_prod_img';
@@ -667,12 +679,22 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize){
 			$h=round(($h*$imgsize)/100);
 		}
 		if (has_post_thumbnail( $post->ID ) ) {
-			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+			if($links=='yes')
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+			else
+				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
 		}else{
 			$eimage=eshop_files_directory();
-			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+			if($links=='yes')
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+			else
+				$echo .='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 		}
-		$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
+		if($links=='yes')
+			$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
+		else
+			$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span>'."\n";
+
 		include_once( 'eshop-get-custom.php' );
 		if($form=='yes'){
 			$short='yes';
