@@ -43,7 +43,8 @@ Not currently available.
 
 == Changelog == 
 
-version 5.1.0
+Version 5.1.0
+
 * *fixed* style page not updating correctly
 * *added* ability to set featured product, stock and stock availability on the products quick reference page
 * *added* new shortcode attribute - links, useful when used with form
