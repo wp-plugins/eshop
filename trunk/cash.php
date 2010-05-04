@@ -43,9 +43,10 @@ switch ($eshopaction) {
 		foreach ($_REQUEST as $field=>$value) { 
 		  $ecash->ipn_data["$field"] = $value;
       	}
-		//
+		//affiliate
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
-
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		/* ############### */
 		if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($ecash->ipn_data['RefNr']);

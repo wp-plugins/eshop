@@ -177,6 +177,7 @@ if (!function_exists('display_cart')) {
 						}
 						break;
 					case '3'://( one overall charge no matter how many are ordered )
+						$shiparray=array_unique($shiparray);
 						foreach ($shiparray as $nowt => $shipclass){
 							if($shipclass!='F'){
 								if($pzone!=$eshopoptions['unknown_state'])
@@ -496,7 +497,10 @@ if (!function_exists('orderhandle')) {
 		$comments=$wpdb->escape($_POST['comments']);
 		
 		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
-
+		if(isset($_POST['affiliate']))
+			$affiliate=$wpdb->escape($_POST['affiliate']);
+		else
+			$affiliate='';
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
 		$processing=__('Processing&#8230;','eshop');
@@ -506,7 +510,7 @@ if (!function_exists('orderhandle')) {
 				(checkid, first_name, last_name,company,email,phone, address1, address2, city,
 				state, zip, country, reference, ship_name,ship_company,ship_phone, 
 				ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
-				custom_field,transid,edited,comments,paidvia)VALUES(
+				custom_field,transid,edited,comments,paidvia,affiliate)VALUES(
 				'$checkid',
 				'$first_name',
 				'$last_name',
@@ -532,7 +536,8 @@ if (!function_exists('orderhandle')) {
 				'$processing',
 				NOW(),
 				'$comments',
-				'$paidvia'
+				'$paidvia',
+				'$affiliate'
 					);");
 			$i=1;
 			//this is here to generate just one code per order
@@ -703,6 +708,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$custom=$drow->custom_field;
 			$transid=$drow->transid;
 			$edited=$drow->edited;
+			$affiliate=$drow->affiliate;
 		}
 		if($status=='Completed'){$status=__('Order Received','eshop');}
 		if($status=='Pending' || $status=='Waiting'){$status=__('Pending Payment','eshop');}
@@ -728,7 +734,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 				$containsdownloads++;
 			}
 		}
-		
+		$arrtotal=number_format($total, 2);
 		$cart.= __('Total','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
@@ -794,7 +800,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$downloads.=__('Email:','eshop').' '.$drow->email."\n";
 			$downloads.=__('Code:','eshop').' '.$chkcode."\n";
 		}
-		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited);
+		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"transid"=>$transid,"total"=>$arrtotal);
 		return $array;
 	}
 }

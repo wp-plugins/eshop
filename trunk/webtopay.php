@@ -49,7 +49,9 @@ switch ($eshopaction) {
 		
 		$_POST['RefNr'] = $checkid;
 		
-		orderhandle($_POST, $checkid);
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		
 		$p = new webtopay_class; 
 
@@ -271,6 +273,11 @@ switch ($eshopaction) {
 				$this_email=html_entity_decode($this_email,ENT_QUOTES);
 				$headers=eshop_from_address();
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
+				//affiliate
+				if($array['affiliate']!=''){
+					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+				}
 			}
 	
 	    	//- Answer for webtopay server -

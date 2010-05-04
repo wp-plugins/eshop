@@ -64,7 +64,9 @@ switch ($eshopaction) {
 		$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key)); 
 		$md5hash=$secret.$LID.$invoice.$amount;
 		$checkid=md5($md5hash);
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		$p = new authorizenet_class; 
 		$p->add_field('x_login',$LID);
 		$p->add_field('x_amount',$amount);
@@ -280,7 +282,11 @@ switch ($eshopaction) {
 				$this_email=html_entity_decode($this_email,ENT_QUOTES);
 				$headers=eshop_from_address();
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				
+				//affiliate
+				if($array['affiliate']!=''){
+					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+				}
 				do_shortcode('[eshop_show_success]');
 			}
 

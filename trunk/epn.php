@@ -43,7 +43,9 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$checkid=md5($_POST['RefNr']);
 		//
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		$_POST['ID']=$checkid;
 		$p = new epn_class; 
 		$p->epn_url = 'https://www.eProcessingNetwork.com/cgi-bin/dbe/order.pl';     // epn url

@@ -84,6 +84,7 @@ function eshop_products_manager() {
 				$stkav='1';
 			else
 				$stkav='0';
+
 			update_post_meta( $pid, '_eshop_stock', $stkav);
 			update_post_meta( $pid, '_eshop_product', $eshop_product);
 		}
@@ -293,28 +294,27 @@ function eshop_products_manager() {
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$eshop_product['sku'].'</td>';
-				echo '<td headers="ids sku'.$calt.'">'.$getid.'</td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$getid.'" title="id: '.$getid.'">'.$posttitle.'</a></td>';
+				echo '<td headers="ids sku'.$calt.'">'.$getid.'<input type="hidden" value="1" name="product['.$getid.'][theid]" /></td>';
+				echo '<td headers="page sku'.$calt.'"><a href="post.php?action=edit&amp;post='.$getid.'" title="id: '.$getid.'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$eshop_product['shiprate'].'</td>';
 				if($eshopoptions['stock_control']=='yes'){
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
-					$stocktable=$wpdb->prefix ."eshop_stock";
 					if($available=='')
 						$available='0';
 					if(is_numeric($available) && $eshopoptions['stock_control']=='yes'){
 						$eavailable='<label for="stock'.$calt.'">'.__('Stock','eshop').'</label><input type="text" value="'.$available.'" id="stock'.$calt.'" name="product['.$getid.'][stkqty]" size="4" />';
 						$available=$eavailable;
 					}
-					if($stkav=='1')
-						$stkchk=' checked="checked"';
-					else
-						$stkchk='';
 				}else{
 					$available='n/a';
 				}
+				if($stkav=='1')
+					$stkchk=' checked="checked"';
+				else
+					$stkchk='';
 				
 				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 				echo '<td headers="stkavail sku'.$calt.'"><label for="stkavail'.$calt.'">'.__('Stock Available','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][stkavail]" id="stkavail'.$calt.'"'.$stkchk.' /></td>';
@@ -345,7 +345,7 @@ function eshop_products_manager() {
 					$fchk=' checked="checked"';
 				else
 					$fchk='';
-				$feat='<label for="stkavail'.$calt.'">'.__('Featured Product','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][featured]" id="featured'.$calt.'"'.$fchk.' />';
+				$feat='<label for="featured'.$calt.'">'.__('Featured Product','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][featured]" id="featured'.$calt.'"'.$fchk.' />';
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
 				echo '<td headers="ftrd sku'.$calt.'">'.$feat.'</td>';
 

@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.1.0');
+define('ESHOP_VERSION', '5.2.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.1.0
+Version: 5.2.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -437,6 +437,7 @@ if (isset($_POST['eshoplongdownloadname'])){
 
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-custom-fields.php' );
+include_once( 'eshop-eshortcodes.php');
 
 //displays the add to cart form
 include_once( 'eshop-get-custom.php' );
