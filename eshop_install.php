@@ -435,6 +435,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	downloads set('yes','no') NOT NULL default 'no',
 	admin_note TEXT NOT NULL,
 	paidvia VARCHAR(255) NOT NULL default '',
+	affiliate varchar(255) NOT NULL default '',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
@@ -749,7 +750,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	optid int(11) NOT NULL auto_increment,
 	name varchar(255) NOT NULL default '',
 	type tinyint(1) NOT NULL default '0',
-	description TEXT NOT NULL DEFAULT '',
+	`description` TEXT NOT NULL ,
 	  PRIMARY KEY  (optid)
 	) $charset_collate;";
 	error_log("creating table $table");
@@ -865,6 +866,22 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic A
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic iDeal Lite email','$esubject')"); 
 
+//added in 5.1
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.2.0' ){
+	$table = $wpdb->prefix . "eshop_orders";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='affiliate') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `affiliate` varchar(255) NOT NULL default ''";
+		$wpdb->query($sql);
+	}
+}
+
 //added in 5.0
 
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.0.0' ){
@@ -892,7 +909,7 @@ if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '4.2.5' ){
 		}
 	}
 	if ($add_field) {
-		$sql="ALTER TABLE `".$table."` ADD `description` TEXT NOT NULL default ''";
+		$sql="ALTER TABLE `".$table."` ADD `description` TEXT NOT NULL";
 		$wpdb->query($sql);
 	}
 }

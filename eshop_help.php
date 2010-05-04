@@ -12,7 +12,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
 
 ?>
-<div id="eshoppage">
+<div id="eshoppage" class="eshophelp">
 <div class="wrap">
 <div id="eshopicon" class="icon32"></div><h2>Help</h2>
 <p>This is some basic helpful information about the shopping cart admin.</p>
@@ -23,6 +23,8 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#short">Shortcodes</a></li>
 <li><a href="#test">eShop testing</a></li>
 <li><a href="#glive">Going Live with eShop</a></li>
+<li><a href="#payliv">eShop &amp; Paypal</a></li>
+
 <li><a href="#bover">Configuration</a></li>
 <li><a href="#img">Product Images</a></li>
 <li><a href="#optset">Option Sets</a></li>
@@ -33,7 +35,7 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><a href="#base">eShop Base</a></li>
 <li><a href="#extr">Cart Operations</a></li>
 <li><a href="#conf">Conflicting plugins</a></li>
-<li><a href="#comp">Compatability</a></li>
+<li><a href="#comp">Compatability</a> (including - affiliates)</li>
 <li><a href="#actnote">Notes on activation</a></li>
 <li><a href="#del">Deactivating and Uninstalling</a></li>
 
@@ -162,13 +164,13 @@ require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 <li><code>[eshop_show_payments]</code> Displays a list of images with the current payment methods allowed.</li>
 <li><code>[eshop_empty_cart]</code>Message<code>[/eshop_empty_cart]</code> Specifically designed for the cart page, any <em>Message</em> you enter will only be displayed if the cart is empty.</li>
 <li><code>[eshop_cart_items]</code> A simple shortcode for use in templates via the <code>do_shortcode</code> function. In its simplest form it displays the number of items in the cart. It can be adjusted with the following attributes <code>before</code> and <code>after</code>, which can be used to insert text before and after the cart size.
-<code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty. <code>showwhat</code> is also available to show either number of <em>items</em>, <em>qty</em> total or <em>both</em>;
-<li><code>[eshop_addtocart]</code> will enable the add to cart form to appear anywhere on a product page. By default the form appears after the content. (not fully tested - please let me know if it causes problems).
+<code>hide</code> is also available, setting this to yes will stop the shortcode from displaying anything if the cart is empty. <code>showwhat</code> is also available to show either number of <em>items</em>, <em>qty</em> total or <em>both</em></li>
+<li><code>[eshop_addtocart]</code> will enable the add to cart form to appear anywhere on a product page. By default the form appears after the content. (not fully tested - please let me know if it causes problems).</li>
 <li><code>[eshop_welcome]</code> print a simple name of the customer. You can use the following attributes: <code>before</code> - which could be used to add mark up, <code>returning</code> - perhaps use a phrase like welcome back, <code>guest</code> - the phrase you would like to use for a guest, <code>after</code> - again could be used to close the markup.<br />
 This has also been written for use in templates, add something like:
 <code>&lt;?php 
 echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' returning='Welcome back' guest='Hello Guest' after='&lt;/span&gt;']");
-?&gt;</code>
+?&gt;</code></li>
 </ol>
 <h3>Notes</h3>
 <p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
@@ -198,7 +200,115 @@ echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' ret
 
 <p>Everything should then be set up and working!</p>
 </div>
+<div class="wrap">
+<h2 id="payliv">eShop &amp; Paypal</h2>
 
+
+<p>If you are about to open or have just opened a new PayPal account, jump straight to the section <strong>New paypal business account</strong> but if you want to use an account that has been used and configured before, please read <strong>Existing paypal account</strong> first.</p>
+
+
+<h3>Existing paypal account</h3>
+
+<p>You might have an account that has been used for other shopping cart solutions or just with settings changed from default and you are unsure if those will prevent eShop from working properly. Below, you will see a list of settings that HAVE to be set as indicated for proper operation of eShop. After you have done those, read the recommendations given under "New paypal business account" for best customer experience.</p>
+<ol>
+<li>If you have a PERSONAL or PREMIER ACOUNT it is recommended to upgrade to a BUSINESS account.</li>
+
+<li><p>Check your account options and change them if different from the (default) settings below.</p>
+
+<p>Go to My Account > Profile ( > More Options ) and go through each of these sections:</p>
+<dl>
+<dt>Account Information</dt>
+
+   <dd><strong>Email</strong> - Make sure you are using the same email address in eShop as the one that is set as Primary here! If not, change either your eShop settings or Add and make that email address Primary here.
+</dd>
+
+<dt>Financial Information</dt>
+
+    <dd><strong>Currency Balances</strong> -  Make sure the currency you are going to use in eShop is present here and is set as Primary. If not, pick the currency from the dropdown list under Select new currency , hit Add Currency and then select the new currency and hit Make Primary.</dd>
+
+
+<dt>Selling Preferences</dt>
+<dd>
+<dl>
+    <dt>Tax/Value Added Tax</dt>
+	<dd>If you are a business supplier -for example- and have Sales Tax rules set up here, be sure you define prices in eShop WITHOUT tax. Do not forget to mention prices are without tax on your website to avoid an unpleasant surprise during checkout. Currently, eShop does not have an option to display such a message automatically.</dd>
+
+    <dt>Shipping Calculations</dt>
+
+    <dd>It is recommended to let eShop handle shipping calculation. If you have set up any rules here, copy them over to your eShop > Shipping admin page in WordPress before you hit Clear Settings to clear them from your PayPal account. If you insist on letting PayPal handle shipping calculation instead of eShop's Shippping Rates feature, please be sure to set all shipping rates in eShop to 0 (zero) and warn customers on your site they will face additional shipment costs during checkout to avoid canceled transactions due to an unpleasant surprise. Currently, eShop does not have an option to disable shipping calculation and display such a message automatically.</dd>
+
+    <dt>Instant Payment Notification Preferences</dt>
+
+    <dd>IPN needs to be OFF ! If active, hit Turn Off IPN and confirm to get rid of all settings.</dd>
+
+    <dt>Website Payment Preferences</dt>
+
+    <dd>The following option need to be set to OFF or transactions will NOT be handled properly by eShop!
+
+          <ul>
+		  <li>Auto Return: OFF</li>
+          <li>Payment Data Transfer: OFF</li>
+          <li>Encrypted Website Payments: OFF</li>
+		  </ul></dd>
+
+    <dt>Language Encoding </dt>
+<dd>If in doubt set this to UTF-8 same as WP</dd>
+</dl></dd></dl>
+</li>
+</ol>
+<p>All other settings will not interfere with proper operation of eShop.</p>
+
+<p>Read the instructions under "New paypal business account" for some recommendations to improve customer experience on your web shop.</p>
+<h2>New paypal business account</h2>
+
+<p>If you haven't done so already, head over to https://www.paypal.com/ and Sign Up for a new Business account in the same country with the same currency and with the same e-mail address as you will be using in eShop. After that, there is nothing more that needs to be done to make eShop handle PayPal transactions successfully.</p>
+
+<p>However, you might want to configure and tweak your account to improve the customer experience. The following instructions should guide you through that without doing things that will break proper communication between eShop and PayPal during checkout.</p>
+
+<p>On your new Acount Overview you will see a section My account tools with a link My Business Setup. Follow that and you will land on a page that starts with:</p>
+
+<p style="font-size:1.4em;">    First steps with PayPal<br />
+
+    You've signed up for a PayPal Business account. Now what?</p>
+
+
+<p>Below that, in the section My payment solution you will see Set up my payment solution and Customize my buyer's experience. Just leave that first part alone, eShop will take care of that for you. If you like, you can set stuff like your company logo under the second part. Hit the Start Now button right after "Customize PayPal payment pages, adjust customer service settings, and much more."</p>
+
+<p>You are now on the Customize my buyer's experience page. Here you can :</p>
+<dl>
+<dt>Add your business logo</dt>
+<dd><ul>
+<li>Make the PayPal checkout pages recognizable as your business. Recommended.</li>
+<li>Create a new checkout page style here and give it colors and logo to match your website. Then set it to Primary to make it visible for </li>
+<li>customers that check out with your eShop cart. Currently, eShop is not able to use non-primary styles during checkout.	</li>
+</ul></dd>
+
+<dt>Sales tax</dt>
+<dd>Set this ONLY if you are a business supplier -for example- and specify prices WITHOUT tax on your website! Do not forget to mention this on your site to avoid unpleasant surprises during checkout. Currently, eShop does not have an option to display such a message automatically.
+</dd>
+<dt>Shipping calculations</dt>
+<dd>Do NOT set these but let eShop handle shipping charges. Go to your eShop > Shipping admin page in WordPress and define shipping cost rules there.</dd>
+<dt>Auto Return</dt>
+<dd><p>Careful: Some settings must be left OFF for proper operation of eShop.</p>
+
+    <ul>
+	<li>Auto Return: leave OFF !</li>
+    <li>Payment Data Transfer: leave OFF !</li>
+    <li>Encrypted Website Payments: leave OFF</li> 
+    <li>PayPal Account Optional: switch to ON if you want buyers to be able to use their Credit Card without opening a PayPal account first. Recommended!</li>
+    <li>Contact Telephone Number: to show your phone number to those that are about to check out. Setting your private number here is NOT recommended!</li>
+    <li>Express Checkout Settings - not required.</li>
+	</ul>
+</dd>
+
+<dt>Card Statement Name</dt>
+<dd>Settings here are fine when left like they are but it is RECOMMENDED that you make sure the Credit Card Statement Name is recognizable as that of your online shop. Customers will see this name later on their Credit Card statement and might get confused -or even charge back the money- if they do not recognize it as a purchase from your shop.</dd>
+</dl>
+<p>By now, you will have you account set up to receive transactions from your website using eShop. Go ahead and put it LIVE in WordPress on Settings > eShop > General !</p>
+
+<p>Later, will probably link your business or personal bank account to your new PayPal account to be able to transfer revenue and maybe your Credit Card. Then I recommend to get your status VERIFIED for increased credibility among potential customers. See the PayPal Help pages and Tutorials (under Resolution Center) for more info.</p>
+
+</div>
 <div class="wrap">
 <h2 id="bover">Configuration</h2>
 <p>There are a number of settings that should be configured <strong>before</strong> you can start selling.</p>
@@ -460,6 +570,10 @@ php_value session.gc_maxlifetime 10800
 <div class="wrap">
 <h2 id="comp">Compatability</h2>
 <p>eShop has been written for Wordpress 2.9 and up, and is not compatible with earlier versions.</p>
+<h3>Affiliates</h3>
+<p>Now compatible with <a href="http://www.tipsandtricks-hq.com/wordpress-affiliate/">WP Affiliate</a> for affiliates.</p>
+<h3>Shortcodes</h3>
+<p>Compatible with <a href="http://wordpress.org/extend/plugins/eshortcodes/">eShortcodes</a>. (WP verion 3 specific)</p>
 </div>
 
 <div class="wrap">

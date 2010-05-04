@@ -62,7 +62,11 @@ switch ($eshopaction) {
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
 		//
+		//$_COOKIE['ap_id']='helooeshop';
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		//if(isset($_COOKIE['ap_id'])) $token .= $_COOKIE['ap_id'];
 		$_POST['custom']=$token;
 		$p = new paypal_class; 
 		if($eshopoptions['status']=='live'){
@@ -233,6 +237,14 @@ switch ($eshopaction) {
  		/*
 		updating db.
 		*/
+			//extract affiliate code from custom
+			/*
+			if(strlen($p->ipn_data['custom'])>'56'){
+				$ipncustom=$p->ipn_data['custom'];
+				$p->ipn_data['custom']=substr($ipncustom,0,55);
+				$eshopaff=substr($ipncustom,55);
+			}
+			*/
 			$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 
@@ -303,7 +315,7 @@ switch ($eshopaction) {
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
-				$extradetails .= __("The transaction was not completed successfully.eShop thought the order to be no longer pending.",'eshop');
+				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
@@ -314,7 +326,7 @@ switch ($eshopaction) {
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 //debug
-			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']."\n";
+			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$chkamt."\n";
 			if($extradetails!='') $body .= $extradetails."\n\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
@@ -344,6 +356,11 @@ switch ($eshopaction) {
 				$this_email=html_entity_decode($this_email,ENT_QUOTES);
 				$headers=eshop_from_address();
 				wp_mail($array['eemail'], $csubject, $this_email,$headers);
+				//affiliate
+				if($array['affiliate']!=''){
+					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+				}
 			}
       	}else{
       		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);

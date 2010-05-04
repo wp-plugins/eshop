@@ -720,6 +720,12 @@ dl.eshop-def dd{
 dl.eshop-def dd ul{
 	margin-left:20px;
 }
+.eshophelp dt{
+	font-weight:bold;
+}
+.eshophelp dd{
+	margin-left:20px;
+}
 /* email templates */
 .ewarn{
 	color:#800;

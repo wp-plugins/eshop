@@ -606,6 +606,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$transid=$drow->transid;
 		$admin_note=htmlspecialchars(stripslashes($drow->admin_note));
 		$paidvia=$drow->paidvia;
+		$eshopaff=$drow->affiliate;
 	}
 	if($status=='Completed'){$status=__('Active','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
@@ -706,9 +707,9 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	$chours=substr($custom, 8, 2);
 	$cminutes=substr($custom, 10, 2);
 	$thisdate=$cyear."-".$cmonth."-".$cday.__(' at ','eshop').$chours.':'.$cminutes;
-	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.</p>\n";
-	
-	echo "</div>\n";
+	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.";
+	if($eshopaff!='') echo '<br />'.__('Affiliate Reference:','eshop').' <strong>'.$eshopaff.'</strong>';
+	echo "</p>\n</div>\n";
 	if($drow->reference!=''){
 		echo '<p><strong>'.__('Customer reference:','eshop').'</strong> '.$drow->reference.'</p>';
 	}
@@ -725,7 +726,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$address=$drow->address1;
 			if($drow->address2!='') $address.= ', '.$drow->address2;
 
-			echo '<p><address>'.$drow->first_name." ".$drow->last_name."<br />\n";
+			echo '<address>'.$drow->first_name." ".$drow->last_name."<br />\n";
 			if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
 			echo $address."<br />\n";
 			echo $drow->city."<br />\n";
@@ -742,7 +743,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$qcode=$wpdb->escape($drow->country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-			echo $qcountry."</address></p>";
+			echo $qcountry."</address>";
 			if($eshopoptions['shipping_zone']=='country'){
 				$qzone=$countryzone;
 			}else{
@@ -756,7 +757,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				if($drow->ship_company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->ship_company."<br />\n";
 				echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->ship_phone."</p>\n";
 				echo '<h5>'.__('Address','eshop').'</h5>';
-				echo '<p><address>'.$drow->ship_name.'<br />'."\n";
+				echo '<address>'.$drow->ship_name.'<br />'."\n";
 				if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
 				echo $drow->ship_address."<br />\n";
 				echo $drow->ship_city."<br />\n";
@@ -772,7 +773,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				$qcode=$wpdb->escape($drow->ship_country);
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
-				echo $qcountry."</address></p>";
+				echo $qcountry."</address>";
 				if($eshopoptions['shipping_zone']=='country'){
 					$qzone=$countryzone;
 				}else{

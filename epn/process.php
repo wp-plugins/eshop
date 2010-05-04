@@ -96,6 +96,11 @@ if(isset($ps->ipn_data['ID'])){
 			$this_email=html_entity_decode($this_email,ENT_QUOTES);
 			$headers=eshop_from_address();
 			wp_mail($array['eemail'], $csubject, $this_email,$headers);
+			//affiliate
+			if($array['affiliate']!=''){
+				do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+				"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+			}
 		}
 	}elseif(isset($_POST['approved']) && isset($_GET['epn']) && $_GET['epn']=='fail' && $_POST['approved']=='N'){
 		$eshopdosend='yes';

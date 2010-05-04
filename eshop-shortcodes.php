@@ -347,7 +347,7 @@ function eshop_list_cat_tags($atts){
 	'numberposts' => $records, 
 	'offset' => $offset,
 	); 
-	$pages = query_posts($args);
+	$pages = get_posts($args);
 	wp_reset_query();
 	if($pages) {
 		//paginate

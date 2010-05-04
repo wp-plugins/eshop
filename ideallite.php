@@ -141,11 +141,13 @@ switch ($eshopaction) {
 		$sUrlBase = $_POST['notify_url'];
 		
 		$p->sUrlCancel = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('CANCEL');
-$p->sUrlError = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('ERROR');
-$p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('SUCCESS');
+		$p->sUrlError = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('ERROR');
+		$p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('SUCCESS');
 
 
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		
 		$traxid = $p->sTransactionId;
 		$_POST['custom']=$traxid;
@@ -383,7 +385,11 @@ $p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=
 					$this_email=html_entity_decode($this_email,ENT_QUOTES);
 					$headers=eshop_from_address();
 					wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				
+					//affiliate
+					if($array['affiliate']!=''){
+						do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+					}
 					// Clear the session - Empty the cart
 					$_SESSION = array();
 					session_destroy();
