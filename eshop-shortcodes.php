@@ -243,6 +243,7 @@ function eshop_list_subpages($atts){
 	'offset' => $offset,
 	); 
 	$pages = get_posts($args);
+	wp_reset_query();
 
 	if($pages) {
 		//paginate
@@ -738,7 +739,7 @@ function eshop_show_discounts(){
 			$echo .='
 			<tr>
 			<th headers="elevel"  id="row'.$x.'">'.$x.'</th>
-			<td headers="elevel espend row'.$x.'" class="amts">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($amt,2)).'</td>
+			<td headers="elevel espend row'.$x.'" class="amts">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($amt,2)).'</td>
 			<td headers="elevel ediscount row'.$x.'" class="disc">'.$percent.'</td>
 			</tr>';
 		}
@@ -746,7 +747,7 @@ function eshop_show_discounts(){
 	}
 	if($shipdisc>0){
 		$echo .='
-		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshopoptions['discount_shipping'],2)).'</span></p>';
+		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshopoptions['discount_shipping'],2)).'</span></p>';
 	}
 	return $echo;
 }
@@ -804,11 +805,11 @@ function eshop_show_shipping($atts) {
 					}else{
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 					}
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 					$eshopshiptable.= '</tr>';
 					$x++;
 				}
@@ -822,11 +823,11 @@ function eshop_show_shipping($atts) {
 					$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
 					$eshopshiptable.= '<tr'.$alt.'>';
 					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
+					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
 					$eshopshiptable.= '</tr>';
 					$x++;
 				}
@@ -842,11 +843,11 @@ function eshop_show_shipping($atts) {
 					$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
 					$eshopshiptable.= '<tr'.$alt.'>';
 					$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+					$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 					$eshopshiptable.= '</tr>';
 					$x++;
 				}
@@ -858,7 +859,7 @@ function eshop_show_shipping($atts) {
 		$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
 		$eshopshiptable.= '<tr'.$alt.'>';
 		$eshopshiptable.= '<th id="cname'.$x.'" headers="class">F <small>'.__('(Free)','eshop').'</small></th>'."\n";
-		$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format('0',2)).'</td>'."\n";
+		$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format('0',2)).'</td>'."\n";
 		$eshopshiptable.= '</tr>';
 	}
 	$eshopshiptable.='</tbody>'."\n";

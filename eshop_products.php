@@ -299,8 +299,8 @@ function eshop_products_manager() {
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$eshop_product['shiprate'].'</td>';
+				$stocktable=$wpdb->prefix ."eshop_stock";
 				if($eshopoptions['stock_control']=='yes'){
-					$stocktable=$wpdb->prefix ."eshop_stock";
 					$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
 					if($available=='')
 						$available='0';
@@ -309,7 +309,7 @@ function eshop_products_manager() {
 						$available=$eavailable;
 					}
 				}else{
-					$available='n/a';
+					$available=__('n/a','eshop');
 				}
 				if($stkav=='1')
 					$stkchk=' checked="checked"';
@@ -353,7 +353,7 @@ function eshop_products_manager() {
 				for($i=1;$i<=$numoptions;$i++){
 					if($eshop_product['products'][$i]['option']!=''){
 						echo stripslashes(esc_attr($eshop_product['products'][$i]['option']));
-						echo ' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshop_product['products'][$i]['price'],2)).'<br />';
+						echo ' @ '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshop_product['products'][$i]['price'],2)).'<br />';
 					}
 				}
 				echo '</td>';

@@ -398,7 +398,6 @@ function eshopw_show_product($atts){
 }
 function eshopw_list_cat_tags($atts){
 	global $wpdb, $post,$wp_query;
-	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopwcats','images'=>'no','sortby'=>'1','show'=>'6','order'=>'ASC','size'=>'','id'=>'','type'=>''), $atts));
 	$allowedsort=array('post_date','post_title','menu_order');
 	$allowedorder=array('ASC','DESC');

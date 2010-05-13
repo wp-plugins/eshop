@@ -60,9 +60,9 @@ if(isset($_POST['submit'])){
 			$ideallitepost['IDEAL_MERCHANT_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_MERCHANT_ID']);
 			$ideallitepost['IDEAL_SUB_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_SUB_ID']);
 			$ideallitepost['IDEAL_TEST_MODE']=$wpdb->escape($_POST['ideallite']['IDEAL_TEST_MODE']);
-			$ideallitepost['IDEAL_URL_CANCEL']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_CANCEL']);
-			$ideallitepost['IDEAL_URL_ERROR']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_ERROR']);
-			$ideallitepost['IDEAL_URL_SUCCESS']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_SUCCESS']);
+			//$ideallitepost['IDEAL_URL_CANCEL']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_CANCEL']);
+			//$ideallitepost['IDEAL_URL_ERROR']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_ERROR']);
+			//$ideallitepost['IDEAL_URL_SUCCESS']=$wpdb->escape($_POST['ideallite']['IDEAL_URL_SUCCESS']);
 			$ideallitepost['idealownermail']=$wpdb->escape($_POST['ideallite']['idealownermail']);
 			$ideallitepost['idealdescription']=$wpdb->escape($_POST['ideallite']['idealdescription']);
 			$eshopoptions['ideallite']=$ideallitepost;
@@ -551,7 +551,7 @@ switch($action_status){
 	<input id="eshop_webtopayprojectid" name="webtopay[projectid]" type="text" value="<?php echo $eshopwebtopay['projectid']; ?>" size="30" maxlength="50" /><br />
 	                        
 	<label for="eshop_webtopaysignature"><?php _e('Webtopay signature password','eshop'); ?></label>
-	<input id="eshop_webtopaysignature" name="webtopay[isignature]" type="text" value="<?php echo $eshopwebtopay['signature']; ?>" size="30" maxlength="50" /><br />
+	<input id="eshop_webtopaysignature" name="webtopay[signature]" type="text" value="<?php echo $eshopwebtopay['signature']; ?>" size="30" maxlength="50" /><br />
 	
 	</fieldset>
 	

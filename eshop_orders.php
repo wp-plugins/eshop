@@ -165,6 +165,7 @@ if (!function_exists('displayorders')) {
 			<th id="transid">'.__('Transaction ID','eshop').'</th>
 			<th id="bulk"><input type="checkbox" value="" name="checkAllAuto" id="checkAllAuto" /><label for="checkAllAuto">'.__('Bulk','eshop').'</label></th></tr></thead><tbody>'."\n";
 			$move=array();
+			$c=0;
 			foreach($myrowres as $myrow){
 				//total + products
 				$c++;//count for the  number of results.
@@ -200,7 +201,7 @@ if (!function_exists('displayorders')) {
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
 					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
 					<td headers="items numb'.$c.'">'.$x.'</td>
-					<td headers="price numb'.$c.'" class="right">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2)).'</td>
+					<td headers="price numb'.$c.'" class="right">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2)).'</td>
 					<td headers="downloads numb'.$c.'" class="right">'.$myrow->downloads.'</td>
 					<td headers="transid numb'.$c.'">'.$myrow->transid.'</td>'.
 					'<td headers="bulk numb'.$c.'"><label for="move'.$c.'">Move #'.$c.'</label><input type="checkbox" value="'.$checkid.'" name="move[]" id="move'.$c.'" />'
@@ -693,12 +694,12 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		<td headers="opname onum'.$calt.'">'.$itemid.'</td>
 		<td headers="opname onum'.$calt.'">'.$downloadable.'</td>
 		<td headers="opname onum'.$calt.'">'.$myrow->item_qty.'</td>
-		<td headers="opname onum'.$calt.'" class="right">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."</td></tr>\n";
+		<td headers="opname onum'.$calt.'" class="right">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."</td></tr>\n";
 	}
 	if($transid==__('Processing&#8230;','eshop'))
-		echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	else
-		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(_c('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(_x('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	echo "</tbody></table>\n";
 			
 	$cyear=substr($custom, 0, 4);

@@ -75,24 +75,16 @@ echo '</p>';
 }
 //check for new css
 $plugin_dir=WP_PLUGIN_DIR;
+$dirs=wp_upload_dir();
+$upload_dir=$dirs['basedir'];
 $eshop_goto=$upload_dir.'/eshop_files/eshop.css';
 $eshop_from=$plugin_dir.'/eshop/files/eshop.css';
 $eshopver=split('\.',ESHOP_VERSION);
 $file = file_get_contents($eshop_from, true);
-$echo=split('/\* =='.$eshopver[0].'== \*/',$file);
 ?>
 </div>
 <div class="wrap">
 <h2><?php _e('Style Editor','eshop'); ?></h2>
-<?php
-if($eshopoptions['style']=='yes'  && $echo[1]!='' && isset($_GET['viewcss'])){
-	echo '<h3 id="eshopcss">Recent default style additions</h3>';
-	echo '<p>You can copy and paste this into your existing stylesheet.</p>';
-	echo '<div class="eshopnewstyle"><pre>'.$echo[1].'</pre></div>';
-}elseif($eshopoptions['style']=='yes' && $echo[1]!=''){
-	echo '<p>There may be new <a href="themes.php?page=eshop_style.php&amp;viewcss#eshopcss" title="view style updates">style available</a></p>';
-}
-?>
  <p><?php _e('Use this simple <abbr><span class="abbr" title="Cascading Style Sheet">CSS</span></abbr> file editor to modify the default style sheet file.','eshop'); ?></p>
  <form method="post" action="themes.php?page=eshop_style.php" id="edit_box">
   <fieldset>
