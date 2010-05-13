@@ -168,11 +168,11 @@ function createoptions($optid,$name){
 	<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($name)); ?>" size="35"/>
 	<label for="type"><?php _e('Set display type','eshop'); ?></label>
 	<select id="type" name="type">
-	<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
-	<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
+	<option value="0">Dropdown</option>
+	<option value="1">Checkboxes</option>
 	</select><br />
 	<label for="edesc">Description</label>
-	<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
+	<textarea id="edesc" name="description" rows="3" cols="80"></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($name)); ?></caption>
 	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>

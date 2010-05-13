@@ -45,6 +45,8 @@ if (!function_exists('eshop_cart')) {
 			$pname=$_POST['pname'];
 			/* if download option then it must be free shipping */
 			$postid=$wpdb->escape($_POST['postid']);
+			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+
 			$dlchk=$eshop_product['products'][$option]['download'];
 			if($dlchk!='')	$pclas='F';
 			$iprice= $eshop_product['products'][$option]['price'];
@@ -74,8 +76,9 @@ if (!function_exists('eshop_cart')) {
 		
 		if(isset($_SESSION['eshopcart'.$blog_id][$identifier])){
 			$testqty=$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+$qty;
-			$stkqty = $eshop_product['qty'];
 			$eshopid=$_SESSION['eshopcart'.$blog_id][$identifier]['postid'];
+			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+			$stkqty = $eshop_product['qty'];
 			//recheck stkqty
 			$stocktable=$wpdb->prefix ."eshop_stock";
 			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
@@ -90,6 +93,7 @@ if (!function_exists('eshop_cart')) {
 
 		}elseif($identifier!=''){
 			$postid=$wpdb->escape($_POST['postid']);
+			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
 			$item=$eshop_product['products'][$option]['option'];
 
 			$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
@@ -132,18 +136,18 @@ if (!function_exists('eshop_cart')) {
 		
 		//update products in the cart
 		if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
-		
 			foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
 				$needle=array(" ",".");
 				$sessproductid=str_replace($needle,"_",$productid);
 				foreach ($_POST as $key => $value){
 					if($key==$sessproductid){
 						foreach ($value as $notused => $qty){
-							if($qty=="0"){
+							if($qty=="0"){							
 								unset($_SESSION['eshopcart'.$blog_id][$productid]);
 							}else{
-								$stkqty = $eshop_product['qty'];
 								$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
+								$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+								$stkqty = $eshop_product['qty'];
 								//recheck stkqty
 								$stocktable=$wpdb->prefix ."eshop_stock";
 								$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
@@ -165,7 +169,7 @@ if (!function_exists('eshop_cart')) {
 		}
 		//any errors will print here.
 		if($error!='') $echo.= $error;
-		if(sizeof($_SESSION['eshopcart'.$blog_id])=='0'){
+		if(sizeof(isset($_SESSION['eshopcart'.$blog_id]) && $_SESSION['eshopcart'.$blog_id])=='0'){
 			unset($_SESSION['eshopcart'.$blog_id]);
 		}
 		if(isset($_SESSION['eshopcart'.$blog_id])){

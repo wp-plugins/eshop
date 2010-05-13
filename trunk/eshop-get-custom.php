@@ -59,7 +59,7 @@ function eshop_boing($pee,$short='no'){
 								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.'" name="optset[]">'."\n";
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
-										$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
+										$addprice=' + '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
 									else
 										$addprice='';
 									$replace.='<option value="'.$opsets['id'].'">'.stripslashes(esc_attr($opsets['label'])).$addprice.'</option>'."\n";
@@ -73,7 +73,7 @@ function eshop_boing($pee,$short='no'){
 							foreach($optsets['item'] as $opsets){
 								$ox++;
 								if($opsets['price']!='0.00')
-									$addprice=' + '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
+									$addprice=' + '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($opsets['price'],2));
 								else
 									$addprice='';
 								$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
@@ -97,7 +97,7 @@ function eshop_boing($pee,$short='no'){
 					$price=$eshop_product['products'][$i]['price'];
 					if($option!=''){
 						if($price!='0.00')
-							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
+							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
 						else
 							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
 					}
@@ -109,7 +109,7 @@ function eshop_boing($pee,$short='no'){
 				if($price!='0.00'){
 					$replace.='
 					<input type="hidden" name="option" value="1" />
-					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
+					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
 					';
 				}else{
 					$replace.='

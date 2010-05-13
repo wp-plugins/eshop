@@ -26,21 +26,25 @@ function eshop_inner_custom_box($post) {
     wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
     // The actual fields for data entry
     $osets=array();
-    $stkav=get_post_meta( $_REQUEST[ 'post' ], '_eshop_stock',true );
-    $eshop_product=get_post_meta( $_REQUEST[ 'post' ], '_eshop_product',true );
-	$osets=$eshop_product['optset'];
+    if(isset($_REQUEST[ 'post' ])){
+    	$stkav=get_post_meta( $_REQUEST[ 'post' ], '_eshop_stock',true );
+    	$eshop_product=get_post_meta( $_REQUEST[ 'post' ], '_eshop_product',true );
+    }else{
+    	$stkav='';
+    	$eshop_product=array();
+    }
+    if(isset($eshop_product['optset']))
+		$osets=$eshop_product['optset'];
  
     //recheck stkqty
     $stocktable=$wpdb->prefix ."eshop_stock";
     $stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID");
     if(isset($stktableqty) && is_numeric($stktableqty)) $eshop_product['qty']=$stktableqty;
-        
     ?>
-
     <h4><?php _e('Product','eshop'); ?></h4>
-    <p><label for="eshop_sku"><?php _e('Sku','eshop'); ?> </label><input id="eshop_sku" name="eshop_sku" value="<?php echo $eshop_product[sku]; ?>" type="text" size="20" /> <?php _e('(unique identification reference eg. abc001)','eshop'); ?></p>
-    <p><label for="eshop_product_description"><?php _e('Product Description','eshop'); ?> </label><input id="eshop_product_description" name="eshop_product_description" value="<?php echo $eshop_product[description]; ?>" type="text" size="30" /></p>
 
+    <p><label for="eshop_sku"><?php _e('Sku','eshop'); ?> </label><input id="eshop_sku" name="eshop_sku" value="<?php if (isset($eshop_product['sku'])) echo $eshop_product['sku']; ?>" type="text" size="20" /> <?php _e('(unique identification reference eg. abc001)','eshop'); ?></p>
+    <p><label for="eshop_product_description"><?php _e('Product Description','eshop'); ?> </label><input id="eshop_product_description" name="eshop_product_description" value="<?php if (isset($eshop_product['description'])) echo $eshop_product['description']; ?>" type="text" size="30" /></p>
     <?php
     //get list of download products for selection 
     $producttable = $wpdb->prefix ."eshop_downloads";
@@ -55,7 +59,7 @@ function eshop_inner_custom_box($post) {
         <tbody>
         <?php
 		for($i=1;$i<=$numoptions;$i++){
-			if(is_array($eshop_product['products'])){
+			if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
 				$opt=$eshop_product['products'][$i]['option'];
 				$price=$eshop_product['products'][$i]['price'];
 				$downl=$eshop_product['products'][$i]['download'];
@@ -136,12 +140,12 @@ function eshop_inner_custom_box($post) {
 	<?php
 	}
 	?>
-    <p><input id="eshop_featured_product" name="eshop_featured_product" value="Yes"<?php echo $eshop_product['featured']=='Yes' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_featured_product" class="selectit"><?php _e('Featured Product','eshop'); ?></label></p>
+    <p><input id="eshop_featured_product" name="eshop_featured_product" value="Yes"<?php echo isset($eshop_product['featured']) && $eshop_product['featured']=='Yes' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_featured_product" class="selectit"><?php _e('Featured Product','eshop'); ?></label></p>
     <p><input id="eshop_stock_available" name="eshop_stock_available" value="Yes"<?php echo $stkav=='1' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_stock_available" class="selectit"><?php _e('Stock Available','eshop'); ?></label></p>
     <?php
     if($eshopoptions['stock_control']=='yes'){
     ?>
-    <p><label for="eshop_stock_quantity"><?php _e('Stock Quantity','eshop'); ?></label> <input id="eshop_stock_quantity" name="eshop_stock_quantity" value="<?php echo $eshop_product['qty']; ?>" type="text" size="4" /></p>
+    <p><label for="eshop_stock_quantity"><?php _e('Stock Quantity','eshop'); ?></label> <input id="eshop_stock_quantity" name="eshop_stock_quantity" value="<?php if(isset($eshop_product['qty'])) echo $eshop_product['qty']; ?>" type="text" size="4" /></p>
     <?php
     }
 	echo '</div><div class="clear"></div>';

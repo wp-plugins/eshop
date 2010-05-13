@@ -104,7 +104,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
@@ -118,7 +118,7 @@ if (!function_exists('display_cart')) {
 				$discount=is_discountable(calculate_total());
 				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
 			}
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -202,12 +202,12 @@ if (!function_exists('display_cart')) {
 					$echo.=' <small>(<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
 				}
 				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
 				</tr>';
 				$_SESSION['shipping'.$blog_id]=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price'.$blog_id]=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
 			}
 
 			$echo.= "</tbody></table>\n";
@@ -504,6 +504,20 @@ if (!function_exists('orderhandle')) {
 		$detailstable=$wpdb->prefix.'eshop_orders';
 		$itemstable=$wpdb->prefix.'eshop_order_items';
 		$processing=__('Processing&#8230;','eshop');
+		//readjust state if needed
+		$sttable=$wpdb->prefix.'eshop_states';
+		$getstate=$eshopoptions['shipping_state'];
+		if($eshopoptions['show_allstates'] != '1'){
+			$stateList=$wpdb->get_results("SELECT id,code,stateName FROM $sttable WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
+		}else{
+			$stateList=$wpdb->get_results("SELECT id,code,stateName,list FROM $sttable ORDER BY list,stateName",ARRAY_A);
+		}
+		foreach($stateList as $code => $value){
+			$eshopstatelist[$value['code']]=$value['id'];
+		}
+		if(isset($eshopstatelist[$state]))	$state=$eshopstatelist[$state];
+		if(isset($eshopstatelist[$ship_state]))	$ship_state=$eshopstatelist[$ship_state];
+
 		$eshopching=$wpdb->get_var("SELECT checkid from $detailstable where checkid='$checkid' limit 1");
 		if($eshopching!=$checkid){
 			$query1=$wpdb->query("INSERT INTO $detailstable
@@ -724,9 +738,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
-				$cart.= __('Shipping Charge:','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
 			}else{
-				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
+				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
 			}
 		
 			//check if downloadable product
@@ -735,7 +749,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}
 		}
 		$arrtotal=number_format($total, 2);
-		$cart.= __('Total','eshop').' '.sprintf( _c('%1$s%2$s|1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."\n";
+		$cart.= __('Total','eshop').' '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);

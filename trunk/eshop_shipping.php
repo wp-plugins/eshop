@@ -496,7 +496,7 @@ default:
 			$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='".__('A','eshop')."' ORDER BY 'class'  ASC");
 
 			foreach ($query as $row){
-				echo '<tr'.$alt.'>';
+				echo '<tr class="alt">';
 				echo '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
 				echo '<td headers="zone1 cname'.$x.'"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1','eshop').'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
 				echo '<td headers="zone2 cname'.$x.'"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2','eshop').'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
