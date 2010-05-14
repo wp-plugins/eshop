@@ -528,11 +528,8 @@ if (!function_exists('eshop_checkout')) {
 				}
 			}
 		}else{
-			if(isset($_POST['state']) && $_POST['altstate']==''){
-				$valid=is_numeric($_POST['state']);
-				if($valid==FALSE){
-					$error.= '<li>'.__('<strong>State/County/Province</strong> - missing or incorrect.','eshop').'</li>';
-				}
+			if(isset($_POST['state']) && $_POST['state']=='' &&  $_POST['altstate']==''){
+				$error.= '<li>'.__('<strong>State/County/Province</strong> - missing or incorrect.','eshop').'</li>';
 			}
 		}
 		
