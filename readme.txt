@@ -38,6 +38,10 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 Not currently available.
 
 == Changelog == 
+Version 5.2.2
+
+* *fixed* major bug in checkout
+
 
 Version 5.2.1
 
