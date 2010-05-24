@@ -1,7 +1,7 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.2.2');
+define('ESHOP_VERSION', '5.2.3');
 
 /*
 Plugin Name: eShop for Wordpress
@@ -28,7 +28,7 @@ Author URI: http://quirm.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-load_plugin_textdomain('eshop', PLUGINDIR . '/' . plugin_basename(dirname(__FILE__)));
+load_plugin_textdomain('eshop');
 //grab all options here in one go
 $eshopoptions = get_option('eshop_plugin_settings');
 /* eShop ADMIN STUFF HERE */
@@ -284,7 +284,7 @@ if (!function_exists('eshop_cron')) {
 			if($max>0){
 				$to = $eshopoptions['cron_email'];    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
-				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php'."\n";
+				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php&action=Dispatch'."\n";
 				$headers=eshop_from_address();
 				$subject=get_bloginfo('name').__(": outstanding orders");
 				wp_mail($to, $subject, $body, $headers);

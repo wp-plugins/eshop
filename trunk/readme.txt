@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.2.2
+Stable tag: 5.2.3
 
 An accessible Shopping Cart plugin.
 
@@ -38,10 +38,16 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 Not currently available.
 
 == Changelog == 
+
+Version 5.2.3
+
+* cleaned up install and uninstall, shouldn't be producing errors in the error log any more.
+* cron notification now links to active orders page
+* slight to change for translations - please let me know asap if it causes an issue.
+
 Version 5.2.2
 
 * *fixed* major bug in checkout
-
 
 Version 5.2.1
 

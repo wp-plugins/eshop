@@ -119,10 +119,11 @@ function eshop_inner_custom_box($post) {
 		<p><label for="eshop_shipping_rate"><?php _e('Shipping Rate','eshop'); ?></label> <select name="eshop_shipping_rate" id="eshop_shipping_rate">
 		<option value=""><?php _e('No (or select)','eshop'); ?></option>
 		<?php
-		if($eshop_product['shiprate']!=''){
+		if(isset($eshop_product['shiprate']) && $eshop_product['shiprate']!=''){
 			$selected = $shiprate;
 		}else{
 			$selected = '';
+			$eshop_product['shiprate']='';
 		}
 		
 		$shipcodes=array('A','B','C','D','E','F');

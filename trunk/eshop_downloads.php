@@ -225,7 +225,7 @@ function eshop_downloads_manager() {
 				echo '<p class="productassociation">'.__('This file is associated with the following product pages:','eshop').'</p>';
 				echo '<ul class="productpages">';
 				foreach($pchk['1'] as $myrow){
-					echo '<li><a href="page.php?action=edit&amp;post='.$myrow.'" title="edit '.get_the_title($myrow).'">'.get_the_title($myrow).'</a></li>';
+					echo '<li><a href="post.php?action=edit&amp;post='.$myrow.'" title="edit '.get_the_title($myrow).'">'.get_the_title($myrow).'</a></li>';
 				}
 				echo '</ul>';
 				?>

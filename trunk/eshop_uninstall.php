@@ -11,6 +11,7 @@ else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
 global $wpdb;
+$eshopoptions = get_option('eshop_plugin_settings');
 
 echo '<div class="wrap"><div id="eshopicon" class="icon32"></div><h2>'.__('eShop Uninstall','eshop').'</h2>';
 

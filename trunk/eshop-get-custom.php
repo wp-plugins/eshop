@@ -16,8 +16,9 @@ function eshop_boing($pee,$short='no'){
 				}
 			}
 		}
+		$replace='';
 		if($stkav=='1'){
-			$replace='';
+			
 			if('yes' == $eshopoptions['stock_control'] && 'yes' == $eshopoptions['show_stock'] && isset($currst) && $eshop_product['download']==''){
 				$replace.='<p class="stkqty">'.__('Stock Available:','eshop').' <span>'.$currst.'</span></p>';
 			}
