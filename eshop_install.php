@@ -182,9 +182,6 @@ eshop_postmeta_setup();
 
 $eshopoptions = get_option('eshop_plugin_settings');
 $table = $wpdb->prefix . "eshop_states";
-//new for 2.13.0
-if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '2.12.9' )
-	$wpdb->query("DROP TABLE $table");
 	
 if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
@@ -196,7 +193,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 			  PRIMARY KEY  (id),
 			KEY zone (zone)
 			) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,stateName,zone,list) VALUES  
 	('AK', 'Alaska', 5,'US'),
@@ -366,7 +363,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	zone5 float(6,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 
 	$wpdb->query("INSERT INTO ".$table."(class,items,zone1,zone2,zone3,zone4,zone5) VALUES 
@@ -397,7 +394,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 
@@ -440,7 +437,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	KEY custom_field (checkid),
 	KEY status (status)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 
@@ -454,7 +451,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	    PRIMARY KEY  (id),
 	  KEY post_id (post_id,available,purchases)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 
@@ -469,7 +466,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  purchases int(11) NOT NULL default '0',
 	    PRIMARY KEY  (id)
 			) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 $table = $wpdb->prefix ."eshop_download_orders";
@@ -486,7 +483,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		  PRIMARY KEY  (id),
 		KEY code (code,email)
 		) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 
@@ -500,7 +497,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		  PRIMARY KEY  (code),
 		KEY zone (zone)
 		) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 	$wpdb->query("INSERT INTO ".$table." (code,country,zone) VALUES  
 		('AD', 'Andorra', 1),
@@ -710,7 +707,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  xtra text NOT NULL,
 	  PRIMARY KEY  (post_id)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 $table = $wpdb->prefix ."eshop_discount_codes";
@@ -727,7 +724,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  PRIMARY KEY  (id),
 	  UNIQUE KEY disccode (disccode)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 //new for 4.0.0
@@ -741,7 +738,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	weight float(8,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 $table = $wpdb->prefix . "eshop_option_names";
@@ -753,7 +750,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	`description` TEXT NOT NULL ,
 	  PRIMARY KEY  (optid)
 	) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 }
 
@@ -768,7 +765,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 		`emailContent` TEXT NOT NULL ,
 		PRIMARY KEY ( `id` )
 		) $charset_collate;";
-	error_log("creating table $table");
+	
 	dbDelta($sql);
 	//enter new defauts:
 	$esubject=__('Your order from ','eshop').get_bloginfo('name');
@@ -894,7 +891,7 @@ if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.0.0' ){
 		}
 	}
 	if ($add_field) {
-		$sql="ALTER TABLE `".$table."` CHANGE `description` `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL";
+		$sql="ALTER TABLE `".$table."` CHANGE `description` `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL";
 		$wpdb->query($sql);
 	}
 }
@@ -1098,7 +1095,7 @@ foreach($pages as $page) {
 		}else{
 			$post_parent = $first_id;
 		}
-		if($page['top']=='yes'){
+		if(isset($page['top']) && $page['top']=='yes'){
 			$post_parent=0;
 		}
 		
@@ -1137,7 +1134,7 @@ if($newpages == true){
 function eshop_create_dirs(){
 	$dirs=wp_upload_dir();
 	$upload_dir=$dirs['basedir'];
-
+	$eshopoptions = get_option('eshop_plugin_settings');
 	if(wp_mkdir_p( $upload_dir )){
 		$url_dir=$dirs['baseurl'];
 		if(substr($url_dir, -1)!='/')$url_dir.='/';
