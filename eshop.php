@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.2.3');
+define('ESHOP_VERSION', '5.2.4');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.2.3
+Version: 5.2.4
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -28,7 +28,7 @@ Author URI: http://quirm.net/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-load_plugin_textdomain('eshop');
+load_plugin_textdomain('eshop', false, dirname( plugin_basename( __FILE__ ) ) );
 //grab all options here in one go
 $eshopoptions = get_option('eshop_plugin_settings');
 /* eShop ADMIN STUFF HERE */
