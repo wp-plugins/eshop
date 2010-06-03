@@ -229,16 +229,16 @@ table.cart tr.stotal {
 	text-align:right;
 }
 /* shipping rates */
-table#eshopshiprates td {
+table.eshopshiprates td {
 	text-align:right;
 }
-table#eshopshiprates td.center {
+table.eshopshiprates td.center {
 	text-align:center;
 }
-table#eshopshiprates thead th, #zonelist thead th {
+table.eshopshiprates thead th, #zonelist thead th {
 	padding:2px;
 }
-table#eshopshiprates {
+table.eshopshiprates {
 	margin-bottom:10px;
 }
 #zonelist td {

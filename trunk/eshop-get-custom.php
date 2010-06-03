@@ -140,7 +140,7 @@ function eshop_boing($pee,$short='no'){
 			}
 			$replace .='</fieldset>
 			</form>';
-			if($short=='no' && $eshopoptions['downloads_only'] !='yes'){
+			if($short=='no' && $eshopoptions['downloads_only'] !='yes' && $eshopoptions['shipping']!='4'){
 				if($eshopoptions['cart_shipping']!=''){
 					$replace .='
 					<p class="eshopshipping">

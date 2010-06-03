@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.2.4');
+define('ESHOP_VERSION', '5.3.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.2.4
+Version: 5.3.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -53,6 +53,8 @@ if (!function_exists('eshop_admin')) {
 		$page[]=add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop_templates.php'),'eshop_admin_templates');
 		$page[]=add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop_about.php'), 'eshop_admin_about');
 		$page[]=add_submenu_page('eshop.php',__('eShop Help','eshop'),__('Help','eshop'), 'eShop', basename('eshop_help.php'), 'eshop_admin_help');
+		if (eshop_wp_version('3'))
+			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my_orders.php'),'eshop_user_orders');
 
 		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_style.php'),'eshop_admin_style');
 		$page[]=add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_settings.php'),'eshop_admin_settings');
@@ -60,6 +62,8 @@ if (!function_exists('eshop_admin')) {
 		foreach ($page as $paged){
 			add_action('admin_print_styles-' . $paged, 'eshop_admin_styles');
 		}
+		if(is_admin())
+			include 'user.php';
     
     }
 }
@@ -133,6 +137,14 @@ if (!function_exists('eshop_admin_orders_stats')) {
 	}
 }
 
+if (!function_exists('eshop_user_orders')) {
+    /**
+     * display the pending orders.
+     */
+     function eshop_user_orders() {
+		include 'eshop_user_orders.php';
+     }
+}
 if (!function_exists('eshop_admin_orders')) {
     /**
      * display the pending orders.
@@ -367,7 +379,7 @@ if (!function_exists('eshop_wp_head_add')) {
      * javascript functions
      */
     function eshop_wp_head_add() {
-    	global $wp_query,$eshopoptions;
+    	global $wp_query,$eshopoptions,$wpdb;
     	$eshopurl=eshop_files_directory();
 		if(isset($wp_query->query_vars['eshopaction'])) {
    	 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
@@ -443,7 +455,7 @@ include_once( 'eshop-eshortcodes.php');
 include_once( 'eshop-get-custom.php' );
 add_filter('the_content', 'eshop_boing');
 
-add_action('init','eshopdata');
+add_action('init','eshopdata',1);
 if (!function_exists('eshopdata')) {
 	function eshopdata(){
 	 	if(!session_id()){

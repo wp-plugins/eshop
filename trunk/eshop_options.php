@@ -11,7 +11,7 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-global $wpdb;
+global $wpdb, $eshopoptions;
 $opttable=$wpdb->prefix.'eshop_option_names';
 $optsettable=$wpdb->prefix.'eshop_option_sets';
 
@@ -39,8 +39,10 @@ if (isset($_POST['delete'])) {
 		if($named!=''){
 			$name=$_POST['eshop_option'][$x];
 			$price=$_POST['eshop_price'][$x];
+			$weight=$_POST['eshop_weight'][$x];
 			if($price=='' || !is_numeric($price))$price='0.00';
-			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s'",$optid,$name,$price));
+			if($weight=='' || !is_numeric($weight))$weight='0.00';
+			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s',weight='%s'",$optid,$name,$price,$weight));
 		}
 	$x++;
 	}
@@ -59,8 +61,10 @@ if (isset($_POST['eaddopt'])) {
 		if($named!=''){
 			$name=$_POST['eshop_option'][$x];
 			$price=$_POST['eshop_price'][$x];
+			$weight=$_POST['eshop_weight'][$x];
+			if($weight=='' || !is_numeric($weight))$weight='0.00';
 			if($price=='' || !is_numeric($price))$price='0.00';
-			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s'",$optid,$name,$price));
+			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s',weight='%s'",$optid,$name,$price,$weight));
 		}
 		$x++;
 	}
@@ -81,7 +85,7 @@ if (isset($_POST['eaddopt'])) {
 	}
 }elseif(isset($_GET['optid']) && is_numeric($_GET['optid'])) {
 	$optid=$_GET['optid'];
-	$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price from $optsettable where optid='%d' ORDER by id ASC",$optid));
+	$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price,weight from $optsettable where optid='%d' ORDER by id ASC",$optid));
 	$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
 	$ename=$egrab->name;
 	$etype=$egrab->type;
@@ -98,8 +102,12 @@ if (isset($_POST['eaddopt'])) {
 		<td headers="eshopoption eshopnumrow'.$i.'"><label for="eshop_option_'.$i.'">'. __('Option','eshop').' '.$i.'</label>
 		<input id="eshop_option_'.$i.'" name="eshop_option['.$i.']" value="'.stripslashes(esc_attr($myrow->optname)).'" type="text" size="25" /></td>
 		<td headers="eshopprice eshopnumrow'.$i.'"><label for="eshop_price_'.$i.'">'.__('Price','eshop').' '.$i.'</label>
-		<input id="eshop_price_'.$i.'" name="eshop_price['.$i.']" value="'.stripslashes(esc_attr($myrow->price)).'" type="text" size="6" /></td>'.
-		"</tr>\n";
+		<input id="eshop_price_'.$i.'" name="eshop_price['.$i.']" value="'.stripslashes(esc_attr($myrow->price)).'" type="text" size="6" /></td>';
+		if($eshopoptions['shipping']=='4'){
+		$tbody.='<td headers="eshopweight eshopnumrow'.$i.'"><label for="eshop_weight_'.$i.'">'.__('Weight','eshop').' '.$i.'</label>
+		<input id="eshop_weight_'.$i.'" name="eshop_weight['.$i.']" value="'.stripslashes(esc_attr($myrow->weight)).'" type="text" size="6" /></td>';
+		}
+		$tbody.="</tr>\n";
 		$i++;
 	}
 	?>
@@ -116,7 +124,7 @@ if (isset($_POST['eaddopt'])) {
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($ename)); ?></caption>
-			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
+			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
 		<tbody>
 	<?php
 		echo $tbody;
@@ -161,6 +169,7 @@ function createnew(){
 	<?php
 }
 function createoptions($optid,$name){
+global $eshopoptions;
 	?>
 	<form id="eshopoptionsets" action="" method="post">
 	<fieldset>
@@ -175,7 +184,7 @@ function createoptions($optid,$name){
 	<textarea id="edesc" name="description" rows="3" cols="80"></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($name)); ?></caption>
-	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th></tr></thead>
+	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
 	<tbody>
 	<?php extraoptions(1); ?>
 	</tbody></table>
@@ -185,6 +194,7 @@ function createoptions($optid,$name){
 	<?php
 }
 function extraoptions($start){
+	global $eshopoptions;
 	$i = $start;
 	$finish=$start+4;
 	while ($i <= $finish) {
@@ -193,6 +203,10 @@ function extraoptions($start){
 			<th id="eshopnumrow<?php echo $i; ?>" headers="eshopnum"><?php echo $i; ?></th>
 			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option[<?php echo $i; ?>]" value="" type="text" size="25" /></td>
 			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price[<?php echo $i; ?>]" value="" type="text" size="6" /></td>
+			<?php if($eshopoptions['shipping']=='4'){?>
+			<td headers="eshopweight eshopnumrow<?php echo $i; ?>"><label for="eshop_weight_<?php echo $i; ?>"><?php _e('Weight','eshop'); ?> <?php echo $i; ?></label><input id="eshop_weight_<?php echo $i; ?>" name="eshop_weight[<?php echo $i; ?>]" value="" type="text" size="6" /></td>
+			<?php }?>
+
 		</tr>	
 		<?php
 		$i++; 

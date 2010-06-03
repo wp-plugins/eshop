@@ -29,7 +29,6 @@ include_once (WP_PLUGIN_DIR.'/eshop/paypal/index.php');
 require_once(WP_PLUGIN_DIR.'/eshop/paypal/paypal.class.php');  // include the class file
 $p = new paypal_class;             // initiate an instance of the class
 
-
 if($eshopoptions['status']=='live'){
 	$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
 }else{
@@ -136,7 +135,7 @@ switch ($eshopaction) {
 		}
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
-			
+		
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
@@ -151,16 +150,17 @@ switch ($eshopaction) {
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
 			}
+			
 			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
-				$value=$eshopstatelist[$value];
+				if($value!='')
+					$value=$eshopstatelist[$value];
 			}
 			$p->add_field($name, $value);
 		}
-		
+
 	//	$p->add_field('return_method','2'); //1=GET 2=POST
 	// was return method now rm - go figure.
 		$p->add_field('rm','2'); //1=GET 2=POST
-
 		
 		//settings in paypal/index.php to change these
 		$p->add_field('currency_code',$eshopoptions['currency']); //['USD,GBP,JPY,CAD,EUR']
@@ -227,8 +227,7 @@ switch ($eshopaction) {
    
       
    case 'paypalipn':          // Paypal is calling page for IPN validation...
-   
-		// It's important to remember that paypal calling this script.  There
+   		// It's important to remember that paypal calling this script.  There
 		// is no output here.  This is where you validate the IPN data and if it's
 		// valid, update your database to signify that the user has payed.  If
 		// you try and use an echo or printf function here it's not going to do you

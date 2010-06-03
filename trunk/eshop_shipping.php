@@ -13,25 +13,13 @@ else {
 }
 global $wpdb,$eshopoptions;
 //had to recreate these 2 functions here - the include didn't work!
-//only use after magic quote check
-if (!function_exists('stripslashes_this')) {
-	function stripslashes_this($array) {
-		return is_array($array) ? array_map('stripslashes_this', $array) : stripslashes($array);
-	}
-}
 //sanitises input array!
 if (!function_exists('sanitise_this')) {
 	function sanitise_this($array) {
 		return is_array($array) ? array_map('sanitise_this', $array) : esc_html($array);
 	}
 }
-if (get_magic_quotes_gpc()) {
-    $_COOKIE = stripslashes_this($_COOKIE);
-    $_FILES = stripslashes_this($_FILES);
-    $_GET = stripslashes_this($_GET);
-    $_POST = stripslashes_this($_POST);
-    $_REQUEST = stripslashes_this($_REQUEST);
-}
+
 
 if (isset($_GET['eshopaction']) )
 	$action_status = esc_attr($_GET['eshopaction']);
@@ -348,13 +336,16 @@ default:
 
 	if(isset($_POST['shipmethod'])){
 		$eshopoptions = get_option('eshop_plugin_settings');
-		$eshopoptions['shipping']=$wpdb->escape($_POST['eshop_shipping']);
-		$eshopoptions['shipping_zone']=$wpdb->escape($_POST['eshop_shipping_zone']);
-		$eshopoptions['show_zones']=$wpdb->escape($_POST['eshop_show_zones']);
-		$eshopoptions['unknown_state']=$wpdb->escape($_POST['eshop_unknown_state']);
+		$eshopoptions['shipping']=$_POST['eshop_shipping'];
+		$eshopoptions['shipping_zone']=$_POST['eshop_shipping_zone'];
+		$eshopoptions['show_zones']=$_POST['eshop_show_zones'];
+		$eshopoptions['unknown_state']=$_POST['eshop_unknown_state'];
+		$eshopoptions['ship_types']=$_POST['eshop_ship_types'];
+		$eshopoptions['weight_unit']=$_POST['eshop_weight_unit'];
 		update_option('eshop_plugin_settings',$eshopoptions);
 	}
-	if(isset($_POST['submit'])){
+	if(isset($_POST['eshopstd'])){
+		unset ($_POST['eshopstd']);
 		foreach($_POST as $k=>$v){
 			$class=substr($k,0,1);
 			$items=substr($k,1,1);
@@ -368,6 +359,19 @@ default:
 			//echo "<p>UPDATE $dtable set $zone='$v' where class='$class' and items='$items'</p>";
 			}
 		}
+	}
+	if(isset($_POST['eshopwgt'])){
+		$build="INSERT INTO $dtable (`zone1`,`zone2`,`zone3`,`zone4`,`zone5`,`weight`,`ship_type`) VALUES";
+		foreach($_POST['row'] as $k=>$v){
+			//$k == ship_type
+			foreach($v as $f=>$value){
+				if($value['weight']!='')
+					$build.="('".$value['zone1']."','".$value['zone2']."','".$value['zone3']."','".$value['zone4']."','".$value['zone5']."','".$value['weight']."','".$k."'),";
+			}
+		}
+		$queri=trim($build,',');
+		$wpdb->query("DELETE from $dtable where items='0'");
+		$wpdb->query($queri);
 	}
 	if($error!=''){
 		echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid amounts:','eshop').'</p><ul>'.$error.'</ul></div>'."\n";
@@ -383,7 +387,7 @@ default:
 	<form id="shipformmethod" action="" method="post">
 	<fieldset><legend><?php _e('Shipping rate calculation','eshop'); ?></legend>
 	<?php
-	for($i=1;$i<=3;$i++){
+	for($i=1;$i<=4;$i++){
 		$selected='';
 		if($i == $eshopoptions['shipping']){$selected=' checked="checked"';}
 		if($i==1){
@@ -392,7 +396,9 @@ default:
 			$extra=' <small>'.__('( once per shipping class no matter what quantity is ordered )','eshop').'</small>';
 		}elseif($i==3){
 			$extra=' <small>'.__('( one overall charge no matter what quantity is ordered )','eshop').'</small>';
-		}	
+		}elseif($i==4){
+			$extra=' <small>'.__('( by weight &amp; zone. )','eshop').'</small>';
+		}		
 		echo '<input type="radio" class="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">'.__('Method ','eshop').$i.$extra.'</label><br />';
 	}
 	?>
@@ -430,11 +436,23 @@ default:
 	}
 	?>
 	</select><br />
-	
+	<label for="eshop_ship_types"><?php _e('Shipping Modes (by weight) - 1 mode per line','eshop'); ?></label><br />
+	<?php
+	if(isset($eshopoptions['ship_types']))	
+		$ship_types=$eshopoptions['ship_types'];
+	else
+		$ship_types='';
+	?>
+	<textarea id="eshop_ship_types" name="eshop_ship_types" cols="60" rows="6"><?php echo stripslashes(esc_attr($ship_types)); ?></textarea>
+	<?php if(!isset($eshopoptions['weight_unit'])) $eshopoptions['weight_unit']=''; ?>
+	<p><label for="eshop_weight_unit"><?php _e('Weight units','eshop'); ?></label>
+	<input id="eshop_weight_unit" name="eshop_weight_unit" type="text" value="<?php echo stripslashes(esc_attr($eshopoptions['weight_unit'])); ?>" size="10" maxlength="10" /><br /></p>
+
 	<p class="submit eshop"><input type="submit" name="shipmethod" class="button-primary" id="submitit" value="<?php _e('Update Shipping rate calculation','eshop'); ?>" /></p>
 
 	</fieldset>
 	</form>
+<?php if($eshopoptions['shipping']!=4){ ?>
 	<form id="shipform" action="" method="post">
 	<fieldset><legend><span><?php _e('Shipping Classes and Zones','eshop'); ?></span></legend>
 	<table class="hidealllabels" summary="Shipping rates">
@@ -509,12 +527,89 @@ default:
 	}
 	?>
 	</table>
-	<p class="submit eshop"><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
+	<p class="submit eshop"><input type="hidden" name="eshopstd" value="1" /><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
+	<?php
+	}else{//ship by weight
+	if(isset($eshopoptions['ship_types'])){
+	?>
+	<form id="shipform" action="" method="post">
+	<fieldset><legend><span><?php _e('Shipping Modes, by weight and zone','eshop'); ?></span></legend>
+	<?php
+	$typearr=explode("\n", $eshopoptions['ship_types']);
+	$eshopletter = "A";
+	foreach ($typearr as $k=>$type){
+		$k++;
+		?>
+		<table class="hidealllabels widefat" summary="Shipping rates per mode">
+		<caption><?php echo stripslashes(esc_attr($type)); ?></caption>
+		<thead>
+		<tr>
+		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone1"><?php _e('Zone 1','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone2"><?php _e('Zone 2','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone3"><?php _e('Zone 3','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone4"><?php _e('Zone 4','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone5"><?php _e('Zone 5','eshop'); ?></th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php
+		$x=1;
+		$query=$wpdb->get_results("SELECT * from $dtable where ship_type='$k' ORDER BY weight ASC");
+		foreach ($query as $row){
+			$alt = ($x % 2) ? '' : ' class="alt"';
+			echo '<tr'.$alt.'>';
+			echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="'.$row->weight.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="'.$row->zone1.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="'.$row->zone2.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="'.$row->zone3.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="'.$row->zone4.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="'.$row->zone5.'" /></td>'."\n";
+			echo '</tr>';
+			$x++;
+		}
+		extraeshopweights($x,$eshopletter,$k);
+		$eshopletter++;
+		?>
+		</tbody>
+		</table>
+		<?php
+	}
+	?>
+
+	<p class="submit eshop"><input type="hidden" name="eshopwgt" value="1" /><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
+	</fieldset>
+	</form>
+	<?php
+	}else{
+		echo '<p>'.__('No modes setup','eshop').'</p>';
+	}
+	}
+	?>
 	</div>
 <?php
 	break;
+}
+function extraeshopweights($start,$eshopletter,$k){
+	global $eshopoptions;
+	$x = $start;
+	$finish=$start+3;
+	while ($x <= $finish) {
+		$alt = ($x % 2) ? '' : ' class="alt"';
+		echo '<tr'.$alt.'>';
+		echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="" /></td>'."\n";
+		echo '</tr>';
+		$x++;
+	}
+	?>
+	<?php
 }
 ?>
 <?php eshop_show_credits(); ?>

@@ -52,7 +52,8 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	$subject=$thisemail->emailSubject;
 	$this_email=$thisemail->emailContent;
 	// START SUBST
-	$this_email = eshop_email_parse($this_email,$array);
+	//yes downloads, no to user password
+	$this_email = eshop_email_parse($this_email,$array,'yes','no');
 	$this_email = str_replace('&#8230;', '...', $this_email);
 // For system email - 
 	if($eshopoptions['business']!=''){

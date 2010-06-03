@@ -356,11 +356,13 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
    	id INT NOT NULL AUTO_INCREMENT,
 	class char(1) NOT NULL default '',
 	items SMALLINT( 2 ) NOT NULL default '0',
-	zone1 float(6,2) NOT NULL default '0.00',
-	zone2 float(6,2) NOT NULL default '0.00',
-	zone3 float(6,2) NOT NULL default '0.00',
-	zone4 float(6,2) NOT NULL default '0.00',
-	zone5 float(6,2) NOT NULL default '0.00',
+	zone1 float(16,2) NOT NULL default '0.00',
+	zone2 float(16,2) NOT NULL default '0.00',
+	zone3 float(16,2) NOT NULL default '0.00',
+	zone4 float(16,2) NOT NULL default '0.00',
+	zone5 float(16,2) NOT NULL default '0.00',
+	weight float(16,2) NOT NULL default '0.00', 
+	ship_type int(11) NOT NULL,
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
 	
@@ -386,11 +388,12 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	checkid varchar(255) NOT NULL default '',
 	item_id varchar(255) NOT NULL default '0',
 	item_qty int(11) NOT NULL default '0',
-	item_amt float(8,2) NOT NULL default '0.00',
+	item_amt float(16,2) NOT NULL default '0.00',
 	optname varchar(255) NOT NULL default '',
 	optsets text NOT NULL,
 	post_id int(11) NOT NULL default '0',
 	down_id int(11) NOT NULL default '0',
+	weight float(16,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid)
 	) $charset_collate;";
@@ -433,6 +436,8 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	admin_note TEXT NOT NULL,
 	paidvia VARCHAR(255) NOT NULL default '',
 	affiliate varchar(255) NOT NULL default '',
+	user_id int(11) NOT NULL,
+	user_notes text NOT NULL,
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
@@ -734,7 +739,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	id int(11) NOT NULL auto_increment,
 	optid int(11) NOT NULL default '0',
 	name varchar(255) NOT NULL default '',
-	price float(8,2) NOT NULL default '0.00',
+	price float(16,2) NOT NULL default '0.00',
 	weight float(8,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
@@ -788,6 +793,11 @@ These are available for download via:
 {DOWNLOADS}
 
 
+--------------- LOGIN DETAILS ---------------
+You can login into the site to review the status of your order.
+{LOGIN_DETAILS}
+
+
 --------------- CUSTOMER DETAILS ---------------
 
 {NAME}
@@ -839,6 +849,7 @@ These are available for download via:
 --------------- OTHER INFORMATION (if applicable) ---------------
 
 {REFCOMM}
+
 ---
 
 If you have questions or concerns, please contact us.
@@ -862,6 +873,54 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic A
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic iDeal Lite email','$esubject')"); 
+
+
+//added in 5.3
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.0' ){
+	$table = $wpdb->prefix . "eshop_order_items";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='weight') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `weight` float(16,2) NOT NULL default '0.00'";
+		$wpdb->query($sql);
+	}
+	$table = $wpdb->prefix . "eshop_shipping_rates";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='weight') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `weight` float(16,2) NOT NULL default '0.00', ADD ship_type int(11) NOT NULL";
+		$wpdb->query($sql);
+	}
+}
+
+
+//added in 5.2
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.0' ){
+	$table = $wpdb->prefix . "eshop_orders";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='user_id') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD `user_id` int(11) NOT NULL , ADD `user_notes` TEXT NOT NULL ";
+		$wpdb->query($sql);
+	}
+}
+
+
 
 //added in 5.1
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.2.0' ){
