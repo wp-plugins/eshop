@@ -262,6 +262,8 @@ if(isset($_POST['submit'])){
 			$eshopoptions['tandc_use']=$wpdb->escape($_POST['eshop_tandc_use']);
 			$eshopoptions['tandc_id']=$wpdb->escape($_POST['eshop_tandc_id']);
 			$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
+			if (eshop_wp_version('3'))
+				$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
 
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
@@ -429,31 +431,30 @@ switch($action_status){
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
 			$currencycodes=array(
-			'GBP'=>'Pounds Sterling ',
-			'USD'=>'U.S. Dollars',
-			'EUR'=>'Euros',
-			'AUD'=>'Australian Dollars',
-			'CAD'=>'Canadian Dollars',
-			'CHF'=>'Swiss Franc',
-			'CZK'=>'Czech Koruna',
-			'DKK'=>'Danish Krone',
-			'EUR'=>'Euros',
-			'GBP'=>'Pounds Sterling ',
-			'HKD'=>'Hong Kong Dollar ',
-			'HUF'=>'Hungarian Forint',
-			'ILS'=>'Israeli Shekel',
-			'JPY'=>'Yen ',
-			'LTL' => 'Lithuanian Litas',
-			'LVL'=>'Latvijas lats',
-			'MXN'=>'Mexican Peso',
-			'NOK'=>'Norwegian Krone',
-			'NZD'=>'New Zealand Dollar',
-			'PHP'=>'Philippine Pesos',
-			'PLN'=>'Polish Zloty',
-			'MYR' => 'Ringgit Malaysia',
-			'SEK'=>'Swedish Krona',
-			'SGD'=>'Singapore Dollar ',
-			'TL' => 'Turkish Lira'
+			'GBP'=>__('Pounds Sterling','eshop'),
+			'USD'=>__('U.S. Dollars','eshop'),
+			'EUR'=>__('Euros','eshop'),
+			'AUD'=>__('Australian Dollars','eshop'),
+			'BRL'=>__('Brazilian Real','eshop'),
+			'CAD'=>__('Canadian Dollars','eshop'),
+			'CHF'=>__('Swiss Franc','eshop'),
+			'CZK'=>__('Czech Koruna','eshop'),
+			'DKK'=>__('Danish Krone','eshop'),
+			'HKD'=>__('Hong Kong Dollar','eshop'),
+			'HUF'=>__('Hungarian Forint','eshop'),
+			'ILS'=>__('Israeli Shekel','eshop'),
+			'JPY'=>__('Japan Yen','eshop'),
+			'LTL' =>__('Lithuanian Litas','eshop'),
+			'LVL'=>__('Latvijas lats','eshop'),
+			'MXN'=>__('Mexican Peso','eshop'),
+			'NOK'=>__('Norwegian Krone','eshop'),
+			'NZD'=>__('New Zealand Dollar','eshop'),
+			'PHP'=>__('Philippine Pesos','eshop'),
+			'PLN'=>__('Polish Zloty','eshop'),
+			'MYR' => __('Ringgit Malaysia','eshop'),
+			'SEK'=>__('Swedish Krona','eshop'),
+			'SGD'=>__('Singapore Dollar','eshop'),
+			'TL' => __('Turkish Lira','eshop')
 			);
 			foreach($currencycodes as $code=>$codename){
 				if($code == $eshopoptions['currency']){
@@ -855,7 +856,20 @@ switch($action_status){
 	</select><br />
 	<label for="eshop_tandc"><?php _e('Text for the required checkbox.','eshop'); ?></label><input id="eshop_tandc" name="eshop_tandc" type="text" value="<?php echo $eshopoptions['tandc']; ?>" size="60" /><br />
 	<label for="eshop_tandc_id"><?php _e('Page id (transforms text above into a link).','eshop'); ?></label><input id="eshop_tandc_id" name="eshop_tandc_id" type="text" value="<?php echo $eshopoptions['tandc_id']; ?>" size="6" /><br />
-
+<?php if (eshop_wp_version('3')){ ?>
+<label for="eshop_users"><?php _e('Users added on checkout with ability to view order history. <small>(You will need to manually add {LOGIN_DETAILS} to your email templates.)</small>','eshop'); ?></label>
+	<select name="eshop_users" id="eshop_users">
+		<?php
+		if('yes' == $eshopoptions['users']){
+			echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+			echo '<option value="">'.__('No','eshop').'</option>';
+		}else{
+			echo '<option value="yes">'.__('Yes','eshop').'</option>';
+			echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
+		}
+		?>
+	</select><br />
+<?php } ?>
 </fieldset>
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
 <label for="eshop_fold_menu"><?php _e('Hide sub pages from menu until top level page is visited.','eshop'); ?></label>

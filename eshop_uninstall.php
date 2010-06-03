@@ -67,6 +67,11 @@ if(isset($_POST['delete'])){
 	}
 	echo '<li>'.__('Product Information - deleted','eshop').'</li>';
 
+	//user meta
+	$wpdb->query("DELETE FROM $wpdb->usermeta WHERE meta_key = 'eshop'");
+	echo '<li>'.__('User Meta - deleted','eshop').'</li>';
+
+
 	//delete files
 	$dloaddir=eshop_download_directory();
 	if ($handle = opendir($dloaddir)) {
@@ -121,6 +126,7 @@ if(isset($_POST['delete'])){
 	echo '<li>'.__('Removal of files uploaded via the plugin (downloads).','eshop').'</li>';
 	echo '<li>'.__('Removal of the database tables created by the plugin.','eshop').'</li>';
 	echo '<li>'.__('Removal of meta data(product information) associated with a product page.','eshop').'</li>';
+	echo '<li>'.__('Removal of User meta data(address fields etc.).','eshop').'</li>';
 	echo '<li>'.__('Deactivation and removal of eShop widgets.','eshop').'</li>';
 	echo '<li>'.__('Deactivation of the plugin.','eshop').'</li>';
 	echo '</ul>';

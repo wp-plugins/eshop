@@ -50,10 +50,15 @@ if(isset($_POST['eshop-adnote'])){
 	if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$view=$_GET['view'];
 		$admin_note=$wpdb->escape($_POST['eshop-adnote']);
-		$query2=$wpdb->get_results("UPDATE $dtable set admin_note='$admin_note' where id='$view'");
-		echo '<div class="updated fade"><p>'.__('Admin Note changed successfully.','eshop').'</p></div>';
+		if (isset($eshopoptions['users']) && $eshopoptions['users']=='yes'){
+			$user_notes=$wpdb->escape($_POST['eshop-unote']);
+		}else{
+			$user_notes='';
+		}
+		$query2=$wpdb->get_results("UPDATE $dtable set admin_note='$admin_note',user_notes='$user_notes' where id='$view'");
+		echo '<div class="updated fade"><p>'.__('Notes changed successfully.','eshop').'</p></div>';
 	}else{
-		echo '<div class="error fade"><p>'.__('Error: Admin Note was not changed.','eshop').'</p></div>';
+		echo '<div class="error fade"><p>'.__('Error: Notes were not changed.','eshop').'</p></div>';
 	}
 }
 
@@ -606,6 +611,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$custom=$drow->custom_field;
 		$transid=$drow->transid;
 		$admin_note=htmlspecialchars(stripslashes($drow->admin_note));
+		$user_notes=htmlspecialchars(stripslashes($drow->user_notes));
 		$paidvia=$drow->paidvia;
 		$eshopaff=$drow->affiliate;
 	}
@@ -677,16 +683,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
 			$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
 		}else{
-			$downloadable='<span class="offlineprod">'.__('No','eshop').'</span>';
+			$downloadable='';
 		}
 	
 		// add in a check if postage here as well as a link to the product
-		if($itemid=='postage'){
-			$showit=__('Shipping','eshop');
-			$downloadable=$itemid='&nbsp;';
-		}else{
-			$showit=$myrow->optname;
-		}
+		$showit=$myrow->optname;
 		$calt++;
 		$alt = ($calt % 2) ? '' : ' class="alt"';
 		echo '<tr'.$alt.'>
@@ -800,9 +801,18 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	}
 	//admin note form goes here
 	?>
-	<form method='post' action="" id="eshop-anote"><fieldset><legend><label for="eshop-adnote"><?php _e('Admin Note','eshop'); ?></label></legend>
-	<textarea rows="5" cols="80" id="eshop-adnote" name="eshop-adnote"><?php echo $admin_note; ?></textarea>
-	<p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Admin Note','eshop'); ?>" name="submit" /></p>
+	<form method='post' action="" id="eshop-anote"><fieldset><legend><?php _e('Notes','eshop'); ?></legend>
+	<p><label for="eshop-adnote"><?php _e('Admin Note','eshop'); ?></label><br />
+	<textarea rows="5" cols="80" id="eshop-adnote" name="eshop-adnote"><?php echo $admin_note; ?></textarea></p>
+	<?php
+	if (isset($eshopoptions['users']) && $eshopoptions['users']=='yes'){
+	?>
+	<p><label for="eshop-unote"><?php _e('Note for customer (will be displayed on their order view page)','eshop'); ?></label><br />
+	<textarea rows="5" cols="80" id="eshop-unote" name="eshop-unote"><?php echo $user_notes; ?></textarea></p>
+	<?php
+	}
+	?>
+	<p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Notes','eshop'); ?>" name="submit" /></p>
 	</fieldset>
 	</form>
 	<?php	

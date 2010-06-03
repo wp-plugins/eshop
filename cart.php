@@ -92,6 +92,7 @@ if (!function_exists('eshop_cart')) {
 			}
 
 		}elseif($identifier!=''){
+			$weight=0;
 			$postid=$wpdb->escape($_POST['postid']);
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
 			$item=$eshop_product['products'][$option]['option'];
@@ -120,7 +121,27 @@ if (!function_exists('eshop_cart')) {
 			$_SESSION['eshopcart'.$blog_id][$identifier]['price']=$iprice;
 			if(isset($_POST['optset'])){
 				$_SESSION['eshopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
+
+				$oset=$qb=array();
+				$optings=$_POST['optset'];
+				$opttable=$wpdb->prefix.'eshop_option_sets';
+				foreach($optings as $foo=>$opst){
+					$qb[]="id=$opst";
+				}
+				$qbs = implode(" OR ", $qb);
+				$otable=$wpdb->prefix.'eshop_option_sets';
+				$orowres=$wpdb->get_results("select weight from $otable where $qbs ORDER BY id ASC");
+				$x=0;
+				foreach($orowres as $orow){
+					$weight+=$orow->weight;
+					$x++;
+				}
+				
 			}
+			//weights?
+			if(isset($eshop_product['products'][$option]['weight']))
+				$weight+=$eshop_product['products'][$option]['weight'];
+			$_SESSION['eshopcart'.$blog_id][$identifier]['weight']=$weight;
 			
 		}
 		//save? not sure why I used that, but its working so why make trouble for myself.

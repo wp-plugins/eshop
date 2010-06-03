@@ -1,4 +1,4 @@
 $eshopj=jQuery.noConflict();
 $eshopj(document).ready(function () {
-    document.forms.eshopgateway.submit();
+    document.form.eshopgateway.submit();
 });

@@ -55,7 +55,7 @@ function eshop_inner_custom_box($post) {
     ?>
     <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">
     <caption><?php _e('Product Options','eshop'); ?></caption>
-    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?></tr></thead>
+    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
         <tbody>
         <?php
 		for($i=1;$i<=$numoptions;$i++){
@@ -63,8 +63,12 @@ function eshop_inner_custom_box($post) {
 				$opt=$eshop_product['products'][$i]['option'];
 				$price=$eshop_product['products'][$i]['price'];
 				$downl=$eshop_product['products'][$i]['download'];
+				if(isset($eshop_product['products'][$i]['weight'])) 
+					$weight=$eshop_product['products'][$i]['weight'];
+				else
+					$weight='';
 			}else{
-				$opt=$price=$downl='';
+				$weight=$opt=$price=$downl='';
 			}
 			?>
 			<tr>
@@ -81,6 +85,10 @@ function eshop_inner_custom_box($post) {
 				}
 				?>
 				</select></td>
+			<?php } ?>
+			<?php if($eshopoptions['shipping']=='4'){//shipping by weight 
+			?>
+			<td headers="eshopweight eshopnumrow<?php echo $i; ?>"><label for="eshop_weight_<?php echo $i; ?>"><?php _e('Weight','eshop'); ?> <?php echo $i; ?></label><input id="eshop_weight_<?php echo $i; ?>" name="eshop_weight_<?php echo $i; ?>" value="<?php echo $weight; ?>" type="text" size="6" /></td>
 			<?php } ?>
 				</tr>
 				<?php
@@ -114,7 +122,7 @@ function eshop_inner_custom_box($post) {
 	<div id="eshoposetsc">
     <h4><?php _e('Product Settings','eshop'); ?></h4>
     <?php
-	if($eshopoptions['downloads_only'] !='yes'){
+	if($eshopoptions['downloads_only'] !='yes' && $eshopoptions['shipping']!='4'){
 		?>
 		<p><label for="eshop_shipping_rate"><?php _e('Shipping Rate','eshop'); ?></label> <select name="eshop_shipping_rate" id="eshop_shipping_rate">
 		<option value=""><?php _e('No (or select)','eshop'); ?></option>
@@ -188,6 +196,10 @@ function eshop_save_postdata( $post_id ) {
 			add_filter('redirect_post_location','eshop_price_error');
 		}
 		$eshop_product['products'][$i]['download']=$thisdl=$_POST['eshop_download_'.$i];
+		$eshop_product['products'][$i]['weight']=$_POST['eshop_weight_'.$i];
+		if(!is_numeric($_POST['eshop_weight_'.$i]) && $_POST['eshop_weight_'.$i]!=''){
+			add_filter('redirect_post_location','eshop_weight_error');
+		}
 	}
 	$eshop_product['description']=htmlspecialchars($_POST['eshop_product_description']);
 	$eshop_product['shiprate']=$_POST['eshop_shipping_rate'];
