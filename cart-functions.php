@@ -485,20 +485,18 @@ if (!function_exists('orderhandle')) {
 	function orderhandle($_POST,$checkid){
 		//This function puts the order into the db.
 		global $wpdb, $blog_id,$eshopoptions;
-		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes') {
+		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;
 			require ( ABSPATH . WPINC . '/registration.php' );
 			//auto create a new user if they don't exist - only works if not logged in ;)
 			$user_email=$_POST['email'];
-			if(isset($_POST['altstate']) && $_POST['altstate']!='')
-				$_POST['altstate'];
 			$utable=$wpdb->prefix ."users";
-			$username = $_POST['first_name'].$_POST['last_name'];
+			$username = strtolower($_POST['first_name'].$_POST['last_name']);
 			$eshopch = $wpdb->get_results("SHOW TABLE STATUS LIKE '$utable'");
 
 			//a unique'ish number
-			$altusername=$_POST['first_name'].$_POST['last_name'].$eshopch[0]->Auto_increment;
+			$altusername=strtolower($_POST['first_name'].$_POST['last_name'].$eshopch[0]->Auto_increment);
 			if(!email_exists($user_email)){
 				if(username_exists($username))
 					$username=$altusername;

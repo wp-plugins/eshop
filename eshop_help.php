@@ -573,7 +573,7 @@ php_value session.gc_maxlifetime 10800
 <h3>Affiliates</h3>
 <p>Now compatible with <a href="http://www.tipsandtricks-hq.com/wordpress-affiliate/">WP Affiliate</a> for affiliates.</p>
 <h3>Shortcodes</h3>
-<p>Compatible with <a href="http://wordpress.org/extend/plugins/eshortcodes/">eShortcodes</a>. (WP verion 3 specific)</p>
+<p>Compatible with <a href="http://wordpress.org/extend/plugins/eshortcodes/">eShortcodes</a>. (WP version 3 specific)</p>
 </div>
 
 <div class="wrap">

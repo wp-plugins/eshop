@@ -857,7 +857,7 @@ switch($action_status){
 	<label for="eshop_tandc"><?php _e('Text for the required checkbox.','eshop'); ?></label><input id="eshop_tandc" name="eshop_tandc" type="text" value="<?php echo $eshopoptions['tandc']; ?>" size="60" /><br />
 	<label for="eshop_tandc_id"><?php _e('Page id (transforms text above into a link).','eshop'); ?></label><input id="eshop_tandc_id" name="eshop_tandc_id" type="text" value="<?php echo $eshopoptions['tandc_id']; ?>" size="6" /><br />
 <?php if (eshop_wp_version('3')){ ?>
-<label for="eshop_users"><?php _e('Users added on checkout with ability to view order history. <small>(You will need to manually add {LOGIN_DETAILS} to your email templates.)</small>','eshop'); ?></label>
+<label for="eshop_users"><?php _e('Allow users to sign up. <small>(You should ensure that {LOGIN_DETAILS} is in your email templates.)</small>','eshop'); ?></label>
 	<select name="eshop_users" id="eshop_users">
 		<?php
 		if('yes' == $eshopoptions['users']){
