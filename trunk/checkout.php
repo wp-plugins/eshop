@@ -320,8 +320,9 @@ if (!function_exists('eshopShowform')) {
 
 		$echo .='<p class="eshop_tandc"><input type="checkbox" name="eshop_tandc" id="eshop_tandc" value="1" /><label for="eshop_tandc">'.$eshoptc.'<span class="reqd">*</span></label></p>';
 	}
-	
-	
+	if(isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && !is_user_logged_in()){
+			$echo .='<p class="eshop_users"><input type="checkbox" name="eshop_users" id="eshop_users" value="1" /><label for="eshop_users">'.__('Sign me up to the site so I can view my orders.','eshop').'</label></p>';
+	}
 	if('no' == $eshopoptions['downloads_only']){
 			$echo .='<label for="submitit"><small id="eshopshowshipcost">'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
 	}
@@ -619,6 +620,9 @@ if (!function_exists('eshop_checkout')) {
 				else
 					$_SESSION['eshop_discount'.$blog_id]=$_POST['eshop_discount'];
 			}
+		}
+		if(isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_POST['eshop_users']) && !is_user_logged_in()){
+			$_SESSION['eshop_user'.$blog_id]='1';
 		}
 
 		if($error!=''){
