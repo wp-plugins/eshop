@@ -37,11 +37,11 @@ function eshop_cart_items($atts){
 		}
 		
 		if($showwhat=='items' || $showwhat=='both'){
-			$eecho .='<span>'.$eshopsize.'</span> '.eshop_plural($eshopsize, __('product','eshop'), __('products','eshop') ).' '.__('in cart','eshop').'.';
+			$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
 		}
 		if($showwhat=='qty' || $showwhat=='both'){
 			if($showwhat=='both') $eecho.= '<br />';
-			$eecho .='<span>'.$eshopqty.'</span> '.eshop_plural($eshopqty, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
+			$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopsize,'eshop'),$eshopsize);
 		}
 		$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
 		$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
@@ -598,10 +598,11 @@ function eshop_show_product($atts){
 		$pages=array();
 		$theids = explode(",", $id);
 		foreach($theids as $thisid){
-			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title,$wpdb->posts.post_excerpt,$wpdb->posts.post_author,$wpdb->posts.post_date,$wpdb->posts.post_type,$wpdb->posts.post_status,$wpdb->posts.post_name from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($pages,$thispage['0']);
 		}
+
 		if(sizeof($pages)>0){//if nothing found - don't do this
 			if($panels=='no'){
 				$echo = eshop_listpages($pages,$class,$form,$imgsize,$links);
@@ -614,6 +615,7 @@ function eshop_show_product($atts){
 		}
 		$post=$paged;
 	}
+
 	return;
 }
 function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
@@ -621,19 +623,20 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
 	$paged=$post;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
-	foreach ($subpages as $post) {
+	foreach ($subpages as $post){		
 		setup_postdata($post);
+		
 		if($links=='yes')
 			$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
 		else
 			$echo .= '<li>'.apply_filters("the_title",$post->post_title);
-
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
 			$w=round(($w*$imgsize)/100);
 			$h=round(($h*$imgsize)/100);
 		}
+
 		if (has_post_thumbnail( $post->ID ) ) {
 			if($links=='yes')
 				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";

@@ -35,11 +35,11 @@ class eshop_widget extends WP_Widget {
 				}
 				$eecho='<p class="eshopwidget">';
 				if($showwhat=='items' || $showwhat=='both'){
-					$eecho .='<span>'.$eshopsize.'</span> '.eshop_plural($eshopsize, __('product','eshop'), __('products','eshop') ).' '.__('in cart','eshop').'.';
+					$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
 				}
 				if($showwhat=='qty' || $showwhat=='both'){
 					if($showwhat=='both') $eecho.= '<br />';
-					$eecho .='<span>'.$eshopqty.'</span> '.eshop_plural($eshopqty, __('item','eshop'), __('items','eshop') ).' '.__('in cart','eshop').'.';
+					$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopsize,'eshop'),$eshopsize);
 				}
 				$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
 				$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
