@@ -59,8 +59,15 @@ if (!function_exists('eshop_admin')) {
 		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_style.php'),'eshop_admin_style');
 		$page[]=add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_settings.php'),'eshop_admin_settings');
 		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+		$help='
+		<p><strong>' . __('Extra eShop help:') . '</strong><br />
+		'.__('<a href="http://wordpress.org/tags/eshop">Wordpress forums</a>','eshop').'<br />
+		'.__('<a href="http://quirm.net/forum/forum.php?id=14">Quirm.net</a>','eshop').'</p>
+		';
 		foreach ($page as $paged){
 			add_action('admin_print_styles-' . $paged, 'eshop_admin_styles');
+			if($paged!='users_page_my_orders')
+				add_contextual_help($paged,$help); 
 		}
 		if(is_admin())
 			include 'user.php';
