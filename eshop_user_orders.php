@@ -15,6 +15,7 @@ global $wpdb;
 
 if (!function_exists('displaymyorders')) {
 	function displaymyorders(){
+	
 		global $wpdb,$eshopoptions;
 		global $current_user;
 		get_currentuserinfo();

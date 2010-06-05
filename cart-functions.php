@@ -1294,5 +1294,4 @@ if (!function_exists('eshop_wp_version')) {
 		return false;
 	}
 }
-
 ?>
