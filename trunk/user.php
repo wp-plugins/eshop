@@ -56,7 +56,7 @@ global $wpdb,$eshopoptions;
 ?>
 
 <h3><?php _e("Shopping Cart information", "eshop"); ?></h3>
-<p>eShop will use information from above, such as first name, last name and email address. Filling in fields here will save you having to enter them each time you purchase something from our shop.</p>
+<p><?php _e('Filling in fields here will save you having to enter them each time you purchase something from our shop.','eshop'); ?></p>
 <table class="form-table">
 <tr>
 <th><label for="company"><?php _e("Company"); ?></label></th>

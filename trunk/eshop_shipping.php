@@ -578,7 +578,6 @@ default:
 		<?php
 	}
 	?>
-
 	<p class="submit eshop"><input type="hidden" name="eshopwgt" value="1" /><input type="submit" name="submit" class="button-primary" id="submit" value="<?php _e('Update Shipping Rates','eshop'); ?>" /></p>
 	</fieldset>
 	</form>
