@@ -264,6 +264,8 @@ if(isset($_POST['submit'])){
 			$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
 			if (eshop_wp_version('3'))
 				$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
+				$eshopoptions['users_text']=$wpdb->escape($_POST['eshop_users_text']);
+
 
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
@@ -869,6 +871,11 @@ switch($action_status){
 		}
 		?>
 	</select><br />
+	<?php
+	if(!isset($eshopoptions['users_text'])) $eshopoptions['users_text']='';
+	?>
+	<label for="eshop_users_text"><?php _e('Change sign up text.','eshop'); ?></label><input id="eshop_users_text" name="eshop_users_text" type="text" value="<?php echo $eshopoptions['users_text']; ?>" size="60" /><br />
+
 <?php } ?>
 </fieldset>
 <fieldset><legend><?php _e('Sub pages','eshop'); ?></legend>
