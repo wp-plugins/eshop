@@ -175,7 +175,7 @@ function eshop_products_manager() {
 	if($max>0){
 		$apge=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
 		echo '<ul id="eshopsubmenu">';
-		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
+		echo '<li><span>'.__('Sort Products by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>'.__('Product','eshop').'</a></li>';

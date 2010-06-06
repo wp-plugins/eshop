@@ -518,6 +518,8 @@ if (!function_exists('orderhandle')) {
 					update_user_meta( $user_id, 'eshop', $eshopuser );
 					update_user_meta( $user_id, 'first_name', $_POST['first_name'] );
 					update_user_meta( $user_id, 'last_name',$_POST['last_name'] );
+					update_user_option( $user_id, 'default_password_nag', true, true ); //Set up the Password change nag.
+					wp_new_user_notification($user_id, $random_password);
 				}
 			}
 		}else{
@@ -1201,7 +1203,7 @@ if (!function_exists('eshop_plural')) {
 	}
 }
 if (!function_exists('eshop_email_parse')) {
-	function eshop_email_parse($this_email,$array, $d='yes',$userpass='yes'){
+	function eshop_email_parse($this_email,$array, $d='yes'){
 		require_once ( ABSPATH . WPINC . '/registration.php' );
 		$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 		$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
@@ -1216,18 +1218,6 @@ if (!function_exists('eshop_email_parse')) {
 		$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
 		$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
 		$this_email = str_replace('{ORDERDATE}', $array['date'], $this_email);
-		if($userpass=='yes' && $array['user_id']!=0 && !is_user_logged_in()){
-			$random_password = wp_generate_password( 12, false );
-			$user_info=get_userdata($array['user_id']);
-			$userdetails='Login: '.$user_info->user_login."\n";
-			$uid=$array['user_id'];
-			wp_update_user(array('ID'=>$uid,'user_pass'=>$random_password));
-			$userdetails.='Password: '.$random_password."\n";
-			$this_email = str_replace('{LOGIN_DETAILS}', $userdetails, $this_email);
-		}else{
-			$this_email = str_replace('{LOGIN_DETAILS}', '', $this_email);
-		}
-
 		return $this_email;
 	}
 }

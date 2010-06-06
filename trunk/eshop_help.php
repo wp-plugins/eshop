@@ -484,7 +484,7 @@ This is only triggered when someone visits the site.</p>
 
 <p>Shipping Rate F is preset for 'FREE' delivery and cannot be amended.</p>
 <h5>Method 4 notes</h5>
-<p>This will automatically set all weights to zero, so be careful when using. An extra field is added to the product entry section. Additionally a new section on the checkout page is added to allow the customer to choose the shupping method.</p>
+<p>This will automatically set all weights to zero, so be careful when using. An extra field is added to the product entry section. Additionally a new section on the checkout page is added to allow the customer to choose the shipping method.</p>
 <p><strong>Shipping Modes (by weight) - 1 mode per line</strong> - required, enables you to specify different methods of shipping.</p>
 <p><strong>Weight units</strong> - specify what weight unit you will be using.</p>
 <p><strong>Note:</strong> - currently weight is <em>not</em> automatically shown on product pages.</p>
