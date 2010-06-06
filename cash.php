@@ -114,7 +114,7 @@ switch ($eshopaction) {
 			$this_email = stripslashes($thisemail->emailContent);
 			// START SUBST
 			$csubject=stripslashes($thisemail->emailSubject);
-			$this_email = eshop_email_parse($this_email,$array,'no');
+			$this_email = eshop_email_parse($this_email,$array);
 
 			//try and decode various bits - may need tweaking Mike, we may have to write 
 			//a function to handle this depending on what you are using - but for now...

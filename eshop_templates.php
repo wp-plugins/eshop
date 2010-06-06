@@ -87,10 +87,8 @@ echo htmlspecialchars(stripslashes($thisemail->emailContent));
 <li><strong>{REFCOMM}</strong> - <?php _e('The reference and other messages provided by the customer.','eshop'); ?></li>
 <li><strong>{CONTACT}</strong> - <?php _e('Customers shipping address phone number.','eshop'); ?></li>
 <li><strong>{ORDERDATE}</strong> - <?php _e('Date and time of order.','eshop'); ?></li>
-<?php if (eshop_wp_version('3')){ ?>
-<li><strong>{LOGIN_DETAILS}</strong> - <?php _e('Provides the customer with their login name and password.','eshop'); ?></li>
-<?php } ?>
 </ul>
+<p><?php _e('To change the default email that notifies the customer when signing up to you site(if enabled) you may need to install another plugin such as <a href="http://wordpress.org/extend/plugins/new-user-email-set-up/">New user Email Set Up</a>.','eshop'); ?></p>
 </div>
 	<?php 
 	//end custom styling

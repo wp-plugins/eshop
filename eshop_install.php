@@ -793,11 +793,6 @@ These are available for download via:
 {DOWNLOADS}
 
 
---------------- LOGIN DETAILS ---------------
-You can login into the site to review the status of your order.
-{LOGIN_DETAILS}
-
-
 --------------- CUSTOMER DETAILS ---------------
 
 {NAME}
