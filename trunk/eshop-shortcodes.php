@@ -307,7 +307,8 @@ function eshop_list_cat_tags($atts){
 	$args = array(
 	'post_type' => 'post',
 	'post_status' => 'publish',
-	$type => $find
+	$type => $find, 
+	'meta_key'=>'_eshop_product'
 	); 
 	$max = sizeof(query_posts($args));
 	if($max>$show)
