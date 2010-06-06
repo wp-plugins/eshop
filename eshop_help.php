@@ -339,6 +339,17 @@ echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' ret
 
 <h4>Cart Options</h4>
 <p><strong>Percentage size of thumbnail image shown in cart - leave blank to not show the image</strong> - takes the standard thumbnail produced by wordpress and reduces it by the value entered to fit into the shopping cart.</p>
+<p><strong>Use an add to cart image or button? </strong> - a default image is supplied for us, but this can be changed.</p>
+
+<h4>Checkout Options</h4>
+<p><strong>Hide the Additional information form fields</strong> - hides checkout form fields.</p>
+<p><strong>Hide the shipping address form fields</strong> - hides checkout form fields.</p>
+
+<p><strong>Add a required checkbox to the checkout.</strong></p>
+<p><strong>Text for the required checkbox.</strong></p>
+<p><strong>Page id (transforms text above into a link).</strong></p>
+<p><strong>Allow users to sign up. (You should ensure that {LOGIN_DETAILS} is in your email templates.)</strong> - enables customers to sogn up to be able to view their past orders. <strong>Note</strong> will not sign anyone up if the email addres is already in use.</p>
+<p><strong>Change sign up text.</strong> - default text is provided, but you can change that here.</p>
 
 <h4>Sub Pages</h4>
 <p>This option, sometimes referred to as 'fold menus', can automatically hide sub pages until their parent page is viewed. (hides links to shop pages until you go into the shop). <strong>Warning</strong> this affects all sub page listings on your site.</p>
@@ -457,11 +468,13 @@ This is only triggered when someone visits the site.</p>
 
 <h3>Shipping</h3>
 <h4>Shipping Rates</h4>
-<p>Shipping rate calculations - 3 methods are offered:</p>
+<p>Shipping rate calculations:</p>
 <ul>
 <li><strong>Method 1</strong> ( per quantity of 1, prices reduced for additional items ) may take a while to calculate, but is possibly of greatest use.</li>
 <li><strong>Method 2</strong> ( once per shipping class no matter what quantity is ordered ) </li>
 <li><strong>Method 3</strong> ( one overall charge no matter what quantity is ordered )</li>
+<li><strong>Method 4</strong> (  by weight & zone )</li>
+
 </ul>
 <p>Each of these methods still allow for a 'per zone' price.</p>
 
@@ -470,6 +483,12 @@ This is only triggered when someone visits the site.</p>
 <p>The table for the shipping charges is fairly complex, but hopefully easy to follow.</p>
 
 <p>Shipping Rate F is preset for 'FREE' delivery and cannot be amended.</p>
+<h5>Method 4 notes</h5>
+<p>This will automatically set all weights to zero, so be careful when using. An extra field is added to the product entry section. Additionally a new section on the checkout page is added to allow the customer to choose the shupping method.</p>
+<p><strong>Shipping Modes (by weight) - 1 mode per line</strong> - required, enables you to specify different methods of shipping.</p>
+<p><strong>Weight units</strong> - specify what weight unit you will be using.</p>
+<p><strong>Note:</strong> - currently weight is <em>not</em> automatically shown on product pages.</p>
+<p>The table for entering the prices features a starting weight, and prices per zone.</p>
 
 <h4>Countries and State/County/Province</h4>
 <p>Default zones are pre-configured for both 'Countries' and 'State/County/Province' but can be amended if necessary.</p>
