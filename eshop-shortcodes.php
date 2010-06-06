@@ -306,7 +306,7 @@ function eshop_list_cat_tags($atts){
 	$thisispage=get_permalink($post->ID);
 	$args = array(
 	'post_type' => 'post',
-	'post_status' => null,
+	'post_status' => 'publish',
 	$type => $find
 	); 
 	$max = sizeof(query_posts($args));
@@ -340,7 +340,7 @@ function eshop_list_cat_tags($atts){
 	if(!isset($offset)) $offset='0';
 	$args = array(
 	'post_type' => 'post',
-	'post_status' => null,
+	'post_status' => 'publish',
 	$type => $find, 
 	'meta_key'=>'_eshop_product',
 	'orderby'=> $orderby,
