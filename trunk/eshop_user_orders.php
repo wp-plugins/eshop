@@ -67,12 +67,11 @@ if (!function_exists('displaymyorders')) {
 			<thead>
 			<tr>
 			<th id="line" title="Line number">#</th>
-			<th id="date">'.__('Date/Time','eshop').'</th>
-			<th id="customer">'.__('Customer','eshop').'</th>
+			<th id="date">'.__('Ordered on','eshop').'</th>
+			<th id="transid">'.__('Transaction ID','eshop').'</th>
 			<th id="items">'.__('Items','eshop').'</th>
 			<th id="price">'.__('Price','eshop').'</th>
 			<th id="state">'.__('Order Status','eshop').'</th>
-			<th id="transid">'.__('Transaction ID','eshop').'</th>
 			</tr></thead><tbody>'."\n";
 			$move=array();
 			$c=0;
@@ -115,11 +114,10 @@ if (!function_exists('displaymyorders')) {
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$c.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
-					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
+					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->transid.'</a></td>
 					<td headers="items numb'.$c.'">'.$x.'</td>
 					<td headers="price numb'.$c.'" class="right">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2)).'</td>
-					<td headers="state numb'.$c.'" class="right">'.$status.'</td>
-					<td headers="transid numb'.$c.'">'.$myrow->transid.'</td>'."</tr>\n";
+					<td headers="state numb'.$c.'" class="right">'.$status.'</td>';
 				}
 
 			}
