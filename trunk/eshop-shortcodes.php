@@ -700,7 +700,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links){
 		else
 			$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span>'."\n";
 
-		include_once( 'eshop-get-custom.php' );
+		include_once( 'eshop-add-cart.php' );
 		if($form=='yes'){
 			$short='yes';
 			$echo =eshop_boing($echo,$short);
@@ -1019,7 +1019,7 @@ if (!function_exists('eshop_show_zones')) {
 function eshop_addtocart(){
 	global $wpdb, $post;
 	eshop_cache();
-	include_once( 'eshop-get-custom.php' );
+	include_once( 'eshop-add-cart.php' );
 	return eshop_boing('');
 }
 function eshop_welcome($atts, $content = ''){
