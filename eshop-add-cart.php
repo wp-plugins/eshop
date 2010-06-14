@@ -92,19 +92,39 @@ function eshop_boing($pee,$short='no'){
 
 						
 			if($eshopoptions['options_num']>1){
-				$opt=$eshopoptions['options_num'];
-				$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
-				for($i=1;$i<=$opt;$i++){
-					$option=$eshop_product['products'][$i]['option'];
-					$price=$eshop_product['products'][$i]['price'];
-					if($option!=''){
-						if($price!='0.00')
-							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
-						else
-							$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
+			
+				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
+					$opt=$eshopoptions['options_num'];
+					$replace.="\n<ul>\n";//.'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
+					for($i=1;$i<=$opt;$i++){
+						$option=$eshop_product['products'][$i]['option'];
+						$price=$eshop_product['products'][$i]['price'];
+						if($i=='1') $esel=' checked="checked"';
+						else $esel='';
+						if($option!=''){
+							if($price!='0.00')
+								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2))."</label>\n</li>";
+							else
+								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.'" name="option" /><label for="eshopopt'.$theid.'_'.$i.'">'.stripslashes(esc_attr($option)).'</label>'."\n</li>";
+						}
 					}
+					$replace.="</ul>\n";
+
+				}else{			
+					$opt=$eshopoptions['options_num'];
+					$replace.="\n".'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
+					for($i=1;$i<=$opt;$i++){
+						$option=$eshop_product['products'][$i]['option'];
+						$price=$eshop_product['products'][$i]['price'];
+						if($option!=''){
+							if($price!='0.00')
+								$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).' @ '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</option>'."\n";
+							else
+								$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
+						}
+					}
+					$replace.='</select></label>';
 				}
-				$replace.='</select></label>';
 			}else{
 				$option=$eshop_product['products']['1']['option'];
 				$price=$eshop_product['products']['1']['price'];

@@ -110,7 +110,7 @@ function eshop_inner_custom_box($post) {
 	if(!is_array($osets)) $osets=array();
 	foreach($myrowres as $row){
 	?>
-		<li><input type="checkbox" name="eshoposets[]" id="osets<?php echo $oi; ?>" value="<?php echo $row->optid; ?>"<?php if(in_array($row->optid,$osets)) echo ' checked="checked"'; ?>><label for="osets<?php echo $oi; ?>"><?php echo stripslashes(esc_attr($row->name))?></label></li>
+		<li><input type="checkbox" name="eshoposets[]" id="osets<?php echo $oi; ?>" value="<?php echo $row->optid; ?>"<?php if(in_array($row->optid,$osets)) echo ' checked="checked"'; ?> /><label for="osets<?php echo $oi; ?>"><?php echo stripslashes(esc_attr($row->name))?></label></li>
 	<?php
 		$oi++;
 	}
@@ -157,6 +157,14 @@ function eshop_inner_custom_box($post) {
     <p><label for="eshop_stock_quantity"><?php _e('Stock Quantity','eshop'); ?></label> <input id="eshop_stock_quantity" name="eshop_stock_quantity" value="<?php if(isset($eshop_product['qty'])) echo $eshop_product['qty']; ?>" type="text" size="4" /></p>
     <?php
     }
+    ?>
+    <h4><?php _e('Form Settings','eshop'); ?></h4>
+    <p><label for="eshop_cart_radio"><?php _e('Show Options as','eshop'); ?></label> 
+    <select name="eshop_cart_radio" id="eshop_cart_radio">
+    	<option value="0"<?php if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='0') echo ' selected="selected"'; ?>><?php _e('Checkboxes','eshop'); ?></option>
+		<option value="1"<?php if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1') echo ' selected="selected"'; ?>><?php _e('Radio Buttons','eshop'); ?></option>
+    </select></p>
+    <?php
 	echo '</div><div class="clear"></div>';
 
 }
@@ -236,6 +244,8 @@ function eshop_save_postdata( $post_id ) {
 		}
 
 	}
+	//form setup
+	$eshop_product['cart_radio']=$_POST['eshop_cart_radio'];
 	//option sets
 	if(isset($_POST['eshoposets'])){
 		$eshop_product['optset']=$_POST['eshoposets'];

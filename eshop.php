@@ -455,11 +455,11 @@ if (isset($_POST['eshoplongdownloadname'])){
 }
 
 //add eshop product entry onto the post and page edit pages.
-include_once( 'eshop-custom-fields.php' );
+include_once( 'eshop-product-entry.php' );
 include_once( 'eshop-eshortcodes.php');
 
 //displays the add to cart form
-include_once( 'eshop-get-custom.php' );
+include_once( 'eshop-add-cart.php' );
 add_filter('the_content', 'eshop_boing');
 
 add_action('init','eshopdata',1);
