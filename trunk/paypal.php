@@ -163,11 +163,14 @@ switch ($eshopaction) {
 		$p->add_field('rm','2'); //1=GET 2=POST
 		
 		//settings in paypal/index.php to change these
-		$p->add_field('currency_code',$eshopoptions['currency']); //['USD,GBP,JPY,CAD,EUR']
+		$p->add_field('currency_code',$eshopoptions['currency']);
 		$p->add_field('lc',$eshopoptions['location']);
 		$p->add_field('cmd','_ext-enter');
 		$p->add_field('redirect_cmd','_cart');
 		$p->add_field('upload','1');
+		if('yes' == $eshopoptions['downloads_only'])
+			$p->add_field('no_shipping','1');
+		
 		//$p->add_field('address_override','1');//causes errors :(
 		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_paypal_post(); // submit the fields to paypal
@@ -248,14 +251,6 @@ switch ($eshopaction) {
  		/*
 		updating db.
 		*/
-			//extract affiliate code from custom
-			/*
-			if(strlen($p->ipn_data['custom'])>'56'){
-				$ipncustom=$p->ipn_data['custom'];
-				$p->ipn_data['custom']=substr($ipncustom,0,55);
-				$eshopaff=substr($ipncustom,55);
-			}
-			*/
 			$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 
@@ -276,8 +271,8 @@ switch ($eshopaction) {
 					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
-			//check reciever email is correct - we will use business for now
 			$paypalRecipient = (isset($p->ipn_data['business'])) ? $p->ipn_data['business'] : $p->ipn_data['receiver_email'];
+			//check reciever email is correct - we will use business for now
 			if($paypalRecipient != $eshopoptions['business'])
 			//if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
