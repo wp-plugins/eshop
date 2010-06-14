@@ -191,7 +191,7 @@ class paypal_class {
       // script.
       $post_string = '';    
       foreach ($_POST as $field=>$value) { 
-         $this->ipn_data["$field"] = $value;
+         $this->ipn_data["$field"] = $value;//str_replace('%40','@', $value);
          $post_string .= $field.'='.urlencode($value).'&'; 
       }
       $post_string.="cmd=_notify-validate"; // append ipn command

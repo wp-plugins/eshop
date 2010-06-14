@@ -4,7 +4,8 @@ function eshop_boing($pee,$short='no'){
 	$stkav=get_post_meta( $post->ID, '_eshop_stock',true );
     $eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
 	//if the search page we don't want the form!
-	if((!strpos($pee, '[eshop_addtocart')) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+	//was (!strpos($pee, '[eshop_addtocart'))
+	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//stock checker
 		if($post->ID!=''){
 			if('yes' == $eshopoptions['stock_control']){
