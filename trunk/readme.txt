@@ -44,6 +44,7 @@ Version 5.4.0
 
 * *added* enhancements for WP3.0, ability for buyer to sign up to the site at checkout stage. This gives the customer an order status page if they login, and ability to save address etc.
 * *added* new shipping method - ship by weight, this also allows several different methods of shipping to be set.
+* *changed* cart widget can now show the full cart
 * *fixed* many small bugs
 
 Version 5.3.0
