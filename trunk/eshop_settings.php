@@ -456,7 +456,7 @@ switch($action_status){
 			'MYR' => __('Ringgit Malaysia','eshop'),
 			'SEK'=>__('Swedish Krona','eshop'),
 			'SGD'=>__('Singapore Dollar','eshop'),
-			'TL' => __('Turkish Lira','eshop').
+			'TL' => __('Turkish Lira','eshop'),
 			'INR' => __('Indian Rupee','eshop')
 			);
 			foreach($currencycodes as $code=>$codename){

@@ -161,7 +161,7 @@ function eshop_inner_custom_box($post) {
     <h4><?php _e('Form Settings','eshop'); ?></h4>
     <p><label for="eshop_cart_radio"><?php _e('Show Options as','eshop'); ?></label> 
     <select name="eshop_cart_radio" id="eshop_cart_radio">
-    	<option value="0"<?php if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='0') echo ' selected="selected"'; ?>><?php _e('Checkboxes','eshop'); ?></option>
+    	<option value="0"<?php if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='0') echo ' selected="selected"'; ?>><?php _e('Dropdown Select','eshop'); ?></option>
 		<option value="1"<?php if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1') echo ' selected="selected"'; ?>><?php _e('Radio Buttons','eshop'); ?></option>
     </select></p>
     <?php

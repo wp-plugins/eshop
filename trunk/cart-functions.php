@@ -6,6 +6,12 @@ if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
 		//The cart display.
 		global $wpdb, $blog_id,$eshopoptions;
+		if($pzone=='widget'){
+			$pzone='';
+			$iswidget='w';
+		}else{
+			$iswidget='';
+		}
 		$echo ='';
 		$check=0;
 		$sub_total=0;
@@ -30,9 +36,9 @@ if (!function_exists('display_cart')) {
 			<caption>'.__('Shopping Cart','eshop').'</caption>
 			<thead>
 			<tr class="thead">
-			<th id="cartItem" class="nb">'.__('Item Description','eshop').'</th>
-			<th id="cartQty" class="bt">'.__('<dfn title="Quantity">Qty</dfn>','eshop').'</th>
-			<th id="cartTotal" class="btbr">'.__('Total','eshop').'</th>
+			<th id="cartItem'.$iswidget.'" class="nb">'.__('Item Description','eshop').'</th>
+			<th id="cartQty'.$iswidget.'" class="bt">'.__('<dfn title="Quantity">Qty</dfn>','eshop').'</th>
+			<th id="cartTotal'.$iswidget.'" class="btbr">'.__('Total','eshop').'</th>
 			</tr></thead><tbody>';
 			//display each item as a table row
 			$calt=0;
@@ -88,15 +94,15 @@ if (!function_exists('display_cart')) {
 					}else{
 						$optset='';
 					}
-					$echo.= '<td id="prod'.$calt.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.$optset.'</td>'."\n";
-					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod$calt\">";
+					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.$optset.'</td>'."\n";
+					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod".$calt.$iswidget."\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
 						//generate acceptable id
 						$toreplace=array(" ","-","$");
 						$accid=$productid.$key;
 						$accid=str_replace($toreplace, "", $accid);
-						$echo.= '<label for="'.$accid.'"><input class="short" type="text" id="'.$accid.'" name="'.$productid.'['.$key.']" value="'.$opt["qty"].'" size="3" maxlength="3" /></label>';
+						$echo.= '<label for="'.$accid.$iswidget.'"><input class="short" type="text" id="'.$accid.$iswidget.'" name="'.$productid.'['.$key.']" value="'.$opt["qty"].'" size="3" maxlength="3" /></label>';
 					}else{
 						$echo.= $opt["qty"];
 					}
@@ -107,7 +113,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod$calt\" class=\"amts\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
@@ -122,7 +128,7 @@ if (!function_exists('display_cart')) {
 				$discount=is_discountable(calculate_total());
 				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
 			}
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -529,9 +535,7 @@ if (!function_exists('orderhandle')) {
 		}
 		if(!isset($eshopoptions['users'])) $user_id='0';
 		
-		
-		
-		
+	
 		//$wpdb->show_errors();
 		if (get_magic_quotes_gpc()) {
 			$_POST=stripslashes_array($_POST);
@@ -623,6 +627,8 @@ if (!function_exists('orderhandle')) {
 				'$affiliate',
 				'$user_id'
 					);");
+					
+					
 			$i=1;
 			//this is here to generate just one code per order
 			$code=eshop_random_code(); 
@@ -853,7 +859,6 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$cday=substr($custom, 6, 2);
 		$thisdate=$cyear."-".$cmonth."-".$cday;
 		$cart.= "\n".__('Order placed on','eshop')." ".$thisdate."\n";
-
 		foreach($dquery as $drow){
 			$address.= "\n".__('Mailing Address:','eshop')."\n".$drow->address1.", ".$drow->address2."\n";
 			$address.= $drow->city."\n";
@@ -913,6 +918,11 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$downloads.=__('Email:','eshop').' '.$drow->email."\n";
 			$downloads.=__('Code:','eshop').' '.$chkcode."\n";
 		}
+		$cart=html_entity_decode($cart);
+		$extras=html_entity_decode($extras);
+		$firstname=html_entity_decode($firstname);
+		$ename=html_entity_decode($ename);
+		$address=html_entity_decode($address);
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal);
 		return $array;
 	}

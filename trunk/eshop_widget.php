@@ -12,7 +12,7 @@ add_action("widgets_init", "eshopwidgets_init");
 class eshop_widget extends WP_Widget {
 
 	function eshop_widget() {
-		$widget_ops = array('classname' => 'eshopcart_widget', 'description' => __('Displays a simplified cart','eshop'));
+		$widget_ops = array('classname' => 'eshopcart_widget', 'description' => __('Displays a simplified or full cart','eshop'));
 		$this->WP_Widget('eshopw_cart', __('eShop Cart','eshop'), $widget_ops);
 	}
 
@@ -33,17 +33,25 @@ class eshop_widget extends WP_Widget {
 				foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
 					$eshopqty+=$eshopwop['qty'];
 				}
-				$eecho='<p class="eshopwidget">';
-				if($showwhat=='items' || $showwhat=='both'){
-					$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
-				}
-				if($showwhat=='qty' || $showwhat=='both'){
-					if($showwhat=='both') $eecho.= '<br />';
-					$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopsize,'eshop'),$eshopsize);
-				}
-				$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-				$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
-				$eecho .='</p>';
+				if($showwhat=='full'){
+					$eecho='<div class="eshopcartwidget">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget');
+					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
+					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+					$eecho .='</p></div>';
+				}else{
+					$eecho='<p class="eshopwidget">';
+					if($showwhat=='items' || $showwhat=='both'){
+						$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
+					}
+					if($showwhat=='qty' || $showwhat=='both'){
+						if($showwhat=='both') $eecho.= '<br />';
+						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopsize,'eshop'),$eshopsize);
+					}
+					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+					$eecho .='</p>';
+				}			
+
 				echo $before_widget;
 				echo $before_title.$title.$after_title;
 				echo $eecho;
@@ -88,6 +96,8 @@ class eshop_widget extends WP_Widget {
 			<option value="items"<?php selected( $showwhat, 'items' ); ?>><?php _e('Total number of different products','eshop'); ?></option>
 			<option value="qty"<?php selected( $showwhat, 'qty' ); ?>><?php _e('Total number of different items','eshop'); ?></option>
 			<option value="both"<?php selected( $showwhat, 'both' ); ?>><?php _e('Both','eshop'); ?></option>
+			<option value="full"<?php selected( $showwhat, 'full' ); ?>><?php _e('Full Cart','eshop'); ?></option>
+
 			</select>
 		</p>
 	<?php
