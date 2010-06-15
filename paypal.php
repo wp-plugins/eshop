@@ -271,10 +271,8 @@ switch ($eshopaction) {
 					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
-			$paypalRecipient = (isset($p->ipn_data['business'])) ? $p->ipn_data['business'] : $p->ipn_data['receiver_email'];
 			//check reciever email is correct - we will use business for now
-			if($paypalRecipient != $eshopoptions['business'])
-			//if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
+			if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
 				$txn_id = __("Fraud-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
 				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
@@ -292,7 +290,7 @@ switch ($eshopaction) {
 				$stocktable=$wpdb->prefix ."eshop_stock";
 				$mtable=$wpdb->prefix.'postmeta';
 				$producttable=$wpdb->prefix.'eshop_downloads';
-				$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND item_id!='postage'");
+				$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked'");// AND item_id!='postage'
 				foreach($query as $row){
 					$pid=$row->post_id;
 					$uqty=$row->item_qty;
@@ -370,6 +368,7 @@ switch ($eshopaction) {
 					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 				}
 			}
+			
       	}else{
       		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
