@@ -158,6 +158,16 @@ switch ($eshopaction) {
 		//goes direct to this script as nothing needs showing on screen.
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$sttable=$wpdb->prefix.'eshop_states';
+		$getstate=$eshopoptions['shipping_state'];
+		if($eshopoptions['show_allstates'] != '1'){
+			$stateList=$wpdb->get_results("SELECT id,code,stateName FROM $sttable WHERE list='$getstate' ORDER BY stateName",ARRAY_A);
+		}else{
+			$stateList=$wpdb->get_results("SELECT id,code,stateName,list FROM $sttable ORDER BY list,stateName",ARRAY_A);
+		}
+		foreach($stateList as $code => $value){
+			$eshopstatelist[$value['id']]=$value['code'];
+		}
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
@@ -174,7 +184,10 @@ switch ($eshopaction) {
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
 			}
-			
+			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
+				if($value!='')
+					$value=$eshopstatelist[$value];
+			}
 			$p->add_field($name, $value);
 		}
 	

@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.4.0
+Stable tag: 5.4.1
 
 An accessible Shopping Cart plugin.
 
@@ -40,6 +40,10 @@ Not currently available.
 
 == Changelog == 
 
+Version 5.4.1
+* *fixed* bug with checkout State/County/Province sending a number to various merchant gateways
+* *fixed* bug with shortcode  - eshop_cart_items
+
 Version 5.4.0
 
 * *added* enhancements for WP3.0, ability for buyer to sign up to the site at checkout stage. This gives the customer an order status page if they login, and ability to save address etc.
@@ -48,9 +52,11 @@ Version 5.4.0
 * *fixed* many small bugs
 
 Version 5.3.0
-* beta version, not released
+
+* beta version not released
 
 Version 5.2.3
+
 * further fix for translations - this one works...
 
 Version 5.2.3

@@ -21,7 +21,7 @@ add_shortcode('eshop_addtocart','eshop_addtocart');
 add_shortcode('eshop_welcome','eshop_welcome');
 
 function eshop_cart_items($atts){
-	global $blog_id;
+	global $blog_id,$eshopoptions;
 	extract(shortcode_atts(array('before'=>'','after'=>'','hide'=>'no','showwhat'=>'both'), $atts));
 	$eecho='';
 	if($before!='')
