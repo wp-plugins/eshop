@@ -115,7 +115,7 @@ case ('countries'):
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 2 letter state abbreviation, followed by &#8220;Country Name,&#8221; then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('&#8220;List&#8221; promotes that country to appear at the top of the list.','eshop'); ?></p>
-
+	<p><?php _e('Warning: deleting all will cause eShop to stop functioning.','eshop'); ?></p>
 	<div id="eshopformfloat">
 	<form id="filterzones" action="" method="post">
 	<fieldset><legend><?php _e('Filter','eshop'); ?></legend>
@@ -261,6 +261,8 @@ case ('states'):
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 4 letter(maximum usual is 2) abbreviation and must be unique, followed by &#8220;Name&#8221;, then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('Example: AZ, Arizona,4','eshop'); ?></p>
+	<p><?php _e('Warning: deleting all may cause eShop to stop functioning.','eshop'); ?></p>
+
 	<div id="eshopformfloat">
 	<form id="eshop_shipping_state_form" action="" method="post">
 	<fieldset><legend><?php _e('Set State/County/Province','eshop'); ?></legend>

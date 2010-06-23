@@ -494,7 +494,7 @@ if (!function_exists('orderhandle')) {
 		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;
-			require ( ABSPATH . WPINC . '/registration.php' );
+			require_once ( ABSPATH . WPINC . '/registration.php' );
 			//auto create a new user if they don't exist - only works if not logged in ;)
 			$user_email=$_POST['email'];
 			$utable=$wpdb->prefix ."users";

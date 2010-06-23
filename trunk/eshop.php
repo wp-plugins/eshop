@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.4.1');
+define('ESHOP_VERSION', '5.4.2');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.4.1
+Version: 5.4.2
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -435,8 +435,14 @@ if (!function_exists('eshop_stylesheet')) {
 		}
 	}
 }
+add_filter('style_loader_src','eshop_unversion');
+//removes version number from css, needed for multisite
+function eshop_unversion($src) {
+    if( strpos($src,'eshop.css') )
+        $src=remove_query_arg('ver', $src);
+    return $src;
+}
 //this automatically hides the relevant pages
-
 add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 //fold the page menu as it is likely to get long...
 //this can be removed in a theme by using remove_filter...

@@ -151,6 +151,9 @@ if (!function_exists('eshopShowform')) {
 			$v=$value['country'];
 			$countryList[$k]=$v;
 		}
+		if(!isset($countryList)){
+			wp_die(__('Error, please contact site owner.','eshop'));
+		}
 		$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
 		foreach($countryList as $code => $label){
 			$label=htmlspecialchars($label);
