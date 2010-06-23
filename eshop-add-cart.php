@@ -95,7 +95,7 @@ function eshop_boing($pee,$short='no'){
 			
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
 					$opt=$eshopoptions['options_num'];
-					$replace.="\n<ul>\n";//.'<label for="eopt'.$theid.'"><select id="eopt'.$theid.'" name="option">';
+					$replace.="\n<ul>\n";
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
 						$price=$eshop_product['products'][$i]['price'];

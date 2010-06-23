@@ -422,7 +422,9 @@ form.dlproduct .ro {
 form.dlproduct label {
 	display:inline;
 }
-
+fieldset.eshoppayvia li{
+	padding:5px;
+}
 /*********** OTHER ***************/
 /* cart options */
 .cartopt {
