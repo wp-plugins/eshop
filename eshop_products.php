@@ -142,7 +142,8 @@ function eshop_products_manager() {
 	$metatable=$wpdb->prefix.'postmeta';
 	$poststable=$wpdb->prefix.'posts';
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status = 'publish' ".$addtoq);
+	
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id AND posts.post_status != 'trash' AND posts.post_status != 'revision'".$addtoq);
 	if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
 		$records=$eshopoptions['records'];
 	}else{
@@ -194,7 +195,7 @@ function eshop_products_manager() {
 		}else{
 			$addtoq="AND posts.post_author = $user_ID ";
 		}
-		
+
 		$myrowres=$wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
@@ -202,6 +203,7 @@ function eshop_products_manager() {
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
 		$addtoq
+		AND posts.post_status != 'trash' AND posts.post_status != 'revision'
 		ORDER BY meta.post_id  LIMIT $offset, $records");
 
 		$calt=0;
@@ -262,7 +264,10 @@ function eshop_products_manager() {
 		<?php
 		foreach($grab as $foo=>$grabit){
 			$eshop_product=unserialize($grabit['_eshop_product']);
-			$stkav=$grabit['_eshop_stock'];
+			if(isset($grabit['_eshop_stock']))
+				$stkav=$grabit['_eshop_stock'];
+			else
+				$stkav=0;
 			$pdownloads='no';
 			if($eshop_product['products']['1']['price']!=''){
 			//reset array

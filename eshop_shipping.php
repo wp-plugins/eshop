@@ -342,7 +342,7 @@ default:
 		$eshopoptions['shipping_zone']=$_POST['eshop_shipping_zone'];
 		$eshopoptions['show_zones']=$_POST['eshop_show_zones'];
 		$eshopoptions['unknown_state']=$_POST['eshop_unknown_state'];
-		$eshopoptions['ship_types']=$_POST['eshop_ship_types'];
+		$eshopoptions['ship_types']=trim($_POST['eshop_ship_types']);
 		$eshopoptions['weight_unit']=$_POST['eshop_weight_unit'];
 		update_option('eshop_plugin_settings',$eshopoptions);
 	}
@@ -473,7 +473,7 @@ default:
 		case '1':// ( per quantity of 1, prices reduced for additional items )
 			$x=1;
 			$calt=0;
-			$query=$wpdb->get_results("SELECT * from $dtable ORDER BY class ASC, items ASC");
+			$query=$wpdb->get_results("SELECT * from $dtable where ship_type=0 ORDER BY class ASC, items ASC");
 
 			foreach ($query as $row){
 				$calt++;

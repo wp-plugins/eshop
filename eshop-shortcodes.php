@@ -19,6 +19,7 @@ add_shortcode('eshop_list_alpha', 'eshop_list_alpha');
 add_shortcode('eshop_cart_items','eshop_cart_items');
 add_shortcode('eshop_addtocart','eshop_addtocart');
 add_shortcode('eshop_welcome','eshop_welcome');
+add_shortcode('eshop_details','eshop_details');
 
 function eshop_cart_items($atts){
 	global $blog_id,$eshopoptions;
@@ -761,17 +762,19 @@ function eshop_show_payments(){
 	eshop_cache();
 	if(is_array($eshopoptions['method'])){
 		$i=1;
+		$replace = array(".");
 		$eshopfiles=eshop_files_directory();
 		$echo.= "\n".'<ul class="eshop eshoppayoptions">'."\n";
 		foreach($eshopoptions['method'] as $k=>$eshoppayment){
 			$eshoppayment_text=$eshoppayment;
+			$eshoppayment = str_replace($replace, "", $eshoppayment);
 			if($eshoppayment_text=='cash'){
 				$eshopcash = $eshopoptions['cash'];
 				if($eshopcash['rename']!='')
 					$eshoppayment_text=$eshopcash['rename'];
 			}
-
-			$echo.= '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
+			$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
+			$echo.= '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
 			$i++;
 		}
 		$echo.= "</ul>\n";
@@ -1048,7 +1051,7 @@ function eshop_show_cancel(){
 	if(isset($wp_query->query_vars['eshopaction'])) {
 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
 		if($eshopaction=='cancel'){
-			$echo ='<h3 class="error">'.__('The order was cancelled at PayPal.','eshop')."</h3>";
+			$echo ='<h3 class="error">'.__('The order was cancelled.','eshop')."</h3>";
 			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 			return $echo;
 		}
@@ -1161,7 +1164,254 @@ function eshop_show_success(){
 		return $echo;
 	}
 }
+function eshop_details($atts){
+	global $wpdb, $post,$wp_query,$eshopoptions;
+	eshop_cache();
+	extract(shortcode_atts(array('class'=>'eshopdetails','show'=>'','options_hide'=>''), $atts));
+	$echo='';
+	$allowedtoshow=array('sku','description','options','optionset','shipping','stockqty');
+	if($show!=''){
+		$wanttoshow=explode(",", $show);
+		foreach($wanttoshow as $showit){
+			if(in_array($showit,$allowedtoshow)) $willshow[]=$showit;
+		}
+	}else{
+		$willshow=$allowedtoshow;
+	}
+	
+	$allowedtohide=array('option','price','download','weight');
+	if($options_hide!=''){
+		$wanttohide=explode(",", $options_hide);
+		foreach($wanttohide as $hideit){
+			if(in_array($hideit,$allowedtohide)) $willhide[]=$hideit;
+		}
+	}else{
+		$willhide=array();
+	}
+	
+	$listed='';
+	$producttable = $wpdb->prefix ."eshop_downloads";
+	$eshop_product=get_post_meta($post->ID, '_eshop_product','true');
+	$eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
+	$numoptions=$eshopoptions['options_num'];
+	$currsymbol=$eshopoptions['currency_symbol'];
+	$weightsymbol=$eshopoptions['weight_unit'];
+	$eshopletter = "A";
+	foreach($willshow as $listit){
+		switch($listit){
+			case 'sku':
+				if(isset($eshop_product['sku'])){
+					$listed.='<dt>'.__('Sku','eshop')."</dt>\n";
+					$listed.='<dd>'.$eshop_product['sku']."</dd>\n";
+				}
+				break;
+			case 'description':
+				if(isset($eshop_product['description'])){
+					$listed.='<dt>'.__('Description','eshop')."</dt>\n";
+					$listed.='<dd>'.$eshop_product['description']."</dd>\n";
+				}
+				break;
+			case 'options':
+				if(isset($eshop_product['products'])){
+					$listed.='<dt>'.__('Product Options','eshop')."</dt>\n";
+					$listed.='<dd>';
+					$listed.='<table class="eshop" summary="'.__('Product Options by option price and download','eshop').'">
+    				<thead>
+    				<tr>';
+    				if(!in_array('option',$willhide))
+    					$listed.='<th id="'.$eshopletter.'eshopnum">#</th><th id="'.$eshopletter.'eshopoption">'. __('Option','eshop').'</th>';
+    				if(!in_array('price',$willhide))
+	    				$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
+    				if($eshopdlavail>0 && !in_array('download',$willhide)){ 
+    					$listed.='<th id="'.$eshopletter.'eshopdownload">'.__('Download','eshop').'</th>';
+    				} 
+    				if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){
+    					$listed.='<th id="'.$eshopletter.'eshopweight">'.__('Weight','eshop').'</th>';
+    				}
+    				$listed.='</tr></thead>
+        			<tbody>'."\n";
+					
+					for($i=1;$i<=$numoptions;$i++){
+						if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
+							$opt=$eshop_product['products'][$i]['option'];
+							$price=$eshop_product['products'][$i]['price'];
+							$downl=$eshop_product['products'][$i]['download'];
+							if(isset($eshop_product['products'][$i]['weight']) && $eshop_product['products'][$i]['weight']!='') 
+								$weight=$eshop_product['products'][$i]['weight'];
+							else
+								$weight='0';
+						}else{
+							$opt=$price=$downl='';
+							$weight=$price='0';
+						}
+						if($opt=='') break;
+						$alt = ($i % 2) ? '' : ' class="alt"';
+						$listed.='<tr'.$alt.'>';
+						$listed.='<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+						if(!in_array('option',$willhide))
+							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
+						if(!in_array('price',$willhide))
+							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</td>';
+						
+						if($eshopdlavail>0 && !in_array('download',$willhide)){
+    						$myrowres=$wpdb->get_results("Select * From $producttable");
+							$listed.='<td headers="'.$eshopletter.'eshopdownload '.$eshopletter.'eshopnumrow'.$i.'">';
+							foreach($myrowres as $prow){
+								if( trim( $prow->id ) == trim( $downl ) )
+									$listed.=stripslashes(esc_attr($prow->title))."\n";
+							}
+							$listed .="</td>";
 
+						}
+						
+						if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){//shipping by weight 
+							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($weight,2),$weightsymbol).'</td>';
+						}
+						$listed.="</tr>\n";
+					 }
+					 $eshopletter++;
+					$listed.='</tbody></table>'."\n";
+					$listed.="</dd>\n";
+				}
+				break;
+			case 'optionset':
+				if(isset($eshop_product['optset'])){
+				$osets=$eshop_product['optset'];
+					if(is_array($osets)){
+						$listed.='<dt>'.__('Additional Options','eshop')."</dt>\n";
+						$listed.='<dd>';
+						$opttable=$wpdb->prefix.'eshop_option_names';
+						$optsettable=$wpdb->prefix.'eshop_option_sets';
+						foreach($osets as $optid){
+							$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price,weight from $optsettable where optid='%d' ORDER by id ASC",$optid));
+							$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
+							$ename=$egrab->name;
+							$etype=$egrab->type;
+							$edesc=$egrab->description;
+							$checkrows=sizeof($myrowres);
+							$i=1;
+							$tbody='';
+							foreach($myrowres as $myrow){
+								if($myrow->weight=='')
+									$myrow->weight='0';
+								$alt = ($i % 2) ? '' : ' class="alt"';
+								$tbody.="<tr".$alt.">\n".
+								'<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+								if(!in_array('option',$willhide))
+									$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
+								if(!in_array('price',$willhide))
+									$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($myrow->price,2)).'</td>';
+								if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
+									$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($myrow->weight,2),$weightsymbol).'</td>';
+								$tbody.="</tr>\n";
+								$i++;
+							}
+							$listed.=nl2br(stripslashes(esc_attr($edesc)));
+							$listed.='<table class="eshop" summary="'.__('Product Options by option and price','eshop').'">
+							<thead><tr>
+							<th id="'.$eshopletter.'eshopnum">#</th>';
+							if(!in_array('option',$willhide))
+								$listed.='<th id="'.$eshopletter.'eshopoption">'.__('Option','eshop').'</th>';
+							if(!in_array('price',$willhide))
+								$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
+							if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
+								$listed.='<th id="'.$eshopletter.'eshopweight">'. __('Weight','eshop').'</th>';
+							$listed.='</tr></thead><tbody>'."\n";
+							$listed.=$tbody;
+							$listed.='</tbody></table>'."\n";
+							$eshopletter++;
+						}
+					}
+					$listed.="</dd>\n";
+				}
+				break;
+			case 'shipping':
+				if(isset($eshop_product['shiprate']) && $eshopoptions['shipping']!='4'){
+					$listed.='<dt>'.__('Shipping','eshop')."</dt>\n";
+					if($eshopoptions['cart_shipping']!=''){
+						$replace ='<a href="'.get_permalink($eshopoptions['cart_shipping']).'#eshopshiprates"><span>'.__('Shipping Rate:','eshop').'</span> '.$eshop_product['shiprate'].'</a>';
+					}else{
+						$replace ='<span>'.__('Shipping Rate:','eshop').'</span> '.$eshop_product['shiprate'];
+					}
+					$listed.='<dd>'.$replace."</dd>\n";
+				}elseif(isset($eshop_product['shiprate']) && $eshopoptions['shipping']=='4'){
+					unset($weight);
+					$listed.='<dt>'.__('Shipping','eshop')."</dt>\n";
+					//only for ship by weight need to grab weights
+					for($i=1;$i<=$numoptions;$i++){
+						if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
+							if(isset($eshop_product['products'][$i]['weight']) && $eshop_product['products'][$i]['weight']!='' ) 
+								$weight[]=$eshop_product['products'][$i]['weight'];
+							else
+								$weight[]=0;
+						}else{
+							$weight[]=0;
+						}
+					}
+					//expand $weight
+					$cartweight="weight<='".implode("' || weight<='",$weight)."'";
+					$typearr=explode("\n", $eshopoptions['ship_types']);
+					$eshopshiptable='';
+					
+					$dtable=$wpdb->prefix.'eshop_shipping_rates';
+					foreach ($typearr as $k=>$type){
+						$k++;
+						$eshopshiptable.='<span>'.
+						stripslashes(esc_attr($type)).'</span>
+						<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
+						<thead>
+						<tr>
+						<th id="'.$eshopletter.'wt">'. __('Weight','eshop').'</th>
+						<th id="'.$eshopletter.'zone1">'. __('Zone 1','eshop').'</th>
+						<th id="'.$eshopletter.'zone2">'. __('Zone 2','eshop').'</th>
+						<th id="'.$eshopletter.'zone3">'. __('Zone 3','eshop').'</th>
+						<th id="'.$eshopletter.'zone4">'. __('Zone 4','eshop').'</th>
+						<th id="'.$eshopletter.'zone5">'. __('Zone 5','eshop').'</th>
+						</tr>
+						</thead>
+						<tbody>';
+						$x=1;
+						$query=$wpdb->get_results("SELECT weight,zone1,zone2,zone3,zone4,zone5 from $dtable  where ($cartweight) &&  ship_type='$k' order by weight ASC");
+						foreach ($query as $row){
+							$alt = ($x % 2) ? '' : ' class="alt"';
+							$eshopshiptable.='
+							<tr'.$alt.'>
+							<td headers="'.$eshopletter.'wt">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($row->weight,2),$weightsymbol).'</td>
+							<td headers="'.$eshopletter.'zone1">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>
+							<td headers="'.$eshopletter.'zone2">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>
+							<td headers="'.$eshopletter.'zone3">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>
+							<td headers="'.$eshopletter.'zone4">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>
+							<td headers="'.$eshopletter.'zone5">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>
+							</tr>';
+							$x++;
+						}
+						$eshopletter++;
+						$eshopshiptable.='</tbody></table>'."\n";
+					}
+					$listed .='<dd>'.$eshopshiptable.'</dd>';
+				}
+				
+				
+				break;
+			case 'stockqty':
+				if('yes' == $eshopoptions['stock_control']){
+					$stocktable=$wpdb->prefix ."eshop_stock";
+					$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$post->ID");
+				}
+				if(isset($eshop_product['qty']) && isset($currst)){
+					if($currst <='0')$currst='0';
+					$listed.='<dt>'.__('Stock Available','eshop')."</dt>\n";
+					$listed.='<dd>'.$currst."</dd>\n";
+				}
+				break;
+		}
+	}
+	if($listed!='')
+		$echo ='<div class="'.$class.'"><dl>'."\n".$listed.'</dl></div>';
+	
+	return $echo;
+	
+}
 
 function eshop_show_cart() {
 	include_once 'cart.php';

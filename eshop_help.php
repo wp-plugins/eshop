@@ -171,6 +171,12 @@ This has also been written for use in templates, add something like:
 <code>&lt;?php 
 echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' returning='Welcome back' guest='Hello Guest' after='&lt;/span&gt;']");
 ?&gt;</code></li>
+<li><code>[eshop_details]</code> This displays the various product details normally used for the add to cart form - and more. The attritbutes for this are:
+<ul>
+<li><strong>show</strong> - which details, separated by commas, to show and in which order - acceptable values and the default order: <em>sku, description, options, optionset, shipping, stockqty</em></li>
+<li><strong>options_hide</strong> - which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: <em>option, price, download, weight</em></li>
+<li><strong>class</strong> - changes the standard class</li>
+</ul></li>
 </ol>
 <h3>Notes</h3>
 <p>By default eShop will not display a form, even if specified via a shortcode, on WordPress post listing pages - category, search etc. To enable this you need to change the setting in the Product Listings section of the settings page.</p>
@@ -348,7 +354,7 @@ echo do_shortcode("[eshop_welcome before='&lt;span style=\"color:red;\"&gt;' ret
 <p><strong>Add a required checkbox to the checkout.</strong></p>
 <p><strong>Text for the required checkbox.</strong></p>
 <p><strong>Page id (transforms text above into a link).</strong></p>
-<p><strong>Allow users to sign up. (You should ensure that {LOGIN_DETAILS} is in your email templates.)</strong> - enables customers to sogn up to be able to view their past orders. <strong>Note</strong> will not sign anyone up if the email addres is already in use.</p>
+<p><strong>Allow users to sign up</strong> - enables customers to sogn up to be able to view their past orders. <strong>Note</strong> will not sign anyone up if the email address is already in use.</p>
 <p><strong>Change sign up text.</strong> - default text is provided, but you can change that here.</p>
 
 <h4>Sub Pages</h4>
@@ -394,6 +400,11 @@ This is only triggered when someone visits the site.</p>
 <h4>Authorize.net</h4>
 <p>Settings must match those set at Authorize.net exactly.</p>
 
+<h4>iDeal Lite</h4>
+<p>no info available</p>
+
+<h4>ogone</h4>
+<p>Settings as per the instructions on the settings apge, and screen shots of settings at ogone available on <a href="http://quirm.net/2010/06/29/eshop-with-ogone/">quirm.net</a>.</p>
 
 <h3>Discounts</h3>
 <p><strong>Spend</strong> - how much needs to be spent before <strong>% Discount</strong> is applied.</p>

@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
-define('ESHOP_VERSION', '5.4.2');
+define('ESHOP_VERSION', '5.5.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.4.2
+Version: 5.5.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -374,6 +374,10 @@ if (!function_exists('eshop_pre_wp_head')) {
 				include_once 'ideallite.php';
 				//exit;
 			}
+			if($eshopaction=='ogoneipn'){
+				include_once 'ogone.php';
+				//exit;
+			}
 		}
 		if(isset($_POST['eshopident_1'])){
 			ob_start();
@@ -436,9 +440,11 @@ if (!function_exists('eshop_stylesheet')) {
 	}
 }
 add_filter('style_loader_src','eshop_unversion');
+
+
 //removes version number from css, needed for multisite
 function eshop_unversion($src) {
-    if( strpos($src,'eshop.css') )
+    if( strpos($src,'eshop.css'))
         $src=remove_query_arg('ver', $src);
     return $src;
 }
