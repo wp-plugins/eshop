@@ -132,7 +132,8 @@ class eshop_pay_widget extends WP_Widget {
 					if($eshopcash['rename']!='')
 						$eshoppayment_text=$eshopcash['rename'];
 				}
-				echo '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" height="44" width="142" alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
+				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
+				echo '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
 				$i++;
 			}
 			echo "</ul>\n";

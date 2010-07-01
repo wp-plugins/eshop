@@ -78,6 +78,7 @@ if(isset($_POST['submit'])){
 			$epnpost['id']=$wpdb->escape($_POST['epn']['id']);
 			$epnpost['description']=$wpdb->escape($_POST['epn']['description']);
 			$eshopoptions['epn']=$epnpost;
+			
 			//cash
 			$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
 			$cashpost['rename']=$wpdb->escape($_POST['cash']['rename']);
@@ -93,6 +94,12 @@ if(isset($_POST['submit'])){
 				$eshopoptions['status']=$wpdb->escape('testing');
 				$err.='<li>'.__('No Merchant Gateway selected, eShop has been put in Test Mode','eshop').'</li>';
 			}
+			//ogone
+			$ogonepost['PSPID']=$wpdb->escape($_POST['ogone']['PSPID']);
+			$ogonepost['COM']=$wpdb->escape($_POST['ogone']['COM']);
+			$ogonepost['secret']=$wpdb->escape($_POST['ogone']['secret']);
+			$ogonepost['email']=$wpdb->escape($_POST['ogone']['email']);
+			$eshopoptions['ogone']=$ogonepost;
 			break;
 	
 		case ('Pages'):
@@ -251,10 +258,10 @@ if(isset($_POST['submit'])){
 			$eshopoptions['fold_menu']=$wpdb->escape($_POST['eshop_fold_menu']);
 			$eshopoptions['hide_cartco']=$wpdb->escape($_POST['eshop_hide_cartco']);
 			$eshopoptions['stock_control']=$wpdb->escape($_POST['eshop_stock_control']);
-			$eshopoptions['show_stock']=$wpdb->escape($_POST['eshop_show_stock']);
+			//$eshopoptions['show_stock']=$wpdb->escape($_POST['eshop_show_stock']);
 			$eshopoptions['search_img']=$wpdb->escape($_POST['eshop_search_img']);
 			$eshopoptions['show_forms']=$wpdb->escape($_POST['eshop_show_forms']);
-			$eshopoptions['show_sku']=$wpdb->escape($_POST['eshop_show_sku']);
+			//$eshopoptions['show_sku']=$wpdb->escape($_POST['eshop_show_sku']);
 			$eshopoptions['addtocart_image']=$wpdb->escape($_POST['eshop_addtocart_image']);
 			$eshopoptions['hide_addinfo']=$wpdb->escape($_POST['eshop_hide_addinfo']);
 			$eshopoptions['hide_shipping']=$wpdb->escape($_POST['eshop_hide_shipping']);
@@ -262,11 +269,17 @@ if(isset($_POST['submit'])){
 			$eshopoptions['tandc_use']=$wpdb->escape($_POST['eshop_tandc_use']);
 			$eshopoptions['tandc_id']=$wpdb->escape($_POST['eshop_tandc_id']);
 			$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
-			if (eshop_wp_version('3'))
+			if (eshop_wp_version('3')){
 				$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
 				$eshopoptions['users_text']=$wpdb->escape($_POST['eshop_users_text']);
+			}
+			$remove = array("&#039;", '&quot;', '"',"'","!"," ");
 
-
+			$eshopoptions['details']['show']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_show']));
+			$eshopoptions['details']['class']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_class']));
+			$eshopoptions['details']['hide']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_hide']));
+			$eshopoptions['details']['display']=$wpdb->escape($_POST['eshop_details_display']);
+		
 			//error grabbing
 			if(is_numeric($_POST['eshop_records'])){
 				$eshopoptions['records']=$wpdb->escape($_POST['eshop_records']);
@@ -569,7 +582,28 @@ switch($action_status){
 		<label for="eshop_authorizenetdesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_authorizenetdesc" name="authorizenet[desc]" type="text" value="<?php echo $authorizenet['desc']; ?>" size="40" /><br />
 	</fieldset>
 	
-	
+	<fieldset><legend><?php _e('ogone','eshop'); ?></legend>
+		<?php 
+		if(isset($eshopoptions['ogone']))
+			$ogone = $eshopoptions['ogone'];
+		else
+			$ogone['email']=$ogone['COM'] = $ogone['PSPID']= $ogone['secret']='';	
+		?>
+		<p class="cbox"><input id="eshop_methodh" name="eshop_method[]" type="checkbox" value="ogone"<?php if(in_array('ogone',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodh"><?php _e('Accept payment by ogone','eshop'); ?></label></p>
+		<p><em><?php _e('All fields are required.','eshop'); ?></em></p>
+		<p><strong><?php _e('HTTP redirection in the browser/URL of the merchant\'s post-payment page:','eshop'); ?></strong></p>
+		<p><?php _e('The following 2 links need to be entered into the Technical information > transaction feedback page.','eshop'); ?></p>
+		<p><?php _e('If the payment\'s status is "accepted", "on hold" or "uncertain".','eshop'); ?><br />
+		<code><?php echo add_query_arg('eshopaction','ogoneipn',get_permalink($eshopoptions['cart_success'])); ?></code></p>
+		<p><?php _e('If the payment\'s status is "cancelled by the client" or "too many rejections by the acquirer".','eshop'); ?><br />
+		<code><?php echo add_query_arg('eshopaction','cancel',get_permalink($eshopoptions['cart_cancel'])); ?></code></p>
+		<label for="eshop_ogonepspid"><?php _e('PSPID','eshop'); ?></label><input id="eshop_ogonepspid" name="ogone[PSPID]" type="text" value="<?php echo $ogone['PSPID']; ?>" size="20" /><br />
+		<label for="eshop_ogonesecret"><?php _e('SHA Passphrase (In technical info)','eshop'); ?></label><input id="eshop_ogonesecret" name="ogone[secret]" type="text" value="<?php echo $ogone['secret']; ?>" size="40" /><br />
+		<label for="eshop_ogonedesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_ogonedesc" name="ogone[COM]" type="text" value="<?php echo $ogone['COM']; ?>" size="40" /><br />
+		<label for="eshop_ogoneemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_ogoneemail" name="ogone[email]" type="text" value="<?php echo $ogone['email']; ?>" size="30" maxlength="50" /><br />
+
+	</fieldset>
+
 	</fieldset>
 	<p class="submit">
 	<input type="submit" name="submit" class="button-primary" value="<?php _e('Update Options &#187;','eshop') ?>" />
@@ -752,7 +786,36 @@ switch($action_status){
 	}
 	?>
 	</select><br />
-
+</fieldset>
+	<fieldset><legend><?php _e('Product Details','eshop'); ?></legend>
+	<?php
+	if(!isset($eshopoptions['details'])){
+		$eshopoptions['details']['show']='';
+		$eshopoptions['details']['class']='';
+		$eshopoptions['details']['hide']='';
+		$eshopoptions['details']['display']='';
+	}
+	
+	?>
+	<p><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></p>
+	<?php _e('Add product details section to every page with details to display. <small>(adding the shortcode will override settings here)</small>','eshop'); ?>
+	<select name="eshop_details_display" id="eshop_details_display">
+	<?php
+	if('yes' == $eshopoptions['details']['display']){
+		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+		echo '<option value="no">'.__('No','eshop').'</option>';
+	}else{
+		echo '<option value="yes">'.__('Yes','eshop').'</option>';
+		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+	}
+	?>
+	</select><br />
+	<label for="eshop_details_class"><?php _e('Class','eshop'); ?> <small><?php _e('(changes the standard class)','eshop'); ?></small></label><input id="eshop_details_class" name="eshop_details_class" type="text" value="<?php echo $eshopoptions['details']['class']; ?>" size="30" /><br />
+	<label for="eshop_details_show"><?php _e('Show','eshop'); ?> <small><?php _e('(which details, separated by commas, to show and in which order - acceptable values and the default order: sku, description, options, optionset, shipping, stockqty)','eshop'); ?></small></label><input id="eshop_details_show" name="eshop_details_show" type="text" value="<?php echo $eshopoptions['details']['show']; ?>" size="60" /><br />
+	<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: option, price, download, weight)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
+	</fieldset>
+	<?php
+	/*
 <label for="eshop_show_stock"><?php _e('Show stock available','eshop'); ?></label>
 	<select name="eshop_show_stock" id="eshop_show_stock">
 	<?php
@@ -765,6 +828,7 @@ switch($action_status){
 	}
 	?>
 	</select><br />
+
 <label for="eshop_show_sku"><?php _e('Show product sku','eshop'); ?></label>
 	<select name="eshop_show_sku" id="eshop_show_sku">
 	<?php
@@ -777,12 +841,8 @@ switch($action_status){
 	}
 	?>
 	</select><br />
-
-
-</fieldset>
-
-
-
+*/
+?>
 
 <fieldset><legend><?php _e('Currency','eshop'); ?></legend>
 

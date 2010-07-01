@@ -9,12 +9,15 @@ ul.eshoppanels li {
 
 /* FLOATS & CLEARS */
 ul.eshoppanels li, ul.eshop li a img, table.eshop img, 
-form.eshopform fieldset.eshoppayvia li label, .paginate ul li {
+.paginate ul li {
 	float:left;
 }
 /* payment-via options on checkout page */
 form.eshopform fieldset.eshoppayvia li label {
-	float:left;
+	/*float:left;*/
+}
+form.eshopform fieldset.eshoppayvia li img{
+	vertical-align:middle;
 }
 ul.eshop li, form.addtocart, .pagfoot {
 	clear:left;

@@ -85,8 +85,8 @@ function eshop_option_setup() {
 		'show_allstates'=>'',
 		'show_downloads'=>'',
 		'show_forms'=>'',
-		'show_sku'=>'no',
-		'show_stock'=>'no',
+		//'show_sku'=>'no',
+		//'show_stock'=>'no',
 		'show_zones'=>'no',
 		'status'=> 'testing',
 		'stock_control'=>'no',
@@ -869,9 +869,11 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic A
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic iDeal Lite email','$esubject')"); 
 
+if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
+	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ogone email','$esubject')"); 
 
 //added in 5.3
-if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.0' ){
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.1' ){
 	$table = $wpdb->prefix . "eshop_order_items";
 	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
 	$add_field = TRUE;
@@ -899,8 +901,8 @@ if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.0' ){
 }
 
 
-//added in 5.2
-if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.0' ){
+//added in 5.3
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.1' ){
 	$table = $wpdb->prefix . "eshop_orders";
 	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
 	$add_field = TRUE;
@@ -1241,7 +1243,7 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
 		if(wp_mkdir_p( $eshop_goto )){
-			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite');
+			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite','ogone');
 			foreach ($files as $file){
 				if(!file_exists($eshop_goto.'/'.$file.'.png')){
 					//copy the files

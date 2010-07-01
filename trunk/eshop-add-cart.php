@@ -5,6 +5,16 @@ function eshop_boing($pee,$short='no'){
     $eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
+	if((strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+		$details='';
+		if($eshopoptions['details']['show']!='')
+			$details.=" show='".esc_attr($eshopoptions['details']['show'])."'";
+		if($eshopoptions['details']['class']!='')
+			$details.=" class='".esc_attr($eshopoptions['details']['class'])."'";
+		if($eshopoptions['details']['hide']!='')
+			$details.=" options_hide='".esc_attr($eshopoptions['details']['hide'])."'";
+		$pee.= do_shortcode('[eshop_details'.$details.']');
+	}
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//stock checker
 		if($post->ID!=''){
@@ -19,13 +29,14 @@ function eshop_boing($pee,$short='no'){
 		}
 		$replace='';
 		if($stkav=='1'){
-			
-			if('yes' == $eshopoptions['stock_control'] && 'yes' == $eshopoptions['show_stock'] && isset($currst) && $eshop_product['download']==''){
+		/*
+			if('yes' == $eshopoptions['stock_control'] && 'yes' == $eshopoptions['show_stock'] && isset($currst) && (!isset($eshop_product['download']) || (isset($eshop_product['download']) && $eshop_product['download']==''))){
 				$replace.='<p class="stkqty">'.__('Stock Available:','eshop').' <span>'.$currst.'</span></p>';
 			}
 			if('yes' == $eshopoptions['show_sku']){// && $short=='no'){
 				$replace.='<p class="eshopsku">'.__('Sku:','eshop').' <span>'.sanitize_file_name($eshop_product['sku']).'</span></p>';
 			}
+			*/
 			$currsymbol=$eshopoptions['currency_symbol'];
 			$replace .= '
 			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart">
@@ -161,6 +172,7 @@ function eshop_boing($pee,$short='no'){
 			}
 			$replace .='</fieldset>
 			</form>';
+			/*
 			if($short=='no' && $eshopoptions['downloads_only'] !='yes' && $eshopoptions['shipping']!='4'){
 				if($eshopoptions['cart_shipping']!=''){
 					$replace .='
@@ -175,6 +187,7 @@ function eshop_boing($pee,$short='no'){
 					';
 				}
 			}
+			*/
 			$pee = $pee.$replace; 
 		}elseif(isset($currst) && $currst<=0 && is_array($eshop_product)){
 			//eshop_get_custom('Stock Available')=='No' && eshop_get_custom('Price 1')!=''){

@@ -13,6 +13,7 @@ else {
 }
 
 global $wpdb;
+$eshopoptions = get_option('eshop_plugin_settings');
 
 if (isset($_GET['action']) )
 	$action_status = esc_attr($_GET['action']);
@@ -55,7 +56,7 @@ if(isset($_POST['eshop-adnote'])){
 		}else{
 			$user_notes='';
 		}
-		$query2=$wpdb->get_results("UPDATE $dtable set admin_note='$admin_note',user_notes='$user_notes' where id='$view'");
+		$query2=$wpdb->query("UPDATE $dtable set admin_note='$admin_note',user_notes='$user_notes' where id='$view'");
 		echo '<div class="updated fade"><p>'.__('Notes changed successfully.','eshop').'</p></div>';
 	}else{
 		echo '<div class="error fade"><p>'.__('Error: Notes were not changed.','eshop').'</p></div>';
@@ -469,7 +470,7 @@ $dtable=$wpdb->prefix.'eshop_orders';
 $itable=$wpdb->prefix.'eshop_order_items';
 $stable=$wpdb->prefix.'eshop_states';
 $ctable=$wpdb->prefix.'eshop_countries';
-$eshopoptions = get_option('eshop_plugin_settings');
+//$eshopoptions = get_option('eshop_plugin_settings');
 
 /*
 ##########
