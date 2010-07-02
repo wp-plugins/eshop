@@ -591,14 +591,21 @@ switch($action_status){
 		?>
 		<p class="cbox"><input id="eshop_methodh" name="eshop_method[]" type="checkbox" value="ogone"<?php if(in_array('ogone',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodh"><?php _e('Accept payment by ogone','eshop'); ?></label></p>
 		<p><em><?php _e('All fields are required.','eshop'); ?></em></p>
-		<p><strong><?php _e('HTTP redirection in the browser/URL of the merchant\'s post-payment page:','eshop'); ?></strong></p>
+		<div class="ogonehi">
+		<h3><?php _e('The following information must be entered at ogone','eshop'); ?></h3>
 		<p><?php _e('The following 2 links need to be entered into the Technical information > transaction feedback page.','eshop'); ?></p>
+		<p><strong><?php _e('HTTP redirection in the browser/URL of the merchant\'s post-payment page:','eshop'); ?></strong></p>
 		<p><?php _e('If the payment\'s status is "accepted", "on hold" or "uncertain".','eshop'); ?><br />
 		<code><?php echo add_query_arg('eshopaction','ogoneipn',get_permalink($eshopoptions['cart_success'])); ?></code></p>
 		<p><?php _e('If the payment\'s status is "cancelled by the client" or "too many rejections by the acquirer".','eshop'); ?><br />
 		<code><?php echo add_query_arg('eshopaction','cancel',get_permalink($eshopoptions['cart_cancel'])); ?></code></p>
+		<p><?php _e('The following link needs to be entered into the Technical information > Data and origin verification page.','eshop'); ?></p>
+		<p><strong><?php _e('Checks for e-Commerce:','eshop'); ?></strong></p>
+		<p><?php _e('URL of the merchant page containing the payment form that will call the page:orderstandard.asp','eshop'); ?><br />
+		<code><?php echo add_query_arg('eshopaction','redirect',get_permalink($eshopoptions['checkout'])); ?></code></p>
+		</div>
 		<label for="eshop_ogonepspid"><?php _e('PSPID','eshop'); ?></label><input id="eshop_ogonepspid" name="ogone[PSPID]" type="text" value="<?php echo $ogone['PSPID']; ?>" size="20" /><br />
-		<label for="eshop_ogonesecret"><?php _e('SHA Passphrase (In technical info)','eshop'); ?></label><input id="eshop_ogonesecret" name="ogone[secret]" type="text" value="<?php echo $ogone['secret']; ?>" size="40" /><br />
+		<label for="eshop_ogonesecret"><?php _e('SHA Passphrases - set SHA-OUT &amp; SHA-IN to the same value.','eshop'); ?></label><input id="eshop_ogonesecret" name="ogone[secret]" type="text" value="<?php echo $ogone['secret']; ?>" size="40" /><br />
 		<label for="eshop_ogonedesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_ogonedesc" name="ogone[COM]" type="text" value="<?php echo $ogone['COM']; ?>" size="40" /><br />
 		<label for="eshop_ogoneemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_ogoneemail" name="ogone[email]" type="text" value="<?php echo $ogone['email']; ?>" size="30" maxlength="50" /><br />
 

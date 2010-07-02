@@ -80,7 +80,9 @@ $upload_dir=$dirs['basedir'];
 $eshop_goto=$upload_dir.'/eshop_files/eshop.css';
 $eshop_from=$plugin_dir.'/eshop/files/eshop.css';
 $eshopver=split('\.',ESHOP_VERSION);
-$file = file_get_contents($eshop_from, true);
+$left_string = file_get_contents($eshop_from, true);
+$right_string = file_get_contents($eshop_goto, true);
+
 ?>
 </div>
 <div class="wrap">
@@ -109,6 +111,15 @@ $file = file_get_contents($eshop_from, true);
 </form>
 </div>
 	<?php 
+	if(isset($_GET['diff'])){
+		echo '<div class="wrap" id="diff">';
+		echo wp_text_diff( $left_string, $right_string, array( 'title' => __('Comparing Current Style with latest installed version of eShop','eshop'), 'title_left' => __('Latest(from plugin)','eshop'), 'title_right' => __('Current (in use)','eshop') ) );
+		echo '</div>';
+	}else{
+		echo '<div class="wrap">';
+		echo '<p><a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
+		echo '</div>';
+	}
 	//end custom styling
 	eshop_show_credits();
 }

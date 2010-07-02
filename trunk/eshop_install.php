@@ -7,7 +7,7 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
-
+$wpdb->query('DROP TABLE '.$wpdb->prefix.'eshop_emails');
 if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
