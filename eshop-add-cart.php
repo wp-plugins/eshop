@@ -5,7 +5,7 @@ function eshop_boing($pee,$short='no'){
     $eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
-	if((strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+	if($short!='short' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		$details='';
 		if($eshopoptions['details']['show']!='')
 			$details.=" show='".esc_attr($eshopoptions['details']['show'])."'";

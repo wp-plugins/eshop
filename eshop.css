@@ -745,4 +745,13 @@ dl.eshop-def dd ul{
 	max-height:200px;
 	overflow-y:scroll;
 }
-	
+.ogonehi{
+	padding:0 5px;
+	border:1px solid #800;
+	background:#FFEDEF;
+}
+.ogonehi code{
+	border:1px solid #000;
+	padding:2px;
+	background:#fffff5;
+}

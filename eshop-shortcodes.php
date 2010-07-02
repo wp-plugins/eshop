@@ -1023,7 +1023,7 @@ function eshop_addtocart(){
 	global $wpdb, $post;
 	eshop_cache();
 	include_once( 'eshop-add-cart.php' );
-	return eshop_boing('');
+	return eshop_boing('','short');
 }
 function eshop_welcome($atts, $content = ''){
 	global $blog_id;

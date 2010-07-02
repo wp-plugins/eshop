@@ -81,7 +81,7 @@ class ogone_class {
 			  $echortn.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
      		 }
 			$echortn.='
-         <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to ogone &raquo;','eshop').'" /></p>
+         <input class="button" type="submit" id="ppsubmit" value="'. __('Proceed to ogone','eshop').'" /></p>
 	     </form>
 	  </div>';
 	  

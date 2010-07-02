@@ -50,26 +50,6 @@ switch ($eshopaction) {
 		$refid=uniqid(rand());
 		$amount=($_POST['amount']+$_POST['shipping_1'])*100;
 		//change to sha
-		$sha='AMOUNT='.$amount.$Secret.'CN='.$_POST['first_name'].$_POST['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'EMAIL='.$_POST['email'].$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'ORDERID='.$refid.$Secret.'OWNERZIP='.$_POST['zip'].$Secret.'OWNERADDRESS='.$_POST['address1'].$Secret.'OWNERCTY='.$_POST['city'].$Secret.'OWNERTELNO='.$_POST['phone'].$Secret.'OWNERTOWN='.$_POST['address2'].$Secret.'PSPID='.$Pspid.$Secret;
-		$checkid=md5($refid);
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
-		//$p = new ogone_class; 
-		$p->add_field('amount',$amount);
-		$p->add_field('CN',$_POST['first_name'].' '.$_POST['last_name']);
-		$p->add_field('COM',$description);
-		$p->add_field('currency',$eshopoptions['currency']);
-		$p->add_field('EMAIL',$_POST['email']);
-		$p->add_field('language',$eshopoptions['location']);
-		$p->add_field('orderID',$refid);
-		$p->add_field('ownerZIP',$_POST['zip']);
-		$p->add_field('owneraddress',$_POST['address1']);
-		$p->add_field('ownercty',$_POST['country']);
-		$p->add_field('ownertelno',$_POST['phone']);
-		$p->add_field('ownertown',$_POST['city']);
-		$p->add_field('PSPID',$Pspid);
-		$p->add_field('SHASign',$SHASign);
 		if($eshopoptions['cart_success']!=''){
 			$slink=add_query_arg('eshopaction','success',get_permalink($eshopoptions['cart_success']));
 		}else{
@@ -80,6 +60,29 @@ switch ($eshopaction) {
 		}else{
 			die('<p>'.$eshopoptions['cart_cancel'].$derror.'</p>');
 		}
+		$sha=
+		'ACCEPTURL='.$slink.$Secret.'AMOUNT='.$amount.$Secret.'CANCELURL='.$clink.$Secret.'CN='.$_POST['first_name'].' '.$_POST['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'DECLINEURL='.$clink.$Secret.'EMAIL='.$_POST['email'].$Secret.'EXCEPTIONURL='.$clink.$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'OPERATION=SAL'.$Secret.'ORDERID='.$refid.$Secret.'OWNERADDRESS='.$_POST['address1'].$Secret.'OWNERCTY='.$_POST['country'].$Secret.'OWNERTELNO='.$_POST['phone'].$Secret.'OWNERTOWN='.$_POST['city'].$Secret.'OWNERZIP='.$_POST['zip'].$Secret.'PSPID='.$Pspid.$Secret;
+		$SHASign=strtoupper(sha1($sha));
+		$checkid=md5($refid);
+		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($_POST,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		//$p = new ogone_class; 
+		$p->add_field('amount',$amount);
+		$p->add_field('CN',$_POST['first_name'].' '.$_POST['last_name']);
+		$p->add_field('COM',$description);
+		$p->add_field('currency',$eshopoptions['currency']);
+		$p->add_field('email',$_POST['email']);
+		$p->add_field('language',$eshopoptions['location']);
+		$p->add_field('orderID',$refid);
+		$p->add_field('ownerzip',$_POST['zip']);
+		$p->add_field('owneraddress',$_POST['address1']);
+		$p->add_field('ownercty',$_POST['country']);
+		$p->add_field('ownertelno',$_POST['phone']);
+		$p->add_field('ownertown',$_POST['city']);
+		$p->add_field('PSPID',$Pspid);
+		$p->add_field('SHASign',$SHASign);
+		$p->add_field('operation','SAL');
 		$p->add_field('accepturl',$slink);
 		$p->add_field('declineurl',$clink);
 		$p->add_field('exceptionurl',$clink);
@@ -198,7 +201,7 @@ switch ($eshopaction) {
 				$tosha.=$k.'='.$v.$secret;
 			}
 		$ps->ipn_data["mycheckid"]=$checked;
-		if('5' == $_REQUEST["STATUS"] && strtoupper(sha1($tosha)) == $ps->ipn_data['SHASIGN']){
+		if('9' == $_REQUEST["STATUS"]  && strtoupper(sha1($tosha)) == $ps->ipn_data['SHASIGN']){
 			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($transid);
 				$subject = __('ogone IPN -','eshop');
@@ -312,10 +315,10 @@ switch ($eshopaction) {
 			$subject='ogone testing';
 			$checked=md5($ps->ipn_data["orderID"]);	
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($ps->ipn_data['orderID']);
+				$txn_id = __('Failed','eshop').$wpdb->escape($ps->ipn_data['orderID']);
 				$subject = __('ogone IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['orderID']);
+				$txn_id = __("TEST-Failed",'eshop').$wpdb->escape($ps->ipn_data['orderID']);
 				$subject = __('Testing: ogone IPN - ','eshop');
 			}
 			$array=@eshop_rtn_order_details($checked);
