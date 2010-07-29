@@ -263,7 +263,8 @@ if (!function_exists('eshopShowform')) {
 			
 		}
 		
-		$amt=round(($opt["price"]+$addoprice), 2);
+		//$amt=round(($opt["price"]+$addoprice), 2);
+		$amt=number_format(round(($opt["price"]+$addoprice), 2),2);
 		/*
 		if(is_discountable(calculate_total())!=0){
 			$discount=is_discountable(calculate_total())/100;
@@ -836,12 +837,14 @@ if (!function_exists('eshop_checkout')) {
 				global $current_user;
 				get_currentuserinfo();
 				$crumbs=stripslashes_deep(get_the_author_meta( 'eshop', $current_user->ID )) ;
-				foreach($crumbs as $k=>$v){
-					$$k=esc_attr($v);
+				if(is_array($crumbs)){
+					foreach($crumbs as $k=>$v){
+						$$k=esc_attr($v);
+					}
+					$first_name=esc_attr($current_user->user_firstname);
+					$last_name=esc_attr($current_user->user_lastname);
+					$email=esc_attr($current_user->user_email);
 				}
-				$first_name=esc_attr($current_user->user_firstname);
-				$last_name=esc_attr($current_user->user_lastname);
-				$email=esc_attr($current_user->user_email);
 			}
 		}
 	}

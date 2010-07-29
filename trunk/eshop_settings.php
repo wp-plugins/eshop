@@ -273,6 +273,7 @@ if(isset($_POST['submit'])){
 				$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
 				$eshopoptions['users_text']=$wpdb->escape($_POST['eshop_users_text']);
 			}
+			$eshopoptions['zero']=$wpdb->escape($_POST['eshop_zero']);
 			$remove = array("&#039;", '&quot;', '"',"'","!"," ");
 
 			$eshopoptions['details']['show']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_show']));
@@ -943,6 +944,20 @@ switch($action_status){
 	if(!isset($eshopoptions['users_text'])) $eshopoptions['users_text']='';
 	?>
 	<label for="eshop_users_text"><?php _e('Change sign up text.','eshop'); ?></label><input id="eshop_users_text" name="eshop_users_text" type="text" value="<?php echo $eshopoptions['users_text']; ?>" size="60" /><br />
+
+<label for="eshop_zero"><?php _e('Allow zero cost orders.','eshop'); ?></label>
+	<select name="eshop_zero" id="eshop_zero">
+		<?php
+		if(!isset($eshopoptions['zero'])) $eshopoptions['zero']='';
+		if('1' == $eshopoptions['zero']){
+			echo '<option value="1" selected="selected">'.__('Yes','eshop').'</option>';
+			echo '<option value="0">'.__('No','eshop').'</option>';
+		}else{
+			echo '<option value="1">'.__('Yes','eshop').'</option>';
+			echo '<option value="0" selected="selected">'.__('No','eshop').'</option>';
+		}
+		?>
+	</select><br />
 
 <?php } ?>
 </fieldset>

@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.5.1
+Stable tag: 5.5.2
 
 An accessible Shopping Cart plugin.
 
@@ -40,6 +40,17 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 Not currently available.
 
 == Changelog == 
+
+Version 5.5.2 
+
+* *added* ability to accept 0.00 cost orders.
+* *added* link toorder detail page in the transaction email
+* *fixed* several small errors
+* *fixed* error with base feed.
+* *changed* orders page will now show number of orders correctly 
+* *amended* creation of automatic pages to use native WordPress function.
+* *amended* default for visible credits is now set to no.
+* *removed* help file from plugin, now resides on it's own wiki (link on the help tab for all eShop admin pages)
 
 Version 5.5.1
 
@@ -258,9 +269,9 @@ You then need to create a top level shop page, and start creating departments an
 If you are using this plugin I recommend you disable it before upgrading or deactivating/reactivating eShop, as it may be the cause of some incompatibility issues.
 
 
-= Does this work with Wordpress MU =
+= Does this work with Wordpress MultiSite =
 
-Yes.
+Yes - but do not activate the plugin via the network activate link. eShop needs to run the activation process for each and every site within your network. This is currently not done when you activate a plugin for the entire network. Enable the plugin for the sites to activate themselves instead.
 
 
 = Is eShop translatable =
@@ -269,7 +280,7 @@ Yes! the po file is available from quirm.net
 
 = Support =
 
-Available via the WordPress forums (please tag the post eshop) or via http://www.quirm.net/punbb/viewforum.php?id=14
+Available via the WordPress forums (please tag the post eshop) or via http://quirm.net/forum/forum.php?id=14
 
 Due to increasing demands we no longer offer free CSS support.
 

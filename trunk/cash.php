@@ -38,7 +38,10 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$cash = $eshopoptions['cash']; 
-
+		if(!isset($_POST['RefNr'])){
+			$_POST['RefNr']=uniqid(rand());
+			$ecash->ipn_data['RefNr']=$_POST['RefNr'];
+		}
 		$checkid=md5($_POST['RefNr']);
 		foreach ($_REQUEST as $field=>$value) { 
 		  $ecash->ipn_data["$field"] = $value;
@@ -131,7 +134,10 @@ switch ($eshopaction) {
 		 $to = $cash['email'];    //  your email
 		 $body =  __("A cash purchase was made",'eshop')."\n";
 		 $body .= "\n".__("from ",'eshop').$ecash->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
-		 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
+		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
+		 $body .= __('Details','eshop').":\n";
+		 if(isset($array['dbid']))
+		 	$body .= get_bloginfo( 'wpurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
 		 foreach ($ecash->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 		 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 		$headers=eshop_from_address();

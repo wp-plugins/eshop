@@ -178,7 +178,7 @@ if (!function_exists('displayorders')) {
 				$checkid=$myrow->checkid;
 				$itemrowres=$wpdb->get_results("Select * From $itable where checkid='$checkid'");
 				$total=0;
-				$x=-1;
+				$x=0;
 				foreach($itemrowres as $itemrow){
 					$value=$itemrow->item_qty * $itemrow->item_amt;
 					$total=$total+$value;
@@ -202,11 +202,12 @@ if (!function_exists('displayorders')) {
 						$company='';
 					}
 					$currsymbol=$eshopoptions['currency_symbol'];
+					$ic=$x-1;
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$c.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
 					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
-					<td headers="items numb'.$c.'">'.$x.'</td>
+					<td headers="items numb'.$c.'">'.$ic.'</td>
 					<td headers="price numb'.$c.'" class="right">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2)).'</td>
 					<td headers="downloads numb'.$c.'" class="right">'.$myrow->downloads.'</td>
 					<td headers="transid numb'.$c.'">'.$myrow->transid.'</td>'.
