@@ -727,7 +727,7 @@ if (!function_exists('orderhandle')) {
 			//update the discount codes used, and remove from remaining
 			$disctable=$wpdb->prefix.'eshop_discount_codes';
 			if(eshop_discount_codes_check()){
-				if(valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
+				if(isset($_SESSION['eshop_discount'.$blog_id]) && valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
 					$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
 					$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
 
@@ -827,6 +827,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$transid=$drow->transid;
 			$edited=$drow->edited;
 			$affiliate=$drow->affiliate;
+			$dbid=$drow->id;
 		}
 		if($status=='Completed'){$status=__('Order Received','eshop');}
 		if($status=='Pending' || $status=='Waiting'){$status=__('Pending Payment','eshop');}
@@ -923,7 +924,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$firstname=html_entity_decode($firstname);
 		$ename=html_entity_decode($ename);
 		$address=html_entity_decode($address);
-		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal);
+		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal,"dbid"=>$dbid);
 		return $array;
 	}
 }
@@ -1035,6 +1036,8 @@ if (!function_exists('eshop_download_the_product')) {
 						header("Content-Transfer-Encoding: binary");
 						header("Content-Length: ".filesize($dload));
 						readfile("$dload");
+						//alternative download comment above, and uncomment below
+						//eshop_readfile($dload);
         	   			exit();
 					}
 				}
@@ -1077,6 +1080,33 @@ if (!function_exists('eshop_download_the_product')) {
 		}
 		return;
 	}
+}
+if (!function_exists('eshop_readfile')){
+  // Read a file and display its content chunk by chunk
+  function eshop_readfile($filename, $retbytes = TRUE) {
+    $buffer = '';
+    $cnt =0;
+    $chunksize=1024*1024;// Size (in bytes) of tiles chunk
+    // $handle = fopen($filename, 'rb');
+    $handle = fopen($filename, 'rb');
+    if ($handle === false) {
+      return false;
+    }
+    while (!feof($handle)) {
+      $buffer = fread($handle, $chunksize);
+      echo $buffer;
+      ob_flush();
+      flush();
+      if ($retbytes) {
+        $cnt += strlen($buffer);
+      }
+    }
+    $status = fclose($handle);
+    if ($retbytes && $status) {
+      return $cnt; // return num. bytes delivered like readfile() does.
+    }
+    return $status;
+  }
 }
 if (!function_exists('eshop_show_credits')) {
 	function eshop_show_credits(){

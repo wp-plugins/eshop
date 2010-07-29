@@ -11,7 +11,6 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-
 class eshop_multi_sort {
     var $aData;//the array we want to sort.
     var $aSortkeys;//the order in which we want the array to be sorted.
@@ -179,7 +178,10 @@ if(!isset($_GET['change'])){
 		<?php
 		foreach($grab as $foo=>$grabit){
 			$eshop_product=unserialize($grabit['_eshop_product']);
-			$stkav=$grabit['_eshop_stock'];
+			if(isset($grabit['_eshop_stock']))
+				$stkav=$grabit['_eshop_stock'];
+			else
+				$stkav=0;
 			if($eshop_product['products']['1']['price']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);

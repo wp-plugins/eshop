@@ -50,11 +50,7 @@ foreach($thisemail as $this_email){
 ?>
 </tbody>
 </table>
-<?php if($x>=11){ ?>
-<p><?php _e('eShop has detected an error with your templates. But don\'t worry it is easily fixed.','eshop'); ?></p>
-<p><?php _e('Deactivate eShop, delete your eshop_emails database table (via phpmyadmin or similar), then reactivate eShop. (changes you made to the templates will be lost, so keep a note of them!).','eshop'); ?></p>
 
-<?php } ?>
 </div>
 <div class="wrap">
 <?php

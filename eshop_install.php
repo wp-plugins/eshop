@@ -50,7 +50,7 @@ function eshop_option_setup() {
 		'cart_shipping'=>'',
 		'cart_success'=>'',
 		'checkout'=>'',
-		'credits'=> 'yes',
+		'credits'=> 'no',
 		'cron_email'=>'',
 		'currency_symbol'=>'&pound;',
 		'currency'=>'GBP',
@@ -1102,39 +1102,39 @@ $post_date =date("Y-m-d H:i:s");
 $post_date_gmt =gmdate("Y-m-d H:i:s");
 
 $num=0;
-$pages[$num]['name'] = 'shopping-cart';
-$pages[$num]['title'] = 'Shopping Cart';
+$pages[$num]['post_name'] = 'shopping-cart';
+$pages[$num]['post_title'] = 'Shopping Cart';
 $pages[$num]['tag'] = '[eshop_show_cart';
 $pages[$num]['option'] = 'cart';
 
 $num++;
-$pages[$num]['name'] = 'checkout';
-$pages[$num]['title'] = 'Checkout';
+$pages[$num]['post_name'] = 'checkout';
+$pages[$num]['post_title'] = 'Checkout';
 $pages[$num]['tag'] = '[eshop_show_checkout';
 $pages[$num]['option'] = 'checkout';
 
 $num++;
-$pages[$num]['name'] = 'thank-you';
-$pages[$num]['title'] = 'Thank You for your order';
+$pages[$num]['post_name'] = 'thank-you';
+$pages[$num]['post_title'] = 'Thank You for your order';
 $pages[$num]['tag'] = '[eshop_show_success';
 $pages[$num]['option'] = 'cart_success';
 
 $num++;
-$pages[$num]['name'] = 'cancelled-order';
-$pages[$num]['title'] = 'Cancelled Order';
+$pages[$num]['post_name'] = 'cancelled-order';
+$pages[$num]['post_title'] = 'Cancelled Order';
 $pages[$num]['tag'] = '[eshop_show_cancel';
 $pages[$num]['option'] = 'cart_cancel';
 
 $num++;
-$pages[$num]['name'] = 'shipping-rates';
-$pages[$num]['title'] = 'Shipping Rates';
+$pages[$num]['post_name'] = 'shipping-rates';
+$pages[$num]['post_title'] = 'Shipping Rates';
 $pages[$num]['tag'] = '[eshop_show_shipping';
 $pages[$num]['option'] = 'cart_shipping';
 $pages[$num]['top'] = 'yes';
 
 $num++;
-$pages[$num]['name'] = 'downloads';
-$pages[$num]['title'] = 'Downloads';
+$pages[$num]['post_name'] = 'downloads';
+$pages[$num]['post_title'] = 'Downloads';
 $pages[$num]['tag'] = '[eshop_show_downloads';
 $pages[$num]['option'] = 'show_downloads';
 $pages[$num]['top'] = 'yes';
@@ -1144,35 +1144,25 @@ $i = 0;
 $post_parent = 0;
 $qtable=$wpdb->prefix . "posts";
 foreach($pages as $page) {
-	$check_page = $wpdb->get_row("SELECT * FROM $qtable WHERE post_type='page' && `post_content` LIKE '%".$page['tag']."%' LIMIT 1",ARRAY_A);
+	$check_page = $wpdb->get_row("SELECT * FROM $qtable WHERE post_type='page' && (post_status='publish' OR post_status='draft' OR post_status='private') && `post_content` LIKE '%".$page['tag']."%' LIMIT 1",ARRAY_A);
 	if($check_page == null){
 		if($i == 0){
-			$post_parent = 0;
+			$page['post_parent'] = 0;
 		}else{
-			$post_parent = $first_id;
+			$page['post_parent'] = $first_id;
 		}
 		if(isset($page['top']) && $page['top']=='yes'){
-			$post_parent=0;
+			$page['post_parent']=0;
 		}
-		
-		global $wp_version;
-		if($wp_version >= 2.1){
-			$pagepublish='publish';
-		}else{
-			$pagepublish='static';
-		}
-		$page['tag']=$page['tag'].']';
-		$sql ="INSERT INTO $qtable
-		(post_author, post_date, post_date_gmt, post_content, post_content_filtered, post_title, post_excerpt,  post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_parent, menu_order, post_type)
-		VALUES
-		('1', '$post_date', '$post_date_gmt', '".$page['tag']."', '', '".$page['title']."', '', '".$pagepublish."', 'closed', 'closed', '', '".$page['name']."', '', '', '$post_date', '$post_date_gmt', '$post_parent', '0', 'page')";
-		
-		$wpdb->query($sql);
-		$post_id = $wpdb->insert_id;
+		$page['post_status']='publish';
+		$page['ping_status'] ='closed';
+		$page['comment_status'] ='closed'; 
+		$page['post_content']=$page['tag'].']';
+		$page['post_type'] = 'page';
+		$post_id=wp_insert_post( $page );
 		if($i == 0){
 			$first_id = $post_id;
 		}
-		$wpdb->query("UPDATE $qtable SET guid = '" . get_permalink($post_id) . "' WHERE ID = '$post_id'");
 		$eshopoptions[$page['option']]=$post_id;
 		$newpages = true;
 		$i++;

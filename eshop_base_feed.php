@@ -6,7 +6,7 @@ xmlns:c="http://base.google.com/cns/1.0">
 <channel>
 <copyright>'.get_bloginfo_rss('name').'</copyright>
 <pubDate>'.date("r").'</pubDate>
-<title>'.get_bloginfo_rss('name').wp_title_rss().'</title>
+<title>'.get_wp_title_rss().'</title>
 <link>'.get_bloginfo_rss('url').'</link>
 <description>Product feed for '.get_bloginfo_rss('name').'</description>
 <generator>eShop: Accessible e-commerce plugin for Wordpress</generator>'."\n";

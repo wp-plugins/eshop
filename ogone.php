@@ -60,14 +60,45 @@ switch ($eshopaction) {
 		}else{
 			die('<p>'.$eshopoptions['cart_cancel'].$derror.'</p>');
 		}
+		/*
 		$sha=
 		'ACCEPTURL='.$slink.$Secret.'AMOUNT='.$amount.$Secret.'CANCELURL='.$clink.$Secret.'CN='.$_POST['first_name'].' '.$_POST['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'DECLINEURL='.$clink.$Secret.'EMAIL='.$_POST['email'].$Secret.'EXCEPTIONURL='.$clink.$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'OPERATION=SAL'.$Secret.'ORDERID='.$refid.$Secret.'OWNERADDRESS='.$_POST['address1'].$Secret.'OWNERCTY='.$_POST['country'].$Secret.'OWNERTELNO='.$_POST['phone'].$Secret.'OWNERTOWN='.$_POST['city'].$Secret.'OWNERZIP='.$_POST['zip'].$Secret.'PSPID='.$Pspid.$Secret;
 		$SHASign=strtoupper(sha1($sha));
+		*/
 		$checkid=md5($refid);
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		//$p = new ogone_class; 
+		$oarray=array(
+		'accepturl'=>$slink,
+		'amount'=>$amount,
+		'cancelurl'=>$clink,
+		'CN'=>$_POST['first_name'].' '.$_POST['last_name'],
+		'COM'=>$description,
+		'currency'=>$eshopoptions['currency'],
+		'declineurl'=>$clink,
+		'email'=>$_POST['email'],
+		'exceptionurl'=>$clink,
+		'language'=>$eshopoptions['location'],
+		'operation'=>'SAL',
+		'orderID'=>$refid,
+		'owneraddress'=>$_POST['address1'],
+		'ownercty'=>$_POST['country'],
+		'ownertelno'=>$_POST['phone'],
+		'ownertown'=>$_POST['city'],
+		'ownerzip'=>$_POST['zip'],
+		'PSPID'=>$Pspid);
+		$sha='';
+		foreach($oarray as $k=>$v){
+			if($v!=''){
+				$p->add_field($k,$v);
+				$sha.=strtoupper($k).'='.$v.$Secret;
+			}
+		}
+		$SHASign=strtoupper(sha1($sha));
+		$p->add_field('SHASign',$SHASign);
+		/*
 		$p->add_field('amount',$amount);
 		$p->add_field('CN',$_POST['first_name'].' '.$_POST['last_name']);
 		$p->add_field('COM',$description);
@@ -87,6 +118,7 @@ switch ($eshopaction) {
 		$p->add_field('declineurl',$clink);
 		$p->add_field('exceptionurl',$clink);
 		$p->add_field('cancelurl',$clink);
+		*/
 		$echoit.=$p->eshop_submit_ogone_post($_POST);
 		
 		break;
@@ -275,6 +307,9 @@ switch ($eshopaction) {
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
+			 if(isset($array['dbid']))
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+
 			 foreach ($ps->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 

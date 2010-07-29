@@ -326,11 +326,15 @@ switch ($eshopaction) {
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
 			$subject .=" Ref:".$p->ipn_data['txn_id'];
+			$array=eshop_rtn_order_details($checked);
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
+			 if(isset($array['dbid']))
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+
 			 //debug
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$chkamt."\n";
 			if($extradetails!='') $body .= $extradetails."\n\n";
