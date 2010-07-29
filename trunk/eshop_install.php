@@ -7,7 +7,6 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
-$wpdb->query('DROP TABLE '.$wpdb->prefix.'eshop_emails');
 if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
@@ -774,8 +773,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	dbDelta($sql);
 	//enter new defauts:
 	$esubject=__('Your order from ','eshop').get_bloginfo('name');
-	$emailfile='
-[AUTO-RESPONSE - PLEASE DO NOT REPLY]
+	$emailfile='[AUTO-RESPONSE - PLEASE DO NOT REPLY]
 
 Dear {FIRSTNAME},
 
@@ -809,10 +807,9 @@ These are available for download via:
 
 If you have questions or concerns, please contact us.
 Thank you for ordering with us.';
-	$wpdb->query("INSERT INTO ".$table." (emailUse,emailType, emailSubject,emailContent) VALUES ('1','Automatic default email','$esubject','$emailfile')"); 
-	$esubject=get_bloginfo('name').__(' Notification','eshop');
-	$emailfile='
-[SPECIAL COMMUNICATION/NOTIFICATION]
+$wpdb->query("INSERT INTO ".$table." (emailUse,emailType, emailSubject,emailContent) VALUES ('1','Automatic default email','$esubject','$emailfile')"); 
+$esubject=get_bloginfo('name').__(' Notification','eshop');
+$emailfile='[SPECIAL COMMUNICATION/NOTIFICATION]
 
 Dear {FIRSTNAME},
 
