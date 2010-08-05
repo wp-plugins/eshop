@@ -323,7 +323,7 @@ switch ($eshopaction) {
 					$stocktable=$wpdb->prefix ."eshop_stock";
 					$mtable=$wpdb->prefix.'postmeta';
 					$producttable=$wpdb->prefix.'eshop_downloads';
-					$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND item_id!='postage'");
+					$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");
 					foreach($query as $row){
 						$pid=$row->post_id;
 						$uqty=$row->item_qty;

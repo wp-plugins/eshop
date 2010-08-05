@@ -492,7 +492,7 @@ $moveit=$wpdb->get_results("Select checkid From $dtable where downloads='yes'");
 
 foreach($moveit as $mrow){
 	$pdownload=$numbrows=0;
-	$result=$wpdb->get_results("Select down_id From $itable where checkid='$mrow->checkid' AND item_id!='postage'");
+	$result=$wpdb->get_results("Select down_id From $itable where checkid='$mrow->checkid' AND post_id!='0'");
 	foreach($result as $crow){
 		//check if downloadable product
 		if($crow->down_id != '0')
