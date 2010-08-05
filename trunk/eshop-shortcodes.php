@@ -391,6 +391,8 @@ function eshop_list_new($atts){
 	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	if($max>$show)
 		$max=$show;
+	if($show<$records)
+		$records=$show;
 	if($max>0){
 		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
 		else $epage='1';
@@ -403,6 +405,7 @@ function eshop_list_new($atts){
 				'type'=>'array'
 				));
 			$offset=($epage*$records)-$records;
+			
 		}else{
 			$page_links = paginate_links( array(
 				'base' => add_query_arg( '_p', '%#%' ),
@@ -417,7 +420,8 @@ function eshop_list_new($atts){
 		}
 	}
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
+
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
@@ -432,13 +436,13 @@ function eshop_list_new($atts){
 		);
 		$echo .= '</div>';
 		//end
+
 		if($panels=='no'){
 			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links);
 		}else{
 			if($class=='eshopsubpages') $class='eshoppanels';
 			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links);
 		}
-
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
 			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
@@ -446,6 +450,7 @@ function eshop_list_new($atts){
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
+
 		return $echo;
 	} 
 	return;
@@ -621,17 +626,15 @@ function eshop_show_product($atts){
 	return;
 }
 function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
-	global $wpdb, $post;
-	$paged=$post;
+	global $wpdb;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
-	foreach ($subpages as $post){		
-		setup_postdata($post);
-		
+	foreach ($subpages as $postit){	
+		setup_postdata($postit);
 		if($links=='yes')
-			$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
+			$echo .= '<li><a class="itemref" href="'.get_permalink($postit->ID).'">'.apply_filters("the_title",$postit->post_title).'</a>';
 		else
-			$echo .= '<li>'.apply_filters("the_title",$post->post_title);
+			$echo .= '<li>'.apply_filters("the_title",$postit->post_title);
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
@@ -639,16 +642,16 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
 			$h=round(($h*$imgsize)/100);
 		}
 
-		if (has_post_thumbnail( $post->ID ) ) {
+		if (has_post_thumbnail( $postit->ID ) ) {
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'">'.get_the_post_thumbnail( $postit->ID, array($w, $h)).'</a>'."\n";
 			else
-				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
+				$echo .=get_the_post_thumbnail( $postit->ID, array($w, $h))."\n";
 
 		}else{
 			$eimage=eshop_files_directory();
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 			else
 				$echo .='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 
@@ -666,7 +669,6 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
 		add_filter('the_content', 'eshop_boing');
 	}
 	$echo .= '</ul>';
-	$post=$paged;
 	return $echo;
 }
 

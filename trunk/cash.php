@@ -77,7 +77,7 @@ switch ($eshopaction) {
 			$stocktable=$wpdb->prefix ."eshop_stock";
 			$mtable=$wpdb->prefix.'postmeta';
 			$producttable=$wpdb->prefix.'eshop_downloads';
-			$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checkid' AND item_id!='postage'");
+			$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checkid' AND post_id!='0'");
 			foreach($query as $row){
 				$pid=$row->post_id;
 				$uqty=$row->item_qty;
@@ -98,6 +98,7 @@ switch ($eshopaction) {
 					$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
 					if($chkit!=''){						
 						$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid");
+						echo "UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid";
 					}else{
 						$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
 					}
