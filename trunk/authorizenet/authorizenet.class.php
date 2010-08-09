@@ -80,8 +80,8 @@ class authorizenet_class {
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->authorizenet_url.'">
           <p>';
 			$relayURL=$_POST['x_relay_URL'];
-			$amount=$_POST['amount'];
-			$shipping=$_POST['shipping_1'];
+			$amount=str_replace(',','',$_POST['amount']);
+			$shipping=str_replace(',','',$_POST['shipping_1']);
 
 			$echortn.='
 			<input type="hidden" name="x_show_form" value="PAYMENT_FORM" />
@@ -107,13 +107,14 @@ class authorizenet_class {
 				}			
 			}
 			foreach ($this->fields as $name => $value) {
+				if($name=='x_amount') $value= str_replace(',','',$value);
 			   $echortn.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
       		}
 			//convert items to one liners - oh joy is me
 			$numberofproducts=$_POST['numberofproducts'];
 			$sep='<|>';
 			for($i=1;$i<=$numberofproducts;$i++){
-				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.$_POST['amount_'.$i].$sep.'N';
+				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(',','',$_POST['amount_'.$i]).$sep.'N';
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />';
 			}
 			if($shipping>0){
