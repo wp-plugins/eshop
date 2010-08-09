@@ -98,9 +98,9 @@ if(isset($_POST['delete'])){
 		echo '<li>'.__('eShop template files deleted','eshop').'</li>';
 	}
 	//unregister widgets
-	unregister_sidebar_widget('eshop_widget');
-	unregister_sidebar_widget('eshop_pay_widget');
-	unregister_sidebar_widget('eshop_products_widget');
+	wp_unregister_sidebar_widget('eshop_widget');
+	wp_unregister_sidebar_widget('eshop_pay_widget');
+	wp_unregister_sidebar_widget('eshop_products_widget');
 	unregister_widget('eshop_widget');
 	unregister_widget('eshop_pay_widget');
 	unregister_widget('eshop_products_widget');

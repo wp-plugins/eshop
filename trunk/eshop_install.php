@@ -97,14 +97,7 @@ function eshop_option_setup() {
 		'unknown_state'=> '5',
 		'version'=>'',
 		'xtra_help' =>'',
-		'xtra_privacy' =>'',
-		//payments:
-		'cash' =>'',
-		'payson' =>'',
-		'ideallite' =>'',
-		'authorizenet' =>'',
-		'epn' =>'',
-		'webtopay' =>''
+		'xtra_privacy' =>''
 	);
 
 	// if old options exist, update to new system only need pre 5.0

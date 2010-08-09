@@ -98,7 +98,6 @@ switch ($eshopaction) {
 					$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
 					if($chkit!=''){						
 						$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid");
-						echo "UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid";
 					}else{
 						$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
 					}

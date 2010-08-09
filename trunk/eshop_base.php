@@ -209,7 +209,7 @@ if(!isset($_GET['change'])){
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('Change details','eshop').'">'.$eshop_product['sku'].'</a></td>';
-				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
+				echo '<td headers="page sku'.$calt.'"><a href="post.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				$pid=$grabit['id'];

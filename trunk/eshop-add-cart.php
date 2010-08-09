@@ -1,11 +1,12 @@
 <?php
-function eshop_boing($pee,$short='no'){
+function eshop_boing($pee,$short='no',$postid=''){
 	global $wpdb,$post,$eshopchk,$eshopoptions;
-	$stkav=get_post_meta( $post->ID, '_eshop_stock',true );
-    $eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
+	if($postid=='') $postid=$post->ID;
+	$stkav=get_post_meta( $postid, '_eshop_stock',true);
+    $eshop_product=get_post_meta( $postid, '_eshop_product',true );
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
-	if($short!='short' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		$details='';
 		if($eshopoptions['details']['show']!='')
 			$details.=" show='".esc_attr($eshopoptions['details']['show'])."'";
@@ -18,17 +19,18 @@ function eshop_boing($pee,$short='no'){
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//stock checker
 		if($post->ID!=''){
-			if('yes' == $eshopoptions['stock_control']){
+			if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 				$stocktable=$wpdb->prefix ."eshop_stock";
-				$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$post->ID");
+				$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$postid");
 				if($currst<=0){
 					$stkav='0';
-					delete_post_meta( $post->ID, '_eshop_stock' );
+					delete_post_meta( $postid, '_eshop_stock' );
 				}
 			}
 		}
 		$replace='';
 		if($stkav=='1'){
+	
 		/*
 			if('yes' == $eshopoptions['stock_control'] && 'yes' == $eshopoptions['show_stock'] && isset($currst) && (!isset($eshop_product['download']) || (isset($eshop_product['download']) && $eshop_product['download']==''))){
 				$replace.='<p class="stkqty">'.__('Stock Available:','eshop').' <span>'.$currst.'</span></p>';
@@ -47,7 +49,7 @@ function eshop_boing($pee,$short='no'){
 			if(is_array($optsets)){	
 				$opttable=$wpdb->prefix.'eshop_option_sets';
 				$optnametable=$wpdb->prefix.'eshop_option_names';
-
+				$optarray=array();
 				foreach($optsets as $foo=>$opset){
 					$qb[]="(n.optid=$opset && n.optid=s.optid)";
 				}
@@ -162,8 +164,8 @@ function eshop_boing($pee,$short='no'){
 			<input type="hidden" name="pclas" value="'.$eshop_product['shiprate'].'" />
 			<input type="hidden" name="pname" value="'.stripslashes(esc_attr($eshop_product['description'])).'" />
 			<input type="hidden" name="pid" value="'.$eshop_product['sku'].'" />
-			<input type="hidden" name="purl" value="'.get_permalink($post->ID).'" />
-			<input type="hidden" name="postid" value="'.$post->ID.'" />';
+			<input type="hidden" name="purl" value="'.get_permalink($postid).'" />
+			<input type="hidden" name="postid" value="'.$postid.'" />';
 			$eshopfiles=eshop_files_directory();
 			if($eshopoptions['addtocart_image']=='img'){
 				$replace .='<input class="buttonimg" src="'.$eshopfiles['1'].'addtocart.png" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';

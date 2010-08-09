@@ -54,7 +54,7 @@ if (!function_exists('display_cart')) {
 					$echo.= "\n<tr".$alt.">";
 					//do the math for weight
 					$eshop_product=get_post_meta( $opt['postid'], '_eshop_product',true );
-
+					$eimg='';
 					/* test image insertion */
 					if(is_numeric($eshopoptions['image_in_cart'])){
 						$imgsize=$eshopoptions['image_in_cart'];
@@ -628,6 +628,7 @@ if (!function_exists('orderhandle')) {
 				'$user_id'
 					);");
 					
+			do_action('eshoporderhandle',$_POST,$checkid);
 					
 			$i=1;
 			//this is here to generate just one code per order
@@ -925,7 +926,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$ename=html_entity_decode($ename);
 		$address=html_entity_decode($address);
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal,"dbid"=>$dbid);
-		return $array;
+		$secarray=apply_filters('eshoprtndetails',$dquery);
+		$retarray=array_merge($array,$secarray);
+		return $retarray;
 	}
 }
 
@@ -1258,6 +1261,9 @@ if (!function_exists('eshop_email_parse')) {
 		$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
 		$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
 		$this_email = str_replace('{ORDERDATE}', $array['date'], $this_email);
+		$filterit=array($array,$this_email);
+		$temp = apply_filters('eshopemailparse',$filterit);
+		if(!is_array($temp)) $this_email=$temp;
 		return $this_email;
 	}
 }
