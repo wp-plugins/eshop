@@ -58,7 +58,7 @@ switch ($eshopaction) {
 		$sequence	= rand(1, 1000);
 		// a timestamp is generated
 		$timestamp	= time ();
-		$amount=$_POST['amount'];
+		$amount=str_replace(',','',$_POST['amount']);
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
 		$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key)); 
