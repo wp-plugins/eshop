@@ -6,7 +6,7 @@ xmlns:c="http://base.google.com/cns/1.0">
 <channel>
 <copyright>'.get_bloginfo_rss('name').'</copyright>
 <pubDate>'.date("r").'</pubDate>
-<title>'.get_wp_title_rss().'</title>
+<title>'.get_bloginfo_rss('name').'</title>
 <link>'.get_bloginfo_rss('url').'</link>
 <description>Product feed for '.get_bloginfo_rss('name').'</description>
 <generator>eShop: Accessible e-commerce plugin for Wordpress</generator>'."\n";
@@ -73,7 +73,7 @@ foreach($array as $foo=>$grabit){
 	$baseprice=$grabit['products']['1']['price'];
 	if (has_post_thumbnail( $rid ) ) {
 		$grabimg=get_post_thumbnail_id($rid);
-		$src=wp_get_attachment_image_src($grabimg);
+		$src=wp_get_attachment_image_src($grabimg,'full');
 		$baseimg =$src['0'];
 	}	
 	

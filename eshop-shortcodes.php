@@ -661,7 +661,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links){
 		$echo .= apply_filters('the_excerpt', get_the_excerpt());
 		if($form=='yes'){
 			$short='yes';
-			$echo =eshop_boing($echo,$short);
+			$echo =eshop_boing($echo,$short,$postit->ID);
 		}else
 			$short='no';
 		$echo .= '</li>'."\n";
@@ -706,7 +706,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links){
 		include_once( 'eshop-add-cart.php' );
 		if($form=='yes'){
 			$short='yes';
-			$echo =eshop_boing($echo,$short);
+			$echo =eshop_boing($echo,$short,$post->ID);
 		}else
 			$short='no';
 		$echo .= '</li>'."\n";
@@ -1197,7 +1197,10 @@ function eshop_details($atts){
 	$eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
 	$numoptions=$eshopoptions['options_num'];
 	$currsymbol=$eshopoptions['currency_symbol'];
-	$weightsymbol=$eshopoptions['weight_unit'];
+	if(!empty($eshopoptions['weight_unit']))
+		$weightsymbol=$eshopoptions['weight_unit'];
+	else
+		$weightsymbol='';
 	$eshopletter = "A";
 	foreach($willshow as $listit){
 		switch($listit){
@@ -1287,41 +1290,43 @@ function eshop_details($atts){
 						foreach($osets as $optid){
 							$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price,weight from $optsettable where optid='%d' ORDER by id ASC",$optid));
 							$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
-							$ename=$egrab->name;
-							$etype=$egrab->type;
-							$edesc=$egrab->description;
-							$checkrows=sizeof($myrowres);
-							$i=1;
-							$tbody='';
-							foreach($myrowres as $myrow){
-								if($myrow->weight=='')
-									$myrow->weight='0';
-								$alt = ($i % 2) ? '' : ' class="alt"';
-								$tbody.="<tr".$alt.">\n".
-								'<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+							if(isset($egrab->name)){
+								$ename=$egrab->name;
+								$etype=$egrab->type;
+								$edesc=$egrab->description;
+								$checkrows=sizeof($myrowres);
+								$i=1;
+								$tbody='';
+								foreach($myrowres as $myrow){
+									if($myrow->weight=='')
+										$myrow->weight='0';
+									$alt = ($i % 2) ? '' : ' class="alt"';
+									$tbody.="<tr".$alt.">\n".
+									'<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+									if(!in_array('option',$willhide))
+										$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
+									if(!in_array('price',$willhide))
+										$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($myrow->price,2)).'</td>';
+									if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
+										$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($myrow->weight,2),$weightsymbol).'</td>';
+									$tbody.="</tr>\n";
+									$i++;
+								}
+								$listed.=nl2br(stripslashes(esc_attr($edesc)));
+								$listed.='<table class="eshop" summary="'.__('Product Options by option and price','eshop').'">
+								<thead><tr>
+								<th id="'.$eshopletter.'eshopnum">#</th>';
 								if(!in_array('option',$willhide))
-									$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
+									$listed.='<th id="'.$eshopletter.'eshopoption">'.__('Option','eshop').'</th>';
 								if(!in_array('price',$willhide))
-									$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($myrow->price,2)).'</td>';
+									$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
 								if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
-									$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($myrow->weight,2),$weightsymbol).'</td>';
-								$tbody.="</tr>\n";
-								$i++;
+									$listed.='<th id="'.$eshopletter.'eshopweight">'. __('Weight','eshop').'</th>';
+								$listed.='</tr></thead><tbody>'."\n";
+								$listed.=$tbody;
+								$listed.='</tbody></table>'."\n";
+								$eshopletter++;
 							}
-							$listed.=nl2br(stripslashes(esc_attr($edesc)));
-							$listed.='<table class="eshop" summary="'.__('Product Options by option and price','eshop').'">
-							<thead><tr>
-							<th id="'.$eshopletter.'eshopnum">#</th>';
-							if(!in_array('option',$willhide))
-								$listed.='<th id="'.$eshopletter.'eshopoption">'.__('Option','eshop').'</th>';
-							if(!in_array('price',$willhide))
-								$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
-							if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
-								$listed.='<th id="'.$eshopletter.'eshopweight">'. __('Weight','eshop').'</th>';
-							$listed.='</tr></thead><tbody>'."\n";
-							$listed.=$tbody;
-							$listed.='</tbody></table>'."\n";
-							$eshopletter++;
 						}
 					}
 					$listed.="</dd>\n";

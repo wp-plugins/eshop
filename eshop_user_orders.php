@@ -316,6 +316,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		}else{
 			echo '</p></div>';
 		}
+		do_action('eshopshowuserdetails',$drow);
 		echo '<hr class="eshopclear" />';
 		if($drow->thememo!=''){
 			echo '<div class="paypalmemo"><h4>'.__('Paypal memo:','eshop').'</h4><p>'.nl2br(htmlspecialchars(stripslashes($drow->thememo))).'</p></div>';

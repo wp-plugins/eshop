@@ -192,8 +192,8 @@ function eshop_save_postdata( $post_id ) {
 	if( !isset( $id ) )
 		$id = $post_id;
   // OK, we're authenticated: we need to find and save the data
-	$stkav=get_post_meta( $_REQUEST[ 'post' ], '_eshop_stock',true );
-    $eshop_product=get_post_meta( $_REQUEST[ 'post' ], '_eshop_product',true );
+	$stkav=get_post_meta( $post_id, '_eshop_stock',true );
+    $eshop_product=get_post_meta( $post_id, '_eshop_product',true );
 	
 	$eshop_product['sku']=htmlspecialchars($_POST['eshop_sku']);
 	$numoptions=$eshopoptions['options_num'];
