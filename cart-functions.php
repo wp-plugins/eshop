@@ -498,11 +498,12 @@ if (!function_exists('orderhandle')) {
 			//auto create a new user if they don't exist - only works if not logged in ;)
 			$user_email=$_POST['email'];
 			$utable=$wpdb->prefix ."users";
-			$username = strtolower($_POST['first_name'].$_POST['last_name']);
+			$names=str_replace(" ","",$_POST['first_name'].$_POST['last_name']);
+			$username = strtolower($names);
 			$eshopch = $wpdb->get_results("SHOW TABLE STATUS LIKE '$utable'");
 
 			//a unique'ish number
-			$altusername=strtolower($_POST['first_name'].$_POST['last_name'].$eshopch[0]->Auto_increment);
+			$altusername=strtolower($names.$eshopch[0]->Auto_increment);
 			if(!email_exists($user_email)){
 				if(username_exists($username))
 					$username=$altusername;
