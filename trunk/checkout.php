@@ -239,7 +239,7 @@ if (!function_exists('eshopShowform')) {
 			$echo .='</fieldset>';
 		}
 	}
-	$final_price=number_format($_SESSION['final_price'.$blog_id], 2);
+	$final_price=number_format($_SESSION['final_price'.$blog_id], 2,'.','');
 	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
 	$x=0;
 	$discounttotal=0;
@@ -269,7 +269,7 @@ if (!function_exists('eshopShowform')) {
 		}
 		
 		//$amt=round(($opt["price"]+$addoprice), 2);
-		$amt=number_format(round(($opt["price"]+$addoprice), 2),2);
+		$amt=number_format(round(($opt["price"]+$addoprice), 2),2,'.','');
 		/*
 		if(is_discountable(calculate_total())!=0){
 			$discount=is_discountable(calculate_total())/100;
@@ -717,7 +717,7 @@ if (!function_exists('eshop_checkout')) {
 				// create a custom id, and shove details in database
 				$date=date('YmdHis');
 				$_SESSION['date'.$blog_id]=$date;
-				$fprice=number_format($_SESSION['final_price'.$blog_id], 2);
+				$fprice=number_format($_SESSION['final_price'.$blog_id], 2,'.','');
 				$_POST['amount']=$fprice;
 				$_POST['custom']=$date;
 				$_POST['numberofproducts']=sizeof($_SESSION['eshopcart'.$blog_id]);
