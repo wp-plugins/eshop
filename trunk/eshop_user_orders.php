@@ -230,7 +230,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if($transid==__('Processing&#8230;','eshop'))
 		echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	else
-		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(_x('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	echo "</tbody></table>\n";
 			
 	$cyear=substr($custom, 0, 4);

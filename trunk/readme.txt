@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.5.7
+Stable tag: 5.5.8
 
 An accessible Shopping Cart plugin.
 
@@ -40,6 +40,14 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 Not currently available.
 
 == Changelog == 
+
+version 5.5.8
+
+* *added* ability to add a single price (from option 1) to every display shortcode
+* *fixed* bug with some carts having 2 added instead of 1 - specifically when using Simple Facebook Connect
+* *fixed* cart now updates before page is displayed which will hopefully allow the cart widget to be displayed correctly at all times.
+* *changed* method of handling some strings to allow ease of amending text see http://quirm.net/wiki/eshop/changing-displayed-text/
+* *amended* Discount codes reconfigured to allow use of 100% - use with care. Additionally you will need to set Allow zero cost orders.to yes.
 
 Version 5.5.7
 
