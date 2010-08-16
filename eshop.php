@@ -2,13 +2,13 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.5.7');
+	define('ESHOP_VERSION', '5.5.8');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.5.7
+Version: 5.5.8
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -304,7 +304,7 @@ if (!function_exists('eshop_cron')) {
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Completed' OR status='Waiting'");
 			if($max>0){
 				$to = $eshopoptions['cron_email'];    //  your email
-				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin");
+				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin",'eshop');
 				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php&action=Dispatch'."\n";
 				$headers=eshop_from_address();
 				$subject=get_bloginfo('name').__(": outstanding orders");
@@ -478,6 +478,9 @@ if (isset($_POST['eshoplongdownloadname'])){
 //add eshop product entry onto the post and page edit pages.
 include_once( 'eshop-product-entry.php' );
 include_once( 'eshop-eshortcodes.php');
+
+//process cart
+add_action ('init','eshop_cart_process');
 
 //displays the add to cart form
 include_once( 'eshop-add-cart.php' );

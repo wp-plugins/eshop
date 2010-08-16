@@ -713,7 +713,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  id int(11) NOT NULL auto_increment,
 	  dtype tinyint(1) NOT NULL default '0',
 	  disccode varchar(255) NOT NULL default '',
-	  percent mediumint(5) NOT NULL default '0',
+	  percent float(5,2) NOT NULL default '0.00',
 	  remain varchar(11) NOT NULL default '',
 	  used int(11) NOT NULL default '0',
 	  enddate date NOT NULL default '0000-00-00',
@@ -840,6 +840,7 @@ These are available for download via:
 If you have questions or concerns, please contact us.
 Again, thank you for ordering with us.
 ';
+//"
 	$wpdb->query("INSERT INTO ".$table." (emailUse,emailType,emailSubject,emailContent) VALUES ('1','Admin Order Form email','$esubject','$emailfile')"); 
 	//payment option emails
 	$esubject=__('Your order from ','eshop').get_bloginfo('name');
@@ -862,6 +863,12 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic i
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ogone email','$esubject')"); 
 
+
+//changed in 5.5.8
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.5.82' ){
+	$table = $wpdb->prefix . "eshop_discount_codes";
+	$wpdb->query("ALTER TABLE ".$table." CHANGE `percent` `percent` float(5,2) NOT NULL DEFAULT '0'");
+}
 //added in 5.3
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.1' ){
 	$table = $wpdb->prefix . "eshop_order_items";

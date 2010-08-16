@@ -75,8 +75,8 @@ function eshop_discounts_manager() {
 			case '1':
 			case '2':
 			case '3':
-				if(!is_numeric($eshop_percent) || $eshop_percent>99.99)
-					$error[]=__('Percentage must be a number below 100','eshop');
+				if(!is_numeric($eshop_percent) || $eshop_percent>100)
+					$error[]=__('Percentage must be a number no greater than 100.00','eshop');
 				elseif($eshop_percent<=0)
 					$error[]=__('Percentage must be a number above 0','eshop');
 				break;
