@@ -57,9 +57,10 @@ function eshop_products_manager() {
 	<h2><?php _e('Products','eshop'); ?></h2>
 	<p><?php _e('A reference table for identifying products','eshop'); ?>.</p>
 	<?php
-	if(isset($_POST['eshopqp'])){
+	if(isset($_POST['eshopqp']) && isset($_POST['product'])){
 		foreach($_POST['product'] as $id=>$type){
 			$pid=$id;
+			/*
 			$stkav=get_post_meta( $pid, '_eshop_stock',true );
 			$eshop_product=get_post_meta( $pid, '_eshop_product',true );
 			if(isset($type['stkqty']) && is_numeric($type['stkqty'])){
@@ -72,7 +73,20 @@ function eshop_products_manager() {
 					$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,available,purchases) VALUES ($pid,$meta_value,0)"));
 				}
 			}
-					
+			*/	
+			$stocktable=$wpdb->prefix ."eshop_stock";
+			$eshop_product=get_post_meta( $pid, '_eshop_product',true );
+			for($i=1;$i<=$eshopoptions['options_num'];$i++){
+				if(isset($type[$i]['stkqty']) && is_numeric($type[$i]['stkqty'])){
+					$meta_value=$type[$i]['stkqty'];
+					$results=$wpdb->get_results("select post_id from $stocktable where post_id=$pid && option_id=$i");
+					if(!empty($results)){
+						$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$pid && option_id=$i"));
+					}else{
+						$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($pid,$i,$meta_value,0)"));
+					}
+				}
+			}
 			if(isset($type['featured'])){
 				$eshop_product['featured']='Yes';
 				update_post_meta( $id, '_eshop_featured', 'Yes');
@@ -104,13 +118,14 @@ function eshop_products_manager() {
 				$sortby='description';
 				$csb=' class="current"';
 				break;
+		/*
 			case'sc'://name alphabetically (last name)
 				$sortby='shiprate';
 				$csc=' class="current"';
 				break;
-			
+		*/
 			case'sd'://stock availability 
-				$sortby='qty';
+				$sortby='_eshop_stock';
 				$csd=' class="current"';
 				break;
 		
@@ -143,7 +158,10 @@ function eshop_products_manager() {
 	$poststable=$wpdb->prefix.'posts';
 	$range=10;
 	
-	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id AND posts.post_status != 'trash' AND posts.post_status != 'revision'".$addtoq);
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' 
+	AND meta.meta_value!='' 
+	AND posts.ID = meta.post_id 
+	AND posts.post_status != 'trash' AND posts.post_status != 'revision'".$addtoq);
 	if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
 		$records=$eshopoptions['records'];
 	}else{
@@ -180,7 +198,7 @@ function eshop_products_manager() {
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>'.__('Product','eshop').'</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sc"'.$csc.'>'.__('Shipping','eshop').'</a></li>';
+		// echo '<li><a href="'.$apge.'&amp;by=sc"'.$csc.'>'.__('Shipping','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>'.__('Stock','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=se"'.$cse.'>'.__('Featured','eshop').'</a></li>';
 		echo '</ul>';
@@ -252,16 +270,17 @@ function eshop_products_manager() {
 		<th id="desc"><?php _e('Description','eshop'); ?></th>
 		<th id="down"><abbr title="<?php _e('Downloads','eshop'); ?>"><?php _e('DL','eshop'); ?></abbr></th>
 		<th id="ship"><abbr title="<?php _e('Shipping Rate','eshop'); ?>"><?php _e('S/R','eshop'); ?></abbr></th>
-		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
 		<th id="stkavail"><abbr title="<?php _e('Stock Available','eshop'); ?>"><?php _e('Stk avail.','eshop'); ?></abbr></th>
 		<th id="purc"><abbr title="<?php _e('Number of Purchases','eshop'); ?>"><?php _e('Purc.','eshop'); ?></abbr></th>
 		<th id="ftrd"><abbr title="<?php _e('Marked as Featured','eshop'); ?>"><?php _e('Feat.','eshop'); ?></abbr></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
 		<th id="associmg"><?php _e('Thumbnail','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
 		<?php
+		$scc=0;
 		foreach($grab as $foo=>$grabit){
 			$eshop_product=unserialize($grabit['_eshop_product']);
 			if(isset($grabit['_eshop_stock']))
@@ -269,7 +288,7 @@ function eshop_products_manager() {
 			else
 				$stkav=0;
 			$pdownloads='no';
-			if($eshop_product['products']['1']['price']!=''){
+			if(isset($eshop_product['products']['1']['price']) && $eshop_product['products']['1']['price']!=''){
 			//reset array
 				$purcharray=array();
 				//get page title
@@ -304,28 +323,18 @@ function eshop_products_manager() {
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				echo '<td headers="ship sku'.$calt.'">'.$eshop_product['shiprate'].'</td>';
-				$stocktable=$wpdb->prefix ."eshop_stock";
-				if($eshopoptions['stock_control']=='yes'){
-					$available=$wpdb->get_var("select available from $stocktable where post_id=$getid limit 1");
-					if($available=='')
-						$available='0';
-					if(is_numeric($available) && $eshopoptions['stock_control']=='yes'){
-						$eavailable='<label for="stock'.$calt.'">'.__('Stock','eshop').'</label><input type="text" value="'.$available.'" id="stock'.$calt.'" name="product['.$getid.'][stkqty]" size="4" />';
-						$available=$eavailable;
-					}
-				}else{
-					$available=__('n/a','eshop');
-				}
+				
 				if($stkav=='1')
 					$stkchk=' checked="checked"';
 				else
 					$stkchk='';
 				
-				echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
 				echo '<td headers="stkavail sku'.$calt.'"><label for="stkavail'.$calt.'">'.__('Stock Available','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][stkavail]" id="stkavail'.$calt.'"'.$stkchk.' /></td>';
 
 				$purcharray=array();
 				$dltable = $wpdb->prefix ."eshop_downloads";
+				$stocktable=$wpdb->prefix ."eshop_stock";
+
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
 					if($eshop_product['products'][$i]['option']!=''){
 						if($eshop_product['products'][$i]['download']!=''){
@@ -336,7 +345,7 @@ function eshop_products_manager() {
 							else
 								$purcharray[]='0';
 						}else{
-							$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid limit 1");
+							$purchases=$wpdb->get_var("select purchases from $stocktable where post_id=$getid && option_id=$i limit 1");
 							if($purchases!='')
 								$purcharray[]=$purchases;
 							else
@@ -361,6 +370,24 @@ function eshop_products_manager() {
 					}
 				}
 				echo '</td>';
+				//reset the string to stop multiple boxes!
+				$pravailable='';
+				if($eshopoptions['stock_control']=='yes'){
+					for($i=1;$i<=$numoptions;$i++){
+						if($eshop_product['products'][$i]['option']!=''){
+							$available=$wpdb->get_var("select available from $stocktable where post_id=$getid && option_id=$i limit 1");
+							if($available=='')
+								$available='0';
+							if(is_numeric($available) && $eshopoptions['stock_control']=='yes'){
+								$pravailable.='<label for="stock'.$calt.'">'.__('Stock','eshop').'</label><input type="text" value="'.$available.'" id="stock'.$scc.'" name="product['.$getid.']['.$i.'][stkqty]" size="4" /><br />'."\n";
+								$scc++;
+							}
+						}
+					}
+				}else{
+					$pravailable.=__('n/a','eshop').'<br />';
+				}
+				echo '<td headers="stk sku'.$calt.'">'.$pravailable.'</td>';
 				echo '<td headers="associmg sku'.$calt.'">';
 				$w=get_option('thumbnail_size_w');
 				$h=get_option('thumbnail_size_h');

@@ -1,5 +1,5 @@
 <?php
-if ('eshop_orders.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop_user_orders.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*

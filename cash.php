@@ -70,6 +70,10 @@ switch ($eshopaction) {
 		//the magic bit  + creating the subject for our email.
 		$ok='no';
 		if($astatus=='Pending'){
+			$subject .=__("Completed Payment",'eshop');	
+			$ok='yes';
+			eshop_mg_process_product($txn_id,$checkid,'Waiting');
+			/*
 			$query2=$wpdb->query("UPDATE $detailstable set status='Waiting',transid='$txn_id' where checkid='$checkid'");
 			$ok='yes';
 			//product stock control updater
@@ -87,7 +91,7 @@ switch ($eshopaction) {
 				if($fileid!=0){
 					$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
 					//add 1 to number of purchases here (duplication but left in)
-					$wpdb->query("UPDATE $producttable SET purchases=purchases+1 where title='$grabit->title' && files='$grabit->files' limit 1");
+					$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
 					$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
 					if($chkit!=''){	
 						$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid");
@@ -104,6 +108,7 @@ switch ($eshopaction) {
 				}
 
 			}
+			*/
 			//only need to send out for the successes!
 			//lets make sure this is here and available
 			include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');

@@ -4,6 +4,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 	if($postid=='') $postid=$post->ID;
 	$stkav=get_post_meta( $postid, '_eshop_stock',true);
     $eshop_product=get_post_meta( $postid, '_eshop_product',true );
+    $stocktable=$wpdb->prefix ."eshop_stock";
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
 	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
@@ -17,12 +18,24 @@ function eshop_boing($pee,$short='no',$postid=''){
 		$pee.= do_shortcode('[eshop_details'.$details.']');
 	}
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
-		//stock checker
+		//need to precheck stock
 		if($post->ID!=''){
 			if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
-				$stocktable=$wpdb->prefix ."eshop_stock";
-				$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$postid");
-				if($currst<=0){
+				$anystk=false;
+				$stkq=$wpdb->get_results("SELECT option_id, available from $stocktable where post_id=$postid");
+				foreach($stkq as $thisstk){
+					$stkarr[$thisstk->option_id]=$thisstk->available;
+				}
+				$opt=$eshopoptions['options_num'];
+				for($i=1;$i<=$opt;$i++){
+					$currst=0;
+					if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
+					if($currst>0){
+						$anystk=true; 
+						$i=$opt;
+					}
+				}
+				if($anystk==false){
 					$stkav='0';
 					delete_post_meta( $postid, '_eshop_stock' );
 				}
@@ -106,7 +119,12 @@ function eshop_boing($pee,$short='no',$postid=''){
 						$price=$eshop_product['products'][$i]['price'];
 						if($i=='1') $esel=' checked="checked"';
 						else $esel='';
-						if($option!=''){
+						$currst=1;
+						if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
+							if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
+							else $currst=0;
+						}
+						if($option!='' && $currst>0){
 							if($price!='0.00')
 								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format($price,2))."</label>\n</li>";
 							else
@@ -121,7 +139,12 @@ function eshop_boing($pee,$short='no',$postid=''){
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
 						$price=$eshop_product['products'][$i]['price'];
-						if($option!=''){
+						$currst=1;
+						if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
+							if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
+							else $currst=0;
+						}
+						if($option!='' && $currst>0){
 							if($price!='0.00')
 								$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format($price,2)).'</option>'."\n";
 							else
@@ -133,16 +156,22 @@ function eshop_boing($pee,$short='no',$postid=''){
 			}else{
 				$option=$eshop_product['products']['1']['option'];
 				$price=$eshop_product['products']['1']['price'];
-				if($price!='0.00'){
-					$replace.='
-					<input type="hidden" name="option" value="1" />
-					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
-					';
-				}else{
-					$replace.='
-					<input type="hidden" name="option" value="1" />
-					<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span></span>
-					';
+				$currst=1;
+				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
+					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[$i];
+				}
+				if($currst>0){
+					if($price!='0.00'){
+						$replace.='
+						<input type="hidden" name="option" value="1" />
+						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
+						';
+					}else{
+						$replace.='
+						<input type="hidden" name="option" value="1" />
+						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span></span>
+						';
+					}
 				}
 			}
 			if($short=='yes'){

@@ -298,14 +298,14 @@ if (!function_exists('displaystats')) {
 		$itable=$wpdb->prefix.'eshop_order_items';
 		$metatable=$wpdb->prefix.'postmeta';
 		$poststable=$wpdb->prefix.'posts';
-		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status = 'publish'");
+		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status != 'trash' AND posts.post_status != 'revision'");
 		$stocked = $wpdb->get_results("
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_eshop_product'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
-		AND posts.post_status = 'publish'
+		AND posts.post_status != 'trash' AND posts.post_status != 'revision'		
 		ORDER BY meta.post_id");
 
 		$countprod=$countfeat=0;
@@ -702,7 +702,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if($transid==__('Processing&#8230;','eshop'))
 		echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	else
-		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(_x('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
+		echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."</td></tr>\n";
 	echo "</tbody></table>\n";
 			
 	$cyear=substr($custom, 0, 4);

@@ -1,5 +1,5 @@
 <?php
-if ('eshop_products.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop_base.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
      
 /*
@@ -58,11 +58,12 @@ if(!isset($_GET['change'])){
 				$sortby='description';
 				$csb=' class="current"';
 				break;
-	
+		/*
 			case'sd'://stock availability 
-				$sortby='qty';
+				$sortby='_eshop_stock';
 				$csd=' class="current"';
 				break;
+		*/
 			case'sf'://date ascending
 			default:
 				$sortby='id';
@@ -77,8 +78,13 @@ if(!isset($_GET['change'])){
 	$numoptions=$eshopoptions['options_num'];
 	$metatable=$wpdb->prefix.'postmeta';
 	$poststable=$wpdb->prefix.'posts';
+	$stocktable=$wpdb->prefix ."eshop_stock";
 	$range=10;
-	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status = 'publish'");
+	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, 
+	$poststable as posts where meta.meta_key='_eshop_product' 
+	AND meta.meta_value!='' 
+	AND posts.ID = meta.post_id	
+	AND posts.post_status != 'trash' AND posts.post_status != 'revision'");
 	if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
 		$records=$eshopoptions['records'];
 	}else{
@@ -115,7 +121,7 @@ if(!isset($_GET['change'])){
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sb"'.$csb.'>'.__('Product','eshop').'</a></li>';
-		echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>'.__('Stock','eshop').'</a></li>';
+		// echo '<li><a href="'.$apge.'&amp;by=sd"'.$csd.'>'.__('Stock','eshop').'</a></li>';
 		echo '</ul>';
 		
 		$myrowres=$wpdb->get_results("
@@ -124,7 +130,7 @@ if(!isset($_GET['change'])){
 		WHERE meta.meta_key = '_eshop_product'
 		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
-		AND posts.post_status = 'publish'
+		AND posts.post_status != 'trash' AND posts.post_status != 'revision'
 		ORDER BY meta.post_id  LIMIT $offset, $records");		
 		$calt=0;
 		$currsymbol=$eshopoptions['currency_symbol'];
@@ -168,6 +174,7 @@ if(!isset($_GET['change'])){
 		<th id="page"><?php _e('Page','eshop'); ?></th>
 		<th id="desc"><?php _e('Description','eshop'); ?></th>
 		<th id="down"><?php _e('Download','eshop'); ?></th>
+		<th id="stkavail"><abbr title="<?php _e('Stock Available','eshop'); ?>"><?php _e('Stk avail.','eshop'); ?></abbr></th>
 		<th id="stk"><?php _e('Stock','eshop'); ?></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
 		<th id="imga"><?php _e('Image','eshop'); ?></th>
@@ -182,7 +189,7 @@ if(!isset($_GET['change'])){
 				$stkav=$grabit['_eshop_stock'];
 			else
 				$stkav=0;
-			if($eshop_product['products']['1']['price']!=''){
+			if(isset($eshop_product['products']['1']['price']) && $eshop_product['products']['1']['price']!=''){
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				$pdown='';
@@ -200,7 +207,6 @@ if(!isset($_GET['change'])){
 						}
 					}
 				}
-				if($pdown=='') $pdown='No';
 				if($ptitle->post_title=='')
 					$posttitle=__('(no title)','eshop');
 				else
@@ -212,22 +218,31 @@ if(!isset($_GET['change'])){
 				echo '<td headers="page sku'.$calt.'"><a href="post.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
+				if($stkav=='1')
+					$stkchk=__('Yes','eshop');
+				else
+					$stkchk=__('No','eshop');
+
+				echo '<td headers="stkavail sku'.$calt.'">'.$stkchk.'</td>';
+
 				$pid=$grabit['id'];
-				if($pdown=='No'){
-					$stocktable=$wpdb->prefix ."eshop_stock";
-					$available=$wpdb->get_var("select available from $stocktable where post_id=$pid limit 1");
-					if($stkav=='0'){
-						$available='No';
-					}elseif($stkav=='1' && $available==''){
-						$available=__('not set','eshop');
+				if($eshopoptions['stock_control']=='yes'){
+					$pravailable='';
+					$getid=$grabit['id'];
+					for($i=1;$i<=$numoptions;$i++){
+						if($eshop_product['products'][$i]['option']!=''){
+							$available=$wpdb->get_var("select available from $stocktable where post_id=$getid && option_id=$i limit 1");
+							if($available=='' || $available<0)
+								$available='0';
+							if(is_numeric($available) && $eshopoptions['stock_control']=='yes'){
+								$pravailable.=$available.'<br />'."\n";
+							}
+						}
 					}
-					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
-					
 				}else{
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$pid");
-					echo '<td headers="stk sku'.$calt.'">'.__('n/a','eshop').'</td>';
+					$pravailable.=__('n/a','eshop').'<br />';
 				}
+				echo '<td headers="stk sku'.$calt.'">'.$pravailable.'</td>';
 				
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
@@ -240,6 +255,9 @@ if(!isset($_GET['change'])){
 				$getid=$grabit['id'];
 				$w=get_option('thumbnail_size_w');
 				$h=get_option('thumbnail_size_h');
+				$imgsize='50';
+				$w=round(($w*$imgsize)/100);
+				$h=round(($h*$imgsize)/100);
 				if (has_post_thumbnail( $getid ) ) {
 					 echo '<a class="itemref" href="'.get_permalink($getid).'">'.get_the_post_thumbnail( $getid, array($w, $h)).'</a>'."\n";
 				}else{
@@ -335,7 +353,7 @@ if(!isset($_GET['change'])){
 		
 	?>
 		<div class="wrap">
-		<h2><?php _e('eShop Base Product','eshop'); ?></h2>
+		<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Base Product','eshop'); ?></h2>
 		<?php
 		//sort by switch statement
 		$sortby='id';
@@ -386,17 +404,21 @@ if(!isset($_GET['change'])){
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
+			$pdownloads='no';
 			if($grabit['products']['1']['price']!=''){
-				$stkav=$grabit['_eshop_stock'];
+				if(isset($grabit['_eshop_stock']))
+					$stkav=$grabit['_eshop_stock'];
+				else
+					$stkav=0;
 				//get page title
 				$ptitle=get_post($grabit['id']);
 				$pdown='';
 				//check if downloadable product
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
-					if($eshop_product['products'][$i]['option']!=''){
-						if($eshop_product['products'][$i]['download']!=''){
+					if(isset($grabit['products'][$i]['option']) && $grabit['products'][$i]['option']!=''){
+						if($grabit['products'][$i]['download']!=''){
 							$dltable=$wpdb->prefix.'eshop_downloads';
-							$fileid=$eshop_product['products'][$i]['download'];
+							$fileid=$grabit['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
 							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
 							$pdownloads='yes';
@@ -405,7 +427,6 @@ if(!isset($_GET['change'])){
 						}
 					}
 				}
-				if($pdown=='') $pdown='No';
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
@@ -414,25 +435,29 @@ if(!isset($_GET['change'])){
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($grabit['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
 				$pid=$grabit['id'];
-				if($pdown=='No'){
-					if($stkav=='0'){
-						$available='No';
-					}elseif($stkav=='1' && $available==''){
-						$available=__('not set','eshop');
-					}
-					echo '<td headers="stk sku'.$calt.'">'.$available.'</td>';
+				$stocktable=$wpdb->prefix ."eshop_stock";
 
+				$pravailable='';
+				if($eshopoptions['stock_control']=='yes'){
+					for($i=1;$i<=$numoptions;$i++){
+						if($grabit['products'][$i]['option']!=''){
+							$available=$wpdb->get_var("select available from $stocktable where post_id=$pid && option_id=$i limit 1");
+							if($available=='' || $available<0)
+								$available='0';
+							if(is_numeric($available) && $eshopoptions['stock_control']=='yes'){
+								$pravailable.=$available.'<br />'."\n";
+							}
+						}
+					}
+				}else{
+					$pravailable.=__('n/a','eshop').'<br />';
 				}
-				else{
-					$dltable = $wpdb->prefix ."eshop_downloads";
-					$row=$wpdb->get_row("SELECT * FROM $dltable WHERE id =$pid");
-					echo '<td headers="stk sku'.$calt.'">n/a</td>';
-				}
+				echo '<td headers="stk sku'.$calt.'">'.$pravailable.'</td>';
 
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
-					if($grabit['products'][$i]['option']!=''){
-						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format($eshop_product['products'][$i]['price'],2)).'<br />';
+					if(isset($grabit['products'][$i]['option']) && $grabit['products'][$i]['option']!=''){
+						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($grabit['products'][$i]['option'])), $currsymbol, number_format($grabit['products'][$i]['price'],2)).'<br />';
 					}
 				}
 				echo '</td>';
@@ -442,6 +467,7 @@ if(!isset($_GET['change'])){
 
 				$w=get_option('thumbnail_size_w');
 				$h=get_option('thumbnail_size_h');
+				$imgsize='50';
 				if($imgsize!=''){
 					$w=round(($w*$imgsize)/100);
 					$h=round(($h*$imgsize)/100);
@@ -577,7 +603,7 @@ if(!isset($_GET['change'])){
 	}else{
 	?>
 	<div class="wrap">
-	<h2><?php _e('Error','eshop'); ?></h2>
+	<div id="eshopicon" class="icon32"></div><h2><?php _e('Error','eshop'); ?></h2>
 	<p><?php _e('That product does not exist!','eshop'); ?></p>
 	</div>
 	<?php

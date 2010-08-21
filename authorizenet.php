@@ -216,6 +216,10 @@ switch ($eshopaction) {
 			}
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending'){
+				$subject .=__("Completed Payment",'eshop');	
+				$ok='yes';
+				eshop_mg_process_product($txn_id,$checked);
+				/*
 				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
@@ -234,7 +238,7 @@ switch ($eshopaction) {
 					if($fileid!=0){
 						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
 						//add 1 to number of purchases here (duplication but left in)
-						$wpdb->query("UPDATE $producttable SET purchases=purchases+1 where title='$grabit->title' && files='$grabit->files' limit 1");
+						$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
 						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
 						if($chkit!=''){	
 							$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid");
@@ -251,6 +255,7 @@ switch ($eshopaction) {
 					}
 
 				}
+				*/
 			}else{
 				//cannot print anything out at this stage. so authorizenet users won't see the download form.
 				//then it must be a success

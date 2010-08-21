@@ -282,6 +282,10 @@ switch ($eshopaction) {
 			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $_POST['payment_status']=='Completed'){
+				$subject .=__("Completed Payment",'eshop');	
+				$ok='yes';
+				eshop_mg_process_product($txn_id,$checked);
+			/*
 				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
@@ -317,6 +321,7 @@ switch ($eshopaction) {
 					}
 					
 				}
+				*/
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');

@@ -2,13 +2,13 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.5.8');
+	define('ESHOP_VERSION', '5.6.0');
 
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.5.8
+Version: 5.6.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -344,7 +344,7 @@ if (!function_exists('eshop_contains')) {
 
 if (!function_exists('eshop_pre_wp_head')) {
     function eshop_pre_wp_head() {
-    	global $wp_query;
+    	global $wp_query,$blog_id;
 		if(isset($wp_query->query_vars['eshopaction'])) {
    	 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
 		   	if($eshopaction=='success'){
@@ -357,8 +357,8 @@ if (!function_exists('eshop_pre_wp_head')) {
 				global $eshopoptions;
 				ob_start();
 				if(isset($eshopoptions['zero']) && $eshopoptions['zero']=='1'){
-					if($_POST['amount']=='0' && $_SESSION['final_price1']== '0')
-						$_POST['eshop_payment']=$_SESSION['eshop_payment1']='cash';
+					if($_POST['amount']=='0' && $_SESSION['final_price'.$blog_id]== '0')
+						$_POST['eshop_payment']=$_SESSION['eshop_payment'.$blog_id]='cash';
 				}
 			}
 			if($eshopaction=='webtopayipn'){

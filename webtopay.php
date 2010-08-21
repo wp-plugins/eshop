@@ -208,10 +208,12 @@ switch ($eshopaction) {
 			$astatus=$wpdb->get_var($SQL);
 		
 			//the magic bit  + creating the subject for our email.
-			if($astatus=='Pending')
-			{
+			if($astatus=='Pending'){
 				$eshopdosend='yes';
-				
+				$subject .=__("Completed Payment",'eshop');	
+				$ok='yes';
+				eshop_mg_process_product($txn_id,$checked);
+				/*
 				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
@@ -247,6 +249,7 @@ switch ($eshopaction) {
 					}
 
 				}
+				*/
 			}
 			
 			if($eshopdosend=='yes'){

@@ -471,7 +471,8 @@ switch($action_status){
 			'SEK'=>__('Swedish Krona','eshop'),
 			'SGD'=>__('Singapore Dollar','eshop'),
 			'TL' => __('Turkish Lira','eshop'),
-			'INR' => __('Indian Rupee','eshop')
+			'INR' => __('Indian Rupee','eshop'),
+			'ZAR' =>__('South African Rand','eshop')
 			);
 			foreach($currencycodes as $code=>$codename){
 				if($code == $eshopoptions['currency']){

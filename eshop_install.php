@@ -11,7 +11,7 @@ if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
 }
-
+global $eshopoptions;
 /** create capability */
 if (!function_exists('eshop_caps')) {
     /**
@@ -84,8 +84,6 @@ function eshop_option_setup() {
 		'show_allstates'=>'',
 		'show_downloads'=>'',
 		'show_forms'=>'',
-		//'show_sku'=>'no',
-		//'show_stock'=>'no',
 		'show_zones'=>'no',
 		'status'=> 'testing',
 		'stock_control'=>'no',
@@ -101,11 +99,13 @@ function eshop_option_setup() {
 	);
 
 	// if old options exist, update to new system only need pre 5.0
-	foreach( $new_options as $key => $value ) {
-		$existing = get_option( 'eshop_' . $key );
-		if($existing!='')
-			$new_options[$key] = $existing;
-		delete_option( 'eshop_' . $key );
+	if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.2.0' ){
+		foreach( $new_options as $key => $value ) {
+			$existing = get_option( 'eshop_' . $key );
+			if($existing!='')
+				$new_options[$key] = $existing;
+			delete_option( 'eshop_' . $key );
+		}
 	}
 	add_option( 'eshop_plugin_settings', $new_options );
 }
@@ -134,44 +134,90 @@ function eshop_postmeta_setup() {
 		'post_type' => 'any',
 		'numberposts' => -1,
 		); 
-	
-	//add in transfer from prod download to _download here
-	$allposts = get_posts($args);
-	foreach( $allposts as $postinfo) {
-		//if(get_post_meta($postinfo->ID, '_eshop_product')!='')
-		//	break;
-		foreach($new_options as $oldfield=>$newfield){
-			$eshopvalue=get_post_meta($postinfo->ID, $oldfield,true);
-			if(is_array($newfield)){
-				foreach($newfield as $k=>$v){
-					$thenew_options['products'][$k][$v]=$eshopvalue;
+	if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.2.0' ){
+		//add in transfer from prod download to _download here
+		$allposts = get_posts($args);
+		foreach( $allposts as $postinfo) {
+			//if(get_post_meta($postinfo->ID, '_eshop_product')!='')
+			//	break;
+			foreach($new_options as $oldfield=>$newfield){
+				$eshopvalue=get_post_meta($postinfo->ID, $oldfield,true);
+				if(is_array($newfield)){
+					foreach($newfield as $k=>$v){
+						$thenew_options['products'][$k][$v]=$eshopvalue;
+					}
+				}else{
+					$thenew_options[$newfield]=$eshopvalue;
 				}
-			}else{
-				$thenew_options[$newfield]=$eshopvalue;
+				if($oldfield=='_Featured Product' && $eshopvalue=='Yes'){
+					add_post_meta( $postinfo->ID, '_eshop_featured', 'Yes');
+				}
 			}
-			if($oldfield=='_Featured Product' && $eshopvalue=='Yes'){
-				add_post_meta( $postinfo->ID, '_eshop_featured', 'Yes');
+			if($thenew_options['sku']!='' && $thenew_options['description']!='' && $thenew_options['products']['1']['option']!='' && $thenew_options['products']['1']['price']!=''){
+				add_post_meta( $postinfo->ID, '_eshop_product', $thenew_options);
+			}
+			$stock=get_post_meta($postinfo->ID, '_Stock Available',true);
+			if(trim($stock)=='Yes'){
+				add_post_meta( $postinfo->ID, '_eshop_stock', '1');
 			}
 		}
-		if($thenew_options['sku']!='' && $thenew_options['description']!='' && $thenew_options['products']['1']['option']!='' && $thenew_options['products']['1']['price']!=''){
-			add_post_meta( $postinfo->ID, '_eshop_product', $thenew_options);
+		//just make sure they are all gone
+		foreach($new_options as $oldfield=>$newfield){
+			delete_post_meta_by_key($oldfield);
 		}
-		$stock=get_post_meta($postinfo->ID, '_Stock Available',true);
-		if(trim($stock)=='Yes'){
-			add_post_meta( $postinfo->ID, '_eshop_stock', '1');
-		}
+		delete_post_meta_by_key('_Stock Available');
+		delete_post_meta_by_key('_eshop_prod_img');
 	}
-	//just make sure they are all gone
-	foreach($new_options as $oldfield=>$newfield){
-		delete_post_meta_by_key($oldfield);
-	}
-	delete_post_meta_by_key('_Stock Available');
-	delete_post_meta_by_key('_eshop_prod_img');
-
+	
 	/* post meta end */
 }
 eshop_postmeta_setup();
 
+//update post meta if stock control is on only
+function eshop_updatestockcontrol(){
+	global $wpdb,$eshopoptions;
+	$resultList = get_post_meta_multiple('_eshop_product');
+	$stocktable=$wpdb->prefix ."eshop_stock";
+	 if ($resultList){
+		//Loop through each result post to display appropriate contents
+		foreach ($resultList as $post){
+			setup_postdata($post);
+			// Display value of custom field		
+			$eprod=get_post_meta($post->ID, '_eshop_product', true);
+			$stktableqty=$wpdb->get_row("SELECT available FROM $stocktable where post_id=$post->ID");
+			if(isset($stktableqty) && is_numeric($stktableqty)) $eprod['qty']=$stktableqty;	
+			$newqty=$eprod['qty'];
+			unset($eprod['qty']);
+			$numoptions=$eshopoptions['options_num'];
+			if(!is_numeric($numoptions)) $numoptions='3';
+				//update the first, add the rest
+				$sql = "UPDATE $stocktable set available=$newqty, option_id=1 where post_id=$post->ID";
+				$wpdb->query($wpdb->prepare($sql));
+				$eprod['products'][1]['stkqty']=$newqty;
+				for($i=2;$i<=$numoptions;$i++){
+					$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($post->ID,$i,$newqty,$purc)";
+					$wpdb->query($wpdb->prepare($sql));
+					$eprod['products'][$i]['stkqty']=$newqty;
+				}
+			}
+			update_post_meta( $post->ID, '_eshop_product', $eprod);		
+		}
+	}
+}
+function get_post_meta_multiple($postmeta) {
+	global $wpdb;
+ 	$querystr = "SELECT p.* FROM $wpdb->posts AS p WHERE p.ID IN ( ";
+ 	$querystr .= "SELECT post_id FROM $wpdb->postmeta WHERE ";
+	$querystr = $wpdb->prepare( "(meta_key = %s)", $postmeta );	
+ 	$querystr .= " GROUP BY post_id ";
+	$querystr .= "HAVING count(*) = 1) AND p.post_status != 'trash' AND p.post_status != 'revision' ";
+ 	$metaResults = $wpdb->get_results($querystr, OBJECT);					
+	return $metaResults;
+}
+if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.5.9' 
+	&& isset($eshopoptions['stock_control']) && $eshopoptions['stock_control']=='yes'){
+	
+}
 $eshopoptions = get_option('eshop_plugin_settings');
 $table = $wpdb->prefix . "eshop_states";
 	
@@ -384,6 +430,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	optname varchar(255) NOT NULL default '',
 	optsets text NOT NULL,
 	post_id int(11) NOT NULL default '0',
+	option_id int(11) NOT NULL default '0',
 	down_id int(11) NOT NULL default '0',
 	weight float(16,2) NOT NULL default '0.00',
 	  PRIMARY KEY  (id),
@@ -443,6 +490,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
 	  id int(11) NOT NULL auto_increment,
 	  post_id int(11) NOT NULL default '0',
+	  option_id int(11) NOT NULL default '0',
 	  available int(11) NOT NULL default '0',
 	  purchases int(11) NOT NULL default '0',
 	    PRIMARY KEY  (id),
@@ -863,6 +911,33 @@ if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic i
 if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
 	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ogone email','$esubject')"); 
 
+//changed in 5.6.0
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.5.9' ){
+	$table = $wpdb->prefix ."eshop_stock";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='option_id') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD option_id int(11) NOT NULL default '0'";
+		$wpdb->query($sql);
+	}
+	$table = $wpdb->prefix ."eshop_order_items";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='option_id') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD option_id int(11) NOT NULL default '0'";
+		$wpdb->query($sql);
+	}
+}
 
 //changed in 5.5.8
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.5.82' ){
@@ -1247,6 +1322,9 @@ function eshop_create_dirs(){
 }
 $eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
 wp_schedule_event($eshoptime, 'daily', 'eshop_event');
+//changes that need to be run just before version is updated:
+eshop_updatestockcontrol();
+
 /* version number store - add/update */
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);

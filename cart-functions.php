@@ -258,7 +258,8 @@ if (!function_exists('display_cart')) {
 			$echo .= '<p class="eshop_dcode">'.sprintf(__('Discount Code <span>%s</span> has been applied to your cart.','eshop'),$_SESSION['eshop_discount'.$blog_id]).'</p>'."\n";
 		}
 		//test
-		$_SESSION['eshop_totalweight'.$blog_id]['totalweight']=$totalweight;
+		if(isset($totalweight))
+			$_SESSION['eshop_totalweight'.$blog_id]['totalweight']=$totalweight;
 		return $echo;
 	}
 }
@@ -672,6 +673,7 @@ if (!function_exists('orderhandle')) {
 				//end
 
 				$thechk=$_SESSION['eshopcart'.$blog_id][$dlchking]['option'];
+				$option_id=$wpdb->escape($thechk);
 				if(strpos($thechk,' ')===true){
 					$edown=explode(' ',$thechk);
 					$edl=$edown[1];
@@ -683,8 +685,8 @@ if (!function_exists('orderhandle')) {
 				if($dlchk!=''){
 					//there are downloads.
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
-					(checkid, item_id,item_qty,item_amt,optname,post_id,down_id,optsets,weight)values(
-					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id',
+					(checkid, item_id,item_qty,item_amt,optname,post_id,option_id,down_id,optsets,weight)values(
+					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$option_id',
 					'$dlchk','$optset','$weight');");
 
 					$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
@@ -707,8 +709,8 @@ if (!function_exists('orderhandle')) {
 
 				}else{
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
-					(checkid, item_id,item_qty,item_amt,optname,post_id,optsets,weight)values(
-					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$optset','$weight');");
+					(checkid, item_id,item_qty,item_amt,optname,post_id,option_id,optsets,weight)values(
+					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$option_id','$optset','$weight');");
 				}
 				$i++;
 
@@ -1306,13 +1308,18 @@ if (!function_exists('eshop_weight_error')) {
  		return add_query_arg( 'eshop_message', 3, $loc );
 	}
 }
+if (!function_exists('eshop_stkqty_error')) {
+	function eshop_stkqty_error($loc) {
+ 		return add_query_arg( 'eshop_message', 4, $loc );
+	}
+}
 if (!function_exists('eshop_error_message')) {
 	function eshop_error_message($num){ 
 		$messages=array(
 		'1'=> __('Stock Available not set, as all details were not filled in.','eshop'),
 		'2'=> __('Price incorrect, please only enter a numeric value.','eshop'),
-		'3'=> __('Weight incorrect, please only enter a numeric value.','eshop')
-
+		'3'=> __('Weight incorrect, please only enter a numeric value.','eshop'),
+		'4'=> __('Stock Quantity is incorrect, please only enter a numeric value.','eshop')
 		);
 		if(array_key_exists($num, $messages)){
 		?>
@@ -1341,11 +1348,10 @@ if (!function_exists('eshop_cart_process')) {
 		check_admin_referer('eshop_add_product_cart');
 
 		$echo='';
-		$error='';
 		//cache
 		eshop_cache();
 		//delete the session, empties the cart
-		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['eshopcart'.$blog_id]))){
+		if(isset($_POST['unset']) || (calculate_items()==0 && isset($_SESSION['eshopcart'.$blog_id]) && sizeof($_SESSION['eshopcart'.$blog_id])>0)){
 			unset($_SESSION['eshopcart'.$blog_id]);
 			unset($_SESSION['final_price'.$blog_id]);
 			unset($_SESSION['items'.$blog_id]);
@@ -1406,15 +1412,16 @@ if (!function_exists('eshop_cart_process')) {
 		$identifier=$pid.$option.$postid.$optset;
 		$needle=array(" ",".","-","_");
 		$identifier=str_replace($needle,"",$identifier);
-		
+		$stocktable=$wpdb->prefix ."eshop_stock";
 		if(isset($_SESSION['eshopcart'.$blog_id][$identifier])){
 			$testqty=$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+$qty;
 			$eshopid=$_SESSION['eshopcart'.$blog_id][$identifier]['postid'];
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-			$stkqty = $eshop_product['qty'];
+			$item=$_SESSION['eshopcart'.$blog_id][$identifier]['option'];
+			
+			$stkqty = $eshop_product['products'][$item]['stkqty'];
 			//recheck stkqty
-			$stocktable=$wpdb->prefix ."eshop_stock";
-			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
+			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid && option_id=$item");
 			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
 				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
@@ -1428,14 +1435,13 @@ if (!function_exists('eshop_cart_process')) {
 			$weight=0;
 			$postid=$wpdb->escape($_POST['postid']);
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-			$item=$eshop_product['products'][$option]['option'];
-
+			$optid=$wpdb->escape($_POST['option']);
+			$item=$optid;
 			$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
 			$testqty=$qty;
-			$stkqty = $eshop_product['qty'];
+			$stkqty = $eshop_product['products'][$item]['stkqty'];
 			//recheck stkqty
-			$stocktable=$wpdb->prefix ."eshop_stock";
-			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid");
+			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid && option_id=$optid");
 			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
 				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
@@ -1475,59 +1481,111 @@ if (!function_exists('eshop_cart_process')) {
 			if(isset($eshop_product['products'][$option]['weight']))
 				$weight+=$eshop_product['products'][$option]['weight'];
 			$_SESSION['eshopcart'.$blog_id][$identifier]['weight']=$weight;
+			if(isset($error)){
+				unset($_SESSION['eshopcart'.$blog_id][$identifier]);
+			}
+
 			
 		}
-		//save? not sure why I used that, but its working so why make trouble for myself.
-		if(isset($_POST['save'])){
-			$save=$_POST['save'];
-		}
-		//this bit is possibly not required
-		if(isset($productid)){
-			//new item selected ******* may need checking
-			$_SESSION['final_price'.$blog_id] = calculate_price();
-			$_SESSION['items'.$blog_id] = calculate_items();
-		}
-		
-		//update products in the cart
-		if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
-			foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
-				$needle=array(" ",".");
-				$sessproductid=str_replace($needle,"_",$productid);
-				foreach ($_POST as $key => $value){
-					if($key==$sessproductid){
-						foreach ($value as $notused => $qty){
-							if($qty=="0"){							
-								unset($_SESSION['eshopcart'.$blog_id][$productid]);
-							}else{
-								$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
-								$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-								$stkqty = $eshop_product['qty'];
-								//recheck stkqty
-								$stocktable=$wpdb->prefix ."eshop_stock";
-								$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
-    							if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
-								if(!ctype_digit(trim($qty))|| strlen($qty)>3){
-									$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-								}elseif('yes' == $eshopoptions['stock_control'] &&  $stkqty<$qty){
-									$error='<p><strong class="error">'.$qty.' - '.$stkqty.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+		if(!isset($error)){
+
+			//save? not sure why I used that, but its working so why make trouble for myself.
+			if(isset($_POST['save'])){
+				$save=$_POST['save'];
+			}
+			//this bit is possibly not required
+			if(isset($productid)){
+				//new item selected ******* may need checking
+				$_SESSION['final_price'.$blog_id] = calculate_price();
+				$_SESSION['items'.$blog_id] = calculate_items();
+			}
+
+			//update products in the cart
+			if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
+				foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
+					$needle=array(" ",".");
+					$sessproductid=str_replace($needle,"_",$productid);
+					foreach ($_POST as $key => $value){
+						if($key==$sessproductid){
+							foreach ($value as $notused => $qty){
+								if($qty=="0"){							
+									unset($_SESSION['eshopcart'.$blog_id][$productid]);
 								}else{
-									$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
+									$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
+									$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+									$stkqty = $eshop_product['qty'];
+									//recheck stkqty
+									$stocktable=$wpdb->prefix ."eshop_stock";
+									$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
+									if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
+									if(!ctype_digit(trim($qty))|| strlen($qty)>3){
+										$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+									}elseif('yes' == $eshopoptions['stock_control'] &&  $stkqty<$qty){
+										$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+									}else{
+										$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
+									}
 								}
 							}
 						}
 					}
 				}
+				$_SESSION['final_price'.$blog_id] = calculate_price();
+				//$_SESSION['items'.$blog_id] = calculate_items();
 			}
-			$_SESSION['final_price'.$blog_id] = calculate_price();
-			//$_SESSION['items'.$blog_id] = calculate_items();
 		}
 		//any errors will print here.
-		if($error!='') $_SESSION['eshopcart'.$blog_id]['error']= $error;
+		if(isset($error)){
+			$_SESSION['eshopcart'.$blog_id]['error']= $error;
+		}
 		if(isset($_SESSION['eshopcart'.$blog_id]) && sizeof($_SESSION['eshopcart'.$blog_id])=='0'){
 			unset($_SESSION['eshopcart'.$blog_id]);
 			unset($_SESSION['final_price'.$blog_id]);
 			unset($_SESSION['items'.$blog_id]);
 			
+		}
+	}
+}
+if (!function_exists('eshop_mg_process_product')) {
+	function eshop_mg_process_product($txn_id,$checked,$status='Completed'){
+		global $wpdb;
+		//tables
+		$detailstable=$wpdb->prefix.'eshop_orders';
+		$itemstable=$wpdb->prefix ."eshop_order_items";
+		$stocktable=$wpdb->prefix ."eshop_stock";
+		$mtable=$wpdb->prefix.'postmeta';
+		$producttable=$wpdb->prefix.'eshop_downloads';
+		$wpdb->query("UPDATE $detailstable set status='$status',transid='$txn_id' where checkid='$checked'");
+		
+		//product stock control updater & stats
+
+		$query=$wpdb->get_results("SELECT item_qty,post_id,option_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");
+		foreach($query as $row){
+			$pid=$row->post_id;
+			$uqty=$row->item_qty;
+			$optid=$row->option_id;
+			////test downloads
+			//check if downloadable product
+			$fileid=$row->down_id;
+			if($fileid!=0){
+				$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
+				//add 1 to number of purchases here (duplication but left in)
+				$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
+				$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
+				if($chkit!=''){	
+					$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid && option_id=$optid");
+				}else{
+					$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id, option_id) VALUES ('0','$uqty','$pid', '$optid')");
+				}
+			}else{
+				$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid' && option_id=$optid");
+				if($chkit!=''){						
+					$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid && option_id=$optid");
+				}else{
+					$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id, option_id) VALUES ('0','$uqty','$pid', '$optid')");
+				}
+			}
+
 		}
 	}
 }
