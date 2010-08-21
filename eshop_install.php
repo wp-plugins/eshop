@@ -176,48 +176,36 @@ eshop_postmeta_setup();
 //update post meta if stock control is on only
 function eshop_updatestockcontrol(){
 	global $wpdb,$eshopoptions;
-	$resultList = get_post_meta_multiple('_eshop_product');
+	$dib='_eshop_product';
+	$querystr = $wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '$dib'" );
+ 	$metaResults = $wpdb->get_results($querystr);
 	$stocktable=$wpdb->prefix ."eshop_stock";
-	 if ($resultList){
+	 if ($metaResults){
 		//Loop through each result post to display appropriate contents
-		foreach ($resultList as $post){
-			setup_postdata($post);
-			// Display value of custom field		
-			$eprod=get_post_meta($post->ID, '_eshop_product', true);
-			$stktableqty=$wpdb->get_row("SELECT available FROM $stocktable where post_id=$post->ID");
-			if(isset($stktableqty) && is_numeric($stktableqty)) $eprod['qty']=$stktableqty;	
-			$newqty=$eprod['qty'];
+		foreach ($metaResults as $post){
+			$eprod=get_post_meta($post->post_id, '_eshop_product', true);
+			$stktableqty=$wpdb->get_row("SELECT available,purchases FROM $stocktable where post_id=$post->post_id");
+			$available=$stktableqty->available;
+			$purc=$stktableqty->purchases;
+			if(isset($available) && is_numeric($available)) $newqty=$available;	
+			else $newqty=0;
 			unset($eprod['qty']);
 			$numoptions=$eshopoptions['options_num'];
 			if(!is_numeric($numoptions)) $numoptions='3';
-				//update the first, add the rest
-				$sql = "UPDATE $stocktable set available=$newqty, option_id=1 where post_id=$post->ID";
+			//update the first, add the rest
+			$sql = "DELETE FROM $stocktable WHERE post_id = $post->post_id limit 1";
+			$wpdb->query($wpdb->prepare($sql));
+			$eprod['products'][1]['stkqty']=$newqty;
+			for($i=1;$i<=$numoptions;$i++){
+				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($post->post_id,$i,$newqty,$purc)";
 				$wpdb->query($wpdb->prepare($sql));
-				$eprod['products'][1]['stkqty']=$newqty;
-				for($i=2;$i<=$numoptions;$i++){
-					$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($post->ID,$i,$newqty,$purc)";
-					$wpdb->query($wpdb->prepare($sql));
-					$eprod['products'][$i]['stkqty']=$newqty;
-				}
+				$eprod['products'][$i]['stkqty']=$newqty;
 			}
-			update_post_meta( $post->ID, '_eshop_product', $eprod);		
+			update_post_meta( $post->post_id, '_eshop_product', $eprod);		
 		}
 	}
 }
-function get_post_meta_multiple($postmeta) {
-	global $wpdb;
- 	$querystr = "SELECT p.* FROM $wpdb->posts AS p WHERE p.ID IN ( ";
- 	$querystr .= "SELECT post_id FROM $wpdb->postmeta WHERE ";
-	$querystr = $wpdb->prepare( "(meta_key = %s)", $postmeta );	
- 	$querystr .= " GROUP BY post_id ";
-	$querystr .= "HAVING count(*) = 1) AND p.post_status != 'trash' AND p.post_status != 'revision' ";
- 	$metaResults = $wpdb->get_results($querystr, OBJECT);					
-	return $metaResults;
-}
-if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.5.9' 
-	&& isset($eshopoptions['stock_control']) && $eshopoptions['stock_control']=='yes'){
-	
-}
+
 $eshopoptions = get_option('eshop_plugin_settings');
 $table = $wpdb->prefix . "eshop_states";
 	
@@ -1323,7 +1311,9 @@ function eshop_create_dirs(){
 $eshoptime=mktime(0, 0, 0, date('n'), date('j'), date('Y'));
 wp_schedule_event($eshoptime, 'daily', 'eshop_event');
 //changes that need to be run just before version is updated:
-eshop_updatestockcontrol();
+if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.5.9' 	&& isset($eshopoptions['stock_control']) && $eshopoptions['stock_control']=='yes'){
+	eshop_updatestockcontrol();
+}
 
 /* version number store - add/update */
 $eshopoptions['version']=ESHOP_VERSION;
