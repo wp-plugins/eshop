@@ -23,6 +23,7 @@ add_shortcode('eshop_details','eshop_details');
 
 function eshop_cart_items($atts){
 	global $blog_id,$eshopoptions;
+	
 	extract(shortcode_atts(array('before'=>'','after'=>'','hide'=>'no','showwhat'=>'both'), $atts));
 	$eecho='';
 	if($before!='')
@@ -57,6 +58,7 @@ function eshop_cart_items($atts){
 
 function eshop_empty_cart($atts, $content = '') {
 	global $blog_id;
+	
 	if(isset($_SESSION['eshopcart'.$blog_id])){
 		$content='';
 	}
@@ -1048,6 +1050,7 @@ function eshop_addtocart(){
 }
 function eshop_welcome($atts, $content = ''){
 	global $blog_id;
+	
 	extract(shortcode_atts(array('before'=>'','returning'=>'','guest'=>'','after'=>''), $atts));
 	$echo='';
 	if($before!='')
@@ -1190,7 +1193,7 @@ function eshop_details($atts){
 	eshop_cache();
 	extract(shortcode_atts(array('class'=>'eshopdetails','show'=>'','options_hide'=>''), $atts));
 	$echo='';
-	$allowedtoshow=array('sku','description','options','optionset','shipping','stockqty');
+	$allowedtoshow=array('sku','description','options','optionset','shipping');
 	if($show!=''){
 		$wanttoshow=explode(",", $show);
 		foreach($wanttoshow as $showit){
@@ -1200,7 +1203,7 @@ function eshop_details($atts){
 		$willshow=$allowedtoshow;
 	}
 	
-	$allowedtohide=array('option','price','download','weight');
+	$allowedtohide=array('option','price','download','weight','stockqty');
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
 		foreach($wanttohide as $hideit){
@@ -1221,6 +1224,7 @@ function eshop_details($atts){
 	else
 		$weightsymbol='';
 	$eshopletter = "A";
+	$stocktable=$wpdb->prefix ."eshop_stock";
 	foreach($willshow as $listit){
 		switch($listit){
 			case 'sku':
@@ -1252,9 +1256,17 @@ function eshop_details($atts){
     				if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){
     					$listed.='<th id="'.$eshopletter.'eshopweight">'.__('Weight','eshop').'</th>';
     				}
+    				if(!in_array('stockqty',$willhide) && 'yes' == $eshopoptions['stock_control'])
+    					$listed.='<th id="'.$eshopletter.'eshopstk">'.__('Stock','eshop').'</th>';
     				$listed.='</tr></thead>
         			<tbody>'."\n";
-					
+        			if('yes' == $eshopoptions['stock_control']){
+						$stkq=$wpdb->get_results("SELECT option_id, available from $stocktable where post_id=$post->ID");
+						foreach($stkq as $thisstk){
+							if($thisstk->available<0) $thisstk->available=0;
+							$stkarr[$thisstk->option_id]=$thisstk->available;
+						}
+					}
 					for($i=1;$i<=$numoptions;$i++){
 						if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
 							$opt=$eshop_product['products'][$i]['option'];
@@ -1264,9 +1276,15 @@ function eshop_details($atts){
 								$weight=$eshop_product['products'][$i]['weight'];
 							else
 								$weight='0';
+							
+							if(isset($eshop_product['products'][$i]['stkqty']) && $eshop_product['products'][$i]['stkqty']!='' && 'yes' == $eshopoptions['stock_control'])
+								$stklvl=$stkarr[$i];
+							else
+								$stklvl='0';
+							
 						}else{
 							$opt=$price=$downl='';
-							$weight=$price='0';
+							$stklvl=$weight=$price='0';
 						}
 						if($opt=='') break;
 						$alt = ($i % 2) ? '' : ' class="alt"';
@@ -1290,6 +1308,9 @@ function eshop_details($atts){
 						
 						if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){//shipping by weight 
 							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( _x('%1$s %2$s','1- weight 2-weight symbol','eshop'), number_format($weight,2),$weightsymbol).'</td>';
+						}
+    					if(!in_array('stockqty',$willhide) && 'yes' == $eshopoptions['stock_control']){//stock
+    						$listed.='<td headers="'.$eshopletter.'eshopstk '.$eshopletter.'eshopnumrow'.$i.'">'.$stkarr[$i].'</td>';
 						}
 						$listed.="</tr>\n";
 					 }
@@ -1419,17 +1440,6 @@ function eshop_details($atts){
 				
 				
 				break;
-			case 'stockqty':
-				if('yes' == $eshopoptions['stock_control']){
-					$stocktable=$wpdb->prefix ."eshop_stock";
-					$currst=$wpdb->get_var("SELECT available from $stocktable where post_id=$post->ID");
-				}
-				if(isset($eshop_product['qty']) && isset($currst)){
-					if($currst <='0')$currst='0';
-					$listed.='<dt>'.__('Stock Available','eshop')."</dt>\n";
-					$listed.='<dd>'.$currst."</dd>\n";
-				}
-				break;
 		}
 	}
 	if($listed!='')
@@ -1443,10 +1453,9 @@ function eshop_show_cart() {
 	global $wpdb, $blog_id,$wp_query,$eshopoptions;
 	$echo='';
 	include "cart-functions.php";
-	$error='';
 	//cache
 	eshop_cache();
-
+	
 	if(isset($_SESSION['eshopcart'.$blog_id]['error'])){
 		$echo .= $_SESSION['eshopcart'.$blog_id]['error'];
 		unset($_SESSION['eshopcart'.$blog_id]['error']);

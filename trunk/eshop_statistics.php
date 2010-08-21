@@ -36,10 +36,11 @@ function eshop_small_stats($stock,$limit=5){
 		break;
 		case 'stock':
 		default:
-			$mypages=$wpdb->get_results("SELECT $wpdb->posts.ID,$wpdb->posts.post_title, stk.purchases
+			$mypages=$wpdb->get_results("SELECT $wpdb->posts.ID,$wpdb->posts.post_title, stk.purchases, stk.option_id
 			from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 			WHERE $wpdb->postmeta.meta_key='_eshop_stock' 
-			AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
+			AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status != 'trash' 
+			AND $wpdb->posts.post_status != 'revision' AND stk.post_id=$wpdb->posts.ID
 			order by stk.purchases DESC LIMIT $limit");
 			echo '<table class="widefat"><caption>'.__('Top Sellers','eshop').'</caption>';
 			echo '<thead><tr><th id="edprod'.$rand.'">'.__('Product','eshop').'</th><th id="edpurch'.$rand.'">'.__('Purchases','eshop').'</th></tr></thead><tbody>';
@@ -47,7 +48,7 @@ function eshop_small_stats($stock,$limit=5){
 			foreach($mypages as $page){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
-				echo '<tr'.$alt.'><td id="repid'.$page->ID.'" headers="edprod'.$rand.'"><a href="post.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a></td><td headers="edpurch'.$rand.' repid'.$page->ID.'">'.$page->purchases.'</td></tr>'."\n";
+				echo '<tr'.$alt.'><td id="repid'.$page->ID.'" headers="edprod'.$rand.'"><a href="post.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a> '.$page->option_id.'</td><td headers="edpurch'.$rand.' repid'.$page->ID.'">'.$page->purchases.'</td></tr>'."\n";
 			}
 			echo '</tbody></table>';
 		break;

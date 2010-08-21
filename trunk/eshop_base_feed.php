@@ -20,7 +20,7 @@ $myrowres=$wpdb->get_results("
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_eshop_product'
 		AND posts.ID = meta.post_id
-		AND posts.post_status = 'publish'
+		AND posts.post_status != 'trash' AND posts.post_status != 'revision'
 		ORDER BY meta.post_id");
 $x=0;
 foreach($myrowres as $row){
@@ -52,6 +52,7 @@ $basecondition=$eshopoptions['base_condition'];
 $basebrand=$eshopoptions['base_brand'];
 $baseptype=$eshopoptions['base_ptype'];
 $baseexpiry=$eshopoptions['base_expiry'];
+if($baseexpiry=='')$baseexpiry=28;
 $basedate=date('Y-m-d',mktime(0, 0, 0, date("m") , date("d")+$baseexpiry, date("Y")));
 $basepayment=$eshopoptions['base_payment'];
 $basepayments = explode(",", $basepayment);
@@ -96,47 +97,59 @@ foreach($array as $foo=>$grabit){
 		$baseqty=$basedata->qty;
 	}
 
-	$data.='<item>
-		<link>'.eshoprssfilter($baselink).'</link>
-		<title>'.eshoprssfilter($basetitle).'</title>	
-		<description>'.$basedescription.'</description>
-		<g:id>'.eshoprssfilter($baseid).'</g:id>'."\n";
+	$data.='
+ <item>
+	<link>'.eshoprssfilter($baselink).'</link>
+	<title>'.eshoprssfilter($basetitle).'</title>	
+	<description>'.$basedescription.'</description>
+	<g:id>'.eshoprssfilter($baseid).'</g:id>';
 		if(isset($baseqty) && $baseqty!=''){
-			$data.='<g:quantity>'.eshoprssfilter($baseqty).'</g:quantity>'."\n";
+			$data.='
+	<g:quantity>'.eshoprssfilter($baseqty).'</g:quantity>'."\n";
 		}
-	$data.='<g:price>'.eshoprssfilter($baseprice).'</g:price>
-		<g:price_type>starting</g:price_type>'."\n";
+	$data.='
+	<g:price>'.eshoprssfilter($baseprice).'</g:price>
+	<g:price_type>starting</g:price_type>'."\n";
 	foreach($basepayments as $baseapayment){ 
 		if($basepayment!=''){
-			$data.='<g:payment_accepted>'.eshoprssfilter($baseapayment).'</g:payment_accepted>'."\n";
+			$data.='
+	<g:payment_accepted>'.eshoprssfilter($baseapayment).'</g:payment_accepted>'."\n";
 		}
 	} 
 	if(isset($basecondition) && $basecondition!=''){
-		$data.='<g:condition>'.eshoprssfilter($basecondition).'</g:condition>'."\n";
+		$data.='
+	<g:condition>'.eshoprssfilter($basecondition).'</g:condition>'."\n";
 	} 
 	if(isset($baseean) && $baseean!=''){
-		$data.='<g:ean>'.eshoprssfilter($baseean).'</g:ean>'."\n";
+		$data.='
+	<g:ean>'.eshoprssfilter($baseean).'</g:ean>'."\n";
 	} 
 	if(isset($basedate) && $basedate!=''){
-		$data.='<g:expiration_date>'.$basedate.'</g:expiration_date>'."\n";
+		$data.='
+	<g:expiration_date>'.$basedate.'</g:expiration_date>'."\n";
 	} 
 	if(isset($basebrand) && $basebrand!=''){
-		$data.='<g:brand>'.eshoprssfilter($basebrand).'</g:brand>'."\n";
+		$data.='
+	<g:brand>'.eshoprssfilter($basebrand).'</g:brand>'."\n";
 	} 
 	if(isset($baseimg) && $baseimg!=''){
-		$data.='<g:image_link>'.eshoprssfilter($baseimg).'</g:image_link>'."\n";
+		$data.='
+	<g:image_link>'.eshoprssfilter($baseimg).'</g:image_link>'."\n";
 	} 
 	if(isset($baseisbn) && $baseisbn!=''){
-		$data.='<g:isbn>'.eshoprssfilter($baseisbn).'</g:isbn>'."\n";
+		$data.='
+	<g:isbn>'.eshoprssfilter($baseisbn).'</g:isbn>'."\n";
 	} 
 	if(isset($basempn) && $basempn!=''){
-		$data.='<g:mpn>'.eshoprssfilter($basempn).'</g:mpn>'."\n";
+		$data.='
+	<g:mpn>'.eshoprssfilter($basempn).'</g:mpn>'."\n";
 	} 
 	if(isset($baseptype) && $baseptype!=''){
-		$data.='<g:product_type>'.eshoprssfilter($baseptype).'</g:product_type>'."\n";
+		$data.='
+	<g:product_type>'.eshoprssfilter($baseptype).'</g:product_type>'."\n";
 	} 
-	$data.='</item>'."\n";
-
+	$data.='
+ </item>'."\n";
 }
 $data.='</channel>
 </rss>';

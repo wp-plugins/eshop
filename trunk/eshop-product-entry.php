@@ -38,8 +38,15 @@ function eshop_inner_custom_box($post) {
  
     //recheck stkqty
     $stocktable=$wpdb->prefix ."eshop_stock";
-    $stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID");
-    if(isset($stktableqty) && is_numeric($stktableqty)) $eshop_product['qty']=$stktableqty;
+    if(isset($eshop_product['products'])){
+		for ( $i = 1; $i<= count( $eshop_product['products']); $i++) {
+			if ( isset( $eshop_product['products'] ) && !empty( $eshop_product['products'][$i]['option'] ) ) {
+				$eshop_product['products'][$i]['stkqty'] = $wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID AND option_id=$i");
+			}
+		}
+    }
+    //$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID");
+   // if(isset($stktableqty) && is_numeric($stktableqty)) $eshop_product['qty']=$stktableqty;
     ?>
     <h4><?php _e('Product','eshop'); ?></h4>
 
@@ -55,7 +62,10 @@ function eshop_inner_custom_box($post) {
     ?>
     <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">
     <caption><?php _e('Product Options','eshop'); ?></caption>
-    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
+    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
+    <?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?>
+    <?php if($eshopoptions['stock_control']=='yes'){?><th id="eshopstkqty"><?php _e('Stock','eshop'); ?></th><?php } ?>
+    </tr></thead>
         <tbody>
         <?php
 		for($i=1;$i<=$numoptions;$i++){
@@ -67,8 +77,12 @@ function eshop_inner_custom_box($post) {
 					$weight=$eshop_product['products'][$i]['weight'];
 				else
 					$weight='';
+				if(isset($eshop_product['products'][$i]['stkqty']) && $eshopoptions['stock_control']=='yes')
+					$stkqty=$eshop_product['products'][$i]['stkqty'];
+				else
+					$stkqty='';
 			}else{
-				$weight=$opt=$price=$downl='';
+				$stkqty=$weight=$opt=$price=$downl='';
 			}
 			?>
 			<tr>
@@ -89,9 +103,16 @@ function eshop_inner_custom_box($post) {
 			<?php if($eshopoptions['shipping']=='4'){//shipping by weight 
 			?>
 			<td headers="eshopweight eshopnumrow<?php echo $i; ?>"><label for="eshop_weight_<?php echo $i; ?>"><?php _e('Weight','eshop'); ?> <?php echo $i; ?></label><input id="eshop_weight_<?php echo $i; ?>" name="eshop_weight_<?php echo $i; ?>" value="<?php echo $weight; ?>" type="text" size="6" /></td>
-			<?php } ?>
-				</tr>
-				<?php
+			<?php 
+			} 
+			if($eshopoptions['stock_control']=='yes'){
+			?>
+			<td headers="eshopstkqty eshopnumrow<?php echo $i; ?>"><label for="eshop_stkqty_<?php echo $i; ?>"><?php _e('Stock','eshop'); ?> <?php echo $i; ?></label><input id="eshop_stkqty_<?php echo $i; ?>" name="eshop_stkqty_<?php echo $i; ?>" value="<?php echo $stkqty; ?>" type="text" size="6" /></td>
+			<?php 
+			} 
+			?>
+			</tr>
+			<?php
 		 }
     ?>
     </tbody>
@@ -152,11 +173,13 @@ function eshop_inner_custom_box($post) {
     <p><input id="eshop_featured_product" name="eshop_featured_product" value="Yes"<?php echo isset($eshop_product['featured']) && $eshop_product['featured']=='Yes' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_featured_product" class="selectit"><?php _e('Featured Product','eshop'); ?></label></p>
     <p><input id="eshop_stock_available" name="eshop_stock_available" value="Yes"<?php echo $stkav=='1' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_stock_available" class="selectit"><?php _e('Stock Available','eshop'); ?></label></p>
     <?php
+    /*
     if($eshopoptions['stock_control']=='yes'){
     ?>
     <p><label for="eshop_stock_quantity"><?php _e('Stock Quantity','eshop'); ?></label> <input id="eshop_stock_quantity" name="eshop_stock_quantity" value="<?php if(isset($eshop_product['qty'])) echo $eshop_product['qty']; ?>" type="text" size="4" /></p>
     <?php
     }
+    */
     ?>
     <h4><?php _e('Form Settings','eshop'); ?></h4>
     <p><label for="eshop_cart_radio"><?php _e('Show Options as','eshop'); ?></label> 
@@ -208,6 +231,10 @@ function eshop_save_postdata( $post_id ) {
 		if(!is_numeric($_POST['eshop_weight_'.$i]) && $_POST['eshop_weight_'.$i]!=''){
 			add_filter('redirect_post_location','eshop_weight_error');
 		}
+		$eshop_product['products'][$i]['stkqty']=$_POST['eshop_stkqty_'.$i];
+		if(!is_numeric($_POST['eshop_stkqty_'.$i]) && $_POST['eshop_stkqty_'.$i]!=''){
+			add_filter('redirect_post_location','eshop_stkqty_error');
+		}
 	}
 	$eshop_product['description']=htmlspecialchars($_POST['eshop_product_description']);
 	$eshop_product['shiprate']=$_POST['eshop_shipping_rate'];
@@ -223,27 +250,48 @@ function eshop_save_postdata( $post_id ) {
 		$stkav='1';
 	else
 		$stkav='0';
+		
+	$stocktable=$wpdb->prefix ."eshop_stock";
+	//test stk control per option
+	for($i=1;$i<=$numoptions;$i++){
+		if($eshop_product['products'][$i]['stkqty']!='' && is_numeric($eshop_product['products'][$i]['stkqty'])){
+			$stkv=$eshop_product['products'][$i]['stkqty'];
+			// Clicking update appears to trigger this function twice (once to create a revision I think, and once to save).  Upshot is that we can't rely on the $post_id variable so...
+			$pid = $_POST['post_ID'];
+			$sql = "select post_id from $stocktable WHERE post_id=$pid AND option_id=$i";
+			$result=$wpdb->get_results($sql);
+			if( !empty( $result ) ){
+				$sql = "UPDATE $stocktable set available=$stkv where post_id=$pid AND option_id=$i";
+				$wpdb->query($wpdb->prepare($sql));
+			} else {
+				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($pid,$i,$stkv,0)";
+				$wpdb->query($wpdb->prepare($sql));
+			}
+		}
+	}
+	/*
 	$eshop_product['qty']=$_POST['eshop_stock_quantity'];
 	if($eshop_product['qty']!='' && is_numeric($eshop_product['qty'])){
 		$meta_value=$eshop_product['qty'];
 		$stocktable=$wpdb->prefix ."eshop_stock";
-		$results=$wpdb->get_results("select post_id from $stocktable");
+		$results=$wpdb->get_results("select post_id, option_id from $stocktable");
 		if(!empty($results)){
 			$found='no';
 			foreach($results as $r){
-				if($id==$r->post_id){//update
-					$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$id"));
+				if($id==$r->post_id && $optid==$r->option_id){//update
+					$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id='$id' && option_id=$optid'"));
 					$found='yes';
 				}
 			}
 			if($found=='no'){
-				$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,available,purchases) VALUES ($id,$meta_value,0)"));
+				$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($id,$optid,$meta_value,0)"));
 			}
 		}else{
-			$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,available,purchases) VALUES ($id,$meta_value,0)"));
+			$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($id,$optid,$meta_value,0)"));
 		}
 
 	}
+	*/
 	//form setup
 	$eshop_product['cart_radio']=$_POST['eshop_cart_radio'];
 	//option sets

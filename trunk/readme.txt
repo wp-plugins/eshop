@@ -41,6 +41,12 @@ Not currently available.
 
 == Changelog == 
 
+version 6.0.0
+
+* *changed* stock control has been updated and now is available per option (will not be available for option sets)
+* *changed* eshop_details shortcode - stockqty is now part of options, andnot a separate item, but can be hidden.
+* *added* ZAR South African Rand to the available currencies.
+
 version 5.5.8
 
 * *added* ability to add a single price (from option 1) to every display shortcode
