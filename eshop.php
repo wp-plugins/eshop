@@ -8,7 +8,7 @@ if(!defined('ESHOP_VERSION'))
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.6.0
+Version: 5.6.0b1
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 

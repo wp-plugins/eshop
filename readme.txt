@@ -41,7 +41,7 @@ Not currently available.
 
 == Changelog == 
 
-version 6.0.0
+version 5.6.0
 
 * *changed* stock control has been updated and now is available per option (will not be available for option sets)
 * *changed* eshop_details shortcode - stockqty is now part of options, andnot a separate item, but can be hidden.
