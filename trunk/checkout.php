@@ -302,6 +302,11 @@ if (!function_exists('eshopShowform')) {
 					if($eshopcash['rename']!='')
 						$eshoppayment_text=$eshopcash['rename'];
 				}
+				if($eshoppayment_text=='bank'){
+					$eshopbank = $eshopoptions['bank'];
+					if($eshopbank['rename']!='')
+						$eshoppayment_text=$eshopbank['rename'];
+				}
 				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
 				$echo .='<li><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></label></li>'."\n";
 				$i++;
@@ -315,6 +320,11 @@ if (!function_exists('eshopShowform')) {
 					$eshopcash = $eshopoptions['cash'];
 					if($eshopcash['rename']!='')
 						$eshoppayment_text=$eshopcash['rename'];
+				}
+				if($eshoppayment_text=='bank'){
+					$eshopbank = $eshopoptions['bank'];
+					if($eshopbank['rename']!='')
+						$eshoppayment_text=$eshopbank['rename'];
 				}
 				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
 				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";

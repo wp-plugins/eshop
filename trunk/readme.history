@@ -1,6 +1,91 @@
 This document contains older information deleted from the main readme document.
 
 == Changelog == 
+
+Version 4.3.2
+
+* *fixed* 'Array' appearing in blank product entry fields..
+* *added* eshop_welcome shortcode - see help page for details.
+
+Version 4.3.1
+
+* *fixed* admin downloads only showing one per page (oops my bad).
+
+Version 4.3.0
+
+**Last major update before WordPress 3 is released**
+
+* *added* eshop hide sub pages - off by default not on (for new users only)
+* *added* Option sets can now have descriptions.
+* *added* optional hide shopping cart link until items in cart (does not affect widget)
+* *fixed* ideallite.class - small alteration to solve some purchaseId 's being created that were too long.
+* *fixed* Malaysian Ringgit changed from from "RM " to "MYR" 
+* *added* note about turning stock control on - could cause all items to have 0 stock
+* *added* ability to add a donotcache for WP Supercahe - should only affect eShop pages. Does not play nicely for widgets though.
+* *fixed* download pagination issues
+* *fixed* delete stats should now work correctly.
+
+Version 4.2.4
+
+* *fixed* bug with carts over SEK1000 with Payson payment gateway.
+* *added* small updates for compatability with wp super cache (not fully tested)
+
+Version 4.2.3
+
+* *fixed* bug on stats page.
+
+Version 4.2.1 & Version 4.2.2
+
+* *fixed* bug in ability to create Discount Codes
+
+Version 4.2.0
+
+* *added* notes about auto created pages to the help page
+* *added* another unique identifier for multipe option sets
+* *added* {DOWNLOADS} now hiden if no downloads are present.
+* *added* hide price if 0.00 for standard options.
+* *added* ability to delete all orders to reset stats from the stats page.
+* *added* ability to list sub page products from elsewhere for [eshop_list_subpages] only
+* *amended* csv download data now separates address/city/county/zip/country
+* *updated* discounts can now have decimal point values - only partially tested, use with caution.
+* *updated* webtopay functionality
+* *fixed* option set data fof customer emails and csv download.
+* *fixed* issue with zeroing and readding same product
+* *fixed* possible code injection bug in checkout.
+* *fixed* csv download data
+* *fixed* state/county/province in emails.
+
+Version 4.1.1
+
+* *updated* cart widget - ability to hide when empty.
+* *updated* customer email link to highlight it more.
+* *fixed* product listing image can now be chosen - in any language...
+* *fixed* large downloads - may solve some time out issues.
+
+Version 4.1.0
+
+* *added* ability to rename cash payment option
+* *added* Dutch iDEAL payment gateway
+* *added* Turkish Lira, and tidied up code for that section.
+* *amended* eshop install to add in $charset_collate - this may help solve some language issues (for fresh installs only).
+* *amended* update/empty cart button changed - update now comes first.
+* *fixed* attempted to fix a double order entry issue.
+* *fixed* minor errors  - affects several files.
+
+Version 4.0.2
+
+* *fixed* minor bug with major issues for new option sets.
+
+Version 4.0.1 
+
+* *fixed* CSS class for shipping alt state.
+* *fixed* State short code duplicates.
+
+Version 4.0.0 
+
+* *added* Option sets for all products.
+
+
 Version 3.7.4
 
 * *amended* Authorize.net Secrret Answer is now MD5-Hash Phrase and must match your setting at Authorize.net
