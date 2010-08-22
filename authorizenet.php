@@ -25,7 +25,7 @@ if($eshopoptions['status']=='live'){
 //only reqd for the developer
 $authorizenet = $eshopoptions['authorizenet']; 
 $authemail=$authorizenet['email'];
-if($authemail=='elfin@elfden.co.uk')
+if(isset($authorizenet['developer']) && $authorizenet['developer']=='1')
 	$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
 
 $this_script = site_url();
@@ -83,7 +83,7 @@ switch ($eshopaction) {
 		//only reqd for the developer
 		$authorizenet = $eshopoptions['authorizenet']; 
 		$authemail=$authorizenet['email'];
-		if($authemail=='elfin@elfden.co.uk')
+		if(isset($authorizenet['developer']) && $authorizenet['developer']=='1')
 			$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
 
 		$echoit.=$p->eshop_submit_authorizenet_post($_POST);

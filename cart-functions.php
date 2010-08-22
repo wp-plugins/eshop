@@ -1345,7 +1345,7 @@ if (!function_exists('eshop_cart_process')) {
 		if(!isset($_POST['eshopnon'])){
 			return;
 		}
-		check_admin_referer('eshop_add_product_cart');
+		wp_verify_nonce('eshop_add_product_cart');
 
 		$echo='';
 		//cache
@@ -1368,9 +1368,30 @@ if (!function_exists('eshop_cart_process')) {
 		}
 		$_POST=sanitise_array($_POST);
 		//if adding a product to the cart
+		if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
+			$min=$eshopoptions['min_qty'];
+		if(isset($eshopoptions['max_qty']) && $eshopoptions['max_qty']!='') 
+			$max=$eshopoptions['max_qty'];
 		if(isset($_POST['qty']) && !isset($_POST['save']) && (!is_numeric(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
 			$qty=$_POST['qty']=1;
-			$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+			$v='999';
+			if(isset($max)) $v=$max;
+			$error='<p><strong class="error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
+		}
+		
+		if(isset($min) && isset($_POST['qty']) && $_POST['qty'] < $min){
+			$qty=$_POST['qty']=$min;
+			$v='999';
+			if(isset($max)) $v=$max;
+			$k=$min;
+			$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+		}
+		if(isset($max) && isset($_POST['qty']) && $_POST['qty'] > $max){
+			$qty=$_POST['qty']=$max;
+			$v=$max;
+			$k=1;
+			if(isset($min)) $k=$min;
+			$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 		}
 		if(isset($_POST['postid'])){
 			$stkav=get_post_meta( $_POST['postid'], '_eshop_stock',true );
@@ -1519,9 +1540,23 @@ if (!function_exists('eshop_cart_process')) {
 									$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
 									if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 									if(!ctype_digit(trim($qty))|| strlen($qty)>3){
-										$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+										$v='999';
+										if(isset($max)) $v=$max;
+										$error='<p><strong class="error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
 									}elseif('yes' == $eshopoptions['stock_control'] &&  $stkqty<$qty){
 										$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+									}elseif(isset($min) && isset($qty) && $qty < $min){
+										$qty=$min;
+										$v='999';
+										if(isset($max)) $v=$max;
+										$k=$min;
+										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+									}elseif(isset($max) && isset($qty) && $qty > $max){
+										$qty=$max;
+										$v=$max;
+										$k=1;
+										if(isset($min)) $k=$min;
+										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 									}else{
 										$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
 									}
@@ -1537,6 +1572,9 @@ if (!function_exists('eshop_cart_process')) {
 		//any errors will print here.
 		if(isset($error)){
 			$_SESSION['eshopcart'.$blog_id]['error']= $error;
+		}
+		if(isset($enote)){
+			$_SESSION['eshopcart'.$blog_id]['enote']= $enote;
 		}
 		if(isset($_SESSION['eshopcart'.$blog_id]) && sizeof($_SESSION['eshopcart'.$blog_id])=='0'){
 			unset($_SESSION['eshopcart'.$blog_id]);

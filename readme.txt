@@ -35,6 +35,8 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * able to be used as product catalogue with no sales.
 * and much much more
 
+Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
+
 == Screenshots ==
 
 Not currently available.
@@ -43,16 +45,21 @@ Not currently available.
 
 version 5.6.0
 
+* *added* ability to set a min/max purchase quantity (affects all products)
+* *added* ability for developers to test authorize.net with their test account.
+* *added* New merchant gateway, duplicate of Cash, called Bank. As with Cash this can be renamed to whatever you would like.
+* *added* ZAR South African Rand to the available currencies.
+* *added* More strings that can be translated (email templates specific)
+* *fixed* ability to display and use more than one add to cart form on a single product.
 * *changed* stock control has been updated and now is available per option (will not be available for option sets)
 * *changed* eshop_details shortcode - stockqty is now part of options, andnot a separate item, but can be hidden.
-* *added* ZAR South African Rand to the available currencies.
 
 version 5.5.8
 
 * *added* ability to add a single price (from option 1) to every display shortcode
 * *fixed* bug with some carts having 2 added instead of 1 - specifically when using Simple Facebook Connect
 * *fixed* cart now updates before page is displayed which will hopefully allow the cart widget to be displayed correctly at all times.
-* *changed* method of handling some strings to allow ease of amending text see http://quirm.net/wiki/eshop/changing-displayed-text/
+* *changed* method of handling some strings to allow ease of amending text see [Changing Displayed Text](http://quirm.net/wiki/eshop/changing-displayed-text/)
 * *amended* Discount codes reconfigured to allow use of 100% - use with care. Additionally you will need to set Allow zero cost orders.to yes.
 
 Version 5.5.7
@@ -140,7 +147,7 @@ Version 5.2.3
 
 * cleaned up install and uninstall, shouldn't be producing errors in the error log any more.
 * cron notification now links to active orders page
-* slight to change for translations - please let me know asap if it causes an issue.
+* slight change for translations - please let me know asap if it causes an issue.
 
 Version 5.2.2
 
@@ -205,90 +212,6 @@ Version 5.0.0
 * *added* to help with the above a default image has been included for products with no thumbnail.
 * *added* eshop_list_cat_tags shortcode, listing for products by category and tags. See help page for more details. The functionality has also been added into the the eShop product widget.
 
-Version 4.3.2
-
-* *fixed* 'Array' appearing in blank product entry fields..
-* *added* eshop_welcome shortcode - see help page for details.
-
-Version 4.3.1
-
-* *fixed* admin downloads only showing one per page (oops my bad).
-
-Version 4.3.0
-
-**Last major update before WordPress 3 is released**
-
-* *added* eshop hide sub pages - off by default not on (for new users only)
-* *added* Option sets can now have descriptions.
-* *added* optional hide shopping cart link until items in cart (does not affect widget)
-* *fixed* ideallite.class - small alteration to solve some purchaseId 's being created that were too long.
-* *fixed* Malaysian Ringgit changed from from "RM " to "MYR" 
-* *added* note about turning stock control on - could cause all items to have 0 stock
-* *added* ability to add a donotcache for WP Supercahe - should only affect eShop pages. Does not play nicely for widgets though.
-* *fixed* download pagination issues
-* *fixed* delete stats should now work correctly.
-
-Version 4.2.4
-
-* *fixed* bug with carts over SEK1000 with Payson payment gateway.
-* *added* small updates for compatability with wp super cache (not fully tested)
-
-Version 4.2.3
-
-* *fixed* bug on stats page.
-
-Version 4.2.1 & Version 4.2.2
-
-* *fixed* bug in ability to create Discount Codes
-
-Version 4.2.0
-
-* *added* notes about auto created pages to the help page
-* *added* another unique identifier for multipe option sets
-* *added* {DOWNLOADS} now hiden if no downloads are present.
-* *added* hide price if 0.00 for standard options.
-* *added* ability to delete all orders to reset stats from the stats page.
-* *added* ability to list sub page products from elsewhere for [eshop_list_subpages] only
-* *amended* csv download data now separates address/city/county/zip/country
-* *updated* discounts can now have decimal point values - only partially tested, use with caution.
-* *updated* webtopay functionality
-* *fixed* option set data fof customer emails and csv download.
-* *fixed* issue with zeroing and readding same product
-* *fixed* possible code injection bug in checkout.
-* *fixed* csv download data
-* *fixed* state/county/province in emails.
-
-Version 4.1.1
-
-* *updated* cart widget - ability to hide when empty.
-* *updated* customer email link to highlight it more.
-* *fixed* product listing image can now be chosen - in any language...
-* *fixed* large downloads - may solve some time out issues.
-
-Version 4.1.0
-
-* *added* ability to rename cash payment option
-* *added* Dutch iDEAL payment gateway
-* *added* Turkish Lira, and tidied up code for that section.
-* *amended* eshop install to add in $charset_collate - this may help solve some language issues (for fresh installs only).
-* *amended* update/empty cart button changed - update now comes first.
-* *fixed* attempted to fix a double order entry issue.
-* *fixed* minor errors  - affects several files.
-
-Version 4.0.2
-
-* *fixed* minor bug with major issues for new option sets.
-
-Version 4.0.1 
-
-* *fixed* CSS class for shipping alt state.
-* *fixed* State short code duplicates.
-
-Version 4.0.0 
-
-* *added* Option sets for all products.
-
-
 == Installation ==
 
 Download the plugin, upload to your Wordpress plugins directory and activate. Further instructions and help are included. the plugin automatically creates certain pages for you:
@@ -316,15 +239,15 @@ Yes - but do not activate the plugin via the network activate link. eShop needs 
 
 = Is eShop translatable =
 
-Yes! the po file is available from quirm.net
+Yes! the po file is available from [Quirm.net downloads](http://quirm.net/download/)
 
 = Support =
 
-Available via the WordPress forums (please tag the post eshop) or via http://quirm.net/forum/forum.php?id=14
+Available via the WordPress forums (please tag the post eshop) or via [Quirm.net forums](http://quirm.net/forum/forum.php?id=14)
 
 Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
-= 5.5.7 =
+= 5.6.0 =
 Please remember to backup your database before upgrading. 

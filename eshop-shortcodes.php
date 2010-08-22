@@ -796,6 +796,11 @@ function eshop_show_payments(){
 				if($eshopcash['rename']!='')
 					$eshoppayment_text=$eshopcash['rename'];
 			}
+			if($eshoppayment_text=='bank'){
+				$eshopbank = $eshopoptions['bank'];
+				if($eshopbank['rename']!='')
+					$eshoppayment_text=$eshopbank['rename'];
+			}
 			$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
 			$echo.= '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
 			$i++;
@@ -1459,6 +1464,10 @@ function eshop_show_cart() {
 	if(isset($_SESSION['eshopcart'.$blog_id]['error'])){
 		$echo .= $_SESSION['eshopcart'.$blog_id]['error'];
 		unset($_SESSION['eshopcart'.$blog_id]['error']);
+	}
+	if(isset($_SESSION['eshopcart'.$blog_id]['enote'])){
+		$echo .= $_SESSION['eshopcart'.$blog_id]['enote'];
+		unset($_SESSION['eshopcart'.$blog_id]['enote']);
 	}
 	if(isset($_SESSION['eshopcart'.$blog_id])){
 		if((isset($wp_query->query_vars['eshopaction']) && urldecode($wp_query->query_vars['eshopaction'])=='cancel') && !isset($_POST['save'])){

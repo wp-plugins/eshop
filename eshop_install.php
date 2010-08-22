@@ -836,7 +836,7 @@ These are available for download via:
 
 If you have questions or concerns, please contact us.
 Thank you for ordering with us.';
-$wpdb->query("INSERT INTO ".$table." (emailUse,emailType, emailSubject,emailContent) VALUES ('1','Automatic default email','$esubject','$emailfile')"); 
+$wpdb->query("INSERT INTO ".$table." (id,emailUse,emailType, emailSubject,emailContent) VALUES ('1','1','".__('Automatic default email','eshop')."','$esubject','$emailfile')"); 
 $esubject=get_bloginfo('name').__(' Notification','eshop');
 $emailfile='[SPECIAL COMMUNICATION/NOTIFICATION]
 
@@ -877,27 +877,34 @@ If you have questions or concerns, please contact us.
 Again, thank you for ordering with us.
 ';
 //"
-	$wpdb->query("INSERT INTO ".$table." (emailUse,emailType,emailSubject,emailContent) VALUES ('1','Admin Order Form email','$esubject','$emailfile')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailUse,emailType,emailSubject,emailContent) VALUES ('2','1','".__('Admin Order Form email','eshop')."','$esubject','$emailfile')"); 
 	//payment option emails
 	$esubject=__('Your order from ','eshop').get_bloginfo('name');
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Paypal email','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Payson email','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Cash email','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('3','Automatic Paypal email','eshop')."','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('4','Automatic Payson email','eshop')."','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('5','Automatic Cash email','eshop')."','$esubject')"); 
 }
 //additions
 $esubject=__('Your order from ','eshop').get_bloginfo('name');
-if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ePN email' limit 1")!='Automatic ePN email')
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ePN email','$esubject')"); 
-if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic webtopay email' limit 1")!='Automatic webtopay email')
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic webtopay email','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=6 limit 1")!='6')
+//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ePN email' limit 1")!='Automatic ePN email')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('6','".__('Automatic ePN email','eshop').",'$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=7 limit 1")!='7')
+//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic webtopay email' limit 1")!='Automatic webtopay email')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('7','".__('Automatic webtopay email','eshop')."','$esubject')"); 
 
-if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic Authorize.net email','$esubject')"); 
-if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic iDeal Lite email','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=8 limit 1")!='8')
+//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('8','".__('Automatic Authorize.net email','eshop')."','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=9 limit 1")!='9')
+//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('9','".__('Automatic iDeal Lite email','eshop')."','$esubject')"); 
 
-if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
-	$wpdb->query("INSERT INTO ".$table." (emailType,emailSubject) VALUES ('Automatic ogone email','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=10 limit 1")!='10')
+//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('10','".__('Automatic ogone email','eshop')."','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=11 limit 1")!='11')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('11','".__('Automatic Bank email','eshop')."','$esubject')"); 
 
 //changed in 5.6.0
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.5.9' ){
@@ -1293,7 +1300,7 @@ function eshop_create_dirs(){
 		$eshop_goto=$upload_dir.'/eshop_files';
 		 //make sure directory exists
 		if(wp_mkdir_p( $eshop_goto )){
-			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite','ogone');
+			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite','ogone','bank');
 			foreach ($files as $file){
 				if(!file_exists($eshop_goto.'/'.$file.'.png')){
 					//copy the files

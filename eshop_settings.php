@@ -67,6 +67,11 @@ if(isset($_POST['submit'])){
 			$ideallitepost['idealdescription']=$wpdb->escape($_POST['ideallite']['idealdescription']);
 			$eshopoptions['ideallite']=$ideallitepost;
 			//authorize.net
+			if(isset($_POST['authorizenet']['developer']))
+				$authorizenetpost['developer']='1';
+			else
+				$authorizenetpost['developer']='0';
+
 			$authorizenetpost['email']=$wpdb->escape($_POST['authorizenet']['email']);
 			$authorizenetpost['id']=$wpdb->escape($_POST['authorizenet']['id']);
 			$authorizenetpost['key']=$wpdb->escape($_POST['authorizenet']['key']);
@@ -83,6 +88,10 @@ if(isset($_POST['submit'])){
 			$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
 			$cashpost['rename']=$wpdb->escape($_POST['cash']['rename']);
 			$eshopoptions['cash']=$cashpost;
+			//bank
+			$bankpost['email']=$wpdb->escape($_POST['bank']['email']);
+			$bankpost['rename']=$wpdb->escape($_POST['bank']['rename']);
+			$eshopoptions['bank']=$bankpost;
 			//webtopay
 			$webtopaypost['id']=$wpdb->escape($_POST['webtopay']['id']);
 			$webtopaypost['password']=$wpdb->escape($_POST['webtopay']['password']);
@@ -258,10 +267,10 @@ if(isset($_POST['submit'])){
 			$eshopoptions['fold_menu']=$wpdb->escape($_POST['eshop_fold_menu']);
 			$eshopoptions['hide_cartco']=$wpdb->escape($_POST['eshop_hide_cartco']);
 			$eshopoptions['stock_control']=$wpdb->escape($_POST['eshop_stock_control']);
-			//$eshopoptions['show_stock']=$wpdb->escape($_POST['eshop_show_stock']);
+			$eshopoptions['min_qty']=$wpdb->escape($_POST['eshop_min_qty']);
+			$eshopoptions['max_qty']=$wpdb->escape($_POST['eshop_max_qty']);
 			$eshopoptions['search_img']=$wpdb->escape($_POST['eshop_search_img']);
 			$eshopoptions['show_forms']=$wpdb->escape($_POST['eshop_show_forms']);
-			//$eshopoptions['show_sku']=$wpdb->escape($_POST['eshop_show_sku']);
 			$eshopoptions['addtocart_image']=$wpdb->escape($_POST['eshop_addtocart_image']);
 			$eshopoptions['hide_addinfo']=$wpdb->escape($_POST['eshop_hide_addinfo']);
 			$eshopoptions['hide_shipping']=$wpdb->escape($_POST['eshop_hide_shipping']);
@@ -571,8 +580,20 @@ switch($action_status){
 		<label for="eshop_cashemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_cashemail" name="cash[email]" type="text" value="<?php echo $eshopcash['email']; ?>" size="30" maxlength="50" /><br />
 		<label for="eshop_cashrename"><?php _e('Change Cash name to','eshop'); ?></label><input id="eshop_cashrename" name="cash[rename]" type="text" value="<?php echo $eshopcash['rename']; ?>" size="30" maxlength="50" /><br />
 
-		</fieldset>
-		
+	</fieldset>
+	<fieldset><legend><?php _e('Bank (wire transfer)','eshop'); ?></legend>
+		<p><?php _e('<strong>Note:</strong> payment by other means, such as wire transfer - behaves just like Cash.','eshop'); ?></p>
+		<?php 
+		if(isset($eshopoptions['bank']))
+			$eshopbank = $eshopoptions['bank']; 
+		else
+			$eshopbank['email']=$eshopbank['rename'] = '';	
+		?>
+		<p class="cbox"><input id="eshop_methodbk" name="eshop_method[]" type="checkbox" value="bank"<?php if(in_array('bank',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methode"><?php _e('Accept bank payments','eshop'); ?></label></p>
+		<label for="eshop_bankemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_bankemail" name="bank[email]" type="text" value="<?php echo $eshopbank['email']; ?>" size="30" maxlength="50" /><br />
+		<label for="eshop_bankrename"><?php _e('Change bank name to','eshop'); ?></label><input id="eshop_bankrename" name="bank[rename]" type="text" value="<?php echo $eshopbank['rename']; ?>" size="30" maxlength="50" /><br />
+
+	</fieldset>	
 	<fieldset><legend><?php _e('Webtopay','eshop'); ?></legend>
 	<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
 	<?php 
@@ -605,7 +626,7 @@ switch($action_status){
 		if(isset($eshopoptions['authorizenet']))
 			$authorizenet = $eshopoptions['authorizenet']; 
 		else
-			$authorizenet['email']=$authorizenet['id'] = $authorizenet['key']= $authorizenet['desc']=$authorizenet['secret']='';	
+			$authorizenet['developer']=$authorizenet['email']=$authorizenet['id'] = $authorizenet['key']= $authorizenet['desc']=$authorizenet['secret']='';	
 		?>
 		<p class="cbox"><input id="eshop_methodg" name="eshop_method[]" type="checkbox" value="authorize.net"<?php if(in_array('authorize.net',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodg"><?php _e('Accept payment by Authorize.net','eshop'); ?></label></p>
 		<label for="eshop_authorizenetemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_authorizenetemail" name="authorizenet[email]" type="text" value="<?php echo $authorizenet['email']; ?>" size="30" maxlength="50" /><br />
@@ -613,6 +634,8 @@ switch($action_status){
 		<label for="eshop_authorizenetkey"><?php _e('Transaction Key','eshop'); ?></label><input id="eshop_authorizenetkey" name="authorizenet[key]" type="text" value="<?php echo $authorizenet['key']; ?>" size="40" /><br />
 		<label for="eshop_authorizenetsecret"><?php _e('MD5-Hash Phrase(was Secret Answer)','eshop'); ?></label><input id="eshop_authorizenetsecret" name="authorizenet[secret]" type="text" value="<?php echo $authorizenet['secret']; ?>" size="40" /><br />
 		<label for="eshop_authorizenetdesc"><?php _e('Cart description','eshop'); ?></label><input id="eshop_authorizenetdesc" name="authorizenet[desc]" type="text" value="<?php echo $authorizenet['desc']; ?>" size="40" /><br />
+		<p class="cbox"><input id="eshop_authorizenetdev" name="authorizenet[developer]" type="checkbox" value="1"<?php if(isset($authorizenet['developer']) && $authorizenet['developer']=='1') echo ' checked="checked"'; ?> /><label for="eshop_authorizenetdev"><?php _e('Use Developer test account when in test mode.','eshop'); ?></label></p>
+
 	</fieldset>
 	
 	<fieldset><legend><?php _e('ogone','eshop'); ?></legend>
@@ -826,6 +849,14 @@ switch($action_status){
 	}
 	?>
 	</select><br />
+	<fieldset><legend><?php _e('Min/Max Quantities','eshop'); ?></legend>
+		<?php 
+		if(!isset($eshopoptions['min_qty'])) $eshopoptions['min_qty']='';
+		if(!isset($eshopoptions['max_qty'])) $eshopoptions['max_qty']='';
+		?>
+		<label for="eshop_min_qty"><?php _e('Minimum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_min_qty" name="eshop_min_qty" type="text" value="<?php echo $eshopoptions['min_qty']; ?>" size="5" /><br />
+		<label for="eshop_max qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
+	</fieldset>
 </fieldset>
 	<fieldset><legend><?php _e('Product Details','eshop'); ?></legend>
 	<?php
