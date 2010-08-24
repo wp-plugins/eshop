@@ -1047,9 +1047,12 @@ if (!function_exists('eshop_show_zones')) {
 		return $echo;
 	}
 }
-function eshop_addtocart(){
+function eshop_addtocart($atts){
 	global $wpdb, $post;
 	eshop_cache();
+	extract(shortcode_atts(array('hide'=>''), $atts));
+	if($hide!='' && !is_user_logged_in())
+		return;
 	include_once( 'eshop-add-cart.php' );
 	return eshop_boing('','short');
 }

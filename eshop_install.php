@@ -11,7 +11,7 @@ if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
 }
-global $eshopoptions;
+global $eshopoptions, $charset_collate;
 /** create capability */
 if (!function_exists('eshop_caps')) {
     /**

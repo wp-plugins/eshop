@@ -45,6 +45,7 @@ Not currently available.
 
 version 5.6.0
 
+* *added* ability to hide the addtocart shortcode, so that it is only available to site members.
 * *added* ability to set a min/max purchase quantity (affects all products)
 * *added* ability for developers to test authorize.net with their test account.
 * *added* New merchant gateway, duplicate of Cash, called Bank. As with Cash this can be renamed to whatever you would like.

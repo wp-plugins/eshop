@@ -108,6 +108,7 @@ if (!function_exists('eshopShowform')) {
 		}else{
 			$stateList=$wpdb->get_results("SELECT id,code,stateName,list FROM $table ORDER BY list,stateName",ARRAY_A);
 		}
+		
 		if(sizeof($stateList)>0){
 			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').eshop_checkreqd($reqdarray,'state').'<br />
 			  <select class="med pointer" name="state" id="state">';
@@ -121,7 +122,6 @@ if (!function_exists('eshopShowform')) {
 			$tablec=$wpdb->prefix.'eshop_countries';
 			foreach($eshopstatelist as $egroup =>$value){
 				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
-
 				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 				foreach($value as $code =>$stateName){
 					$stateName=htmlspecialchars($stateName);
@@ -462,16 +462,20 @@ if (!function_exists('eshop_checkout')) {
 
 			if($eshopoptions['shipping_zone']=='country'){
 				if($_POST['ship_country']!=''){
-					$pzone=$_POST['ship_country'];
+					$pzoneid=$_POST['ship_country'];
 				}else{
-					$pzone=$_POST['country'];
+					$pzoneid=$_POST['country'];
 				}
+				$table=$wpdb->prefix.'eshop_countries';
+				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzoneid' LIMIT 1");
 			}else{
 				if($_POST['ship_state']!=''){
-					$pzone=$_POST['ship_state'];
+					$pzoneid=$_POST['ship_state'];
 				}else{
-					$pzone=$_POST['state'];
+					$pzoneid=$_POST['state'];
 				}
+				$table=$wpdb->prefix.'eshop_states';
+				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE id='$pzoneid' LIMIT 1");
 				if($_POST['altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
@@ -488,17 +492,19 @@ if (!function_exists('eshop_checkout')) {
 					$pzone=$_POST['country'];
 				}
 			}else{
-				if($_POST['ship_state']!=''){
+				if(isset($_POST['altstate']) && $_POST['altstate']!=''){
+					$pzone=$eshopoptions['unknown_state'];
+				}
+				if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
+					$pzone=$eshopoptions['unknown_state'];
+				}
+				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
 					$pzone=$_POST['ship_state'];
-				}else{
+				}
+				if(isset($_POST['state']) && $_POST['state']!=''){
 					$pzone=$_POST['state'];
 				}
-				if($_POST['altstate']!=''){
-					$pzone=$eshopoptions['unknown_state'];
-				}
-				if($_POST['ship_altstate']!=''){
-					$pzone=$eshopoptions['unknown_state'];
-				}
+				
 			}
 		}
 		//
