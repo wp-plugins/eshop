@@ -172,7 +172,7 @@ switch ($eshopaction) {
 			$p->add_field('no_shipping','1');
 		
 		//$p->add_field('address_override','1');//causes errors :(
-		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_paypal_post(); // submit the fields to paypal
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}

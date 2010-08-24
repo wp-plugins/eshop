@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.5.8
+Stable tag: 5.6.0
 
 An accessible Shopping Cart plugin.
 
@@ -49,11 +49,14 @@ version 5.6.0
 * *added* ability to set a min/max purchase quantity (affects all products)
 * *added* ability for developers to test authorize.net with their test account.
 * *added* New merchant gateway, duplicate of Cash, called Bank. As with Cash this can be renamed to whatever you would like.
-* *added* ZAR South African Rand to the available currencies.
+* *added* South African Rand & Bulgarian Lev to the available currencies.
 * *added* More strings that can be translated (email templates specific)
 * *fixed* ability to display and use more than one add to cart form on a single product.
-* *changed* stock control has been updated and now is available per option (will not be available for option sets)
-* *changed* eshop_details shortcode - stockqty is now part of options, andnot a separate item, but can be hidden.
+* *fixed* Major bug in checkout shipping calculation when shipping is set per State/County/Province
+* *UPDATED* stock control has been updated and now is available per option (will not be available for option sets)
+* *changed* eshop_details shortcode - stockqty is now part of options, and not a separate item, but can be hidden.
+* *added* message for eShop admins only when in test mode.
+* *amended* when in test mode sales are now restricted to eShop admins only.
 
 version 5.5.8
 

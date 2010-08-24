@@ -202,7 +202,7 @@ switch ($eshopaction) {
 			$p->add_field($name, $value);
 		}
 	
-		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_cash_post(); // submit the fields to cash
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}

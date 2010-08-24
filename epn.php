@@ -116,7 +116,7 @@ switch ($eshopaction) {
 			$p->add_field($name, $value);
 		}
 
-		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_epn_post(); // submit the fields to epn
     	}
       	break;

@@ -166,7 +166,7 @@ switch ($eshopaction) {
 			$p->add_field($name, $value);
 		}
 	
-		if($eshopoptions['status']!='live' && is_user_logged_in()||$eshopoptions['status']=='live'){
+		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_bank_post(); // submit the fields to bank
     		//$p->dump_fields();      // for debugging, output a table of all the fields
     	}
