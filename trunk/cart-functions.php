@@ -139,10 +139,8 @@ if (!function_exists('display_cart')) {
 				//shipping for cart.
 				if($eshopoptions['shipping_zone']=='country'){
 					$table=$wpdb->prefix.'eshop_countries';
-					$dacode='code';
 				}else{
 					$table=$wpdb->prefix.'eshop_states';
-					$dacode='id';
 				}
 				$table2=$wpdb->prefix.'eshop_shipping_rates';
 				switch($eshopoptions['shipping']){
@@ -152,19 +150,13 @@ if (!function_exists('display_cart')) {
 							if(!in_array($shipclass, $tempshiparray)) {
 								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
-									if($pzone!=$eshopoptions['unknown_state'])
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
-									else
-										$shipzone='zone'.$pzone;
+									$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
 							}else{
 								if($shipclass!='F'){
-									if($pzone!=$eshopoptions['unknown_state'])
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
-									else
-										$shipzone='zone'.$pzone;
+									$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
 									$shipping+=$shipcost;
 								}
@@ -176,10 +168,7 @@ if (!function_exists('display_cart')) {
 							if(!in_array($shipclass, $tempshiparray)) {
 								array_push($tempshiparray, $shipclass);
 								if($shipclass!='F'){
-									if($pzone!=$eshopoptions['unknown_state'])
-										$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
-									else
-										$shipzone='zone'.$pzone;
+									$shipzone='zone'.$pzone;
 									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
 									$shipping+=$shipcost;
 								}
@@ -190,10 +179,7 @@ if (!function_exists('display_cart')) {
 						$shiparray=array_unique($shiparray);
 						foreach ($shiparray as $nowt => $shipclass){
 							if($shipclass!='F'){
-								if($pzone!=$eshopoptions['unknown_state'])
-									$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
-								else
-									$shipzone='zone'.$pzone;						
+								$shipzone='zone'.$pzone;						
 								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
 								$shipping+=$shipcost;
 							}
@@ -201,10 +187,7 @@ if (!function_exists('display_cart')) {
 						break;
 					case '4'://by weight/zone etc
 						//$totalweight
-						if($pzone!=$eshopoptions['unknown_state'])
-							$shipzone = 'zone'.$wpdb->get_var("SELECT zone FROM $table WHERE $dacode='$pzone' limit 1");
-						else
-							$shipzone='zone'.$pzone;
+						$shipzone='zone'.$pzone;
 						$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight<='$totalweight' && ship_type='$shiparray' order by weight DESC limit 1");
 						$shipping+=$shipcost;
 						$_SESSION['eshopshiptype'.$blog_id]=$shiparray;
