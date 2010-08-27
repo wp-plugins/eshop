@@ -2,7 +2,7 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.6.0');
+	define('ESHOP_VERSION', '5.6.1');
 
 /*
 Plugin Name: eShop for Wordpress

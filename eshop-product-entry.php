@@ -6,16 +6,17 @@ add_action('save_post', 'eshop_save_postdata');
 add_action('admin_head-post.php', 'eshop_check_error'); // called after the redirect
 /* Adds a custom section to the "advanced" Post and Page edit screens */
 function eshop_add_custom_box() {
-
-  if( function_exists( 'add_meta_box' )) {
-  	get_currentuserinfo() ;
-	if(current_user_can('eShop')){
-    	add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
-                'eshop_inner_custom_box', 'post', 'normal','high' );
-   		add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
-                'eshop_inner_custom_box', 'page', 'normal' );
-    }
-   }
+	if( function_exists( 'add_meta_box' )) {
+  		get_currentuserinfo() ;
+  		$array=array('post','page');
+  		$array=apply_filters('eshop_post_types',$array);
+		if(current_user_can('eShop')){
+			foreach($array as $type){
+    			add_meta_box( 'epagepostcustom', __( 'Product Entry', 'eshop' ), 
+                'eshop_inner_custom_box', $type, 'normal','high' );
+        	}
+    	}
+  	}
 }
    
 /* Prints the inner fields for the custom post/page section */

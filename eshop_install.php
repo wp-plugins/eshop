@@ -7,6 +7,7 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
+
 if(eshop_create_dirs()==false){
 	deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 	wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
@@ -388,7 +389,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	zone4 float(16,2) NOT NULL default '0.00',
 	zone5 float(16,2) NOT NULL default '0.00',
 	weight float(16,2) NOT NULL default '0.00', 
-	ship_type int(11) NOT NULL,
+	ship_type int(11) NOT NULL default '',
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
 	
@@ -416,7 +417,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	item_qty int(11) NOT NULL default '0',
 	item_amt float(16,2) NOT NULL default '0.00',
 	optname varchar(255) NOT NULL default '',
-	optsets text NOT NULL,
+	optsets text NOT NULL default '',
 	post_id int(11) NOT NULL default '0',
 	option_id int(11) NOT NULL default '0',
 	down_id int(11) NOT NULL default '0',
@@ -456,15 +457,15 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	ship_country varchar(3) NOT NULL default '',
 	custom_field varchar(15) NOT NULL default '',
 	transid varchar(255) NOT NULL default '',
-	comments text NOT NULL,
-	thememo text NOT NULL,
+	comments text NOT NULL default '',
+	thememo text NOT NULL default '',
 	edited datetime NOT NULL default '0000-00-00 00:00:00',
 	downloads set('yes','no') NOT NULL default 'no',
-	admin_note TEXT NOT NULL,
+	admin_note TEXT NOT NULL default '',
 	paidvia VARCHAR(255) NOT NULL default '',
 	affiliate varchar(255) NOT NULL default '',
 	user_id int(11) NOT NULL,
-	user_notes text NOT NULL,
+	user_notes text NOT NULL default '',
 	  PRIMARY KEY  (id),
 	KEY custom_field (checkid),
 	KEY status (status)
@@ -728,7 +729,7 @@ $table = $wpdb->prefix ."eshop_base_products";
 if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
 	  post_id bigint(20) NOT NULL default '0',
-	  img text NOT NULL,
+	  img text NOT NULL default '',
 	  brand varchar(255) NOT NULL default '',
 	  ptype varchar(255) NOT NULL default '',
 	  thecondition varchar(255) NOT NULL default '',
@@ -737,7 +738,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	  isbn varchar(255) NOT NULL default '',
 	  mpn varchar(255) NOT NULL default '',
 	  qty int(5) NOT NULL default '0',
-	  xtra text NOT NULL,
+	  xtra text NOT NULL default '',
 	  PRIMARY KEY  (post_id)
 	) $charset_collate;";
 	
@@ -780,7 +781,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	optid int(11) NOT NULL auto_increment,
 	name varchar(255) NOT NULL default '',
 	type tinyint(1) NOT NULL default '0',
-	`description` TEXT NOT NULL ,
+	`description` TEXT NOT NULL  default '',
 	  PRIMARY KEY  (optid)
 	) $charset_collate;";
 	
@@ -793,9 +794,9 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	$sql = "CREATE TABLE ".$table." (
 		`id` INT NOT NULL AUTO_INCREMENT ,
 		`emailUse` tinyint(1) NOT NULL default '0',
-		`emailType` VARCHAR( 50 ) NOT NULL ,
-		`emailSubject` VARCHAR( 255 ) NOT NULL ,
-		`emailContent` TEXT NOT NULL ,
+		`emailType` VARCHAR( 50 ) NOT NULL default '',
+		`emailSubject` VARCHAR( 255 ) NOT NULL default '',
+		`emailContent` TEXT NOT NULL default '',
 		PRIMARY KEY ( `id` )
 		) $charset_collate;";
 	
@@ -888,7 +889,7 @@ Again, thank you for ordering with us.
 $esubject=__('Your order from ','eshop').get_bloginfo('name');
 if($wpdb->get_var("select id from ".$table." where id=6 limit 1")!='6')
 //if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ePN email' limit 1")!='Automatic ePN email')
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('6','".__('Automatic ePN email','eshop').",'$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('6','".__('Automatic ePN email','eshop')."','$esubject')"); 
 if($wpdb->get_var("select id from ".$table." where id=7 limit 1")!='7')
 //if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic webtopay email' limit 1")!='Automatic webtopay email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('7','".__('Automatic webtopay email','eshop')."','$esubject')"); 
@@ -905,6 +906,35 @@ if($wpdb->get_var("select id from ".$table." where id=10 limit 1")!='10')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('10','".__('Automatic ogone email','eshop')."','$esubject')"); 
 if($wpdb->get_var("select id from ".$table." where id=11 limit 1")!='11')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('11','".__('Automatic Bank email','eshop')."','$esubject')"); 
+//changes for 5.6.1
+if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.6.1' ){
+	$table = $wpdb->prefix . "eshop_orders";
+	$sql="ALTER TABLE $table CHANGE `comments` `comments` TEXT NULL DEFAULT '',
+	CHANGE `thememo` `thememo` TEXT NULL DEFAULT '',
+	CHANGE `admin_note` `admin_note` TEXT NULL DEFAULT '',
+	CHANGE `user_notes` `user_notes` TEXT NULL DEFAULT ''";
+	$wpdb->query($sql);
+	
+	$table = $wpdb->prefix . "eshop_order_items";
+	$sql="ALTER TABLE $table CHANGE `optsets` `optsets` TEXT NULL DEFAULT ''";
+	$wpdb->query($sql);
+	
+	$table = $wpdb->prefix . "eshop_base_products";
+	$sql="ALTER TABLE $table CHANGE `img` `img` TEXT NULL DEFAULT '',
+	CHANGE `xtra` `xtra` TEXT NULL DEFAULT ''";
+	$wpdb->query($sql);
+	
+	$table = $wpdb->prefix . "eshop_option_names";
+	$sql="ALTER TABLE $table CHANGE `description` `description` TEXT NULL DEFAULT ''";
+	$wpdb->query($sql);
+	
+	$table = $wpdb->prefix . "eshop_emails";
+	$sql="ALTER TABLE $table CHANGE `emailType` `emailType` VARCHAR( 50 ) NULL DEFAULT '',
+	CHANGE `emailSubject` `emailSubject` VARCHAR( 255 ) NULL DEFAULT '',
+	CHANGE `emailContent` `emailContent` TEXT NULL DEFAULT ''";
+	$wpdb->query($sql);
+}
+
 
 //changed in 5.6.0
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.5.9' ){

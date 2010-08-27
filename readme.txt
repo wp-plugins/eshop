@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.6.0
+Stable tag: 5.6.1
 
 An accessible Shopping Cart plugin.
 
@@ -42,6 +42,14 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Not currently available.
 
 == Changelog == 
+
+Version 5.6.1
+
+* *fixed* if number of options set to 1, cart was not working - hopefully this is fixed in this release.
+* *fixed* continue shopping link will by default not link to the last item added to the basket - correctly!
+* *fixed* issue with product options not displaying correctly in the cart/orders/emails.
+* *added* filters for custom post types. eshop_sub_page_type changs shortcode to list subpages (page by default), and eshop_post_types allows you to amend what edit screens the product entry appears on. (post and page by default)
+* *amended* a few database settings (only affecting a very small proportion of users)
 
 version 5.6.0
 
