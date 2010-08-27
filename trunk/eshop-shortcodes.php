@@ -207,7 +207,8 @@ function eshop_list_subpages($atts){
 		$order='ASC';
 	
 	$thisispage=get_permalink($post->ID);
-	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='page' AND post_parent='$eshopid' AND post_status='publish'");
+	$pagetype=apply_filters('eshop_sub_page_type','page');
+	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
 	if($max>$show)
 		$max=$show;
 	if($max>0){
@@ -663,11 +664,11 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		$echo .= apply_filters('the_excerpt', get_the_excerpt());
 
 		if($price!='no'){
-			$eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
+			$eshop_product=get_post_meta( $postit->ID, '_eshop_product',true );
 			global $eshopoptions;
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
-				$echo.='<span class="ep_price">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($eshop_product['products']['1']['price'],2)).'</span>';
+				$echo.='<span class="ep_price">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
 			}
 		}
 
@@ -1463,7 +1464,6 @@ function eshop_show_cart() {
 	include "cart-functions.php";
 	//cache
 	eshop_cache();
-	
 	if(isset($_SESSION['eshopcart'.$blog_id]['error'])){
 		$echo .= $_SESSION['eshopcart'.$blog_id]['error'];
 		unset($_SESSION['eshopcart'.$blog_id]['error']);
@@ -1479,8 +1479,10 @@ function eshop_show_cart() {
 		}
 		if($eshopoptions['shop_page']!=''){
 			$return=get_permalink($eshopoptions['shop_page']);
+		}elseif(isset($_SESSION['lastproduct'.$blog_id])){
+			$return=get_permalink($_SESSION['lastproduct'.$blog_id]);
 		}else{
-			$return=esc_attr( stripslashes( wp_get_referer() ) );
+			$return=get_permalink($eshopoptions['cart']);
 		}
 		$echo.= display_cart($_SESSION['eshopcart'.$blog_id],'true', $eshopoptions['checkout']);
 		$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';

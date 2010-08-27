@@ -161,15 +161,14 @@ function eshop_boing($pee,$short='no',$postid=''){
 				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[$i];
 				}
+				$replace .='<input type="hidden" name="option" value="1" />';
 				if($currst>0){
 					if($price!='0.00'){
 						$replace.='
-						<input type="hidden" name="option" value="1" />
 						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
 						';
 					}else{
 						$replace.='
-						<input type="hidden" name="option" value="1" />
 						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span></span>
 						';
 					}

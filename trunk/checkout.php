@@ -243,7 +243,8 @@ if (!function_exists('eshopShowform')) {
 	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
 	$x=0;
 	$discounttotal=0;
-	foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
+	$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+	foreach ($eshopcartarray as $productid => $opt){
 		$x++;
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productid."\" />";
@@ -251,7 +252,7 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"weight_".$x."\" value=\"".$opt['weight']."\" />";
 		/* options */
 		$addoprice=0;
-		if(isset($opt['optset'])){
+		if(isset($opt['optset']) && is_array($opt['optset'])){
 			$oset=$qb=array();
 
 			$optings=unserialize($opt['optset']);
@@ -509,7 +510,8 @@ if (!function_exists('eshop_checkout')) {
 		}
 		//
 		$shiparray=array();
-		foreach ($_SESSION['eshopcart'.$blog_id] as $productid => $opt){
+		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+		foreach ($eshopcartarray as $productid => $opt){
 			if(is_array($opt)){
 				switch($eshopoptions['shipping']){
 				case '1'://( per quantity of 1, prices reduced for additional items )
