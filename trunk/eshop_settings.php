@@ -29,6 +29,7 @@ foreach ( $stati as $status => $label ) {
 }
 //end submenu
 
+
 if(isset($_POST['submit'])){
 	include 'cart-functions.php';
 	//ensure fresh copy:
@@ -856,7 +857,7 @@ switch($action_status){
 		if(!isset($eshopoptions['max_qty'])) $eshopoptions['max_qty']='';
 		?>
 		<label for="eshop_min_qty"><?php _e('Minimum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_min_qty" name="eshop_min_qty" type="text" value="<?php echo $eshopoptions['min_qty']; ?>" size="5" /><br />
-		<label for="eshop_max qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
+		<label for="eshop_max_qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
 	</fieldset>
 </fieldset>
 	<fieldset><legend><?php _e('Product Details','eshop'); ?></legend>
