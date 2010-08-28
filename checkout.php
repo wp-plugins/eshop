@@ -252,9 +252,8 @@ if (!function_exists('eshopShowform')) {
 		$echo.= "\n  <input type=\"hidden\" name=\"weight_".$x."\" value=\"".$opt['weight']."\" />";
 		/* options */
 		$addoprice=0;
-		if(isset($opt['optset']) && is_array($opt['optset'])){
+		if(isset($opt['optset'])){
 			$oset=$qb=array();
-
 			$optings=unserialize($opt['optset']);
 			$opttable=$wpdb->prefix.'eshop_option_sets';
 			foreach($optings as $foo=>$opst){

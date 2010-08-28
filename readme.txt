@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.6.1
+Stable tag: 5.6.2
 
 An accessible Shopping Cart plugin.
 
@@ -42,6 +42,10 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Not currently available.
 
 == Changelog == 
+
+Version 5.6.1
+
+* *fixed* URGENT fix for option sets, price not transferred/recorded correctly.
 
 Version 5.6.1
 
