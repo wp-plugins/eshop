@@ -108,7 +108,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <li><em>Jos&#233; Mar&#237;a Sancho de &#193;vila</em> - donating for the product reference page updates.</li>
   <li><a href="http://www.Simon-Townshend.com">Simon Townshend</a> - donating to have the ogone payment gateway added.</li>
   <li><a href="http://www.conormaxwell.com/">Connor Maxwell</a> - thank you.</li>
-
+  <li><a href="http://www.code-styling.de/">Heiko Rabe</a> - for the initial class behind the new met boxes on settings pages</li>
   </ul>
 </div>
 </div>

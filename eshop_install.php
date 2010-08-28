@@ -389,7 +389,7 @@ if ($wpdb->get_var("show tables like '$table'") != $table) {
 	zone4 float(16,2) NOT NULL default '0.00',
 	zone5 float(16,2) NOT NULL default '0.00',
 	weight float(16,2) NOT NULL default '0.00', 
-	ship_type int(11) NOT NULL default '',
+	ship_type int(11) NOT NULL default '0',
 	  PRIMARY KEY  (id)
 	) $charset_collate;";
 	
@@ -880,32 +880,32 @@ Again, thank you for ordering with us.
 //"
 	$wpdb->query("INSERT INTO ".$table." (id,emailUse,emailType,emailSubject,emailContent) VALUES ('2','1','".__('Admin Order Form email','eshop')."','$esubject','$emailfile')"); 
 	//payment option emails
-	$esubject=__('Your order from ','eshop').get_bloginfo('name');
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('3','Automatic Paypal email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('4','Automatic Payson email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('".__('5','Automatic Cash email','eshop')."','$esubject')"); 
 }
 //additions
 $esubject=__('Your order from ','eshop').get_bloginfo('name');
+
+if($wpdb->get_var("select id from ".$table." where id=3 limit 1")!='3')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('3','".__('Automatic Paypal email','eshop')."','$esubject')"); 
+if($wpdb->get_var("select id from ".$table." where id=4 limit 1")!='4')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('4','".__('Automatic Payson email','eshop')."','$esubject')");
+if($wpdb->get_var("select id from ".$table." where id=5 limit 1")!='5')
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('5','".__('Automatic Cash email','eshop')."','$esubject')"); 
+
 if($wpdb->get_var("select id from ".$table." where id=6 limit 1")!='6')
-//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ePN email' limit 1")!='Automatic ePN email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('6','".__('Automatic ePN email','eshop')."','$esubject')"); 
 if($wpdb->get_var("select id from ".$table." where id=7 limit 1")!='7')
-//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic webtopay email' limit 1")!='Automatic webtopay email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('7','".__('Automatic webtopay email','eshop')."','$esubject')"); 
 
 if($wpdb->get_var("select id from ".$table." where id=8 limit 1")!='8')
-//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic Authorize.net email' limit 1")!='Automatic Authorize.net email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('8','".__('Automatic Authorize.net email','eshop')."','$esubject')"); 
 if($wpdb->get_var("select id from ".$table." where id=9 limit 1")!='9')
-//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic iDeal Lite email' limit 1")!='Automatic iDeal Lite email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('9','".__('Automatic iDeal Lite email','eshop')."','$esubject')"); 
 
 if($wpdb->get_var("select id from ".$table." where id=10 limit 1")!='10')
-//if($wpdb->get_var("select emailType from ".$table." where emailtype='Automatic ogone email' limit 1")!='Automatic ogone email')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('10','".__('Automatic ogone email','eshop')."','$esubject')"); 
 if($wpdb->get_var("select id from ".$table." where id=11 limit 1")!='11')
 	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('11','".__('Automatic Bank email','eshop')."','$esubject')"); 
+	
 //changes for 5.6.1
 if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.6.1' ){
 	$table = $wpdb->prefix . "eshop_orders";
@@ -992,7 +992,7 @@ if ( $eshopoptions['version']=='' || $eshopoptions['version'] < '5.3.1' ){
 		}
 	}
 	if ($add_field) {
-		$sql="ALTER TABLE `".$table."` ADD `weight` float(16,2) NOT NULL default '0.00', ADD ship_type int(11) NOT NULL";
+		$sql="ALTER TABLE `".$table."` ADD `weight` float(16,2) NOT NULL default '0.00', ADD ship_type int(11) NOT NULL default '0'";
 		$wpdb->query($sql);
 	}
 }
