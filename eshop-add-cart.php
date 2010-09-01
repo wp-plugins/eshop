@@ -159,7 +159,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 				$price=$eshop_product['products']['1']['price'];
 				$currst=1;
 				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
-					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[$i];
+					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[1];
 				}
 				$replace .='<input type="hidden" name="option" value="1" />';
 				if($currst>0){

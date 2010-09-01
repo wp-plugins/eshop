@@ -1321,7 +1321,11 @@ function eshop_details($atts){
 							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($weight,2),$weightsymbol).'</td>';
 						}
     					if(!in_array('stockqty',$willhide) && 'yes' == $eshopoptions['stock_control']){//stock
-    						$listed.='<td headers="'.$eshopletter.'eshopstk '.$eshopletter.'eshopnumrow'.$i.'">'.$stkarr[$i].'</td>';
+    						if(isset($stkarr[$i])) 
+    							$dstk=$stkarr[$i];
+    						else 
+    							$dstk=0;
+    						$listed.='<td headers="'.$eshopletter.'eshopstk '.$eshopletter.'eshopnumrow'.$i.'">'.$dstk.'</td>';
 						}
 						$listed.="</tr>\n";
 					 }

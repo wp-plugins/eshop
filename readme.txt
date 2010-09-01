@@ -45,6 +45,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version 5.7.0
 
+* *fixed* issue with single option and stock control where it was hiding details in the add to cart form
 * *fixed* error with shipping not being added to cart under some circumstances.
 * *updated* number formatting for other languages
 * *updated* Settings page over hauled, new interface to match other WordPress pages.
