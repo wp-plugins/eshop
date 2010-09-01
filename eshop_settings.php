@@ -1,6 +1,6 @@
 <?php
 if ('eshop_settings.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
 See eshop.php for information and license terms

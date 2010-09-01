@@ -1,6 +1,6 @@
 <?php
 if ('cart-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
 
 if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){

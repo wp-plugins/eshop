@@ -1,6 +1,24 @@
 <?php
 if ('admin-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
+     
+if (!function_exists('eshopdata')) {
+	function eshopdata(){
+		global $current_user, $wp_roles, $post;
+		get_currentuserinfo() ;
+		if(current_user_can('eShop')){
+			//this block is used solely for back end downloads *ONLY*
+			if(isset($_GET['eshopdl'])){
+				include 'eshop-all-data.php';
+			}
+			if(isset($_GET['eshopbasedl'])){
+				include 'eshop_base_feed.php';
+			}
+		}
+		
+	}
+}    
+     
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook
@@ -245,23 +263,7 @@ if (!function_exists('eshop_deactivate')) {
     	wp_clear_scheduled_hook('eshop_event');
     }
 }
-add_action('init','eshopdata');
-if (!function_exists('eshopdata')) {
-	function eshopdata(){
-		global $current_user, $wp_roles, $post;
-		get_currentuserinfo() ;
-		if(current_user_can('eShop')){
-			//this block is used solely for back end downloads *ONLY*
-			if(isset($_GET['eshopdl'])){
-				include 'eshop-all-data.php';
-			}
-			if(isset($_GET['eshopbasedl'])){
-				include 'eshop_base_feed.php';
-			}
-		}
-		
-	}
-}
+
 if (!function_exists('eshop_show_credits')) {
 	function eshop_show_credits(){
 	//for admin

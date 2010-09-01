@@ -1,6 +1,6 @@
 <?php
-if ('webtopay.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+if ('webtopay.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
+     die ('<h2>Direct File Access Prohibited</h2>');
      
 /*******************************************************************************
  *                      PHP webtopay IPN Integration Class
