@@ -115,22 +115,33 @@ add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 //fold the page menu as it is likely to get long...
 //this can be removed in a theme by using remove_filter...
 //add option to make it settable
-if($eshopoptions['fold_menu'] == 'yes'){
-	add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
-}
-/**
-* eshop download products - need to process afore page is rendered
-* so this has to be called like this - unless anyone can come up with a better idea!
-*/
-if (isset($_POST['eshoplongdownloadname'])){
-//long silly name to ensure it isn't used elsewhere!
-	eshop_download_the_product($_POST); 
-}
-if($eshopoptions['status']=='testing'){
-	require( ABSPATH . WPINC . '/pluggable.php' );
-	if(is_user_logged_in() && current_user_can('eShop_admin')){
-		add_action('wp_head','eshop_test_mode');
-		add_action('wp_footer','eshop_test_mode_text');
+
+
+add_action ('init','eshop_bits_and_bobs');
+function eshop_bits_and_bobs(){
+	global $eshopoptions;
+	/**
+	* eshop download products - need to process afore page is rendered
+	* so this has to be called like this - unless anyone can come up with a better idea!
+	*/
+	if (isset($_POST['eshoplongdownloadname'])){
+	//long silly name to ensure it isn't used elsewhere!
+		eshop_download_the_product($_POST); 
+	}
+	if($eshopoptions['status']=='testing'){
+		//require_once( ABSPATH . WPINC . '/pluggable.php' );
+		if(is_user_logged_in() && current_user_can('eShop_admin')){
+			add_action('wp_head','eshop_test_mode');
+			add_action('wp_footer','eshop_test_mode_text');
+		}
+	}
+	//add images to the search page if set
+	if('no' != $eshopoptions['search_img']){
+		add_filter('the_excerpt','eshop_excerpt_img');
+		add_filter('the_content','eshop_excerpt_img');
+	}
+	if($eshopoptions['fold_menu'] == 'yes'){
+		add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
 	}
 }
 if (!function_exists('eshop_test_mode_text')) {
@@ -162,10 +173,5 @@ if (!function_exists('eshop_test_mode')) {
 			</style>';
 	return;
 	}
-}
-//add images to the search page if set
-if('no' != $eshopoptions['search_img']){
-	add_filter('the_excerpt','eshop_excerpt_img');
-	add_filter('the_content','eshop_excerpt_img');
 }
 ?>
