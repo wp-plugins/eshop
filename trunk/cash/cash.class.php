@@ -1,6 +1,6 @@
 <?php
 if ('cash.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
      
 /*******************************************************************************
  *                      PHP cash IPN Integration Class

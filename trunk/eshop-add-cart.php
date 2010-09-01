@@ -138,18 +138,20 @@ function eshop_boing($pee,$short='no',$postid=''){
 					$opt=$eshopoptions['options_num'];
 					$replace.="\n".'<label for="eopt'.$theid.$uniq.'"><select id="eopt'.$theid.$uniq.'" name="option">';
 					for($i=1;$i<=$opt;$i++){
-						$option=$eshop_product['products'][$i]['option'];
-						$price=$eshop_product['products'][$i]['price'];
-						$currst=1;
-						if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
-							if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
-							else $currst=0;
-						}
-						if($option!='' && $currst>0){
-							if($price!='0.00')
-								$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
-							else
-								$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
+						if(isset($eshop_product['products'][$i])){
+							$option=$eshop_product['products'][$i]['option'];
+							$price=$eshop_product['products'][$i]['price'];
+							$currst=1;
+							if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
+								if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
+								else $currst=0;
+							}
+							if($option!='' && $currst>0){
+								if($price!='0.00')
+									$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
+								else
+									$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
+							}
 						}
 					}
 					$replace.='</select></label>';

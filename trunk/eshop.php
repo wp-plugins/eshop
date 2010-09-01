@@ -1,13 +1,13 @@
 <?php
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.6.4');
+	define('ESHOP_VERSION', '5.7.0');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.6.4
+Version: 5.7.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -69,27 +69,39 @@ add_theme_support('post-thumbnails');
 if(is_admin()){
 	/* eShop ADMIN SPECIFIC HERE */
 	include_once 'admin_functions.php';
+	include_once 'eshop_settings.php';
+	include_once( 'eshop-product-entry.php' );
+	include_once( 'eshop-eshortcodes.php');
+	
 	/* activations */
 	register_activation_hook(__FILE__,'eshop_install');
 	/*deactivation*/
 	register_deactivation_hook( __FILE__, 'eshop_deactivate' );
-	include_once 'eshop_settings.php';
-	//add eshop product entry onto the post and page edit pages.
-	include_once( 'eshop-product-entry.php' );
-	include_once( 'eshop-eshortcodes.php');
+	add_action('admin_init','eshopdata');
 	add_action('admin_init', 'eshop_admin_init');
 	add_action('admin_menu', 'eshop_admin');
 	add_action( 'admin_notices', 'eshop_update_nag');
 }else{
-	include_once 'public_functions.php';
 	/* eShop Public facing only */
+	include_once 'public_functions.php';
 	include_once( 'eshop-shortcodes.php' );
+	include_once( 'eshop-add-cart.php' );
+	
 	//add credits
 	add_action('wp_footer', 'eshop_visible_credits');
 	//process cart
 	add_action ('init','eshop_cart_process');
-	//displays the add to cart form
-	include_once( 'eshop-add-cart.php' );
 	add_filter('the_content', 'eshop_boing');
+	
+	//this automatically hides the relevant pages
+	add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
+	//fold the page menu as it is likely to get long...
+	add_filter('style_loader_src','eshop_unversion');
+	//removes version number from css, needed for multisite
+	add_action ('init','eshop_bits_and_bobs');
+	add_filter('query_vars', 'add_eshop_query_vars');
+	add_action('wp', 'eshop_pre_wp_head');
+	add_action('wp_print_scripts', 'eshop_wp_head_add');
+	add_action('wp_print_styles', 'eshop_stylesheet');
 }
 ?>

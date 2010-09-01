@@ -1,6 +1,7 @@
 <?php
 if ('public-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
-     die ('<h2>'.__('Direct File Access Prohibited','eshop').'</h2>');
+     die ('<h2>Direct File Access Prohibited</h2>');
+
 if (!function_exists('eshop_pre_wp_head')) {
     function eshop_pre_wp_head() {
     	global $wp_query,$blog_id;
@@ -80,10 +81,7 @@ if (!function_exists('add_eshop_query_vars')) {
 		return $aVars;
 	}
 }
-add_filter('query_vars', 'add_eshop_query_vars');
-add_action('wp', 'eshop_pre_wp_head');
-add_action('wp_print_scripts', 'eshop_wp_head_add');
-add_action('wp_print_styles', 'eshop_stylesheet');
+
 if (!function_exists('eshop_stylesheet')) {
 	function eshop_stylesheet() {
 		global $eshopoptions;
@@ -101,8 +99,7 @@ if (!function_exists('eshop_stylesheet')) {
 		}
 	}
 }
-add_filter('style_loader_src','eshop_unversion');
-//removes version number from css, needed for multisite
+
 if (!function_exists('eshop_unversion')) {
 	function eshop_unversion($src) {
 		if( strpos($src,'eshop.css'))
@@ -110,14 +107,6 @@ if (!function_exists('eshop_unversion')) {
 		return $src;
 	}
 }
-//this automatically hides the relevant pages
-add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
-//fold the page menu as it is likely to get long...
-//this can be removed in a theme by using remove_filter...
-//add option to make it settable
-
-
-add_action ('init','eshop_bits_and_bobs');
 function eshop_bits_and_bobs(){
 	global $eshopoptions;
 	/**

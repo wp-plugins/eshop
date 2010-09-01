@@ -70,7 +70,7 @@ function eshop_inner_custom_box($post) {
         <tbody>
         <?php
 		for($i=1;$i<=$numoptions;$i++){
-			if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
+			if(isset($eshop_product['products']) && isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
 				$opt=$eshop_product['products'][$i]['option'];
 				$price=$eshop_product['products'][$i]['price'];
 				$downl=$eshop_product['products'][$i]['download'];

@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.6.3
+Stable tag: 5.6.5
 
 An accessible Shopping Cart plugin.
 
@@ -43,12 +43,17 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version 5.7.0
+Version 5.6.5
 
+* *fixed* long term issue with some people unable to install - hopefully now fixed
 * *fixed* issue with single option and stock control where it was hiding details in the add to cart form
 * *fixed* error with shipping not being added to cart under some circumstances.
 * *updated* number formatting for other languages
 * *updated* Settings page over hauled, new interface to match other WordPress pages.
+
+Version 5.6.4
+
+* not released.
 
 Version 5.6.3
 
