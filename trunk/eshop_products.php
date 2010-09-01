@@ -366,7 +366,7 @@ function eshop_products_manager() {
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
 					if($eshop_product['products'][$i]['option']!=''){
-						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format($eshop_product['products'][$i]['price'],2)).'<br />';
+						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format_i18n($eshop_product['products'][$i]['price'],2)).'<br />';
 					}
 				}
 				echo '</td>';

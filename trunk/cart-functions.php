@@ -117,7 +117,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($line_total,2))."</td></tr>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td></tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
@@ -130,9 +130,9 @@ if (!function_exists('display_cart')) {
 			$disc_applied='';
 			if(is_discountable(calculate_total())>0){
 				$discount=is_discountable(calculate_total());
-				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format(round($discount, 2),2)).')</small>';
+				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format_i18n(round($discount, 2),2)).')</small>';
 			}
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -214,12 +214,12 @@ if (!function_exists('display_cart')) {
 				}
 	
 				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($shipping,2)).'</td>
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,2)).'</td>
 				</tr>';
 				$_SESSION['shipping'.$blog_id]=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price'.$blog_id]=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($final_price, 2))."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, 2))."</strong></td></tr>";
 			}
 
 			$echo.= "</tbody></table>\n";
@@ -546,20 +546,59 @@ if (!function_exists('orderhandle')) {
 			$state=$wpdb->escape($_POST['altstate']);
 
 		$country=$wpdb->escape($_POST['country']);
-
-		$ship_name=$wpdb->escape($_POST['ship_name']);
-		$ship_phone=$wpdb->escape($_POST['ship_phone']);
-		$ship_company=$wpdb->escape($_POST['ship_company']);
-		$ship_address=$wpdb->escape($_POST['ship_address']);
-		$ship_city=$wpdb->escape($_POST['ship_city']);
-		$ship_postcode=$wpdb->escape($_POST['ship_postcode']);
-		$ship_country=$wpdb->escape($_POST['ship_country']);
-		$ship_state=$wpdb->escape($_POST['ship_state']);
-		if($_POST['ship_state']=='' && $_POST['ship_altstate']!='')
-			$ship_state=$wpdb->escape($_POST['ship_altstate']);
-		$reference=$wpdb->escape($_POST['reference']);
-		$comments=$wpdb->escape($_POST['comments']);
+		if(isset($_POST['ship_name'])){
+			$ship_name=$wpdb->escape($_POST['ship_name']);
+		}else{
+			$ship_name=$first_name.' '.$last_name;
+		}
+		if(isset($_POST['ship_phone'])){
+			$ship_phone=$wpdb->escape($_POST['ship_phone']);
+		}else{
+			$ship_phone=$phone;
+		}
+		if(isset($_POST['ship_company'])){
+			$ship_company=$wpdb->escape($_POST['ship_company']);
+		}else{
+			$ship_company=$company;
+		}
+		if(isset($_POST['ship_address'])){
+			$ship_address=$wpdb->escape($_POST['ship_address']);
+		}else{
+			$ship_address=$address1.' '.$address2;
+		}
+		if(isset($_POST['ship_city'])){
+			$ship_city=$wpdb->escape($_POST['ship_city']);
+		}else{
+			$ship_city=$city;
+		}
+		if(isset($_POST['ship_postcode'])){
+			$ship_postcode=$wpdb->escape($_POST['ship_postcode']);
+		}else{
+			$ship_postcode=$zip;
+		}
+		if(isset($_POST['ship_country'])){
+			$ship_country=$wpdb->escape($_POST['ship_country']);
+		}else{
+			$ship_country=$country;
+		}
+		if(isset($_POST['ship_state'])){
+			$ship_state=$wpdb->escape($_POST['ship_state']);
+		}else{
+			$ship_state=$state;
+		}
 		
+		if(empty($_POST['ship_state']) && !empty($_POST['ship_altstate']))
+			$ship_state=$wpdb->escape($_POST['ship_altstate']);
+		if(isset($_POST['reference'])){
+			$reference=$wpdb->escape($_POST['reference']);
+		}else{
+			$reference='';
+		}
+		if(isset($_POST['comments'])){
+			$comments=$wpdb->escape($_POST['comments']);
+		}else{
+			$comments='';
+		}
 		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
 		if(isset($_POST['affiliate']))
 			$affiliate=$wpdb->escape($_POST['affiliate']);
@@ -837,9 +876,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
 			if($itemid=='postage'){
-				$cart.= __('Shipping Charge:','eshop').' '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
 			}else{
-				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($value, 2))."\n\n";
+				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
 			}
 		
 			//check if downloadable product
@@ -848,7 +887,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}
 		}
 		$arrtotal=number_format($total, 2);
-		$cart.= __('Total','eshop').' '.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($total, 2))."\n";
+		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, 2))."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);
@@ -1006,6 +1045,7 @@ if (!function_exists('eshop_download_the_product')) {
 			$id=$wpdb->escape($_POST['id']);
 			$code=$wpdb->escape($_POST['code']);
 			$email=$wpdb->escape($_POST['email']);
+			//set_time_limit(1000);
 			if($id!='all'){
 				//single file handling
 				$ordertable = $wpdb->prefix ."eshop_download_orders";
@@ -1015,7 +1055,7 @@ if (!function_exists('eshop_download_the_product')) {
 					foreach($chkresult as $chkrow){
 						// make sure output buffering is disabled
 					   	ob_end_clean();
-
+						set_time_limit();
 						$item=$chkrow->files;
 						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$id' limit 1");
 						//update product with number of downloads made
@@ -1031,6 +1071,8 @@ if (!function_exists('eshop_download_the_product')) {
 						header('Content-Disposition: attachment; filename="'.$item.'"');
 						header("Content-Transfer-Encoding: binary");
 						header("Content-Length: ".filesize($dload));
+						//ob_clean();
+    					//flush();
 						readfile("$dload");
 						//alternative download comment above, and uncomment below
 						//eshop_readfile($dload);
@@ -1083,6 +1125,8 @@ if (!function_exists('eshop_readfile')){
     $buffer = '';
     $cnt =0;
     $chunksize=1024*1024;// Size (in bytes) of tiles chunk
+    //also try this line
+    //set_time_limit(300);
     // $handle = fopen($filename, 'rb');
     $handle = fopen($filename, 'rb');
     if ($handle === false) {
@@ -1104,16 +1148,7 @@ if (!function_exists('eshop_readfile')){
     return $status;
   }
 }
-if (!function_exists('eshop_show_credits')) {
-	function eshop_show_credits(){
-	//for admin
-	$version = explode(".", ESHOP_VERSION);
-	?>
-	<p class="creditline"><?php _e('Powered by','eshop'); ?> <a href="http://www.quirm.net/" title="<?php _e('Created by','eshop'); ?> Rich Pedley">eShop</a>
-	<dfn title="<?php echo ESHOP_VERSION; ?>">v.<?php echo $version[0]; ?></dfn></p> 
-	<?php 
-	}
-}
+
 if (!function_exists('eshop_visible_credits')) {
 	function eshop_visible_credits($pee){
 		//for front end
@@ -1216,21 +1251,6 @@ if (!function_exists('eshop_excerpt_img')) {
 	}
 }
 
-if (!function_exists('eshop_update_nag')) {
-	function eshop_update_nag() {
-		global $eshopoptions;
-		if ( $eshopoptions['version']!='' && $eshopoptions['version'] >= ESHOP_VERSION )
-			return false;
-
-		if ( current_user_can('manage_options') )
-			$msg = sprintf( __('<strong>eShop %1$s</strong> is now ready to use. <strong>You must now <a href="%2$s">deactivate and re-activate the plugin</a></strong>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
-		else
-			$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
-
-		echo "<div id='update-nag'>$msg</div>";
-	}
-}
-
 if (!function_exists('eshop_plural')) {
 	function eshop_plural( $quantity, $singular, $plural ){
 	  if( intval( $quantity ) == 1 )
@@ -1240,16 +1260,23 @@ if (!function_exists('eshop_plural')) {
 }
 if (!function_exists('eshop_email_parse')) {
 	function eshop_email_parse($this_email,$array, $d='yes'){
+		global $eshopoptions;
 		require_once ( ABSPATH . WPINC . '/registration.php' );
 		$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 		$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
 		$this_email = str_replace('{NAME}', $array['ename'], $this_email);
 		$this_email = str_replace('{EMAIL}', $array['eemail'], $this_email);
 		$this_email = str_replace('{CART}', $array['cart'], $this_email);
+		if(isset($eshopoptions['downloads_email']) && 'yes' == $eshopoptions['downloads_email'] || $d=='yes')
+			$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
+		else
+			$this_email = str_replace('{DOWNLOADS}', '', $this_email);
+		/*
 		if($d=='yes')
 			$this_email = str_replace('{DOWNLOADS}', $array['downloads'], $this_email);
 		else
 			 $this_email = str_replace('{DOWNLOADS}', '', $this_email);
+		*/
 		$this_email = str_replace('{ADDRESS}', $array['address'], $this_email);
 		$this_email = str_replace('{REFCOMM}', $array['extras'], $this_email);
 		$this_email = str_replace('{CONTACT}', $array['contact'], $this_email);
@@ -1308,11 +1335,17 @@ if (!function_exists('eshop_error_message')) {
 		'1'=> __('Stock Available not set, as all details were not filled in.','eshop'),
 		'2'=> __('Price incorrect, please only enter a numeric value.','eshop'),
 		'3'=> __('Weight incorrect, please only enter a numeric value.','eshop'),
-		'4'=> __('Stock Quantity is incorrect, please only enter a numeric value.','eshop')
+		'4'=> __('Stock Quantity is incorrect, please only enter a numeric value.','eshop'),
+		'100'=>__('eShop settings updated.','eshop')
 		);
-		if(array_key_exists($num, $messages)){
+		$messages=apply_filters('eshop_error_messages',$messages);
+		if($num<100 && array_key_exists($num, $messages)){
 		?>
 		<div class="error fade"><p><?php echo $messages[$num]; ?></p></div>
+		<?php
+		}else{
+		?>
+			<div id="message" class="updated fade"><p><?php echo $messages[$num]; ?></p></div>
 		<?php
 		}
 
@@ -1618,5 +1651,23 @@ if (!function_exists('eshop_mg_process_product')) {
 
 		}
 	}
+}
+if (!function_exists('eshop_contains')) {
+    /**
+     * Return true if one string can be found in another
+     * as used above
+     * @param $haystack the string to search *in*
+     * @param $needle the string to search *for*
+     */
+    function eshop_contains($haystack, $needle){
+        $pos = strpos($haystack, $needle);
+        
+        if ($pos === false) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }   
 }
 ?>

@@ -35,7 +35,8 @@ if (!function_exists('eshopShowform')) {
 		$dtable=$wpdb->prefix.'eshop_shipping_rates';
 		$weightsymbol=$eshopoptions['weight_unit'];
 		$currsymbol=$eshopoptions['currency_symbol'];
-		$echo .='<p>'.sprintf( _x('%1$s %2$s %3$s','1- text 2 - weight 3-weight symbol','eshop'),__('Total weight: ','eshop'), number_format($cartweight,2),$weightsymbol).'</p>';
+		/* '1- text 2 - weight 3-weight symbol' */
+		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,2),$weightsymbol).'</p>';
 		foreach ($typearr as $k=>$type){
 			$k++;
 			$eshopshiptable.='
@@ -57,11 +58,11 @@ if (!function_exists('eshopShowform')) {
 				$alt = ($x % 2) ? '' : ' class="alt"';
 				$eshopshiptable.='
 				<tr'.$alt.'>
-				<td headers="'.$eshopletter.'zone1">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone1).'</td>
-				<td headers="'.$eshopletter.'zone2">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone2).'</td>
-				<td headers="'.$eshopletter.'zone3">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone3).'</td>
-				<td headers="'.$eshopletter.'zone4">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone4).'</td>
-				<td headers="'.$eshopletter.'zone5">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, $row->zone5).'</td>
+				<td headers="'.$eshopletter.'zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
+				<td headers="'.$eshopletter.'zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
+				<td headers="'.$eshopletter.'zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
+				<td headers="'.$eshopletter.'zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
+				<td headers="'.$eshopletter.'zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
 				</tr>';
 				$x++;
 			}
@@ -484,26 +485,32 @@ if (!function_exists('eshop_checkout')) {
 				}
 			}
 		}else{
-			$pzone='';
+			$pzoneid='';
 			if($eshopoptions['shipping_zone']=='country'){
 				if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
-					$pzone=$_POST['ship_country'];
+					$pzoneid=$_POST['ship_country'];
 				}elseif(isset($_POST['country']) && $_POST['country']!=''){
-					$pzone=$_POST['country'];
+					$pzoneid=$_POST['country'];
 				}
+				$table=$wpdb->prefix.'eshop_countries';
+				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzoneid' LIMIT 1");
+
 			}else{
+				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
+					$pzoneid=$_POST['ship_state'];
+				}
+				if(isset($_POST['state']) && $_POST['state']!=''){
+					$pzoneid=$_POST['state'];
+				}
+				$table=$wpdb->prefix.'eshop_states';
+				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE id='$pzoneid' LIMIT 1");
 				if(isset($_POST['altstate']) && $_POST['altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
 				if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
-				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
-					$pzone=$_POST['ship_state'];
-				}
-				if(isset($_POST['state']) && $_POST['state']!=''){
-					$pzone=$_POST['state'];
-				}
+				
 				
 			}
 		}
@@ -838,17 +845,20 @@ if (!function_exists('eshop_checkout')) {
 				$_SESSION['addy'.$blog_id]['state']=$_POST['altstate'];
 
 			$_SESSION['addy'.$blog_id]['zip']=$_POST['zip'];
-			$_SESSION['addy'.$blog_id]['ship_name']=$_POST['ship_name'];
-			$_SESSION['addy'.$blog_id]['ship_company']=$_POST['ship_company'];
-			$_SESSION['addy'.$blog_id]['ship_phone']=$_POST['ship_phone'];
-			$_SESSION['addy'.$blog_id]['ship_address']=$_POST['ship_address'];
-			$_SESSION['addy'.$blog_id]['ship_city']=$_POST['ship_city'];
-			$_SESSION['addy'.$blog_id]['ship_country']=$_POST['ship_country'];
-			$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_state'];
-			if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!='')
-				$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_altstate'];
-			$_SESSION['addy'.$blog_id]['ship_postcode']=$_POST['ship_postcode'];
-			$_SESSION['addy'.$blog_id]['comments']=$_POST['comments'];
+			if(isset($_POST['ship_name'])){
+				$_SESSION['addy'.$blog_id]['ship_name']=$_POST['ship_name'];
+				$_SESSION['addy'.$blog_id]['ship_company']=$_POST['ship_company'];
+				$_SESSION['addy'.$blog_id]['ship_phone']=$_POST['ship_phone'];
+				$_SESSION['addy'.$blog_id]['ship_address']=$_POST['ship_address'];
+				$_SESSION['addy'.$blog_id]['ship_city']=$_POST['ship_city'];
+				$_SESSION['addy'.$blog_id]['ship_country']=$_POST['ship_country'];
+				$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_state'];
+				if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!='')
+					$_SESSION['addy'.$blog_id]['ship_state']=$_POST['ship_altstate'];
+				$_SESSION['addy'.$blog_id]['ship_postcode']=$_POST['ship_postcode'];
+			}
+			if(isset($_POST['comments']))
+				$_SESSION['addy'.$blog_id]['comments']=$_POST['comments'];
 			
 			//grab all the POST variables and store in cookie
 			$array=$_POST;
@@ -878,19 +888,32 @@ if (!function_exists('eshop_checkout')) {
 			else
 				$altstate='';
 			$zip=$_SESSION['addy'.$blog_id]['zip'];
-			$ship_name=$_SESSION['addy'.$blog_id]['ship_name'];
-			$ship_company=$_SESSION['addy'.$blog_id]['ship_company'];
-			$ship_phone=$_SESSION['addy'.$blog_id]['ship_phone'];
-			$ship_address=$_SESSION['addy'.$blog_id]['ship_address'];
-			$ship_city=$_SESSION['addy'.$blog_id]['ship_city'];
-			$ship_country=$_SESSION['addy'.$blog_id]['ship_country'];
-			$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
+			/* defaults */
+			$ship_name=$ship_company='';
+			$ship_phone=$ship_address=$ship_city=$ship_postcode='';
+			$ship_country=$ship_state=$ship_altstate=$comments='';
+			if(isset($_SESSION['addy'.$blog_id]['ship_name']))
+				$ship_name=$_SESSION['addy'.$blog_id]['ship_name'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_company']))
+				$ship_company=$_SESSION['addy'.$blog_id]['ship_company'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_phone']))
+				$ship_phone=$_SESSION['addy'.$blog_id]['ship_phone'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_address']))
+				$ship_address=$_SESSION['addy'.$blog_id]['ship_address'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_city']))
+				$ship_city=$_SESSION['addy'.$blog_id]['ship_city'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_country']))
+				$ship_country=$_SESSION['addy'.$blog_id]['ship_country'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_state']))
+				$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
 			if(isset($_SESSION['addy'.$blog_id]['ship_altstate']))
 				$ship_altstate=$_SESSION['addy'.$blog_id]['ship_altstate'];
 			else
 				$ship_altstate='';
-			$ship_postcode=$_SESSION['addy'.$blog_id]['ship_postcode'];
-			$comments=$_SESSION['addy'.$blog_id]['comments'];
+			if(isset($_SESSION['addy'.$blog_id]['ship_postcode']))
+				$ship_postcode=$_SESSION['addy'.$blog_id]['ship_postcode'];
+			if(isset($_SESSION['addy'.$blog_id]['comments']))
+				$comments=$_SESSION['addy'.$blog_id]['comments'];
 		}else{
 			$first_name=$last_name=$company=$phone=$reference='';
 			$email=$address1=$address2=$city=$country='';

@@ -315,7 +315,7 @@ function eshop_discounts_manager() {
 	
 			echo '<tr'.$alt.'>
 			<td headers="code" id="numb'.$calt.'"><a href="'.$phpself.'&amp;editcode='.$myrow->id.'" title="'.__('Edit this discount','eshop').'">'.$myrow->disccode.'</a></td>
-			<td headers="disc numb'.$calt.'">'.number_format($myrow->percent,2).'%</td>
+			<td headers="disc numb'.$calt.'">'.number_format_i18n($myrow->percent,2).'%</td>
 			<td headers="type numb'.$calt.'">'.$type.'</td>
 			<td headers="remain numb'.$calt.'">'.$remain.'</td>
 			<td headers="enddate numb'.$calt.'">'.$eshopdate.'</td>

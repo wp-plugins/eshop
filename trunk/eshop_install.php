@@ -75,7 +75,7 @@ function eshop_option_setup() {
 		'method'=>array('paypal'),
 		'options_num'=>'3',
 		'paypal_noemail'=>'',
-		'records'=>'',
+		'records'=>'10',
 		'search_img'=> 'no',
 		'set_cacheability'=>'no',
 		'shipping_state'=> 'GB',

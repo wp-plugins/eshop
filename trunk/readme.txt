@@ -39,9 +39,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 
 == Screenshots ==
 
-Not currently available.
+Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 5.7.0
+
+* *fixed* error with shipping not being added to cart under some circumstances.
+* *updated* number formatting for other languages
+* *updated* Settings page over hauled, new interface to match other WordPress pages.
 
 Version 5.6.3
 

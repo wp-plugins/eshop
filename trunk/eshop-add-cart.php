@@ -79,7 +79,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset[]">'."\n";
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
-										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format($opsets['price'],2));
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
 									else
 										$addprice='';
 									
@@ -94,7 +94,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 							foreach($optsets['item'] as $opsets){
 								$ox++;
 								if($opsets['price']!='0.00')
-									$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format($opsets['price'],2));
+									$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
 								else
 									$addprice='';
 								$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
@@ -127,7 +127,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 						}
 						if($option!='' && $currst>0){
 							if($price!='0.00')
-								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format($price,2))."</label>\n</li>";
+								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2))."</label>\n</li>";
 							else
 								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option" /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.stripslashes(esc_attr($option)).'</label>'."\n</li>";
 						}
@@ -147,7 +147,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 						}
 						if($option!='' && $currst>0){
 							if($price!='0.00')
-								$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format($price,2)).'</option>'."\n";
+								$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
 							else
 								$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
 						}
@@ -165,7 +165,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 				if($currst>0){
 					if($price!='0.00'){
 						$replace.='
-						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( _x('%1$s%2$s','1-currency symbol 2-amount','eshop'), $currsymbol, number_format($price,2)).'</span></span>
+						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</span></span>
 						';
 					}else{
 						$replace.='
