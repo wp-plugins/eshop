@@ -114,7 +114,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 			
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
 					$opt=$eshopoptions['options_num'];
-					$replace.="\n<ul>\n";
+					$replace.="\n<ul class=\"eshopradio\">\n";
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
 						$price=$eshop_product['products'][$i]['price'];
@@ -133,6 +133,12 @@ function eshop_boing($pee,$short='no',$postid=''){
 						}
 					}
 					$replace.="</ul>\n";
+					//combine 2 into 1 then extract
+					$filterarray[0]=$replace;
+					$filterarray[1]=$eshop_product;
+					$filterarray=apply_filters('eshop_after_radio',$filterarray);
+					$replace=$filterarray[0];
+					
 
 				}else{			
 					$opt=$eshopoptions['options_num'];
