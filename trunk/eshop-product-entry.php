@@ -172,6 +172,8 @@ function eshop_inner_custom_box($post) {
 	}
 	?>
     <p><input id="eshop_featured_product" name="eshop_featured_product" value="Yes"<?php echo isset($eshop_product['featured']) && $eshop_product['featured']=='Yes' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_featured_product" class="selectit"><?php _e('Featured Product','eshop'); ?></label></p>
+    <p><input id="eshop_sale_product" name="eshop_sale_product" value="yes"<?php echo isset($eshop_product['sale']) && $eshop_product['sale']=='yes' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_sale_product" class="selectit"><?php _e('Product in sale','eshop'); ?></label></p>
+
     <p><input id="eshop_stock_available" name="eshop_stock_available" value="Yes"<?php echo $stkav=='1' ? 'checked="checked"' : ''; ?> type="checkbox" /> <label for="eshop_stock_available" class="selectit"><?php _e('Stock Available','eshop'); ?></label></p>
     <?php
     /*
@@ -247,6 +249,16 @@ function eshop_save_postdata( $post_id ) {
 		$eshop_product['featured']='no';
 		delete_post_meta( $id, '_eshop_featured');
 	}
+	if(isset($_POST['eshop_sale_product'])){
+		$eshop_product['sale']='yes';
+		update_post_meta( $id, '_eshop_sale', 'yes');
+	}else{
+		$eshop_product['sale']='no';
+		delete_post_meta( $id, '_eshop_sale');
+	}
+	
+	
+	
 	if(isset($_POST['eshop_stock_available']))
 		$stkav='1';
 	else

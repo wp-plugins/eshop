@@ -191,7 +191,7 @@ class eshop_products_widget extends WP_Widget {
 		echo $before_title.$title.$after_title;
 		switch($show_what){
 			case '1'://featured
-				echo eshopw_list_featured(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'sortby'=>$order_by));
+				echo eshopw_w_featured(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'sortby'=>$order_by));
 				break;
 			case '2'://new
 				echo eshopw_list_new(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size));
@@ -216,6 +216,9 @@ class eshop_products_widget extends WP_Widget {
 				break;
 			case '9'://show best sellers
 				echo eshopw_list_cat_tags(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'type'=>'tag_id','id'=>$show_id,'sortby'=>$order_by));
+				break;
+			case '10'://sale
+				echo eshopw_w_sale(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'sortby'=>$order_by));
 				break;
 		}
 		echo $after_widget;
@@ -266,9 +269,9 @@ class eshop_products_widget extends WP_Widget {
 			<option value="7"<?php selected( $show_what, '7' ); ?>><?php _e('Category ID','eshop'); ?></option>
 			<option value="8"<?php selected( $show_what, '8' ); ?>><?php _e('Tags','eshop'); ?></option>
 			<option value="9"<?php selected( $show_what, '9' ); ?>><?php _e('Tag ID','eshop'); ?></option>
-
+			<option value="10"<?php selected( $show_what, '10' ); ?>><?php _e('Sale','eshop'); ?></option>
 		</select></p>
-		<p><label for="<?php echo $this->get_field_id('order_by'); ?>"><?php _e('Featured Order by','eshop'); ?></label>
+		<p><label for="<?php echo $this->get_field_id('order_by'); ?>"><?php _e('Featured/Sale Order by','eshop'); ?></label>
 				<select id="<?php echo $this->get_field_id('order_by'); ?>" name="<?php echo $this->get_field_name('order_by'); ?>">
 				<option value="1"<?php selected( $order_by, '1' ); ?>><?php _e('Title','eshop'); ?></option>
 				<option value="2"<?php selected( $order_by, '2' ); ?>><?php _e('Menu Order','eshop'); ?></option>
@@ -330,10 +333,19 @@ function eshopw_best_sellers($atts){
 	} 
 	return;
 } 
-function eshopw_list_featured($atts){
+
+function eshopw_w_featured($atts){
+	return eshop_list_featured_sale($atts);
+}
+function eshopw_w_sale($atts){
+	return eshop_list_featured_sale($atts, 'sale');
+}
+
+
+function eshopw_list_featured_sale($atts, $type='featured'){
 	global $wpdb, $post;
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopw_featured','images'=>'no','show'=>'6','size'=>'','sortby'=>'1'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopw_'.$type,'images'=>'no','show'=>'6','size'=>'','sortby'=>'1'), $atts));
 
 	switch ($sortby){
 		case '2'://menu order
@@ -355,7 +367,7 @@ function eshopw_list_featured($atts){
 			break;
 	}
 
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type." AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);

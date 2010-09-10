@@ -87,6 +87,13 @@ function eshop_products_manager() {
 					}
 				}
 			}
+			if(isset($type['sale'])){
+				$eshop_product['sale']='yes';
+				update_post_meta( $id, '_eshop_sale', 'yes');
+			}else{
+				$eshop_product['sale']='no';
+				delete_post_meta( $id, '_eshop_sale');
+			}
 			if(isset($type['featured'])){
 				$eshop_product['featured']='Yes';
 				update_post_meta( $id, '_eshop_featured', 'Yes');
@@ -273,6 +280,7 @@ function eshop_products_manager() {
 		<th id="stkavail"><abbr title="<?php _e('Stock Available','eshop'); ?>"><?php _e('Stk avail.','eshop'); ?></abbr></th>
 		<th id="purc"><abbr title="<?php _e('Number of Purchases','eshop'); ?>"><?php _e('Purc.','eshop'); ?></abbr></th>
 		<th id="ftrd"><abbr title="<?php _e('Marked as Featured','eshop'); ?>"><?php _e('Feat.','eshop'); ?></abbr></th>
+		<th id="onsale" title="<?php _e('Product on sale','eshop'); ?>"><?php _e('Sale','eshop'); ?></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
 		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
 		<th id="associmg"><?php _e('Thumbnail','eshop'); ?></th>
@@ -354,6 +362,7 @@ function eshop_products_manager() {
 					}
 					if($pdownloads=='no') break;
 				}
+
 				//Featured Product
 				if($eshop_product['featured']=='Yes')
 					$fchk=' checked="checked"';
@@ -362,8 +371,14 @@ function eshop_products_manager() {
 				$feat='<label for="featured'.$calt.'">'.__('Featured Product','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][featured]" id="featured'.$calt.'"'.$fchk.' />';
 				echo '<td headers="purc sku'.$calt.'">'.implode("<br />",$purcharray).'</td>';
 				echo '<td headers="ftrd sku'.$calt.'">'.$feat.'</td>';
-
-				echo '<td headers="opt sku'.$calt.'">';
+				//Sale Product
+				if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes')
+					$salechk=' checked="checked"';
+				else
+					$salechk='';
+				$onsale='<label for="sale'.$calt.'">'.__('Product On Sale','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][sale]" id="sale'.$calt.'"'.$salechk.' />';
+				echo '<td headers="sale sku'.$calt.'">'.$onsale.'</td>';
+				echo '<td headers="opt sku'.$calt.'" class="optline">';
 				for($i=1;$i<=$numoptions;$i++){
 					if($eshop_product['products'][$i]['option']!=''){
 						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format_i18n($eshop_product['products'][$i]['price'],2)).'<br />';

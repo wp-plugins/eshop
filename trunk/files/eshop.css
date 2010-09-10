@@ -64,7 +64,9 @@ table.cart tr.total {
 	background:#EFDEF1;
 	color:#404040;
 }
-
+table.cart td span.eshoptext{
+	font-weight:bold;
+}
 /*********** LISTS ***************/
 /* generic eshop panel list colors */
 ul.eshop li a img {
@@ -390,7 +392,10 @@ form.addtocart input.iqty {
 	width:2.5em;
 }
 form.addtocart dfn {
-	font-style:normal;;
+	font-style:normal;
+}
+form.addtocart .etext,form.addtocart .etextarea{
+	display:block;
 }
 /* downloads form */
 form#eshopdlform fieldset {

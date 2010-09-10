@@ -753,6 +753,18 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			}
 			?>
 			</select><br />
+			<label for="eshop_sale"><?php _e('Sale','eshop'); ?></label>
+			<select name="eshop_sale" id="eshop_sale">
+			<?php
+			if(isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']){
+				echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+				echo '<option value="no">'.__('No','eshop').'</option>';
+			}else{
+				echo '<option value="yes">'.__('Yes','eshop').'</option>';
+				echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+			}
+			?>
+			</select><br />
 		</fieldset>
 	<?php
 	}
@@ -804,6 +816,8 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				_e('eShop is currently <span class="live">Live</span>.','eshop');
 			else
 				_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
+			if(isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale'])
+				_e(' <strong>Sale time!</strong>','eshop');
 			
 			if(is_array($eshopoptions['method']))
 			    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$eshopoptions['method'])).'</span>';
@@ -872,6 +886,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$err='100';
 		$eshopoptions = get_option('eshop_plugin_settings');
 		//process here your on $_POST validation and / or option saving
+		$eshopoptions['sale']=$wpdb->escape($_POST['eshop_sale']);
 		$eshopoptions['from_email']=$wpdb->escape($_POST['eshop_from_email']);
 		$eshopoptions['cron_email']=$wpdb->escape($_POST['eshop_cron_email']);
 		$eshopoptions['sysemails']=$wpdb->escape($_POST['eshop_sysemails']);
@@ -1044,7 +1059,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 	function paypal_box($eshopoptions) {
 	?>
 		<fieldset>
-			<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_method"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_method" class="eshopmethod" class="eshopmethod"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
 			<label for="eshop_business"><?php _e('Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo $eshopoptions['business']; ?>" size="30" /><br />
 			<label for="eshop_paypal_noemail"><?php _e('Send buyers email address to paypal?','eshop'); ?></label>
 			<select name="eshop_paypal_noemail" id="eshop_paypal_noemail">
@@ -1071,7 +1086,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$payson['email']=$payson['id'] = $payson['key']= $payson['description']=$payson['minimum']='';	
 			?>
-			<p class="cbox"><input id="eshop_methodb" name="eshop_method[]" type="checkbox" value="payson"<?php if(in_array('payson',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodb"><?php _e('Accept payment by Payson','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodb" name="eshop_method[]" type="checkbox" value="payson"<?php if(in_array('payson',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodb" class="eshopmethod"><?php _e('Accept payment by Payson','eshop'); ?></label></p>
 			<label for="eshop_paysonemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_paysonemail" name="payson[email]" type="text" value="<?php echo $payson['email']; ?>" size="30" maxlength="50" /><br />
 			<label for="eshop_paysonid"><?php _e('Agent ID','eshop'); ?></label><input id="eshop_paysonid" name="payson[id]" type="text" value="<?php echo $payson['id']; ?>" size="20" /><br />
 			<label for="eshop_paysonkey"><?php _e('Secret Key','eshop'); ?></label><input id="eshop_paysonkey" name="payson[key]" type="text" value="<?php echo $payson['key']; ?>" size="40" /><br />
@@ -1098,7 +1113,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$ideallite['idealdescription']=$ideallite['idealownermail'] = $ideallite['IDEAL_AQUIRER']=$ideallite['IDEAL_HASH_KEY'] = $ideallite['IDEAL_MERCHANT_ID']= $ideallite['IDEAL_SUB_ID']=$ideallite['IDEAL_TEST_MODE']='';
 			?>
-			<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="ideallite"<?php if(in_array('ideallite',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodc"><?php _e('Accept payment by iDeal Lite','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="ideallite"<?php if(in_array('ideallite',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodc" class="eshopmethod" class="eshopmethod"><?php _e('Accept payment by iDeal Lite','eshop'); ?></label></p>
 			<label for="eshop_IDEAL_AQUIRER"><?php _e('Aquirer','eshop'); ?></label><input id="eshop_IDEAL_AQUIRER" name="ideallite[IDEAL_AQUIRER]" type="text" value="<?php echo $ideallite['IDEAL_AQUIRER']; ?>" size="40" maxlength="50" /><em><?php _e('Use Rabobank, ING Bank or Simulator','eshop'); ?></em><br />
 			<label for="eshop_IDEAL_HASH_KEY"><?php _e('Hash Key','eshop'); ?></label><input id="eshop_IDEAL_HASH_KEY" name="ideallite[IDEAL_HASH_KEY]" type="text" value="<?php echo $ideallite['IDEAL_HASH_KEY']; ?>" size="20" /><em><?php _e('For Simulator use "Password"','eshop'); ?></em><br />
 			<label for="eshop_IDEAL_MERCHANT_ID"><?php _e('Merchant ID','eshop'); ?></label><input id="eshop_IDEAL_MERCHANT_ID" name="ideallite[IDEAL_MERCHANT_ID]" type="text" value="<?php echo $ideallite['IDEAL_MERCHANT_ID']; ?>" size="40" /><em><?php _e('For Simulator use "123456789"','eshop'); ?></em><br />
@@ -1122,7 +1137,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$epn['email']=$epn['id'] = $epn['description']='';	
 			?>
-			<p class="cbox"><input id="eshop_methodd" name="eshop_method[]" type="checkbox" value="epn"<?php if(in_array('epn',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodd"><?php _e('Accept payment by eProcessingNetwork','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodd" name="eshop_method[]" type="checkbox" value="epn"<?php if(in_array('epn',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodd" class="eshopmethod"><?php _e('Accept payment by eProcessingNetwork','eshop'); ?></label></p>
 			<label for="eshop_epnemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_epnemail" name="epn[email]" type="text" value="<?php echo $epn['email']; ?>" size="30" /><br />
 			<label for="eshop_epnid"><?php _e('User ID','eshop'); ?></label><input id="eshop_epnid" name="epn[id]" type="text" value="<?php echo $epn['id']; ?>" size="20" /><br />
 			<label for="eshop_epndesc"><?php _e('Cart Description','eshop'); ?></label><input id="eshop_epndesc" name="epn[description]" type="text" value="<?php echo $epn['description']; ?>" size="50" maxlength="200" /><br />
@@ -1140,7 +1155,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$eshopcash['email']=$eshopcash['rename'] = '';	
 			?>
-			<p class="cbox"><input id="eshop_methode" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methode"><?php _e('Accept cash payments','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methode" name="eshop_method[]" type="checkbox" value="cash"<?php if(in_array('cash',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methode" class="eshopmethod"><?php _e('Accept cash payments','eshop'); ?></label></p>
 			<label for="eshop_cashemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_cashemail" name="cash[email]" type="text" value="<?php echo $eshopcash['email']; ?>" size="30" maxlength="50" /><br />
 			<label for="eshop_cashrename"><?php _e('Change Cash name to','eshop'); ?></label><input id="eshop_cashrename" name="cash[rename]" type="text" value="<?php echo $eshopcash['rename']; ?>" size="30" maxlength="50" /><br />
 
@@ -1158,7 +1173,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$eshopbank['email']=$eshopbank['rename'] = '';	
 			?>
-			<p class="cbox"><input id="eshop_methodbk" name="eshop_method[]" type="checkbox" value="bank"<?php if(in_array('bank',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodbk"><?php _e('Accept bank payments','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodbk" name="eshop_method[]" type="checkbox" value="bank"<?php if(in_array('bank',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodbk" class="eshopmethod"><?php _e('Accept bank payments','eshop'); ?></label></p>
 			<label for="eshop_bankemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_bankemail" name="bank[email]" type="text" value="<?php echo $eshopbank['email']; ?>" size="30" maxlength="50" /><br />
 			<label for="eshop_bankrename"><?php _e('Change bank name to','eshop'); ?></label><input id="eshop_bankrename" name="bank[rename]" type="text" value="<?php echo $eshopbank['rename']; ?>" size="30" maxlength="50" /><br />
 
@@ -1176,7 +1191,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$eshopwebtopay['password']=$eshopwebtopay['id'] = $eshopwebtopay['lang']= $eshopwebtopay['projectid']=$eshopwebtopay['signature']='';	
 			?>
-			<p class="cbox"><input id="eshop_methodf" name="eshop_method[]" type="checkbox" value="webtopay"<?php if(in_array('webtopay',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodf"><?php _e('Accept webtopay payments','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodf" name="eshop_method[]" type="checkbox" value="webtopay"<?php if(in_array('webtopay',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodf" class="eshopmethod"><?php _e('Accept webtopay payments','eshop'); ?></label></p>
 			<label for="eshop_webtopayid"><?php _e('Webtopay user ID','eshop'); ?></label>
 			<input id="eshop_webtopayid" name="webtopay[id]" type="text" value="<?php echo $eshopwebtopay['id']; ?>" size="30" maxlength="50" /><br />
 			<label for="eshop_webtopaypassword"><?php _e('Webtopay password','eshop'); ?></label>
@@ -1200,7 +1215,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$authorizenet['developer']=$authorizenet['email']=$authorizenet['id'] = $authorizenet['key']= $authorizenet['desc']=$authorizenet['secret']='';	
 			?>
-			<p class="cbox"><input id="eshop_methodg" name="eshop_method[]" type="checkbox" value="authorize.net"<?php if(in_array('authorize.net',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodg"><?php _e('Accept payment by Authorize.net','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodg" name="eshop_method[]" type="checkbox" value="authorize.net"<?php if(in_array('authorize.net',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodg" class="eshopmethod"><?php _e('Accept payment by Authorize.net','eshop'); ?></label></p>
 			<label for="eshop_authorizenetemail"><?php _e('Email address','eshop'); ?></label><input id="eshop_authorizenetemail" name="authorizenet[email]" type="text" value="<?php echo $authorizenet['email']; ?>" size="30" maxlength="50" /><br />
 			<label for="eshop_authorizenetid"><?php _e('API Login ID','eshop'); ?></label><input id="eshop_authorizenetid" name="authorizenet[id]" type="text" value="<?php echo $authorizenet['id']; ?>" size="20" /><br />
 			<label for="eshop_authorizenetkey"><?php _e('Transaction Key','eshop'); ?></label><input id="eshop_authorizenetkey" name="authorizenet[key]" type="text" value="<?php echo $authorizenet['key']; ?>" size="40" /><br />
@@ -1220,7 +1235,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$ogone['email']=$ogone['COM'] = $ogone['PSPID']= $ogone['secret']='';	
 			?>
-			<p class="cbox"><input id="eshop_methodh" name="eshop_method[]" type="checkbox" value="ogone"<?php if(in_array('ogone',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodh"><?php _e('Accept payment by ogone','eshop'); ?></label></p>
+			<p class="cbox"><input id="eshop_methodh" name="eshop_method[]" type="checkbox" value="ogone"<?php if(in_array('ogone',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodh" class="eshopmethod"><?php _e('Accept payment by ogone','eshop'); ?></label></p>
 			<p><em><?php _e('All fields are required.','eshop'); ?></em></p>
 			<div class="ogonehi">
 			<h3><?php _e('The following information must be entered at ogone','eshop'); ?></h3>

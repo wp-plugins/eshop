@@ -43,6 +43,25 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version ?
+
+* *NEW* filter added for add to cart image (eshop_theme_addtocartimg) for theme developers.
+* *NEW* Products can now be marked as being On Sale, various sale CSS hooks added for theme developers.
+* *NEW* shortcode and widget option for listing products on sale.
+* *NEW* Option sets can now have text and textareas.
+* *fix* products admin page - fix for options+prices wrapping.
+* *fixed* panel display for cat_tags shortcode.
+* *fixed* State name when user sign up on checkout was not saving.
+* *fixed* option quantity changes in cart.
+* *fixed* bug when using the add details with incorrect information.
+* *added* filter for addtocart image, can now be changed via filter eshop_theme_addtocartimg - needs to return url to image used.
+* *added* filter and some extra CSS classes for customisation.
+
+
+Version 5.6.6
+
+* not released.
+
 Version 5.6.5
 
 * *fixed* long term issue with some people unable to install - hopefully now fixed

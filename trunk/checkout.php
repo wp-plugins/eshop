@@ -247,24 +247,32 @@ if (!function_exists('eshopShowform')) {
 	$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
 	foreach ($eshopcartarray as $productid => $opt){
 		$x++;
+		$productidident=$productid;
+		//$toreplace=array(" ","-","$","\r","\r\n","\n","\\","&","#",";");
+		//$productidident=md5($productidident);//str_replace($toreplace, "", $productidident);
 		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productid."\" />";
+		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productidident."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
 		$echo.= "\n  <input type=\"hidden\" name=\"weight_".$x."\" value=\"".$opt['weight']."\" />";
 		/* options */
 		$addoprice=0;
 		if(isset($opt['optset'])){
-			$oset=$qb=array();
+			if(isset($qb)) unset($qb);
+			$oset=array();
 			$optings=unserialize($opt['optset']);
 			$opttable=$wpdb->prefix.'eshop_option_sets';
 			foreach($optings as $foo=>$opst){
-				$qb[]="id=$opst";
+				if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')) 
+					$qb[]="id=$opst[id]";
 			}
-			$qbs = implode(" OR ", $qb);
-			$otable=$wpdb->prefix.'eshop_option_sets';
-			$orowres=$wpdb->get_results("select price, id from $otable where $qbs ORDER BY id ASC");
-			foreach($orowres as $orow){
-				$addoprice+=$orow->price;
+			
+			if(isset($qb)){
+				$qbs = implode(" OR ", $qb);
+				$otable=$wpdb->prefix.'eshop_option_sets';
+				$orowres=$wpdb->get_results("select price, id from $otable where $qbs ORDER BY id ASC");
+				foreach($orowres as $orow){
+					$addoprice+=$orow->price;
+				}
 			}
 			
 		}
@@ -927,7 +935,6 @@ if (!function_exists('eshop_checkout')) {
 					$$k=$v;
 				}
 			}
-			
 			if(is_user_logged_in() && isset($eshopoptions['users']) && 'yes' == $eshopoptions['users']){
 				global $current_user;
 				get_currentuserinfo();
