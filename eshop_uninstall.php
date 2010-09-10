@@ -61,7 +61,7 @@ if(isset($_POST['delete'])){
 	$eshopmetaary[]= '_eshop_product';
 	$eshopmetaary[]= '_eshop_stock';
 	$eshopmetaary[]= '_eshop_featured';
-
+	$eshopmetaary[]= '_eshop_sale';
 	foreach( $eshopmetaary as $eshopmeta) {
 		delete_post_meta_by_key($eshopmeta);
 	}

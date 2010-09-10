@@ -233,6 +233,11 @@ td.total, td.right {
   text-align : right;
 }
 
+.optline{
+	white-space:nowrap;
+}
+
+
 /* shipping pages*/
 
 form#zoneform table th {
@@ -517,9 +522,19 @@ div.paginate p.checkers a {
 
 
 #eshop-settings label{
-	font-weight:bold;
-  	color: #333;
+	color: #333;
 	display:block;
+}
+#eshop-settings label.eshopmethod{
+	font-weight:bold;
+}
+#eshop-settings label small{
+	font-style: italic;
+}
+#eshop-settings input[type="text"],
+#eshop-settings select,
+#eshop-settings textarea {
+	margin-bottom:10px;
 }
 
 .eshopdisc{
@@ -631,6 +646,10 @@ fieldset#baseothers fieldset{
 #eshop_admin_note h4{
 	margin:0;
 }
+.eshoptext{
+	font-weight:bold;
+}
+
 /* end eShop CSS */
 
 
@@ -749,6 +768,7 @@ dl.eshop-def dd ul{
 	padding:0 5px;
 	border:1px solid #800;
 	background:#FFEDEF;
+	margin-bottom:10px;
 }
 .ogonehi code{
 	border:1px solid #000;

@@ -4,6 +4,10 @@ function eshop_boing($pee,$short='no',$postid=''){
 	if($postid=='') $postid=$post->ID;
 	$stkav=get_post_meta( $postid, '_eshop_stock',true);
     $eshop_product=get_post_meta( $postid, '_eshop_product',true );
+	$saleclass='';
+	if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+		$saleclass=' sale';
+	}
     $stocktable=$wpdb->prefix ."eshop_stock";
     $uniq=rand();
 	//if the search page we don't want the form!
@@ -46,7 +50,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 		if($stkav=='1'){
 			$currsymbol=$eshopoptions['currency_symbol'];
 			$replace .= '
-			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart">
+			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart'.$saleclass.'">
 			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(esc_attr($eshop_product['description'])).'</span></legend>';
 			$theid=sanitize_file_name($eshop_product['sku']);
 			//option sets
@@ -71,12 +75,13 @@ function eshop_boing($pee,$short='no',$postid=''){
 					$optarray[$myrow->optid]['item'][$x]['price']=$myrow->price;
 					$x++;
 				}
+
 				$enumb=0;
 				if(is_array($optarray)){
 					foreach($optarray as $optsets){
 						switch($optsets['type']){
 							case '0'://select
-								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset[]">'."\n";
+								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][id]">'."\n";
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
 										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
@@ -89,19 +94,45 @@ function eshop_boing($pee,$short='no',$postid=''){
 								break;
 
 							case '1'://checkbox
-							$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
-							$ox=0;
-							foreach($optsets['item'] as $opsets){
-								$ox++;
-								if($opsets['price']!='0.00')
-									$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
-								else
-									$addprice='';
-								$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset[]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
-							}
-							$replace.="</fieldset>\n";
-
-							break;
+								$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
+								$ox=0;
+								foreach($optsets['item'] as $opsets){
+									$ox++;
+									if($opsets['price']!='0.00')
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+									else
+										$addprice='';
+									$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset['.$enumb.'][id]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
+								}
+								$replace.="</fieldset>\n";
+								break;
+							case '2'://text
+								foreach($optsets['item'] as $opsets){
+									if($opsets['price']!='0.00')
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+									else
+										$addprice='';
+									$replace.="\n".'<span class="eshop etext"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
+									$replace.='<input type="text" id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" value="" />'."\n";
+									$replace.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
+									$replace.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
+								}
+								$replace.="</span>\n";
+								break;
+							case '3'://textarea
+								foreach($optsets['item'] as $opsets){
+									if($opsets['price']!='0.00')
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+									else
+										$addprice='';
+										
+									$replace.="\n".'<span class="eshop etextarea"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
+									$replace.='<textarea id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" /></textarea>'."\n";
+									$replace.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
+									$replace.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
+								}
+								$replace.="</select></span>\n";
+								break;
 						}
 						$enumb++;
 
@@ -114,6 +145,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 			
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
 					$opt=$eshopoptions['options_num'];
+					$uniq=apply_filters('eshop_uniq',$uniq);
 					$replace.="\n<ul class=\"eshopradio\">\n";
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
@@ -201,9 +233,10 @@ function eshop_boing($pee,$short='no',$postid=''){
 			<input type="hidden" name="postid" value="'.$postid.'" />
 			<input type="hidden" name="eshopnon" value="set" />';
 			$replace .= wp_nonce_field('eshop_add_product_cart','_wpnonce'.$uniq,true,false);
-			$eshopfiles=eshop_files_directory();
 			if($eshopoptions['addtocart_image']=='img'){
-				$replace .='<input class="buttonimg" src="'.$eshopfiles['1'].'addtocart.png" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';
+				$eshopfiles=eshop_files_directory();
+				$imgloc=apply_filters('eshop_theme_addtocartimg',$eshopfiles['1'].'addtocart.png');
+				$replace .='<input class="buttonimg" src="'.$imgloc.'" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';
 			}else{
 				$replace .='<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />';
 			}

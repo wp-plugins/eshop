@@ -1,5 +1,6 @@
 <?php 
 add_shortcode('eshop_list_featured', 'eshop_list_featured');
+add_shortcode('eshop_sale', 'eshop_list_sale');
 add_shortcode('eshop_best_sellers', 'eshop_best_sellers');
 add_shortcode('eshop_list_new', 'eshop_list_new');
 add_shortcode('eshop_list_subpages', 'eshop_list_subpages');
@@ -371,7 +372,7 @@ function eshop_list_cat_tags($atts){
 		if($panels=='no'){
 			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
 		}else{
-			if($class=='eshopsubpages') $class='eshoppanels';
+			if($class=='eshopcats') $class='eshoppanels';
 			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links,$price);
 		}
 		
@@ -534,22 +535,30 @@ function eshop_best_sellers($atts){
 	return;
 } 
 function eshop_list_featured($atts){
+	return eshop_list_featured_sale($atts);
+}
+function eshop_list_sale($atts){
+	return eshop_list_featured_sale($atts, 'sale');
+}
+
+function eshop_list_featured_sale($atts, $type='featured'){
 	global $wpdb, $post;
 	eshop_cache();
 	$paged=$post;
-	extract(shortcode_atts(array('class'=>'eshopfeatured','panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshop'.$type,'panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
 	$allowedsort=array('post_date','post_title','menu_order');
 	$allowedorder=array('ASC','DESC');
 	if(!in_array($sortby,$allowedsort)) 
 		$sortby='post_title';
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_featured' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
+		
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 	if($pages) {
 		if($panels=='no'){
 			$echo = eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
 		}else{
-			if($class=='eshopfeatured') $class='eshoppanels';
+			if($class=='eshop'.$type) $class='eshoppanels';
 			$echo = eshop_listpanels($pages,$class,$form,$imgsize,$links,$price);
 		}
 		$echo .= '<br class="pagfoot" />';
@@ -629,15 +638,26 @@ function eshop_show_product($atts){
 	return;
 }
 function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
-	global $wpdb;
+	global $wpdb,$eshopoptions;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $postit){	
 		setup_postdata($postit);
+		$xclass='<li>';
+		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
+			$esale=get_post_meta( $postit->ID, '_eshop_sale',true );
+			if($esale=='yes')
+				$xclass='<li class="sale">';
+		}
+		$echo .= $xclass;
 		if($links=='yes')
-			$echo .= '<li><a class="itemref" href="'.get_permalink($postit->ID).'">'.apply_filters("the_title",$postit->post_title).'</a>';
+			$echo .= '<a class="itemref" href="'.get_permalink($postit->ID).'">'.apply_filters("the_title",$postit->post_title).'</a>';
 		else
-			$echo .= '<li>'.apply_filters("the_title",$postit->post_title);
+			$echo .= apply_filters("the_title",$postit->post_title);
+			
+		if(isset($esale) && $esale=='yes')
+			$echo .= '<strong>'.__('On Sale','eshop').'</strong>';
+			
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
@@ -665,7 +685,6 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 
 		if($price!='no'){
 			$eshop_product=get_post_meta( $postit->ID, '_eshop_product',true );
-			global $eshopoptions;
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
@@ -686,13 +705,19 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 }
 
 function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
-	global $wpdb, $post;
+	global $wpdb, $post, $eshopoptions;
 	$paged=$post;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$echo .= '<li>';
+		$xclass='<li>';
+		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
+			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
+			if($esale=='yes')
+				$xclass='<li class="sale"><strong>'.__('On Sale','eshop').'</strong>';
+		}
+		$echo .= $xclass;
 		$w=get_option('thumbnail_size_w');
 		$h=get_option('thumbnail_size_h');
 		if($imgsize!=''){
@@ -718,7 +743,6 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		
 		if($price!='no'){
 			$eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
-			global $eshopoptions;
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
@@ -1214,6 +1238,7 @@ function eshop_details($atts){
 	}
 	
 	$allowedtohide=array('option','price','download','weight','stockqty');
+	$willhide=array();
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
 		foreach($wanttohide as $hideit){
@@ -1251,6 +1276,7 @@ function eshop_details($atts){
 				break;
 			case 'options':
 				if(isset($eshop_product['products'])){
+				    $thclass='';
 					$listed.='<dt>'.__('Product Options','eshop')."</dt>\n";
 					$listed.='<dd>';
 					$listed.='<table class="eshop" summary="'.__('Product Options by option price and download','eshop').'">
@@ -1258,8 +1284,15 @@ function eshop_details($atts){
     				<tr>';
     				if(!in_array('option',$willhide))
     					$listed.='<th id="'.$eshopletter.'eshopnum">#</th><th id="'.$eshopletter.'eshopoption">'. __('Option','eshop').'</th>';
-    				if(!in_array('price',$willhide))
-	    				$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
+    				if(!in_array('price',$willhide)){
+    					$thprice=__('Price','eshop');
+						if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+							$thprice=__('Sale Price','eshop');
+							$thclass=' class="sale"';
+						}
+   				
+	    				$listed.='<th id="'.$eshopletter.'eshopprice"'.$thclass.'>'.$thprice.'</th>';
+	    			}
     				if($eshopdlavail>0 && !in_array('download',$willhide)){ 
     					$listed.='<th id="'.$eshopletter.'eshopdownload">'.__('Download','eshop').'</th>';
     				} 
@@ -1278,7 +1311,7 @@ function eshop_details($atts){
 						}
 					}
 					for($i=1;$i<=$numoptions;$i++){
-						if(isset($eshop_product['products']) && is_array($eshop_product['products'])){
+						if(isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
 							$opt=$eshop_product['products'][$i]['option'];
 							$price=$eshop_product['products'][$i]['price'];
 							$downl=$eshop_product['products'][$i]['download'];
@@ -1286,12 +1319,12 @@ function eshop_details($atts){
 								$weight=$eshop_product['products'][$i]['weight'];
 							else
 								$weight='0';
-							
+
 							if(isset($eshop_product['products'][$i]['stkqty']) && $eshop_product['products'][$i]['stkqty']!='' && 'yes' == $eshopoptions['stock_control'])
 								$stklvl=$stkarr[$i];
 							else
 								$stklvl='0';
-							
+						
 						}else{
 							$opt=$price=$downl='';
 							$stklvl=$weight=$price='0';
@@ -1303,7 +1336,7 @@ function eshop_details($atts){
 						if(!in_array('option',$willhide))
 							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
 						if(!in_array('price',$willhide))
-							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</td>';
+							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</td>';
 						
 						if($eshopdlavail>0 && !in_array('download',$willhide)){
     						$myrowres=$wpdb->get_results("Select * From $producttable");
@@ -1336,7 +1369,13 @@ function eshop_details($atts){
 				break;
 			case 'optionset':
 				if(isset($eshop_product['optset'])){
-				$osets=$eshop_product['optset'];
+					$osets=$eshop_product['optset'];
+					$thclass='';
+					$thprice=__('Price','eshop');
+					if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+						$thprice=__('Sale Price','eshop');
+						$thclass=' class="sale"';
+					}
 					if(is_array($osets)){
 						$listed.='<dt>'.__('Additional Options','eshop')."</dt>\n";
 						$listed.='<dd>';
@@ -1361,7 +1400,7 @@ function eshop_details($atts){
 									if(!in_array('option',$willhide))
 										$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
 									if(!in_array('price',$willhide))
-										$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($myrow->price,2)).'</td>';
+										$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($myrow->price,2)).'</td>';
 									if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){
 										/* ,'1- weight 2-weight symbol' */
 										$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($myrow->weight,2),$weightsymbol).'</td>';
@@ -1375,8 +1414,9 @@ function eshop_details($atts){
 								<th id="'.$eshopletter.'eshopnum">#</th>';
 								if(!in_array('option',$willhide))
 									$listed.='<th id="'.$eshopletter.'eshopoption">'.__('Option','eshop').'</th>';
-								if(!in_array('price',$willhide))
-									$listed.='<th id="'.$eshopletter.'eshopprice">'.__('Price','eshop').'</th>';
+								if(!in_array('price',$willhide)){
+									$listed.='<th id="'.$eshopletter.'eshopprice"'.$thclass.'>'.$thprice.'</th>';
+								}
 								if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide))
 									$listed.='<th id="'.$eshopletter.'eshopweight">'. __('Weight','eshop').'</th>';
 								$listed.='</tr></thead><tbody>'."\n";

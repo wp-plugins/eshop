@@ -19,7 +19,6 @@ if (!function_exists('display_cart')) {
 		//this checks for an empty cart, may not be required but leaving in just in case.
 		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
 		foreach ($eshopcartarray as $productid => $opt){
-			//foreach($opt as $option=>$qty){
 			if(is_array($opt)){
 				foreach($opt as $qty){
 					$check=$check+$qty;
@@ -46,7 +45,6 @@ if (!function_exists('display_cart')) {
 			$shipping=0;
 			$totalweight=0;
 			$currsymbol=$eshopoptions['currency_symbol'];
-			
 			$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
 			foreach ($eshopcartarray as $productid => $opt){
 				$addoprice=0;
@@ -76,36 +74,53 @@ if (!function_exists('display_cart')) {
 					}
 					/* end */
 					//opsets
+					
 					if(isset($opt['optset'])){
 						$oset=$qb=array();
-						
 						$optings=unserialize($opt['optset']);
-						$opttable=$wpdb->prefix.'eshop_option_sets';
+						$c=0;
+
+						if(isset($newoptings)) unset($newoptings);
 						foreach($optings as $foo=>$opst){
-							$qb[]="id=$opst";
+							$qb[]="id=$opst[id]";
+							if((isset($opst['text']) && $opst['text']!='') || !isset($opst['text'])){
+								$newoptings[]=$optings[$c];
+							}
+							$c++;
 						}
-						$qbs = implode(" OR ", $qb);
-						$otable=$wpdb->prefix.'eshop_option_sets';
-						$orowres=$wpdb->get_results("select name, price, id from $otable where $qbs ORDER BY id ASC");
-						$x=0;
-						foreach($orowres as $orow){
-							$oset[]=$orow->name;
-							$addoprice=$addoprice+$orow->price;
-							$x++;
+						if(isset($newoptings)){
+							$qbs = implode(" OR ", $qb);
+							$otable=$wpdb->prefix.'eshop_option_sets';
+							$otablename=$wpdb->prefix.'eshop_option_names';
+							$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
+							$x=0;
+							foreach($orowres as $orow){
+								//if(($orow->type=='2' || $orow->type=='3') && isset($newoptings[$x]['text']))
+								if((isset($newoptings[$x]['type']) && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3')) && isset($newoptings[$x]['text']))
+									$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+								elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
+									$xxxx='';
+								else
+									$oset[]=$orow->name;
+								$addoprice=$addoprice+$orow->price;
+								$x++;
+							}
+							$optset="\n".implode("\n",$oset);
+						}else{
+							$optset='';
 						}
-						$optset='('.implode(', ',$oset).')';
 					}else{
 						$optset='';
 					}
 					//$eshop_product['products'][$opt['item']]['option']
-					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem" class="leftb">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.$optset.'</td>'."\n";
+					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem" class="leftb cartitem">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset).'</td>'."\n";
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod".$calt.$iswidget."\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
 						//generate acceptable id
-						$toreplace=array(" ","-","$");
+						//$toreplace=array(" ","-","$","\r","\r\n","\n","\\","&","#",";");
 						$accid=$productid.$key;
-						$accid=str_replace($toreplace, "", $accid);
+						$accid=md5($accid);//str_replace($toreplace, "", $accid);
 						$echo.= '<label for="'.$accid.$iswidget.'"><input class="short" type="text" id="'.$accid.$iswidget.'" name="'.$productid.'['.$key.']" value="'.$opt["qty"].'" size="3" maxlength="3" /></label>';
 					}else{
 						$echo.= $opt["qty"];
@@ -123,7 +138,8 @@ if (!function_exists('display_cart')) {
 					else		
 						$sub_total+=$line_total;
 					//weight
-					$totalweight+=$opt['weight']*$opt['qty'];
+					if(isset($opt['weight']))
+						$totalweight+=$opt['weight']*$opt['qty'];
 				}
 			}
 			// display subtotal row - total for products only
@@ -253,16 +269,19 @@ if (!function_exists('display_cart')) {
 if (!function_exists('calculate_price')) {
 	function calculate_price(){
 		global $blog_id;
-		$thecart=$_SESSION['eshopcart'.$blog_id];
-		// sum total price for all items in shopping shopcart
-		$price = 0.0;
+		if(isset($_SESSION['eshopcart'.$blog_id])){
+			$thecart=$_SESSION['eshopcart'.$blog_id];
+			// sum total price for all items in shopping shopcart
+			$price = 0.0;
 
-		if(is_array($thecart)){
-			foreach ($thecart as $productid => $opt){
-				$price=$price+$opt['price'];
+			if(is_array($thecart)){
+				foreach ($thecart as $productid => $opt){
+					$price=$price+$opt['price'];
+				}
 			}
+			return number_format($price, 2);
 		}
-		return number_format($price, 2);
+		return '0';
 	}
 }
 if (!function_exists('calculate_total')) {
@@ -511,7 +530,13 @@ if (!function_exists('orderhandle')) {
 					$eshopuser['zip']=$_POST['zip'];
 					if(isset($_POST['altstate']) && $_POST['altstate']!='')
 						$eshopuser['altstate']=$_POST['altstate'];
-
+					if(!is_numeric($_POST['state'])){
+						$statechk=$wpdb->escape($_POST['state']);
+						$sttable=$wpdb->prefix.'eshop_states';
+						$eshopuser['state']=$wpdb->get_var("SELECT id FROM $sttable where code='$statechk' limit 1");
+					}else{
+						$eshopuser['state']=$_POST['state'];
+					}
 					update_user_meta( $user_id, 'eshop', $eshopuser );
 					update_user_meta( $user_id, 'first_name', $_POST['first_name'] );
 					update_user_meta( $user_id, 'last_name',$_POST['last_name'] );
@@ -664,6 +689,8 @@ if (!function_exists('orderhandle')) {
 			//this is here to generate just one code per order
 			$code=eshop_random_code(); 
 			while($i<=$_POST['numberofproducts']){
+				//test
+				$addoprice=0;
 				$chk_id='item_number_'.$i;
 				$chk_qty='quantity_'.$i;
 				$chk_amt='amount_'.$i;
@@ -682,23 +709,41 @@ if (!function_exists('orderhandle')) {
 				if(isset($_SESSION['eshopcart'.$blog_id][$dlchking]['optset'])){
 					$oset=$qb=array();
 					$optings=unserialize($_SESSION['eshopcart'.$blog_id][$dlchking]['optset']);
-					$opttable=$wpdb->prefix.'eshop_option_sets';
+					//$opttable=$wpdb->prefix.'eshop_option_sets';
+					$c=0;
+					if(isset($newoptings)) unset($newoptings);
 					foreach($optings as $foo=>$opst){
-						$qb[]="id=$opst";
+						if(!isset($opst['type']) || (isset($opst['type']) && $opst['text']!='')){
+							$qb[]="id=$opst[id]";
+							$newoptings[]=$optings[$c];
+						}
+						$c++;
 					}
-					$qbs = implode(" OR ", $qb);
-					$otable=$wpdb->prefix.'eshop_option_sets';
-					$orowres=$wpdb->get_results("select name from $otable where $qbs ORDER BY id ASC");
-					foreach($orowres as $orow){
-						$oset[]=$orow->name;
+					if(isset($newoptings)){
+						$qbs = implode(" OR ", $qb);
+						$otable=$wpdb->prefix.'eshop_option_sets';
+						$otablename=$wpdb->prefix.'eshop_option_names';
+						$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
+						$x=0;
+						foreach($orowres as $orow){
+							if(($orow->type=='2' || $orow->type=='3') && isset($newoptings[$x]['text']))
+								$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+							elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
+								$xxxx='';
+							else
+								$oset[]=$orow->name;
+							$addoprice=$addoprice+$orow->price;
+							$x++;
+						}
+						$optset="\n".implode("\n",$oset);
+					}else{
+						$optset='';
 					}
-					$optset=$wpdb->escape(implode(', ',$oset));
 				}else{
 					$optset='';
 				}
-
+				$optset=$wpdb->escape($optset);
 				//end
-
 				$thechk=$_SESSION['eshopcart'.$blog_id][$dlchking]['option'];
 				$option_id=$wpdb->escape($thechk);
 				if(strpos($thechk,' ')===true){
@@ -878,7 +923,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			if($itemid=='postage'){
 				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
 			}else{
-				$cart.= $myrow->optname." ".$itemid."\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
+				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
 			}
 		
 			//check if downloadable product
@@ -1045,7 +1090,7 @@ if (!function_exists('eshop_download_the_product')) {
 			$id=$wpdb->escape($_POST['id']);
 			$code=$wpdb->escape($_POST['code']);
 			$email=$wpdb->escape($_POST['email']);
-			//set_time_limit(1000);
+			set_time_limit(1000);
 			if($id!='all'){
 				//single file handling
 				$ordertable = $wpdb->prefix ."eshop_download_orders";
@@ -1055,7 +1100,7 @@ if (!function_exists('eshop_download_the_product')) {
 					foreach($chkresult as $chkrow){
 						// make sure output buffering is disabled
 					   	ob_end_clean();
-						set_time_limit();
+						set_time_limit(0);
 						$item=$chkrow->files;
 						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$id' limit 1");
 						//update product with number of downloads made
@@ -1368,7 +1413,9 @@ if (!function_exists('eshop_cart_process')) {
 			return;
 		}
 		wp_verify_nonce('eshop_add_product_cart');
-
+		
+		//setup variables:
+		$option=$qty=$pclas=$productid=$pid=$pname=$iprice='';
 		$echo='';
 		//cache
 		eshop_cache();
@@ -1379,7 +1426,7 @@ if (!function_exists('eshop_cart_process')) {
 			unset($_SESSION['items'.$blog_id]);
 			$_POST['save']='false';
 		}
-	
+if(!isset($_POST['save'])){
 		//on windows this check isn't working correctly, so I've added ==0 
 		if (get_magic_quotes_gpc()) {
 			$_COOKIE = stripslashes_array($_COOKIE);
@@ -1443,18 +1490,21 @@ if (!function_exists('eshop_cart_process')) {
 			}
 		}
 
-
 		//unique identifier
-		if(isset($_POST['optset']))
-			$optset='os'.implode('os',$_POST['optset']);
-		else
-			$optset='';
+		$optset='';
+		if(isset($_POST['optset'])){
+			$xx=0;
+			foreach($_POST['optset'] as $opts){
+				$optset.='os'.$xx.implode('os'.$xx,$opts);
+				$xx++;
+			}
+		}
 		if(!isset($pid)) $pid='';
 		if(!isset($option)) $option='';
 		if(!isset($postid)) $postid='';
 		$identifier=$pid.$option.$postid.$optset;
-		$needle=array(" ",".","-","_");
-		$identifier=str_replace($needle,"",$identifier);
+		//$needle=array(" ","-","$","\r","\r\n","\n","\\","&","#",";");
+		$identifier=md5($identifier);//str_replace($needle,"",$identifier);
 		$stocktable=$wpdb->prefix ."eshop_stock";
 		if(isset($_SESSION['eshopcart'.$blog_id][$identifier])){
 			$testqty=$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+$qty;
@@ -1474,17 +1524,24 @@ if (!function_exists('eshop_cart_process')) {
 				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
 			}
 			$_SESSION['lastproduct'.$blog_id]=$postid;
-
 		}elseif($identifier!=''){
 			$weight=0;
-			$postid=$wpdb->escape($_POST['postid']);
+			if(isset($_POST['save']) && $_POST['save']=='true'){
+				$postid=$_SESSION['eshopcart'.$blog_id][$identifier]['postid'];
+				$optid=$_SESSION['eshopcart'.$blog_id][$identifier]['option'];
+				$optnum=$optid;
+				$testqty=$qty;
+			}else{
+				$postid=$wpdb->escape($_POST['postid']);
+				$optid=$wpdb->escape($_POST['option']);
+				$optnum=$optid;
+				$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
+				$testqty=$qty;
+			}
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-			$optid=$wpdb->escape($_POST['option']);
-			$optnum=$optid;
 			$item=$eshop_product['products'][$optnum]['option'];
-			$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
-			$testqty=$qty;
 			$stkqty = $eshop_product['products'][$optnum]['stkqty'];
+
 			//recheck stkqty
 			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid && option_id=$optid");
 			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
@@ -1505,12 +1562,13 @@ if (!function_exists('eshop_cart_process')) {
 			$_SESSION['eshopcart'.$blog_id][$identifier]['price']=$iprice;
 			if(isset($_POST['optset'])){
 				$_SESSION['eshopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
-
+				
 				$oset=$qb=array();
 				$optings=$_POST['optset'];
-				$opttable=$wpdb->prefix.'eshop_option_sets';
+
+				//$opttable=$wpdb->prefix.'eshop_option_sets';
 				foreach($optings as $foo=>$opst){
-					$qb[]="id=$opst";
+					$qb[]="id=$opst[id]";
 				}
 				$qbs = implode(" OR ", $qb);
 				$otable=$wpdb->prefix.'eshop_option_sets';
@@ -1529,15 +1587,15 @@ if (!function_exists('eshop_cart_process')) {
 			if(isset($error)){
 				unset($_SESSION['eshopcart'.$blog_id][$identifier]);
 			}
-
-			
 		}
+}
 		if(!isset($error)){
 
 			//save? not sure why I used that, but its working so why make trouble for myself.
 			if(isset($_POST['save'])){
 				$save=$_POST['save'];
 			}
+			
 			//this bit is possibly not required
 			if(isset($productid)){
 				//new item selected ******* may need checking
@@ -1557,12 +1615,13 @@ if (!function_exists('eshop_cart_process')) {
 								if($qty=="0"){							
 									unset($_SESSION['eshopcart'.$blog_id][$productid]);
 								}else{
-									$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
+									$postid=$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
 									$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-									$stkqty = $eshop_product['qty'];
+									$optnum=$_SESSION['eshopcart'.$blog_id][$productid]['option'];
+									$stkqty = $eshop_product['products'][$_SESSION['eshopcart'.$blog_id][$productid]['option']]['stkqty'];
 									//recheck stkqty
 									$stocktable=$wpdb->prefix ."eshop_stock";
-									$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid");
+									$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid AND option_id=$optnum");
 									if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 									if(!ctype_digit(trim($qty))|| strlen($qty)>3){
 										$v='999';

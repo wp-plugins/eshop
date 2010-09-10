@@ -35,19 +35,27 @@ if (isset($_POST['delete'])) {
 	$optid=$_POST['optid'];
 	$wpdb->query($wpdb->prepare("DELETE FROM $optsettable where optid='%d'",$optid));
 	$x=1;
+	$type=$_POST['type'];
+	if($type=='2' || $type=='3'){
+		echo "<p>".__('Only the first option field is used for this type.','eshop')."</p>\n";
+	}
 	foreach($_POST['eshop_option'] as $notused=>$named){
 		if($named!=''){
 			$name=$_POST['eshop_option'][$x];
 			$price=$_POST['eshop_price'][$x];
-			$weight=$_POST['eshop_weight'][$x];
+			if(isset($_POST['eshop_weight'][$x]))
+				$weight=$_POST['eshop_weight'][$x];
+			else
+				$weight='';
 			if($price=='' || !is_numeric($price))$price='0.00';
 			if($weight=='' || !is_numeric($weight))$weight='0.00';
 			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s',weight='%s'",$optid,$name,$price,$weight));
 		}
-	$x++;
+		if($type=='2' || $type=='3')
+			break;
+		$x++;
 	}
 	$name=$_POST['name'];
-	$type=$_POST['type'];
 	$description=$_POST['description'];
 	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Updated','eshop').'</p>';
@@ -57,19 +65,28 @@ if (isset($_POST['delete'])) {
 if (isset($_POST['eaddopt'])) {
 	$optid=$_POST['optid'];
 	$x=1;
+	$type=$_POST['type'];
+	if($type=='2' || $type=='3'){
+		echo "<p>".__('Only the first option field is used for this type.','eshop')."</p>\n";
+	}
 	foreach($_POST['eshop_option'] as $notused=>$named){
 		if($named!=''){
 			$name=$_POST['eshop_option'][$x];
 			$price=$_POST['eshop_price'][$x];
-			$weight=$_POST['eshop_weight'][$x];
+			if(isset($_POST['eshop_weight'][$x]))
+				$weight=$_POST['eshop_weight'][$x];
+			else
+				$weight='';
 			if($weight=='' || !is_numeric($weight))$weight='0.00';
 			if($price=='' || !is_numeric($price))$price='0.00';
 			$wpdb->query($wpdb->prepare("INSERT INTO $optsettable SET optid='%d', name='%s',price='%s',weight='%s'",$optid,$name,$price,$weight));
 		}
+		if($type=='2' || $type=='3')
+			break;
 		$x++;
 	}
 	$name=$_POST['name'];
-	$type=$_POST['type'];
+	
 	$description=$_POST['description'];
 	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Created','eshop').'</p>';
@@ -117,10 +134,12 @@ if (isset($_POST['eaddopt'])) {
 			<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/>
 			<label for="type"><?php _e('Set display type','eshop'); ?></label>
 			<select id="type" name="type">
-			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>>Dropdown</option>
-			<option value="1"<?php if($etype==1) echo ' selected="selected"';?>>Checkboxes</option>
+			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>><?php _e('Dropdown','eshop'); ?></option>
+			<option value="1"<?php if($etype==1) echo ' selected="selected"';?>><?php _e('Checkboxes','eshop'); ?></option>
+			<option value="2"<?php if($etype==2) echo ' selected="selected"';?>><?php _e('Text','eshop'); ?></option>
+			<option value="3"<?php if($etype==3) echo ' selected="selected"';?>><?php _e('Textarea','eshop'); ?></option>
 			</select><br />
-			<label for="edesc">Description</label>
+			<label for="edesc"><?php _e('Description','eshop'); ?></label>
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($ename)); ?></caption>
@@ -177,10 +196,12 @@ global $eshopoptions;
 	<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($name)); ?>" size="35"/>
 	<label for="type"><?php _e('Set display type','eshop'); ?></label>
 	<select id="type" name="type">
-	<option value="0">Dropdown</option>
-	<option value="1">Checkboxes</option>
+	<option value="0"><?php _e('Dropdown','eshop'); ?></option>
+	<option value="1"><?php _e('Checkboxes','eshop'); ?></option>
+	<option value="2"><?php _e('Text','eshop'); ?></option>
+	<option value="3"><?php _e('Textarea','eshop'); ?></option>
 	</select><br />
-	<label for="edesc">Description</label>
+	<label for="edesc"><?php _e('Description','eshop'); ?></label>
 	<textarea id="edesc" name="description" rows="3" cols="80"></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($name)); ?></caption>

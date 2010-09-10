@@ -60,12 +60,10 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
-		//
-		//$_COOKIE['ap_id']='helooeshop';
+		//affiliates
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
-		//if(isset($_COOKIE['ap_id'])) $token .= $_COOKIE['ap_id'];
 		$_POST['custom']=$token;
 		$p = new paypal_class; 
 		if($eshopoptions['status']=='live'){
@@ -379,6 +377,7 @@ switch ($eshopaction) {
 			}
 			
       	}else{
+      		//not validated
       		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			if($eshopoptions['status']=='live'){
