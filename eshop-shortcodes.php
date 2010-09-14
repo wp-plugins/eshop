@@ -309,8 +309,10 @@ function eshop_list_cat_tags($atts){
 		$order='ASC';
 	
 	$thisispage=get_permalink($post->ID);
+	$array=array('post','page');
+	$array=apply_filters('eshop_post_types',$array);
 	$args = array(
-	'post_type' => 'post',
+	'post_type' => $array,
 	'post_status' => 'publish',
 	$type => $find, 
 	'meta_key'=>'_eshop_product'
@@ -673,10 +675,12 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 
 		}else{
 			$eimage=eshop_files_directory();
+			$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 			else
-				$echo .='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
+				$echo .='<img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 
 		}
 		//this line stops the addtocart form appearing.
@@ -731,10 +735,11 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
 		}else{
 			$eimage=eshop_files_directory();
+			$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 			else
-				$echo .='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
+				$echo .='<img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 		}
 		if($links=='yes')
 			$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
@@ -826,8 +831,13 @@ function eshop_show_payments(){
 				if($eshopbank['rename']!='')
 					$eshoppayment_text=$eshopbank['rename'];
 			}
-			$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
-			$echo.= '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment.'" title="'.__('Pay via','eshop').' '.$eshoppayment.'" /></li>'."\n";
+			$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
+			$eshopmerchantimgpath=$eshopmi['path'];
+			$eshopmerchantimgurl=$eshopmi['url'];
+			$dims='';
+			if(file_exists($eshopmerchantimgpath))
+				$dims=getimagesize($eshopmerchantimgpath);
+			$echo.= '<li><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
 			$i++;
 		}
 		$echo.= "</ul>\n";

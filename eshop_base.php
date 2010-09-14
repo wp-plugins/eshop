@@ -262,7 +262,8 @@ if(!isset($_GET['change'])){
 					 echo '<a class="itemref" href="'.get_permalink($getid).'">'.get_the_post_thumbnail( $getid, array($w, $h)).'</a>'."\n";
 				}else{
 					$eimage=eshop_files_directory();
-					 echo '<a class="itemref" href="'.get_permalink($getid).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+					$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+					 echo '<a class="itemref" href="'.get_permalink($getid).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 				}
 				echo '</td>';
 				echo '</tr>';
@@ -476,7 +477,8 @@ if(!isset($_GET['change'])){
 					 echo '<a class="itemref" href="'.get_permalink($change).'">'.get_the_post_thumbnail( $change, array($w, $h)).'</a>'."\n";
 				}else{
 					$eimage=eshop_files_directory();
-					 echo '<a class="itemref" href="'.get_permalink($change).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+					$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+					 echo '<a class="itemref" href="'.get_permalink($change).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 				}
 				echo '</td>'."\n";
 

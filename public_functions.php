@@ -69,9 +69,10 @@ if (!function_exists('eshop_wp_head_add')) {
 				}
 			}
 		}
-		
     }
 }
+
+
 if (!function_exists('add_eshop_query_vars')) {
 	function add_eshop_query_vars($aVars) {
 		$aVars[] = "eshopaction";    // represents the name of the product category as shown in the URL
@@ -161,6 +162,114 @@ if (!function_exists('eshop_test_mode')) {
 			}
 			</style>';
 	return;
+	}
+}
+/* ajax */
+if (!function_exists('eshop_ajax_inc')) {
+	function eshop_ajax_inc(){
+		wp_enqueue_script('jquery');
+	}
+}
+
+if (!function_exists('eshop_action_javascript')) {
+	function eshop_action_javascript() {
+	?>
+<script type="text/javascript">
+//<![CDATA[
+jQuery(document).ready(function($){
+	$('.addtocart').submit(function(){
+		var Id =$(this).attr("id");
+		var data = {action: 'eshop_special_action',post:$('#'+Id).serialize() };  
+		$.post("<?php echo admin_url('admin-ajax.php'); ?>", data,
+			function(response){
+			$('#'+Id +" .eshopajax").insertAfter(this).fadeIn(100).html(response).fadeOut(3000);
+			setTimeout (cleareshopCart,500); 
+			setTimeout (doeshopRequest,2750);  
+			setTimeout (cleareshopRequest,3000);  
+		});
+		function doeshopRequest(){
+			var tdata = {action: 'eshop_cart'};
+			$.post("<?php echo admin_url('admin-ajax.php'); ?>", tdata,
+			function(response){
+				$(".ajaxcart").insertAfter(this).fadeOut(50).html(response).fadeIn(700);
+			});
+		}
+		function cleareshopRequest(){
+			$(".eshopajax").empty();
+		}
+		function cleareshopCart(){
+			$(".ajaxcart").insert();
+		}
+		return false;
+	});
+
+});
+//]]>
+</script>
+	<?php
+	}
+}
+
+if (!function_exists('eshop_cart_callback')) {
+	function eshop_cart_callback($array) {
+		global $eshopoptions, $blog_id;
+		if(isset($_SESSION['eshopcart'.$blog_id]))
+			echo display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget');
+		die();
+
+	}
+}
+
+if (!function_exists('eshop_special_action_callback')) {
+	function eshop_special_action_callback($array) {
+		global $_POST, $blog_id; 
+		// extract the data
+		$jdata=$_POST['post'];
+		$q = explode("&",$jdata);
+		foreach ($q as $qi){
+			if ($qi != ""){
+				$qa = explode("=",$qi);
+				list ($key, $val) = $qa;
+				if(substr(urldecode($key),0,6)=='optset' && $val){
+					$arr2[urldecode($key)] = urldecode($val);
+				}elseif ($val){
+					$data[urldecode($key)] = urldecode($val);
+				}
+			}
+		} 
+		if(isset($arr2)){
+			foreach ($arr2 as $arr => $v){
+				$off=substr($arr,6);
+				$off=$off.'[val]['.$v.']';
+				$on[]=explode('][',trim($off,'[]'));
+
+			}
+			foreach($on as $c){
+				//change string array into proper array
+				//0 = arraynum
+				//1=arraykey
+				//3=value
+				$data['optset'][$c[0]][$c[1]]=$c[3];
+			}
+		}
+		//quick qunatity check
+		if(!isset($data['qty']) || isset($data['qty']) && !ctype_digit($data['qty'])){
+			$msg=apply_filters('eshopCartQtyError','<p><strong class="error">'.__('Warning: you must supply a valid quantity.','eshop').'</strong></p>');
+		}
+		if(!isset($msg)){
+			eshop_cart_process($data);
+			if(isset($_SESSION['eshopcart'.$blog_id]['error'])){
+				$msg=apply_filters('eshopCartError',$_SESSION['eshopcart'.$blog_id]['error']);
+				unset($_SESSION['eshopcart'.$blog_id]['error']);
+			}elseif(isset($_SESSION['eshopcart'.$blog_id]['enote'])){
+				$msg=apply_filters('eshopCartNote',$_SESSION['eshopcart'.$blog_id]['enote']);
+				unset($_SESSION['eshopcart'.$blog_id]['enote']);
+			}else{
+				$msg=apply_filters('eshopCartSuccess',__('<p>Added</p>','eshop'));
+			}
+		}
+		echo $msg;
+		die();
 	}
 }
 ?>

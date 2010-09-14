@@ -50,7 +50,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 		if($stkav=='1'){
 			$currsymbol=$eshopoptions['currency_symbol'];
 			$replace .= '
-			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart'.$saleclass.'">
+			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart'.$saleclass.'" id="eshopprod'.$postid.$uniq.'">
 			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(esc_attr($eshop_product['description'])).'</span></legend>';
 			$theid=sanitize_file_name($eshop_product['sku']);
 			//option sets
@@ -236,11 +236,11 @@ function eshop_boing($pee,$short='no',$postid=''){
 			if($eshopoptions['addtocart_image']=='img'){
 				$eshopfiles=eshop_files_directory();
 				$imgloc=apply_filters('eshop_theme_addtocartimg',$eshopfiles['1'].'addtocart.png');
-				$replace .='<input class="buttonimg" src="'.$imgloc.'" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';
+				$replace .='<input class="buttonimg eshopbutton" src="'.$imgloc.'" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="image" />';
 			}else{
-				$replace .='<input class="button" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />';
+				$replace .='<input class="button eshopbutton" value="'.__('Add to Cart','eshop').'" title="'.__('Add selected item to your shopping basket','eshop').'" type="submit" />';
 			}
-			$replace .='</fieldset>
+			$replace .='<div class="eshopajax"></div></fieldset>
 			</form>';
 			$pee = $pee.$replace; 
 		}elseif(isset($currst) && $currst<=0 && is_array($eshop_product)){

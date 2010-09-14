@@ -1,10 +1,10 @@
 === eShop ===
-Contributors: Rich Pedley
+Contributors: elfin
 Donate link: http://quirm.net/download/
-Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, authorize.net, cash
+Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.6.5
+Stable tag: 5.7.0
 
 An accessible Shopping Cart plugin.
 
@@ -12,7 +12,7 @@ An accessible Shopping Cart plugin.
 
 eShop is an accessible shopping cart plugin for WordPress, packed with various features. Including:
 
-* Utilises WordPress pages, or posts, to create products
+* Utilises WordPress pages or posts, and custom post types, to create products
 * enhanced for WP3.0 users - customers can sign up to your site (settable option)
 * Various methods available for listing products
 * Products can have multiple options
@@ -28,11 +28,10 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * Google Base Data creation
 * Uninstall available within the plugin
 * Various discount options
-* WPMU compatible.
+* WPMU, Multisite compatible.
 * Merchant gateways:Authorize.net, Paypal, Payson, eProcessingNetwork, Webtopay, iDEAL and Cash/Cheque!
-* Now compatible with WP Affiliate for affiliates (see help page).
-* Compatible with eShortcodes. (WP verion 3 specific)
-* able to be used as product catalogue with no sales.
+* Now compatible with WP Affiliate for affiliates - see [wiki](http://quirm.net/wiki/eshop/).
+* able to be used as a product catalogue with no sales.
 * and much much more
 
 Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
@@ -43,20 +42,22 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version ?
+Version 5.7.0
 
+* *NEW* Ajax'ed add to cart with filters for success message and error messages.
 * *NEW* filter added for add to cart image (eshop_theme_addtocartimg) for theme developers.
 * *NEW* Products can now be marked as being On Sale, various sale CSS hooks added for theme developers.
-* *NEW* shortcode and widget option for listing products on sale.
+* *NEW* Shortcode and widget option for listing products on sale.
 * *NEW* Option sets can now have text and textareas.
-* *fix* products admin page - fix for options+prices wrapping.
+* *NEW* filters for merchant gateway images
+* *NEW* filter for default noimage
+* *fixed* products admin page - fix for options+prices wrapping.
 * *fixed* panel display for cat_tags shortcode.
 * *fixed* State name when user sign up on checkout was not saving.
 * *fixed* option quantity changes in cart.
 * *fixed* bug when using the add details with incorrect information.
-* *added* filter for addtocart image, can now be changed via filter eshop_theme_addtocartimg - needs to return url to image used.
-* *added* filter and some extra CSS classes for customisation.
-
+* *added* Some extra CSS classes for customisation.
+* *amended* category and tags, shortcode and widget now also use the eshop_post_types array - useful for custom post types.
 
 Version 5.6.6
 
@@ -291,7 +292,7 @@ Yes - but do not activate the plugin via the network activate link. eShop needs 
 
 = Is eShop translatable =
 
-Yes! the po file is available from [Quirm.net downloads](http://quirm.net/download/)
+Yes! the po file is available from Quirm.net [eshop.po download](http://quirm.net/download/26/)
 
 = Support =
 

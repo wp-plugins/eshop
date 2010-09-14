@@ -537,11 +537,4 @@ all form name need to be of the format : yourType[shortcodeattribute]
 	</table>
 <?php
 }
-
-/*
-
-function eshop_show_product($atts){
-	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no','imgsize'=>'','links'=>'yes'), $atts));
-}
-*/
 ?>
