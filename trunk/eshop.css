@@ -536,10 +536,16 @@ div.paginate p.checkers a {
 #eshop-settings textarea {
 	margin-bottom:10px;
 }
-
 .eshopdisc{
 	width:40%;
 }
+
+.eshopgateway img{
+	float:right;
+	margin: 0 0 10px 10px;
+}
+
+
 #eshop-settings .cbox label{
 	display:inline;
 	padding-left:10px;

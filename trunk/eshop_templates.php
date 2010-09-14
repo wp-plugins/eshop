@@ -82,7 +82,7 @@ echo htmlspecialchars(stripslashes($thisemail->emailContent));
 <li><strong>{FIRSTNAME}</strong> - <?php _e('Customers First Name.','eshop'); ?></li>
 <li><strong>{NAME}</strong> - <?php _e('Customers Full Name','eshop'); ?></li>
 <li><strong>{EMAIL}</strong> - <?php _e('Customers Email address','eshop'); ?></li>
-<li><strong>{CART}</strong> - <?php _e('The contents of the cusotmers order (i.e. their shopping cart)','eshop'); ?></li>
+<li><strong>{CART}</strong> - <?php _e('The contents of the customers order (i.e. their shopping cart)','eshop'); ?></li>
 <li><strong>{DOWNLOADS}</strong> - <?php _e('A Download link along with the customers email address and password. <em>Only used when an order contains downloads</em>. (not used for cash or bank sales).','eshop'); ?></li>
 <li><strong>{ADDRESS}</strong> - <?php _e('Customers Address','eshop'); ?></li>
 <li><strong>{REFCOMM}</strong> - <?php _e('The reference and other messages provided by the customer.','eshop'); ?></li>

@@ -34,7 +34,7 @@ class eshop_widget extends WP_Widget {
 					$eshopqty+=$eshopwop['qty'];
 				}
 				if($showwhat=='full'){
-					$eecho='<div class="eshopcartwidget">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget');
+					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'</div>';
 					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
 					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 					$eecho .='</p></div>';
@@ -58,12 +58,19 @@ class eshop_widget extends WP_Widget {
 				echo $after_widget;
 			}			
 		}elseif($show!='no'){
-			$eecho= '<p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+			$eecho= '<div class="ajaxcart"></div><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
 			$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p>';
 			echo $before_widget;
 			echo $before_title.$title.$after_title;
 			echo $eecho;
 			echo $after_widget;
+		}else{
+			if($showwhat=='full'){
+				echo $before_widget;
+				//echo $before_title.$title.$after_title;
+				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div</div>';
+				echo $after_widget;
+			}
 		}
 	}
 
@@ -137,8 +144,13 @@ class eshop_pay_widget extends WP_Widget {
 					if($eshopbank['rename']!='')
 						$eshoppayment_text=$eshopbank['rename'];
 				}
-				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
-				echo '<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
+				$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
+				$eshopmerchantimgpath=$eshopmi['path'];
+				$eshopmerchantimgurl=$eshopmi['url'];
+				$dims='';
+				if(file_exists($eshopmerchantimgpath))
+					$dims=getimagesize($eshopmerchantimgpath);
+				echo '<li><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
 				$i++;
 			}
 			echo "</ul>\n";
@@ -205,16 +217,16 @@ class eshop_products_widget extends WP_Widget {
 			case '5'://show best sellers
 				echo eshopw_best_sellers(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size));
 				break;
-			case '6'://show best sellers
+			case '6'://show catname
 				echo eshopw_list_cat_tags(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'type'=>'category_name','id'=>$show_id,'sortby'=>$order_by));
 				break;
-			case '7'://show best sellers
+			case '7'://show cat id
 				echo eshopw_list_cat_tags(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'type'=>'cat','id'=>$show_id,'sortby'=>$order_by));
 				break;
-			case '8'://show best sellers
+			case '8'://show tags
 				echo eshopw_list_cat_tags(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'type'=>'tag','id'=>$show_id,'sortby'=>$order_by));
 				break;
-			case '9'://show best sellers
+			case '9'://show tag id
 				echo eshopw_list_cat_tags(array('images'=>$stype,'show'=>$show_amts,'size'=>$show_size,'type'=>'tag_id','id'=>$show_id,'sortby'=>$order_by));
 				break;
 			case '10'://sale
@@ -452,9 +464,10 @@ function eshopw_list_cat_tags($atts){
 	}
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
-	
+	$array=array('post','page');
+	$array=apply_filters('eshop_post_types',$array);
 	$args = array(
-	'post_type' => 'post',
+	'post_type' => $array,
 	'post_status' => null,
 	$type => $id, 
 	'meta_key'=>'_eshop_product',
@@ -505,7 +518,8 @@ function eshopw_listpanels($subpages,$eshopclass,$size){
 			$echo .='<li><a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a></li>'."\n";
 		}else{
 			$eimage=eshop_files_directory();
-			$echo .='<li><a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a></li>'."\n";
+			$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+			$echo .='<li><a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a></li>'."\n";
 		}
 	}
 	$echo .= '</ul>';

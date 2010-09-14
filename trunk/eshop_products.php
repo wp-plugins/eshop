@@ -413,7 +413,8 @@ function eshop_products_manager() {
 					 echo '<a class="itemref" href="'.get_permalink($getid).'" title="view page">'.get_the_post_thumbnail( $getid, array($w, $h)).'</a>'."\n";
 				}else{
 					$eimage=eshop_files_directory();
-					 echo '<a class="itemref" href="'.get_permalink($getid).'" title="view page"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+					$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+					 echo '<a class="itemref" href="'.get_permalink($getid).'" title="view page"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 				}
 				echo '</td>';
 				echo '</tr>'."\n";

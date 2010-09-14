@@ -69,7 +69,8 @@ if (!function_exists('display_cart')) {
 							$eimg='<a class="itemref" href="'.get_permalink($opt['postid']).'">'.get_the_post_thumbnail( $opt['postid'], array($w, $h)).'</a>'."\n";
 						}else{
 							$eimage=eshop_files_directory();
-							$eimg='<a class="itemref" href="'.get_permalink($opt['postid']).'"><img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+							$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+							$eimg='<a class="itemref" href="'.get_permalink($opt['postid']).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 						}
 					}
 					/* end */
@@ -79,7 +80,6 @@ if (!function_exists('display_cart')) {
 						$oset=$qb=array();
 						$optings=unserialize($opt['optset']);
 						$c=0;
-
 						if(isset($newoptings)) unset($newoptings);
 						foreach($optings as $foo=>$opst){
 							$qb[]="id=$opst[id]";
@@ -1211,21 +1211,22 @@ if (!function_exists('eshop_visible_credits')) {
 if (!function_exists('eshop_show_extra_links')) {
 	function eshop_show_extra_links(){
 		global $eshopoptions;
+		$linkattr=apply_filters('eShopCheckoutLinksAttr','');
 		$xtralinks='';
 		if($eshopoptions['cart_shipping']!='' && $eshopoptions['downloads_only']!='yes'){
 			$ptitle=get_post($eshopoptions['cart_shipping']);
-			$xtralinks.='<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.$ptitle->post_title.'</a>, ';
+			$xtralinks.='<a href="'.get_permalink($eshopoptions['cart_shipping']).'"'.$linkattr.'>'.$ptitle->post_title.'</a>, ';
 		}
 		if($eshopoptions['xtra_privacy']!=''){
 			$ptitle=get_post($eshopoptions['xtra_privacy']);
 			if($ptitle->post_title!=''){
-				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_privacy']).'">'.$ptitle->post_title.'</a>, ';
+				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_privacy']).'"'.$linkattr.'>'.$ptitle->post_title.'</a>, ';
 			}
 		}
 		if($eshopoptions['xtra_help']!=''){
 			$ptitle=get_post($eshopoptions['xtra_help']);
 			if($ptitle->post_title!=''){
-				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_help']).'">'.$ptitle->post_title.'</a>, ';
+				$xtralinks.='<a href="'.get_permalink($eshopoptions['xtra_help']).'"'.$linkattr.'>'.$ptitle->post_title.'</a>, ';
 			}
 		}
 		
@@ -1284,7 +1285,8 @@ if (!function_exists('eshop_excerpt_img')) {
 				$eimg =get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
 			}else{
 				$eimage=eshop_files_directory();
-				$eimg ='<img src="'.$eimage['1'].'noimage.png" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
+				$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
+				$eimg ='<img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 			}
 			if($eshopoptions['search_img'] == 'all'){
 					$echo .=$eimg;
@@ -1407,8 +1409,10 @@ if (!function_exists('eshop_wp_version')) {
 	}
 }
 if (!function_exists('eshop_cart_process')) {
-	function eshop_cart_process(){
+	function eshop_cart_process($data=''){
 		global $wpdb, $blog_id,$wp_query,$eshopoptions,$_POST;
+		if($data!='')
+			$_POST=$data;
 		if(!isset($_POST['eshopnon'])){
 			return;
 		}
@@ -1426,7 +1430,7 @@ if (!function_exists('eshop_cart_process')) {
 			unset($_SESSION['items'.$blog_id]);
 			$_POST['save']='false';
 		}
-if(!isset($_POST['save'])){
+	if(!isset($_POST['save'])){
 		//on windows this check isn't working correctly, so I've added ==0 
 		if (get_magic_quotes_gpc()) {
 			$_COOKIE = stripslashes_array($_COOKIE);
@@ -1436,6 +1440,7 @@ if(!isset($_POST['save'])){
 			$_REQUEST = stripslashes_array($_REQUEST);
 		}
 		$_POST=sanitise_array($_POST);
+	
 		//if adding a product to the cart
 		if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
 			$min=$eshopoptions['min_qty'];
@@ -1468,8 +1473,13 @@ if(!isset($_POST['save'])){
     	}
 		if(isset($_POST['option']) && !isset($_POST['save'])){
 			$edown=$getprice=$option=$_POST['option'];
+			if(!isset($_POST['qty'])){
+				$enote='<p><strong class="error">'.__('Warning: you must supply a quantity.','eshop').'</strong></p>';
+			}
 			$qty=$_POST['qty'];
-			$pclas=$_POST['pclas'];
+			$plcas='';
+			if(isset($_POST['pclas']))
+				$pclas=$_POST['pclas'];
 			$productid=$pid=$_POST['pid'];
 			$pname=$_POST['pname'];
 			/* if download option then it must be free shipping */
@@ -1489,7 +1499,7 @@ if(!isset($_POST['save'])){
 				$iprice='';
 			}
 		}
-
+		
 		//unique identifier
 		$optset='';
 		if(isset($_POST['optset'])){
@@ -1549,7 +1559,7 @@ if(!isset($_POST['save'])){
 				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 			}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
 				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
-				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
+				//$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
 			}else{
 				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
 			}
@@ -1588,7 +1598,7 @@ if(!isset($_POST['save'])){
 				unset($_SESSION['eshopcart'.$blog_id][$identifier]);
 			}
 		}
-}
+	}
 		if(!isset($error)){
 
 			//save? not sure why I used that, but its working so why make trouble for myself.

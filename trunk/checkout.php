@@ -13,7 +13,7 @@ if (!function_exists('eshopShowform')) {
 	}else{
 		$creqd='state';
 	}
-	
+	$linkattr=apply_filters('eShopCheckoutLinksAttr','');
 	$reqdvalues=array('shipping','first_name','last_name','email','phone','address','city','zip','pay',$creqd);
 	$reqdarray=apply_filters('eshopCheckoutReqd', $reqdvalues );
 	$xtralinks=eshop_show_extra_links();
@@ -316,8 +316,13 @@ if (!function_exists('eshopShowform')) {
 					if($eshopbank['rename']!='')
 						$eshoppayment_text=$eshopbank['rename'];
 				}
-				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
-				$echo .='<li><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /><label for="eshop_payment'.$i.'"><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></label></li>'."\n";
+				$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
+				$eshopmerchantimgpath=$eshopmi['path'];
+				$eshopmerchantimgurl=$eshopmi['url'];
+				$dims='';
+				if(file_exists($eshopmerchantimgpath))
+					$dims=getimagesize($eshopmerchantimgpath);
+				$echo .='<li><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /><label for="eshop_payment'.$i.'"><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></label></li>'."\n";
 				$i++;
 			}
 		}else{
@@ -335,8 +340,10 @@ if (!function_exists('eshopShowform')) {
 					if($eshopbank['rename']!='')
 						$eshoppayment_text=$eshopbank['rename'];
 				}
-				$dims=getimagesize($eshopfiles['0'].$eshoppayment.'.png');
-				$echo .='<li><img src="'.$eshopfiles['1'].$eshoppayment.'.png" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
+				$eshopmerchantimgpath=apply_filters('eshop_merchant_img_path_'.$eshoppayment,$eshopfiles['0'].$eshoppayment.'.png');
+				$eshopmerchantimgurl=apply_filters('eshop_merchant_img__url'.$eshoppayment,$eshopfiles['1'].$eshoppayment.'.png');
+				$dims=getimagesize($eshopmerchantimgpath);
+				$echo .='<li><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
 		}
@@ -344,7 +351,7 @@ if (!function_exists('eshopShowform')) {
 	}
 	if('yes' == $eshopoptions['tandc_use']){
 		if($eshopoptions['tandc_id']!='')
-			$eshoptc='<a href="'.get_permalink($eshopoptions['tandc_id']).'">'.$eshopoptions['tandc'].'</a>';
+			$eshoptc='<a href="'.get_permalink($eshopoptions['tandc_id']).'"'.$linkattr.'>'.$eshopoptions['tandc'].'</a>';
 		else
 			$eshoptc=$eshopoptions['tandc'];
 

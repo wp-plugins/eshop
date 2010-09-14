@@ -300,7 +300,7 @@ class eshop_setting_downloads_class extends eshop_metabox_class {
 	function downloads_box_2($eshopoptions) {
 		?>
 		<fieldset>
-			<p><?php _e('Change this setting only if you are using eShop for downloadable sales only.','eshop'); ?></p>
+			<p><?php _e('Change this setting only if you are using eShop for downloadable sales only, reduces the checkout form to bare minimum.','eshop'); ?></p>
 			<label for="eshop_downloads_only"><?php _e('Downloads Only','eshop'); ?></label>
 			<select name="eshop_downloads_only" id="eshop_downloads_only">
 			<?php
@@ -561,6 +561,18 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			}
 			?>
 			</select></p>
+			<p><label for="eshop_ajax_cart"><?php _e('Add to cart, without going to cart page. This may not be suitable for all themes. Works best when displaying the full cart from the eShop Cart Widget.','eshop'); ?></label>
+				<select name="eshop_ajax_cart" id="eshop_ajax_cart">
+				<?php
+				if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
+					echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+					echo '<option value="no">'.__('No','eshop').'</option>';
+				}else{
+					echo '<option value="yes">'.__('Yes','eshop').'</option>';
+					echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+				}
+			?>
+			</select></p>
 		</fieldset>
 		<?php
 	}
@@ -669,21 +681,33 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
 			}
 			?>
-			</select><br /><br />
-			<label for="eshop_tandc_use"><?php _e('Add a required checkbox to the checkout.','eshop'); ?></label>
-			<select name="eshop_tandc_use" id="eshop_tandc_use">
-				<?php
-				if('yes' == $eshopoptions['tandc_use']){
-					echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
-					echo '<option value="">'.__('No','eshop').'</option>';
-				}else{
-					echo '<option value="yes">'.__('Yes','eshop').'</option>';
-					echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
-				}
-				?>
-			</select><br />
-			<label for="eshop_tandc"><?php _e('Text for the required checkbox.','eshop'); ?></label><input id="eshop_tandc" name="eshop_tandc" type="text" value="<?php echo $eshopoptions['tandc']; ?>" size="60" /><br />
-			<label for="eshop_tandc_id"><?php _e('Page id (transforms text above into a link).','eshop'); ?></label><input id="eshop_tandc_id" name="eshop_tandc_id" type="text" value="<?php echo $eshopoptions['tandc_id']; ?>" size="6" /><br />
+		</select><br />
+		<label for="eshop_downloads_only"><?php _e('Minimal checkout form.','eshop'); ?></label>
+		<select name="eshop_downloads_only" id="eshop_downloads_only">
+		<?php
+		if('yes' == $eshopoptions['downloads_only']){
+			echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+			echo '<option value="no">'.__('No','eshop').'</option>';
+		}else{
+			echo '<option value="yes">'.__('Yes','eshop').'</option>';
+			echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
+		}
+		?>
+		</select><br />
+		<label for="eshop_tandc_use"><?php _e('Add a required checkbox to the checkout.','eshop'); ?></label>
+		<select name="eshop_tandc_use" id="eshop_tandc_use">
+			<?php
+			if('yes' == $eshopoptions['tandc_use']){
+				echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
+				echo '<option value="">'.__('No','eshop').'</option>';
+			}else{
+				echo '<option value="yes">'.__('Yes','eshop').'</option>';
+				echo '<option value="" selected="selected">'.__('No','eshop').'</option>';
+			}
+			?>
+		</select><br />
+		<label for="eshop_tandc"><?php _e('Text for the required checkbox.','eshop'); ?></label><input id="eshop_tandc" name="eshop_tandc" type="text" value="<?php echo $eshopoptions['tandc']; ?>" size="60" /><br />
+		<label for="eshop_tandc_id"><?php _e('Page id (transforms text above into a link).','eshop'); ?></label><input id="eshop_tandc_id" name="eshop_tandc_id" type="text" value="<?php echo $eshopoptions['tandc_id']; ?>" size="6" /><br />
 		<?php if (eshop_wp_version('3')){ ?>
 		<label for="eshop_users"><?php _e('Allow users to sign up to your site.','eshop'); ?></label>
 			<select name="eshop_users" id="eshop_users">
@@ -918,7 +942,10 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$eshopoptions['details']['class']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_class']));
 		$eshopoptions['details']['hide']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_hide']));
 		$eshopoptions['details']['display']=$wpdb->escape($_POST['eshop_details_display']);
-
+		//minimal form
+		$eshopoptions['downloads_only']=$wpdb->escape($_POST['eshop_downloads_only']);
+		//ajax
+		$eshopoptions['ajax_cart']=$wpdb->escape($_POST['eshop_ajax_cart']);
 		//error grabbing
 		if(is_numeric($_POST['eshop_records'])){
 			$eshopoptions['records']=$wpdb->escape($_POST['eshop_records']);
@@ -1043,6 +1070,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			'CHF'=>__('Swiss Franc','eshop'),
 			'TL' =>__('Turkish Lira','eshop')
 			);
+			$currencycodes=apply_filters('eshop_currency_codes',$currencycodes);
 			foreach($currencycodes as $code=>$codename){
 				if($code == $eshopoptions['currency']){
 					$sel=' selected="selected"';
@@ -1059,6 +1087,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 	function paypal_box($eshopoptions) {
 	?>
 		<fieldset>
+			<?php 		
+			$this->show_img('paypal');
+			?>
 			<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_method" class="eshopmethod" class="eshopmethod"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
 			<label for="eshop_business"><?php _e('Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo $eshopoptions['business']; ?>" size="30" /><br />
 			<label for="eshop_paypal_noemail"><?php _e('Send buyers email address to paypal?','eshop'); ?></label>
@@ -1079,6 +1110,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 	function payson_box($eshopoptions) {
 		?>
 		<fieldset>
+			<?php 		
+			$this->show_img('payson');
+			?>
 			<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['payson']))
@@ -1107,7 +1141,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 	function ideal_box($eshopoptions) {
 		?>
 		<fieldset>
-			<?php 
+			<?php 		
+			$this->show_img('ideal');
+ 
 			if(isset($eshopoptions['ideallite']))
 				$ideallite = $eshopoptions['ideallite']; 
 			else
@@ -1130,6 +1166,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<?php 		
+			$this->show_img('epn');
+			?>
 			<p><?php _e('<strong>Warning:</strong> All payments to eProcessingNetwork are in USD, irrespective of settings above. In test mode totals ending in a single cent are always failed.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['epn']))
@@ -1148,6 +1187,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<?php 		
+			$this->show_img('cash');
+			?>
 			<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['cash']))
@@ -1166,6 +1208,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<?php 		
+			$this->show_img('bank');
+			?>
 			<p><?php _e('<strong>Note:</strong> payment by other means, such as wire transfer - behaves just like Cash.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['bank']))
@@ -1184,6 +1229,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<?php 		
+			$this->show_img('webtopay');
+			?>
 			<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['webtopay']))
@@ -1210,6 +1258,8 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		?>
 		<fieldset>
 			<?php 
+			$this->show_img('authorizenet');
+
 			if(isset($eshopoptions['authorizenet']))
 				$authorizenet = $eshopoptions['authorizenet']; 
 			else
@@ -1233,7 +1283,9 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			if(isset($eshopoptions['ogone']))
 				$ogone = $eshopoptions['ogone'];
 			else
-				$ogone['email']=$ogone['COM'] = $ogone['PSPID']= $ogone['secret']='';	
+				$ogone['email']=$ogone['COM'] = $ogone['PSPID']= $ogone['secret']='';
+			
+			$this->show_img('ogone');
 			?>
 			<p class="cbox"><input id="eshop_methodh" name="eshop_method[]" type="checkbox" value="ogone"<?php if(in_array('ogone',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodh" class="eshopmethod"><?php _e('Accept payment by ogone','eshop'); ?></label></p>
 			<p><em><?php _e('All fields are required.','eshop'); ?></em></p>
@@ -1258,6 +1310,30 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		</fieldset>
 	<?php
 
+	}
+	function show_img($eshoppayment){
+		global $eshopoptions;
+		$replace = array(".");
+		$eshopfiles=eshop_files_directory();
+		$eshoppayment_text=$eshoppayment;
+		$eshoppayment = str_replace($replace, "", $eshoppayment);
+		if($eshoppayment_text=='cash'){
+			$eshopcash = $eshopoptions['cash'];
+			if($eshopcash['rename']!='')
+				$eshoppayment_text=$eshopcash['rename'];
+		}
+		if($eshoppayment_text=='bank'){
+			$eshopbank = $eshopoptions['bank'];
+			if($eshopbank['rename']!='')
+				$eshoppayment_text=$eshopbank['rename'];
+		}
+		$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
+		$eshopmerchantimgpath=$eshopmi['path'];
+		$eshopmerchantimgurl=$eshopmi['url'];
+		$dims='';
+		if(file_exists($eshopmerchantimgpath))
+			$dims=getimagesize($eshopmerchantimgpath);
+		echo '<p class="eshopgateway"><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.$eshoppayment_text.'" title="'.$eshoppayment_text.'" /></p>'."\n";
 	}
 	function on_save_changes() {
 		global $wpdb;
