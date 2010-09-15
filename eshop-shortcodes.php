@@ -144,7 +144,7 @@ function eshop_list_alpha($atts){
 	
 	
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
 	if($pages) {
 		//paginate
 		$echo = '<div class="paginate">';
@@ -347,7 +347,7 @@ function eshop_list_cat_tags($atts){
 	}
 	if(!isset($offset)) $offset='0';
 	$args = array(
-	'post_type' => 'post',
+	'post_type' => $array,
 	'post_status' => 'publish',
 	$type => $find, 
 	'meta_key'=>'_eshop_product',
@@ -499,7 +499,7 @@ function eshop_best_sellers($atts){
 		}
 	}
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title 
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.*
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 	WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
@@ -556,6 +556,7 @@ function eshop_list_featured_sale($atts, $type='featured'){
 		$order='ASC';
 		
 	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
+
 	if($pages) {
 		if($panels=='no'){
 			$echo = eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
@@ -595,7 +596,7 @@ function eshop_list_random($atts){
 		$subquery= ' AND '.implode(' AND ',$subq);
 	}
 	
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
 
 	if($pages) {
 		if($panels=='no'){

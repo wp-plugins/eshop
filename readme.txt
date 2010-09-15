@@ -42,6 +42,12 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 5.7.1
+
+* *fixed* widgets for featured and sale
+* *fixed* minor issues
+
+
 Version 5.7.0
 
 * *NEW* Ajax'ed add to cart with filters for success message and error messages.
