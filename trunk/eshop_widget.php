@@ -68,7 +68,7 @@ class eshop_widget extends WP_Widget {
 			if($showwhat=='full'){
 				echo $before_widget;
 				//echo $before_title.$title.$after_title;
-				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div</div>';
+				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
 				echo $after_widget;
 			}
 		}
@@ -313,7 +313,7 @@ class eshop_products_widget extends WP_Widget {
 function eshopw_list_new($atts){
 	global $wpdb, $post;
 	extract(shortcode_atts(array('class'=>'eshopw_new','images'=>'no','show'=>'6','size'=>''), $atts));
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $show");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $show");
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);
@@ -329,7 +329,7 @@ function eshopw_best_sellers($atts){
 	global $wpdb, $post;
 	$stktable=$wpdb->prefix.'eshop_stock';
 	extract(shortcode_atts(array('class'=>'eshopw_best','images'=>'no','show'=>'6','size'=>''), $atts));
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title 
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* 
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 	WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
@@ -347,10 +347,10 @@ function eshopw_best_sellers($atts){
 } 
 
 function eshopw_w_featured($atts){
-	return eshop_list_featured_sale($atts);
+	return eshopw_list_featured_sale($atts);
 }
 function eshopw_w_sale($atts){
-	return eshop_list_featured_sale($atts, 'sale');
+	return eshopw_list_featured_sale($atts, 'sale');
 }
 
 
@@ -378,8 +378,7 @@ function eshopw_list_featured_sale($atts, $type='featured'){
 			$order= 'ASC';
 			break;
 	}
-
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type." AND pm.meta_value='Yes' AND post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $orderby $order LIMIT $show");
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);
@@ -397,10 +396,7 @@ function eshopw_list_random($atts){
 	global $wpdb, $post;
 	$paged=$post;
 	extract(shortcode_atts(array('class'=>'eshopw_random','images'=>'no','show'=>'6','size'=>''), $atts));
-	if($list!='yes' && $class='eshoprandomlist'){
-		$class='eshoprandomproduct';
-	}
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by rand() limit $show");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by rand() limit $show");
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);
@@ -421,7 +417,7 @@ function eshopw_show_product($atts){
 		$epages=array();
 		$theids = explode(",", $id);
 		foreach($theids as $thisid){
-			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($epages,$thispage['0']);
 		}
@@ -504,6 +500,7 @@ function eshopw_listpages($subpages,$eshopclass){
 function eshopw_listpanels($subpages,$eshopclass,$size){
 	global $wpdb, $post;
 	$paged=$post;
+	$post='';
 	$echo='';
 	$echo .='<ul class="'.$eshopclass.'">';
 	foreach ($subpages as $post) {
