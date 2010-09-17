@@ -1291,7 +1291,7 @@ if (!function_exists('eshop_excerpt_img')) {
 		global $post,$eshopoptions;
 		$echo='';
 		if(is_search()){
-			$isaproduct=get_post_meta($post->ID,'_Price 1',true);
+			$isaproduct=get_post_meta($post->ID,'_eshop_product',true);
 			$w=get_option('thumbnail_size_w');
 			$h=get_option('thumbnail_size_h');
 			if (has_post_thumbnail( $post->ID ) ) {

@@ -46,8 +46,11 @@ Version 5.7.1
 
 * *fixed* admin product listing per author on multisite
 * *fixed* widgets for featured and sale
+* *fixed* adding thumbnails to search results.
 * *fixed* minor issues
 * *added* delete per item for the cart page(products can still be deleted by quantity 0)
+* *added* search widget, search for products (both in stock, and out of stock), plus a link to shop page, and a random product link
+* *added* filter for language files.
 
 
 Version 5.7.0

@@ -3,6 +3,7 @@ function eshopwidgets_init(){
 	register_widget('eshop_widget');
 	register_widget('eshop_pay_widget');
 	register_widget('eshop_products_widget');
+	register_widget('eshop_search_widget');
 }
 add_action("widgets_init", "eshopwidgets_init");
 
@@ -522,5 +523,99 @@ function eshopw_listpanels($subpages,$eshopclass,$size){
 	$echo .= '</ul>';
 	$post=$paged;
 	return $echo;
+}
+/* product serach widget */
+
+class eshop_search_widget extends WP_Widget {
+
+	function eshop_search_widget() {
+		$widget_ops = array('classname' => 'eshop_search_widget', 'description' => __('Displays a product search, optional link to an index page, and a random wiki page link','eshop'));
+		$this->WP_Widget('eshop_search_widget', __('eShop Product Search','eshop'), $widget_ops);
+	}
+
+	function widget( $args, $instance ) {
+		extract( $args );
+		$output='';
+		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
+		$index = $instance['index'];
+		$random = $instance['random'];
+		$search = $instance['search'];
+		$find = $instance['find'];
+		if($search=='1'){
+			$output.='
+			    <form id="eshopsearchform" method="get" action="'.get_bloginfo('url').'">
+				<div>
+					<input type="text" name="s" id="eshopws" size="20" value="'.get_search_query().'" />
+					<input type="submit" value="'.__('Find','eshop').'" />
+					<input type="hidden" name="eshopsearch" value="'.$find.'" />
+				</div>
+				</form>';
+			
+		}
+		if($index !='' || $random!='')
+			$output.='<ul>';
+		if($index!=''){
+			$output.='<li><a href="'.get_permalink($index).'">'.get_the_title($index).'</a></li>';
+		}
+		if($random!=''){
+			$eswr=add_query_arg('eshoprandom','',get_bloginfo('url'));
+			$output.='<li><a href="'.$eswr.'">'.__('Random product','eshop').'</a></li>';
+		}
+		if($index !='' || $random!='')
+			$output.='</ul>';
+		echo $before_widget;
+		echo $before_title.$title.$after_title;
+		echo $output;
+		echo $after_widget;
+	}
+
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['index'] = strip_tags( $new_instance['index'] );
+		$instance['random'] = strip_tags( $new_instance['random'] );
+		$instance['search'] = strip_tags( $new_instance['search'] );
+		$instance['find'] = strip_tags( $new_instance['find'] );
+		return $instance;
+	}
+
+	function form( $instance ) {
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '','index'=>'','random'=>'' , 'search'=>'', 'find' => '') );
+		$title = strip_tags($instance['title']);
+		$index = $instance['index'];
+		$random = $instance['random'];
+		$search = $instance['search'];
+		$find = $instance['find'];
+
+		?>
+		 <p>
+		    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+		    <input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($title);?>" />
+		 </p>
+		 <p>
+		  	<label for="<?php echo $this->get_field_id('search'); ?>"><?php _e('Show search form','eshop'); ?></label>
+		  	<select id="<?php echo $this->get_field_id('search'); ?>" name="<?php echo $this->get_field_name('search'); ?>">
+		  	<option value="1"<?php selected( $search, '1' ); ?>><?php _e('Yes','eshop'); ?></option>
+		  	<option value=""<?php selected( $search, '' ); ?>><?php _e('No','eshop'); ?></option>
+			</select><br />
+			
+			<label for="<?php echo $this->get_field_id('find'); ?>"><?php _e('Find','eshop'); ?></label>
+			<select id="<?php echo $this->get_field_id('find'); ?>" name="<?php echo $this->get_field_name('find'); ?>">
+			<option value="all"<?php selected( $find, 'all' ); ?>><?php _e('All Products','eshop'); ?></option>
+			<option value="instock"<?php selected( $find, 'instock' ); ?>><?php _e('Only Products in Stock','eshop'); ?></option>
+			</select>	
+			
+			
+			<label for="<?php echo $this->get_field_id('index'); ?>"><?php _e('Index page link','eshop'); ?></label>
+			<input size="3" id="<?php echo $this->get_field_id('index'); ?>" name="<?php echo $this->get_field_name('index'); ?>" type="text" value="<?php echo esc_attr($index); ?>" />
+			<br />
+			<label for="<?php echo $this->get_field_id('random'); ?>"><?php _e('Show random product link','eshop'); ?></label>
+			<select id="<?php echo $this->get_field_id('random'); ?>" name="<?php echo $this->get_field_name('random'); ?>">
+			<option value="1"<?php selected( $random, '1' ); ?>><?php _e('Yes','eshop'); ?></option>
+			<option value=""<?php selected( $random, '' ); ?>><?php _e('No','eshop'); ?></option>
+			</select>			
+		</p>
+	<?php
+	}
 }
 ?>
