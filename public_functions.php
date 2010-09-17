@@ -272,4 +272,23 @@ if (!function_exists('eshop_special_action_callback')) {
 		die();
 	}
 }
+//randomise
+function eshop_random() {
+ 	global $wpdb;
+	$random_id=$wpdb->get_var("SELECT $wpdb->postmeta.post_id from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by rand() limit 1");
+  	wp_redirect( get_permalink( $random_id ) );
+ 	exit;
+}
+function eshop_search(){
+	global $wp_query;
+	if( isset( $_GET['eshopsearch'] ) && is_search()){
+		$meta='_eshop_product';
+		if($_GET['eshopsearch'] == 'instock'){
+			$meta='_eshop_stock';
+			$wp_query->set('meta_value','1');		
+		}
+		$wp_query->set('meta_key',$meta);
+	}
+	return $wp_query;
+}
 ?>

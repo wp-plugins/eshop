@@ -27,8 +27,8 @@ Author URI: http://quirm.net/
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-load_plugin_textdomain('eshop', false, dirname( plugin_basename( __FILE__ ) ) );
+$eshoplanguage=apply_filters( 'eshop_language_dir',dirname( plugin_basename( __FILE__ ) ) );
+load_plugin_textdomain('eshop', false, $eshoplanguage );
 //grab all options here in one go
 $eshopoptions = get_option('eshop_plugin_settings');
 
@@ -113,5 +113,9 @@ if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
 	add_action('wp_ajax_nopriv_eshop_special_action', 'eshop_special_action_callback');
 	add_action('wp_ajax_eshop_cart', 'eshop_cart_callback');
 	add_action('wp_ajax_nopriv_eshop_cart', 'eshop_cart_callback');
+	if ( isset( $_GET['eshoprandom'] ) )
+ 		add_action( 'template_redirect', 'eshop_random' );
+ 	
+	add_action('pre_get_posts','eshop_search');
 }
 ?>
