@@ -37,7 +37,7 @@ class eshop_widget extends WP_Widget {
 					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'</div>';
 					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
 					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
-					$eecho .='</p></div>';
+					$eecho .='</div>';
 				}else{
 					$eecho='<p class="eshopwidget">';
 					if($showwhat=='items' || $showwhat=='both'){
