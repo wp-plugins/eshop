@@ -35,11 +35,15 @@ if (!function_exists('display_cart')) {
 			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
 			<caption>'.__('Shopping Cart','eshop').'</caption>
 			<thead>
-			<tr class="thead">
-			<th id="cartItem'.$iswidget.'" class="nb">'.__('Item Description','eshop').'</th>
+			<tr class="thead">';
+			$echo .='<th id="cartItem'.$iswidget.'" class="nb">'.__('Item Description','eshop').'</th>
 			<th id="cartQty'.$iswidget.'" class="bt">'.__('<dfn title="Quantity">Qty</dfn>','eshop').'</th>
-			<th id="cartTotal'.$iswidget.'" class="btbr">'.__('Total','eshop').'</th>
-			</tr></thead><tbody>';
+			<th id="cartTotal'.$iswidget.'" class="btbr">'.__('Total','eshop').'</th>';
+			if($iswidget==''){
+				$eshopdeleteheaderimage=apply_filters('eshop_delete_header_image',WP_PLUGIN_URL.'/eshop/no.png');
+				$echo.= '<th id="cartDelete" class="btbr"><img src="'.$eshopdeleteheaderimage.'" alt="'.__('Delete','eshop').'" title="'.__('Delete','eshop').'" /></th>';
+			}
+			$echo .= '</tr></thead><tbody>';
 			//display each item as a table row
 			$calt=0;
 			$shipping=0;
@@ -132,7 +136,12 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td></tr>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td>\n";
+					if($iswidget==''){
+						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
+						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="deleteitem['.$productid.']" value="'.$key.'" title="'.__('Delete this item','eshop').'"/></td>';
+					}
+					$echo .="</tr>\n";
 					if(isset($disc_line))
 						$sub_total+=$disc_line*$opt["qty"];
 					else		
@@ -148,7 +157,11 @@ if (!function_exists('display_cart')) {
 				$discount=is_discountable(calculate_total());
 				$disc_applied='<small>('.sprintf(__('Including Discount of <span>%s%%</span>','eshop'),number_format_i18n(round($discount, 2),2)).')</small>';
 			}
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td></tr>\n";
+			if($iswidget=='')
+				$emptycell='<td headers="cartDelete" class="eshopempty"></td>';
+			else
+				$emptycell='';
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td>$emptycell</tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -1612,6 +1625,12 @@ if (!function_exists('eshop_cart_process')) {
 				$_SESSION['final_price'.$blog_id] = calculate_price();
 				$_SESSION['items'.$blog_id] = calculate_items();
 			}
+			if(isset($_POST['deleteitem'])){
+				foreach($_POST['deleteitem'] as $chkey=>$chkval){
+					$tochkkey=$chkey;
+					$tochkval=$chkval;
+				}
+			}
 
 			//update products in the cart
 			if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
@@ -1622,6 +1641,7 @@ if (!function_exists('eshop_cart_process')) {
 					foreach ($_POST as $key => $value){
 						if($key==$sessproductid){
 							foreach ($value as $notused => $qty){
+								if(isset($tochkkey) && $tochkkey==$key) $qty=0;
 								if($qty=="0"){							
 									unset($_SESSION['eshopcart'.$blog_id][$productid]);
 								}else{

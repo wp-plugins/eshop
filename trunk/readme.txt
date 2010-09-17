@@ -44,8 +44,10 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version 5.7.1
 
+* *fixed* admin product listing per author on multisite
 * *fixed* widgets for featured and sale
 * *fixed* minor issues
+* *added* delete per item for the cart page(products can still be deleted by quantity 0)
 
 
 Version 5.7.0
@@ -295,6 +297,9 @@ If you are using this plugin I recommend you disable it before upgrading or deac
 
 Yes - but do not activate the plugin via the network activate link. eShop needs to run the activation process for each and every site within your network. This is currently not done when you activate a plugin for the entire network. Enable the plugin for the sites to activate themselves instead.
 
+= I updated and now things don't look right = 
+
+There is always a possibility that necessary CSS changes have been made, always remember to check the _Appearance > eShop_ page where you will be notified if they do not match, and be given an opportunity to view the differences.
 
 = Is eShop translatable =
 

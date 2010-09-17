@@ -1216,14 +1216,13 @@ function eshop_show_success(){
 					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
 			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
 					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
-					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "ERROR".','eshop').'<br />';
-					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+					$echo.= '<p>'.__('Your iDEAL payment has not been received yet, and currently has status "ERROR".','eshop').'<br />';
+					$echo.= __('Please try to checkout your order again.','eshop').'</p>';
 					$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 			}elseif($_GET['ideal']['status'] == md5("CANCEL") ) {
-
 					$echo ='<h3 class="error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
 					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "CANCEL".','eshop').'<br />';
-					$echo.= __('Please try checkout your order again.','eshop').'</p>';
+					$echo.= __('Please try to checkout your order again.','eshop').'</p>';
 			}else{
 					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
 					$echo.= '<p>'.__('Please try checkout your order again.','eshop').'</p>';

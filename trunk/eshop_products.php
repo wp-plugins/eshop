@@ -452,7 +452,12 @@ function eshop_products_manager() {
 }
 function eshop_authors($filter=''){
 	global $wpdb;
-	$all_logins = $wpdb->get_results( "SELECT ID, user_login FROM $wpdb->users ORDER BY user_login ");
+	if ( !is_multisite() ) {
+		$all_logins = $wpdb->get_results("SELECT ID, user_login FROM $wpdb->users ORDER BY user_login");
+	} else {
+		// WPMU only searches users of current blog
+		$all_logins = $wpdb->get_results("SELECT ID, user_login FROM $wpdb->users, $wpdb->usermeta WHERE $wpdb->users.ID = $wpdb->usermeta.user_id AND meta_key = '".$wpdb->prefix."capabilities' ORDER BY user_login");
+	}
 	$selected=' selected="selected"';
 	$sel='';
 	if($filter=='all') $sel=$selected;
