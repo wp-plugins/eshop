@@ -1,7 +1,7 @@
 /*  Default css for eShop display */
 /*different*/
  /* PANEL DIMENSIONS */
- /* you may need to adjust these figures to accomodate your product images*/
+ /* you may need to adjust these figures to accommodate your product images*/
 ul.eshoppanels li {
 	min-height:200px;
 	min-width:200px;
@@ -59,6 +59,10 @@ table.eshop tr.alt a {
 table.cart tr.stotal {
 	background:#E6FDCD;
 	color:#404040;
+}
+table.cart tr.total td.eshopempty,
+table.cart tr.stotal td.eshopempty{
+	background:#EEEEF8;
 }
 table.cart tr.total {
 	background:#EFDEF1;
@@ -232,6 +236,17 @@ table.cart td.cqty input {
 }
 table.cart tr.stotal {
 	text-align:right;
+}
+table.cart .deletecartitem input{
+	margin:0;
+	padding:0;
+	vertical-align:middle;
+}
+table.cart label.hide{
+	position : absolute;
+	top : -9000px;
+  	left : -9000px;
+  	height:1px;
 }
 /* shipping rates */
 table.eshopshiprates td {

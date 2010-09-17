@@ -113,11 +113,15 @@ $right_string = file_get_contents($eshop_goto, true);
 	<?php 
 	if(isset($_GET['diff'])){
 		echo '<div class="wrap" id="diff">';
-		echo wp_text_diff( $left_string, $right_string, array( 'title' => __('Comparing Current Style with latest installed version of eShop','eshop'), 'title_left' => __('Latest(from plugin)','eshop'), 'title_right' => __('Current (in use)','eshop') ) );
+		echo wp_text_diff( $right_string,$left_string, array( 'title' => __('Comparing Current Style with latest installed version of eShop','eshop'), 'title_right' => __('Latest(from plugin)','eshop'), 'title_left' => __('Current (in use)','eshop') ) );
+		echo '</div>';
+	}elseif($left_string!=$right_string){
+		echo '<div class="wrap">';
+		echo '<p>'.__('There have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
 		echo '</div>';
 	}else{
 		echo '<div class="wrap">';
-		echo '<p><a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
+		echo '<p>'.__('Your CSS matches that included with eShop.','eshop').'</p>';
 		echo '</div>';
 	}
 	//end custom styling
