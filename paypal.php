@@ -265,14 +265,14 @@ switch ($eshopaction) {
 			foreach($checktrans as $trans){
 				if(strpos($trans->transid, $p->ipn_data['txn_id'])===true){
 					$astatus='Failed';
-					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($txn_id);
 					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
 			//check reciever email is correct - we will use business for now
 			if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
-				$txn_id = __("Fraud-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = __("Fraud-",'eshop').$wpdb->escape($txn_id);
 				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
 			}
 			//add any memo from user at paypal here
@@ -283,43 +283,10 @@ switch ($eshopaction) {
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
 				eshop_mg_process_product($txn_id,$checked);
-			/*
-				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
-				$subject .=__("Completed Payment",'eshop');	
-				$ok='yes';
-				//product stock control updater
-				$itemstable=$wpdb->prefix ."eshop_order_items";
-				$stocktable=$wpdb->prefix ."eshop_stock";
-				$mtable=$wpdb->prefix.'postmeta';
-				$producttable=$wpdb->prefix.'eshop_downloads';
-				$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");
-				foreach($query as $row){
-					$pid=$row->post_id;
-					$uqty=$row->item_qty;
-					////test downloads
-					//check if downloadable product
-					$fileid=$row->down_id;
-					if($fileid!=0){
-						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
-						//add 1 to number of purchases here (duplication but left in)
-						$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
-						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-						if($chkit!=''){	
-							$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid");
-						}else{
-							$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-						}
-					}else{
-						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-						if($chkit!=''){						
-							$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid");
-						}else{
-							$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-						}
-					}
-					
-				}
-				*/
+			}elseif($_POST['payment_status']==' Refunded'){
+				$subject .=__("Refunded Payment",'eshop');
+				$ok='no';
+				$extradetails .= __("You have recieved a refund notification, eShop doesn't know how to handle these, but details of the notification are included below.",'eshop');
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');
@@ -328,7 +295,7 @@ switch ($eshopaction) {
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
-			$subject .=" Ref:".$p->ipn_data['txn_id'];
+			$subject .=" Ref:".$txn_id;
 			$array=eshop_rtn_order_details($checked);
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = $eshopoptions['business'];    //  your email
@@ -405,7 +372,7 @@ switch ($eshopaction) {
 					$extradetails .= __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 
 			}
-			$subject .=__(" Ref:",'eshop').$p->ipn_data['txn_id'];
+			$subject .=__(" Ref:",'eshop').$txn_id;
 			// email to business a complete copy of the notification from paypal to keep!!!!!
 			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";

@@ -23,6 +23,7 @@ class eshop_widget extends WP_Widget {
 		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
 		$show = apply_filters( 'widget_text', $instance['show'], $instance );
 		$showwhat = apply_filters( 'widget_text', $instance['showwhat'], $instance );
+		$text = apply_filters( 'widget_text', $instance['text'], $instance );
 
 		if(isset($_SESSION['eshopcart'.$blog_id])){
 			$eshopsize=0;
@@ -69,7 +70,7 @@ class eshop_widget extends WP_Widget {
 			if($showwhat=='full'){
 				echo $before_widget;
 				//echo $before_title.$title.$after_title;
-				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
+				echo '<div class="eshopcartwidget"><div class="ajaxcart">'.$text.'</div></div>';
 				echo $after_widget;
 			}
 		}
@@ -77,17 +78,19 @@ class eshop_widget extends WP_Widget {
 
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
+		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['show'] = strip_tags( $new_instance['show'] );
 		$instance['showwhat'] = strip_tags( $new_instance['showwhat'] );
+		$instance['text'] = strip_tags( $new_instance['text'] );
 		return $instance;
 	}
 
 	function form( $instance ) {
-		$instance = wp_parse_args( (array) $instance, array( 'title' => '','show'=>'no','showwhat'=>'items' ) );
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '', 'show'=>'no', 'showwhat'=>'items', 'text'=>'') );
 		$title = strip_tags($instance['title']);
 		$show = $instance['show'];
 		$showwhat = $instance['showwhat'];
+		$text = $instance['text'];
 		?>
 		 <p>
 		    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
@@ -105,8 +108,11 @@ class eshop_widget extends WP_Widget {
 			<option value="qty"<?php selected( $showwhat, 'qty' ); ?>><?php _e('Total number of different items','eshop'); ?></option>
 			<option value="both"<?php selected( $showwhat, 'both' ); ?>><?php _e('Both','eshop'); ?></option>
 			<option value="full"<?php selected( $showwhat, 'full' ); ?>><?php _e('Full Cart','eshop'); ?></option>
-
 			</select>
+		</p>
+		<p>
+		    <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('text to show for when <em>Full Cart</em> is empty:','eshop'); ?></label>
+		    <input type="text" id="<?php echo $this->get_field_id('text'); ?>" name="<?php echo $this->get_field_name('text'); ?>" value="<?php echo esc_attr($text);?>" />
 		</p>
 	<?php
 	}
@@ -537,7 +543,6 @@ class eshop_search_widget extends WP_Widget {
 		extract( $args );
 		$output='';
 		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
-		$index = $instance['index'];
 		$random = $instance['random'];
 		$search = $instance['search'];
 		$find = $instance['find'];
@@ -552,17 +557,13 @@ class eshop_search_widget extends WP_Widget {
 				</form>';
 			
 		}
-		if($index !='' || $random!='')
-			$output.='<ul>';
-		if($index!=''){
-			$output.='<li><a href="'.get_permalink($index).'">'.get_the_title($index).'</a></li>';
-		}
 		if($random!=''){
+			$output.='<ul>';
 			$eswr=add_query_arg('eshoprandom','',get_bloginfo('url'));
 			$output.='<li><a href="'.$eswr.'">'.__('Random product','eshop').'</a></li>';
-		}
-		if($index !='' || $random!='')
 			$output.='</ul>';
+		}
+		
 		echo $before_widget;
 		echo $before_title.$title.$after_title;
 		echo $output;
@@ -572,7 +573,6 @@ class eshop_search_widget extends WP_Widget {
 	function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['index'] = strip_tags( $new_instance['index'] );
 		$instance['random'] = strip_tags( $new_instance['random'] );
 		$instance['search'] = strip_tags( $new_instance['search'] );
 		$instance['find'] = strip_tags( $new_instance['find'] );
@@ -580,9 +580,8 @@ class eshop_search_widget extends WP_Widget {
 	}
 
 	function form( $instance ) {
-		$instance = wp_parse_args( (array) $instance, array( 'title' => '','index'=>'','random'=>'' , 'search'=>'', 'find' => '') );
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '','random'=>'' , 'search'=>'', 'find' => '') );
 		$title = strip_tags($instance['title']);
-		$index = $instance['index'];
 		$random = $instance['random'];
 		$search = $instance['search'];
 		$find = $instance['find'];
@@ -603,12 +602,8 @@ class eshop_search_widget extends WP_Widget {
 			<select id="<?php echo $this->get_field_id('find'); ?>" name="<?php echo $this->get_field_name('find'); ?>">
 			<option value="all"<?php selected( $find, 'all' ); ?>><?php _e('All Products','eshop'); ?></option>
 			<option value="instock"<?php selected( $find, 'instock' ); ?>><?php _e('Only Products in Stock','eshop'); ?></option>
-			</select>	
+			</select><br />
 			
-			
-			<label for="<?php echo $this->get_field_id('index'); ?>"><?php _e('Index page link','eshop'); ?></label>
-			<input size="3" id="<?php echo $this->get_field_id('index'); ?>" name="<?php echo $this->get_field_name('index'); ?>" type="text" value="<?php echo esc_attr($index); ?>" />
-			<br />
 			<label for="<?php echo $this->get_field_id('random'); ?>"><?php _e('Show random product link','eshop'); ?></label>
 			<select id="<?php echo $this->get_field_id('random'); ?>" name="<?php echo $this->get_field_name('random'); ?>">
 			<option value="1"<?php selected( $random, '1' ); ?>><?php _e('Yes','eshop'); ?></option>

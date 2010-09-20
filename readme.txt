@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.7.0
+Stable tag: 5.7.1
 
 An accessible Shopping Cart plugin.
 
@@ -44,13 +44,16 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version 5.7.1
 
+* *fixed* bug with excerpts when using listing shortcodes. The Continue reading link was pointing to wrong page.
 * *fixed* admin product listing per author on multisite
 * *fixed* widgets for featured and sale
 * *fixed* adding thumbnails to search results.
 * *fixed* minor issues
 * *added* delete per item for the cart page(products can still be deleted by quantity 0)
-* *added* search widget, search for products (both in stock, and out of stock), plus a link to shop page, and a random product link
+* *added* search widget, search for products (both in stock, and out of stock) comes with an optional random product link.
 * *added* filter for language files.
+* *added* text to show when full cart widget is used, but nothing is in cart.
+* *added/fixed* messages generated when orders refunded via paypal. message still sent, but hopefully marked as a refund.
 
 
 Version 5.7.0

@@ -620,7 +620,7 @@ function eshop_show_product($atts){
 		$pages=array();
 		$theids = explode(",", $id);
 		foreach($theids as $thisid){
-			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.post_content,$wpdb->posts.ID,$wpdb->posts.post_title,$wpdb->posts.post_excerpt,$wpdb->posts.post_author,$wpdb->posts.post_date,$wpdb->posts.post_type,$wpdb->posts.post_status,$wpdb->posts.post_name from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($pages,$thispage['0']);
 		}
@@ -641,22 +641,23 @@ function eshop_show_product($atts){
 	return;
 }
 function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
-	global $wpdb,$eshopoptions;
+	global $wpdb,$eshopoptions,$post;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
-	foreach ($subpages as $postit){	
-		setup_postdata($postit);
+	$tempost=$post;
+	foreach ($subpages as $post){	
+		setup_postdata($post);
 		$xclass='<li>';
 		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
-			$esale=get_post_meta( $postit->ID, '_eshop_sale',true );
+			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
 			if($esale=='yes')
 				$xclass='<li class="sale">';
 		}
 		$echo .= $xclass;
 		if($links=='yes')
-			$echo .= '<a class="itemref" href="'.get_permalink($postit->ID).'">'.apply_filters("the_title",$postit->post_title).'</a>';
+			$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
 		else
-			$echo .= apply_filters("the_title",$postit->post_title);
+			$echo .= apply_filters("the_title",$post->post_title);
 			
 		if(isset($esale) && $esale=='yes')
 			$echo .= '<strong>'.__('On Sale','eshop').'</strong>';
@@ -668,18 +669,18 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$h=round(($h*$imgsize)/100);
 		}
 
-		if (has_post_thumbnail( $postit->ID ) ) {
+		if (has_post_thumbnail( $post->ID ) ) {
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'">'.get_the_post_thumbnail( $postit->ID, array($w, $h)).'</a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
 			else
-				$echo .=get_the_post_thumbnail( $postit->ID, array($w, $h))."\n";
+				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
 
 		}else{
 			$eimage=eshop_files_directory();
 			$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
 
 			if($links=='yes')
-				$echo .='<a class="itemref" href="'.get_permalink($postit->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
+				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a>'."\n";
 			else
 				$echo .='<img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 
@@ -689,7 +690,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		$echo .= apply_filters('the_excerpt', get_the_excerpt());
 
 		if($price!='no'){
-			$eshop_product=get_post_meta( $postit->ID, '_eshop_product',true );
+			$eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
@@ -698,7 +699,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 
 		if($form=='yes'){
 			$short='yes';
-			$echo =eshop_boing($echo,$short,$postit->ID);
+			$echo =eshop_boing($echo,$short,$post->ID);
 		}else
 			$short='no';
 		$echo .= '</li>'."\n";
@@ -706,6 +707,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		add_filter('the_content', 'eshop_boing');
 	}
 	$echo .= '</ul>';
+	$post=$tempost;
 	return $echo;
 }
 
@@ -1552,12 +1554,10 @@ function eshop_show_cart() {
 	return $echo;
 }
 
-
 function eshop_show_checkout(){
 	include_once 'checkout.php';
 	return eshop_checkout($_POST);
 }
-
 
 function eshop_show_downloads(){
 	include_once 'purchase-downloads.php';
