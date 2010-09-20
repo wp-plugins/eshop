@@ -60,7 +60,7 @@ class eshop_widget extends WP_Widget {
 				echo $after_widget;
 			}			
 		}elseif($show!='no'){
-			$eecho= '<div class="ajaxcart"></div><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+			$eecho= '<div class="ajaxcart">'.$text.'</div><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
 			$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p>';
 			echo $before_widget;
 			echo $before_title.$title.$after_title;
@@ -70,7 +70,7 @@ class eshop_widget extends WP_Widget {
 			if($showwhat=='full'){
 				echo $before_widget;
 				//echo $before_title.$title.$after_title;
-				echo '<div class="eshopcartwidget"><div class="ajaxcart">'.$text.'</div></div>';
+				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
 				echo $after_widget;
 			}
 		}
@@ -111,7 +111,7 @@ class eshop_widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-		    <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('text to show for when <em>Full Cart</em> is empty:','eshop'); ?></label>
+		    <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('Text to show when Cart is empty:','eshop'); ?></label>
 		    <input type="text" id="<?php echo $this->get_field_id('text'); ?>" name="<?php echo $this->get_field_name('text'); ?>" value="<?php echo esc_attr($text);?>" />
 		</p>
 	<?php
