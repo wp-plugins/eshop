@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.7.1
+Stable tag: 5.7.2
 
 An accessible Shopping Cart plugin.
 
@@ -42,7 +42,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version 5.7.1
+Version 5.7.1 / 2
 
 * *fixed* bug with excerpts when using listing shortcodes. The Continue reading link was pointing to wrong page.
 * *fixed* admin product listing per author on multisite
