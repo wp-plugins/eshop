@@ -279,16 +279,28 @@ function eshop_random() {
   	wp_redirect( get_permalink( $random_id ) );
  	exit;
 }
-function eshop_search(){
-	global $wp_query;
-	if( isset( $_GET['eshopsearch'] ) && is_search()){
-		$meta='_eshop_product';
-		if($_GET['eshopsearch'] == 'instock'){
-			$meta='_eshop_stock';
-			$wp_query->set('meta_value','1');		
-		}
-		$wp_query->set('meta_key',$meta);
+
+class eshop_search {
+	function eshop_search() {
+		add_action('posts_where_request', array(&$this, 'search'));
 	}
-	return $wp_query;
+	function search($where)	{
+		if ( isset( $_GET['eshopsearch'] ) && is_search()) {
+			global $wpdb, $wp;
+			$meta='_eshop_product';
+			$metavalue="";
+			if($_GET['eshopsearch'] == 'instock'){
+				$meta='_eshop_stock';
+				$metavalue=" AND $wpdb->postmeta.meta_value= '1' ";		
+			}
+			$where .= " AND $wpdb->postmeta.meta_key = '{$meta}'{$metavalue}";
+			add_filter('posts_join_request', array(&$this, 'search_join'));
+		}
+		return $where;
+	}
+	function search_join($join)	{
+		global $wpdb;
+		return $join .= " LEFT JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id) ";
+	}
 }
 ?>

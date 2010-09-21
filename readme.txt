@@ -42,6 +42,10 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 5.7.3
+
+* *fixed* product search...
+
 Version 5.7.1 / 2
 
 * *fixed* bug with excerpts when using listing shortcodes. The Continue reading link was pointing to wrong page.

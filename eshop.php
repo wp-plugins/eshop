@@ -103,6 +103,7 @@ if(is_admin()){
 	add_action('wp', 'eshop_pre_wp_head');
 	add_action('wp_print_scripts', 'eshop_wp_head_add');
 	add_action('wp_print_styles', 'eshop_stylesheet');
+	new eshop_search();
 }
 /* ajax the cart - won't allow me to put this in the above*/
 if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
@@ -116,6 +117,5 @@ if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
 	if ( isset( $_GET['eshoprandom'] ) )
  		add_action( 'template_redirect', 'eshop_random' );
  	
-	add_action('pre_get_posts','eshop_search');
 }
 ?>
