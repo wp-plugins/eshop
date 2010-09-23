@@ -213,43 +213,6 @@ switch ($eshopaction) {
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
 				eshop_mg_process_product($txn_id,$checked);
-				/*
-				$query2=$wpdb->query("UPDATE $detailstable set status='Completed',transid='$txn_id' where checkid='$checked'");
-				$subject .=__("Completed Payment",'eshop');	
-				$ok='yes';
-				//product stock control updater
-				$itemstable=$wpdb->prefix ."eshop_order_items";
-				$stocktable=$wpdb->prefix ."eshop_stock";
-				$mtable=$wpdb->prefix.'postmeta';
-				$producttable=$wpdb->prefix.'eshop_downloads';
-				$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");
-				foreach($query as $row){
-					$pid=$row->post_id;
-					$uqty=$row->item_qty;
-					////test downloads
-					//check if downloadable product
-					$fileid=$row->down_id;
-					if($fileid!=0){
-						$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
-						//add 1 to number of purchases here (duplication but left in)
-						$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
-						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-						if($chkit!=''){	
-							$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid");
-						}else{
-							$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-						}
-					}else{
-						$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-						if($chkit!=''){						
-							$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid");
-						}else{
-							$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-						}
-					}
-
-				}
-				*/
 			}
 			
 			if($eshopdosend=='yes'){
@@ -257,7 +220,6 @@ switch ($eshopaction) {
 				// email to business a complete copy of the notification from webtopay to keep!!!!!
 				$array=eshop_rtn_order_details($checked);
 				$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
-				 $to = $webtopay['email'];    //  your email
 				 $body =  __("An instant payment notification was received",'eshop')."\n";
 				 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 				 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
@@ -268,13 +230,15 @@ switch ($eshopaction) {
 				 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
 				$headers=eshop_from_address();
+				$to = apply_filters('eshop_gateway_details_email', array($webtopay['email']));
 				wp_mail($to, $subject, $body, $headers);
 			}
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
 				include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
-
+				eshop_send_customer_email($checked, '7');
+			/*
 				//this is an email sent to the customer:
 				//first extract the order details
 				$array=eshop_rtn_order_details($checked);
@@ -297,6 +261,7 @@ switch ($eshopaction) {
 					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
 					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 				}
+			*/
 			}
 	
 	    	//- Answer for webtopay server -

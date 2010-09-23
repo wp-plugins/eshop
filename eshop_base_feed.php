@@ -20,7 +20,7 @@ $myrowres=$wpdb->get_results("
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_eshop_product'
 		AND posts.ID = meta.post_id
-		AND posts.post_status != 'trash' AND posts.post_status != 'revision'
+		AND posts.post_status = 'publish'
 		ORDER BY meta.post_id");
 $x=0;
 foreach($myrowres as $row){
@@ -78,7 +78,9 @@ foreach($array as $foo=>$grabit){
 		$baseimg =$src['0'];
 	}	
 	
-	$basedescription=get_the_excerpt();
+	$bdoutput = get_the_excerpt();
+	$basedescription = apply_filters('the_excerpt_rss', $bdoutput);
+	
 	//$basecondition=$basebrand=$baseptype=$basedate=$baseimg=$baseean=$baseisbn=$basempn=$baseqty='';
 	//individual set product data
 	$basetable=$wpdb->prefix ."eshop_base_products";
@@ -101,7 +103,7 @@ foreach($array as $foo=>$grabit){
  <item>
 	<link>'.eshoprssfilter($baselink).'</link>
 	<title>'.eshoprssfilter($basetitle).'</title>	
-	<description>'.$basedescription.'</description>
+	<description>'.eshoprssfilter($basedescription).'</description>
 	<g:id>'.eshoprssfilter($baseid).'</g:id>';
 		if(isset($baseqty) && $baseqty!=''){
 			$data.='

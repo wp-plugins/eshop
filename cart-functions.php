@@ -572,18 +572,30 @@ if (!function_exists('orderhandle')) {
 		$custom_field=$wpdb->escape($_POST['custom']);
 		$first_name=$wpdb->escape($_POST['first_name']);
 		$last_name=$wpdb->escape($_POST['last_name']);
-		$phone=$wpdb->escape($_POST['phone']);
-		$company=$wpdb->escape($_POST['company']);
 		$email=$wpdb->escape($_POST['email']);
-		$address1=$wpdb->escape($_POST['address1']);
-		$address2=$wpdb->escape($_POST['address2']);
-		$city=$wpdb->escape($_POST['city']);
-		$zip=$wpdb->escape($_POST['zip']);
-		$state=$wpdb->escape($_POST['state']);
-		if($_POST['state']=='' && $_POST['altstate']!='')
+		//set up some defaults
+		$phone=$company=$address1=$address2=$city=$zip=$state=$country=$paidvia='';
+		if(isset($_POST['phone']))
+			$phone=$wpdb->escape($_POST['phone']);
+		if(isset($_POST['company']))
+			$company=$wpdb->escape($_POST['company']);
+		if(isset($_POST['address1']))
+			$address1=$wpdb->escape($_POST['address1']);
+		if(isset($_POST['address2']))
+			$address2=$wpdb->escape($_POST['address2']);
+		if(isset($_POST['city']))
+			$city=$wpdb->escape($_POST['city']);
+		if(isset($_POST['zip']))
+			$zip=$wpdb->escape($_POST['zip']);
+		if(isset($_POST['state']))
+			$state=$wpdb->escape($_POST['state']);
+		if(isset($_POST['country']))
+			$country=$wpdb->escape($_POST['country']);
+		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
+
+		if(isset($_POST['state']) && $_POST['state']=='' && isset($_POST['altstate']) && $_POST['altstate']!='')
 			$state=$wpdb->escape($_POST['altstate']);
 
-		$country=$wpdb->escape($_POST['country']);
 		if(isset($_POST['ship_name'])){
 			$ship_name=$wpdb->escape($_POST['ship_name']);
 		}else{
@@ -637,7 +649,6 @@ if (!function_exists('orderhandle')) {
 		}else{
 			$comments='';
 		}
-		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
 		if(isset($_POST['affiliate']))
 			$affiliate=$wpdb->escape($_POST['affiliate']);
 		else
@@ -665,7 +676,7 @@ if (!function_exists('orderhandle')) {
 				(checkid, first_name, last_name,company,email,phone, address1, address2, city,
 				state, zip, country, reference, ship_name,ship_company,ship_phone, 
 				ship_address, ship_city, ship_postcode,	ship_state, ship_country, 
-				custom_field,transid,edited,comments,paidvia,affiliate,user_id)VALUES(
+				custom_field,transid,edited,comments,thememo,paidvia,affiliate,user_id,admin_note,user_notes)VALUES(
 				'$checkid',
 				'$first_name',
 				'$last_name',
@@ -691,9 +702,11 @@ if (!function_exists('orderhandle')) {
 				'$processing',
 				NOW(),
 				'$comments',
+				'',
 				'$paidvia',
 				'$affiliate',
-				'$user_id'
+				'$user_id',
+				'',''
 					);");
 					
 			do_action('eshoporderhandle',$_POST,$checkid);
@@ -726,7 +739,7 @@ if (!function_exists('orderhandle')) {
 					$c=0;
 					if(isset($newoptings)) unset($newoptings);
 					foreach($optings as $foo=>$opst){
-						if(!isset($opst['type']) || (isset($opst['type']) && $opst['text']!='')){
+						if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')){
 							$qb[]="id=$opst[id]";
 							$newoptings[]=$optings[$c];
 						}
@@ -809,11 +822,12 @@ if (!function_exists('orderhandle')) {
 			}
 			$postage_name.=__('Shipping','eshop');
 			$querypostage=$wpdb->query("INSERT INTO  $itemstable 
-					(checkid, item_id,item_qty,item_amt)values(
+					(checkid, item_id,item_qty,item_amt,optsets)values(
 					'$checkid',
 					'$postage_name',
 					'1',
-					'$postage');");
+					'$postage',
+					'');");
 			//update the discount codes used, and remove from remaining
 			$disctable=$wpdb->prefix.'eshop_discount_codes';
 			if(eshop_discount_codes_check()){
@@ -1758,5 +1772,34 @@ if (!function_exists('eshop_contains')) {
             return true;
         }
     }   
+}
+if (!function_exists('eshop_send_customer_email')) {
+    function eshop_send_customer_email($checked, $mg_id){
+    	global $wpdb;
+    	//this is an email sent to the customer:
+		//first extract the order details
+		$array=eshop_rtn_order_details($checked);
+		$etable=$wpdb->prefix.'eshop_emails';
+		
+		//grab the template
+		$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='".$mg_id."' AND emailUse='1') OR id='1'  order by id DESC limit 1");
+		$this_email = stripslashes($thisemail->emailContent);
+		
+		// START SUBST
+		$csubject=stripslashes($thisemail->emailSubject);
+		$this_email = eshop_email_parse($this_email,$array);
+
+		//try and decode various bits
+		$this_email=html_entity_decode($this_email,ENT_QUOTES);
+		
+		$headers=eshop_from_address();
+		wp_mail($array['eemail'], $csubject, $this_email,$headers);
+		do_action('eshop_send_customer_email', $csubject, $this_email, $headers, $array);
+		//affiliate
+		if($array['affiliate']!=''){
+			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+			"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+		}
+	}
 }
 ?>

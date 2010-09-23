@@ -50,6 +50,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <h3>Sections</h3>
   <ul>
   <li><a href="#setup">eShop Setup Instructions</a></li>
+  <li><a href="#ehelp">eShop Help</a></li>
   <li><a href="#donate">eShop Donations</a></li>
 	<li><a href="#cred">eShop Credits</a></li>
   </ul>
@@ -82,9 +83,11 @@ update_option('eshop_plugin_settings',$eshopoptions);
 	because of the different possible shipping rates the plugin allows, this page automatically shows the table of shipping rates for you.
 	</li>
 	</ul>
-	
 </div>
-
+<div class="wrap">
+<h2 id="ehelp">Help</h2>
+	<p>The full help file is now available via: <a href="http://quirm.net/wiki/eshop/">http://quirm.net/wiki/eshop/</a> For easy reference that link is included in the Help tab on eShop pages.</p>
+</div>
 <div class="wrap">
  <h2 id="cred">eShop Credits</h2>
   <p>Created by <a href="http://cms.elfden.co.uk/">Rich Pedley</a> based on ideas and requirements from <a href="http://green-beast.com/">Mike Cherim</a>.</p>

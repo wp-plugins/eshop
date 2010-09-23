@@ -73,42 +73,8 @@ switch ($eshopaction) {
 			$subject .=__("Completed Payment",'eshop');	
 			$ok='yes';
 			eshop_mg_process_product($txn_id,$checkid,'Waiting');
+			eshop_send_customer_email($checkid, '5');
 			/*
-			$query2=$wpdb->query("UPDATE $detailstable set status='Waiting',transid='$txn_id' where checkid='$checkid'");
-			$ok='yes';
-			//product stock control updater
-			$itemstable=$wpdb->prefix ."eshop_order_items";
-			$stocktable=$wpdb->prefix ."eshop_stock";
-			$mtable=$wpdb->prefix.'postmeta';
-			$producttable=$wpdb->prefix.'eshop_downloads';
-			$query=$wpdb->get_results("SELECT item_qty,post_id,item_id,down_id FROM $itemstable WHERE checkid='$checkid' AND post_id!='0'");
-			foreach($query as $row){
-				$pid=$row->post_id;
-				$uqty=$row->item_qty;
-				////test downloads
-				//check if downloadable product
-				$fileid=$row->down_id;
-				if($fileid!=0){
-					$grabit=$wpdb->get_row("SELECT title, files FROM $producttable where id='$fileid'");
-					//add 1 to number of purchases here (duplication but left in)
-					$wpdb->query("UPDATE $producttable SET purchases=purchases+$uqty where title='$grabit->title' && files='$grabit->files' limit 1");
-					$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-					if($chkit!=''){	
-						$wpdb->query("UPDATE $stocktable set purchases=purchases+$uqty where post_id=$pid");
-					}else{
-						$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-					}
-				}else{
-					$chkit= $wpdb->get_var("SELECT purchases FROM $stocktable WHERE post_id='$pid'");
-					if($chkit!=''){						
-						$wpdb->query("UPDATE $stocktable set available=available-$uqty, purchases=purchases+$uqty where post_id=$pid");
-					}else{
-						$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id) VALUES ('0','$uqty','$pid')");
-					}
-				}
-
-			}
-			*/
 			//only need to send out for the successes!
 			//lets make sure this is here and available
 			include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -128,15 +94,15 @@ switch ($eshopaction) {
 			//a function to handle this depending on what you are using - but for now...
 			$this_email=html_entity_decode($this_email,ENT_QUOTES);
 			$headers=eshop_from_address();
-			wp_mail($array['eemail'], $csubject, $this_email,$headers);
-			
+			$to = $array['eemail'];
+			wp_mail($to, $csubject, $this_email, $headers);
+			*/
 		}
 
 		$subject .=__(" Ref:",'eshop').$ecash->ipn_data['RefNr'];
 		// email to business a complete copy of the notification from cash to keep!!!!!
 		$array=eshop_rtn_order_details($checkid);
 		$ecash->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
-		 $to = $cash['email'];    //  your email
 		 $body =  __("A cash purchase was made",'eshop')."\n";
 		 $body .= "\n".__("from ",'eshop').$ecash->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
@@ -146,6 +112,7 @@ switch ($eshopaction) {
 		 foreach ($ecash->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 		 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 		$headers=eshop_from_address();
+		$to = apply_filters('eshop_gateway_details_email', array($cash['email']));
 		wp_mail($to, $subject, $body, $headers);
 
 

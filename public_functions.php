@@ -303,4 +303,23 @@ class eshop_search {
 		return $join .= " LEFT JOIN $wpdb->postmeta ON ($wpdb->posts.ID = $wpdb->postmeta.post_id) ";
 	}
 }
+
+function eshopgbase(){
+	if(isset($_GET['eshopbasefeed'])){
+		include WP_PLUGIN_DIR.'/eshop/eshop_base_feed.php';
+	}
+}
+function eshop_ie_fix(){
+?>
+<!--[if lt IE 8]>
+<style type="text/css">
+.eshoppanels li{
+    display:inline;
+    margin:10px 5px 0 5px;
+}
+</style>
+<![endif]-->
+<?php
+}
+
 ?>

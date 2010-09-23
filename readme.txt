@@ -42,6 +42,13 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+version 5.7.4
+
+* *fixed* checkout issues for some users.(mainly those hosting on IIS)
+* *changed* You are now provided with a link for Google Base to pull your feed automatically.
+* *changed* For new users only, the display of the 'panels' - existing users will need to amend the CSS (use the link provided on the Apperance > eShop page).
+* *added* hooks for copy emails (admin and customer)
+
 Version 5.7.3
 
 * *fixed* product search...

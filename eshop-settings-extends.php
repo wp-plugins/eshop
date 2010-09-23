@@ -1330,7 +1330,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
 		$eshopmerchantimgpath=$eshopmi['path'];
 		$eshopmerchantimgurl=$eshopmi['url'];
-		$dims='';
+		$dims[3]='';
 		if(file_exists($eshopmerchantimgpath))
 			$dims=getimagesize($eshopmerchantimgpath);
 		echo '<p class="eshopgateway"><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.$eshoppayment_text.'" title="'.$eshoppayment_text.'" /></p>'."\n";

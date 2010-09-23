@@ -2,13 +2,9 @@
 /*different*/
  /* PANEL DIMENSIONS */
  /* you may need to adjust these figures to accommodate your product images*/
-ul.eshoppanels li {
-	min-height:200px;
-	min-width:200px;
-}
 
 /* FLOATS & CLEARS */
-ul.eshoppanels li, ul.eshop li a img, table.eshop img, 
+ul.eshop li a img, table.eshop img, 
 .paginate ul li {
 	float:left;
 }
@@ -154,6 +150,23 @@ form.dlproduct label {
 }
 
 /*********** OTHER ***************/
+
+/* new panels testing */
+.eshoppanels {
+    width:99%;
+    margin:10px auto;
+    padding:0 1px 10px 1px;
+    list-style:none;
+    text-align:center;
+}
+.eshoppanels li {
+    display:-moz-inline-box;/* FF2 & under */
+    display:inline-block;/* for modern browsers */
+    vertical-align:top;
+    margin:10px 3px 0 3px;
+}
+
+
 /* no bullets */
 #content .eshop li,
 #content ul.eshopfeatured li,#content ul.eshopfeatured li,#content ul.eshopsubpages li,ul.eshopcats li,
@@ -373,6 +386,9 @@ form.eshop  {
 	width:96%;
 	margin:0 auto;
 	line-height:1.3em;
+}
+.eshoppanels form.eshop  {
+	margin: 0;
 }
 form.eshop label  {
 	font-weight:bold;

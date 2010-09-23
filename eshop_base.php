@@ -44,6 +44,7 @@ if(!isset($_GET['change'])){
 	<li><a href="<?php echo $dlpage; ?>&amp;d=1"><?php _e('Download the xml file','eshop'); ?></a></li>
 	<li><a href="<?php echo $dlpage; ?>&amp;d=1&amp;os=mac"><?php _e('Mac - Download the xml file','eshop'); ?></a></li>
 	<li><a href="<?php echo $dlpage; ?>"><?php _e('View xml file','eshop'); ?></a></li>
+	<li><?php echo sprintf( __('Direct link to file for Google Base: <a href="%1$s">%1$s</a>','eshop'), trim(site_url(),'/').'/?eshopbasefeed' ); ?></li>
 	</ul>
 	<?php	
 	//sort by switch statement
