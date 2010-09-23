@@ -752,6 +752,7 @@ if (!function_exists('eshop_checkout')) {
 				$chkerror='1';
 		}else{
 			if(!isset($_GET['eshopaction'])){
+				$shipping=0;
 				$echoit.= "<div class=\"hr\"></div><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
 				// create a custom id, and shove details in database
 				$date=date('YmdHis');
@@ -847,19 +848,44 @@ if (!function_exists('eshop_checkout')) {
 			//add to a session to store address:
 			$_SESSION['addy'.$blog_id]['first_name']=$_POST['first_name'];
 			$_SESSION['addy'.$blog_id]['last_name']=$_POST['last_name'];
-			$_SESSION['addy'.$blog_id]['company']=$_POST['company'];
-			$_SESSION['addy'.$blog_id]['phone']=$_POST['phone'];
-			$_SESSION['addy'.$blog_id]['reference']=$_POST['reference'];
 			$_SESSION['addy'.$blog_id]['email']=$_POST['email'];
-			$_SESSION['addy'.$blog_id]['address1']=$_POST['address1'];
-			$_SESSION['addy'.$blog_id]['address2']=$_POST['address2'];
-			$_SESSION['addy'.$blog_id]['city']=$_POST['city'];
-			$_SESSION['addy'.$blog_id]['country']=$_POST['country'];
-			$_SESSION['addy'.$blog_id]['state']=$_POST['state'];
+			if(isset($_POST['company']))
+				$_SESSION['addy'.$blog_id]['company']=$_POST['company'];
+			else
+				$_SESSION['addy'.$blog_id]['company']='';
+			if(isset($_POST['phone']))
+				$_SESSION['addy'.$blog_id]['phone']=$_POST['phone'];
+			else
+				$_SESSION['addy'.$blog_id]['phone']='';
+			if(isset($_POST['reference']))
+				$_SESSION['addy'.$blog_id]['reference']=$_POST['reference'];
+			else
+				$_SESSION['addy'.$blog_id]['reference']='';
+			if(isset($_POST['address1']))
+				$_SESSION['addy'.$blog_id]['address1']=$_POST['address1'];
+			else
+				$_SESSION['addy'.$blog_id]['address1']='';
+			if(isset($_POST['address2']))
+				$_SESSION['addy'.$blog_id]['address2']=$_POST['address2'];
+			else
+				$_SESSION['addy'.$blog_id]['address2']='';
+			if(isset($_POST['city']))
+				$_SESSION['addy'.$blog_id]['city']=$_POST['city'];
+			if(isset($_POST['country']))
+				$_SESSION['addy'.$blog_id]['country']=$_POST['country'];
+			else
+				$_SESSION['addy'.$blog_id]['country']='';
+			if(isset($_POST['state']))
+				$_SESSION['addy'.$blog_id]['state']=$_POST['state'];
+			else
+				$_SESSION['addy'.$blog_id]['state']='';
+		
 			if(isset($_POST['altstate']) && $_POST['altstate']!='')
 				$_SESSION['addy'.$blog_id]['state']=$_POST['altstate'];
-
-			$_SESSION['addy'.$blog_id]['zip']=$_POST['zip'];
+			if(isset($_POST['zip']))
+				$_SESSION['addy'.$blog_id]['zip']=$_POST['zip'];
+			else
+				$_SESSION['addy'.$blog_id]['zip']='';
 			if(isset($_POST['ship_name'])){
 				$_SESSION['addy'.$blog_id]['ship_name']=$_POST['ship_name'];
 				$_SESSION['addy'.$blog_id]['ship_company']=$_POST['ship_company'];
@@ -874,7 +900,11 @@ if (!function_exists('eshop_checkout')) {
 			}
 			if(isset($_POST['comments']))
 				$_SESSION['addy'.$blog_id]['comments']=$_POST['comments'];
+			else
+				$_SESSION['addy'.$blog_id]['comments']='';
 			
+			if(!isset($_SESSION['shipping'.$blog_id]))$_SESSION['shipping'.$blog_id]=$shipping;
+
 			//grab all the POST variables and store in cookie
 			$array=$_POST;
 			//but first make a few extra equal nothing

@@ -73,6 +73,8 @@ switch ($eshopaction) {
 			$subject .=__("Completed Payment",'eshop');	
 			$ok='yes';
 			eshop_mg_process_product($txn_id,$checkid,'Waiting');
+			eshop_send_customer_email($checkid, '11');
+		/*
 			//only need to send out for the successes!
 			//lets make sure this is here and available
 			include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
@@ -93,6 +95,7 @@ switch ($eshopaction) {
 			$this_email=html_entity_decode($this_email,ENT_QUOTES);
 			$headers=eshop_from_address();
 			wp_mail($array['eemail'], $csubject, $this_email,$headers);
+		*/
 			
 		}
 
@@ -100,7 +103,6 @@ switch ($eshopaction) {
 		// email to business a complete copy of the notification from bank to keep!!!!!
 		$array=eshop_rtn_order_details($checkid);
 		$ebank->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
-		 $to = $bank['email'];    //  your email
 		 $body =  __("A bank purchase was made",'eshop')."\n";
 		 $body .= "\n".__("from ",'eshop').$ebank->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
@@ -110,6 +112,7 @@ switch ($eshopaction) {
 		 foreach ($ebank->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 		 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 		$headers=eshop_from_address();
+		$to = apply_filters('eshop_gateway_details_email', array($bank['email']));
 		wp_mail($to, $subject, $body, $headers);
 
 

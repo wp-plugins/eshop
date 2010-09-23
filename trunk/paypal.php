@@ -298,7 +298,6 @@ switch ($eshopaction) {
 			$subject .=" Ref:".$txn_id;
 			$array=eshop_rtn_order_details($checked);
 			// email to business a complete copy of the notification from paypal to keep!!!!!
-			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
@@ -312,13 +311,15 @@ switch ($eshopaction) {
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
 			$headers=eshop_from_address();
+			$to = apply_filters('eshop_gateway_details_email', array($eshopoptions['business']));
 			wp_mail($to, $subject, $body, $headers);
 
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
 				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-
+				eshop_send_customer_email($checked, '3');
+				/*
 				//this is an email sent to the customer:
 				//first extract the order details
 				$array=eshop_rtn_order_details($checked);
@@ -341,6 +342,7 @@ switch ($eshopaction) {
 					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
 					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 				}
+				*/
 			}
 			
       	}else{
@@ -374,7 +376,6 @@ switch ($eshopaction) {
 			}
 			$subject .=__(" Ref:",'eshop').$txn_id;
 			// email to business a complete copy of the notification from paypal to keep!!!!!
-			 $to = $eshopoptions['business'];    //  your email
 			 $body =  __("An instant payment notification was received",'eshop')."\n";
 			 $body .= "\n".__('from','eshop')." ".$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(' at ','eshop').date('g:i A')."\n\n".__('Details:','eshop')."\n";
@@ -382,6 +383,7 @@ switch ($eshopaction) {
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
 			 $headers=eshop_from_address();
+			 $to = apply_filters('eshop_gateway_details_email', array($eshopoptions['business']));
 			 wp_mail($to, $subject, $body, $headers);
 		}
       	break;
