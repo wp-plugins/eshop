@@ -525,7 +525,7 @@ if(!isset($_GET['change'])){
 		<?php
 		//'
 		foreach($currentconditions as $code){
-			if($basecondition==''){
+			if($basedata->thecondition==''){
 				if($code == $eshopoptions['base_condition']){
 					$sel=' selected="selected"';
 				}else{

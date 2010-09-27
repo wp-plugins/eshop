@@ -61,7 +61,13 @@ switch ($eshopaction) {
 		$amount=str_replace(',','',$_POST['amount']);
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
-		$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key)); 
+		
+		if( phpversion() >= '5.1.2' ){
+			$fingerprint = hash_hmac("md5", $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key); 
+		}else{ 
+			$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key)); 
+		}
+
 		$md5hash=$secret.$LID.$invoice.$amount;
 		$checkid=md5($md5hash);
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
@@ -193,6 +199,11 @@ switch ($eshopaction) {
 		$invoice=$ps->ipn_data["x_invoice_num"];
 		$md5hash=$secret.$LID.$invoice.$amount;
 		$checked=md5($md5hash);
+		if( phpversion() >= '5.1.2' ){	
+			$fingerprint = strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount)); 
+		}else{ 
+			$fingerprint = strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount))); 
+		}
 		$ps->ipn_data["mycheckmd5"]=strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount)));
 		$ps->ipn_data["mycheckedid"]=$checked;
 		if('1' == $_REQUEST["x_response_code"] && $ps->ipn_data["mycheckmd5"]==$ps->ipn_data["x_MD5_Hash"]){
