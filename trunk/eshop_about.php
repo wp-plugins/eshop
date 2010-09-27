@@ -23,7 +23,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
 <div id="eshoppage">
 <div class="wrap">
  <div id="eshopicon" class="icon32"></div><h2 id="donate">eShop Donations</h2>
- <p>Feeling generous? then please dig deep and donate as much as you can afford!</p>
+ <p style="text-align:center">Feeling generous? then please dig deep and donate as much as you can afford!</p>
  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
  <input type="hidden" name="cmd" value="_xclick" />
  <input type="hidden" name="business" value="mypaypal@blackwidows.co.uk" />
@@ -49,9 +49,9 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <p>eShop is simple accessible shopping cart plugin for WordPress that provides basic support for online payments through PayPal.</p>
   <h3>Sections</h3>
   <ul>
-  <li><a href="#setup">eShop Setup Instructions</a></li>
-  <li><a href="#ehelp">eShop Help</a></li>
-  <li><a href="#donate">eShop Donations</a></li>
+  	<li><a href="#setup">eShop Setup Instructions</a></li>
+  	<li><a href="#ehelp">eShop Help</a></li>
+  	<li><a href="#donate">eShop Donations</a></li>
 	<li><a href="#cred">eShop Credits</a></li>
   </ul>
 </div>
@@ -83,6 +83,15 @@ update_option('eshop_plugin_settings',$eshopoptions);
 	because of the different possible shipping rates the plugin allows, this page automatically shows the table of shipping rates for you.
 	</li>
 	</ul>
+	<h4>Admin Pages</h4>
+	<p>eShop create a full section containing the majority of admin pages, along with 3 additional ones located as mentioned below.</p>
+	<ul>
+	<li><strong>Appearance > eShop</strong>:  to allow you to alter the included CSS.</li>
+	<li><strong>Settings > eShop</strong>: for various settings within the plugin.</li>
+	<li><strong>Plugins > eShop Uninstall</strong>: should you decide to delete eShop entirely <em>(which I of course hope you never need!)</em></li>
+	</ul>
+	<h4>Product Entry</h4>
+	<p>Simply edit a page/post and enter details into the Product Entry section on that page.</p>
 </div>
 <div class="wrap">
 <h2 id="ehelp">Help</h2>

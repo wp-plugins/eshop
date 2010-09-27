@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 2.9
 Tested up to: 3.0
-Stable tag: 5.7.3
+Stable tag: 5.7.4
 
 An accessible Shopping Cart plugin.
 
@@ -44,10 +44,12 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 version 5.7.4
 
+* *fixed* Authorize.net issues for PHP5 users.
 * *fixed* checkout issues for some users.(mainly those hosting on IIS)
 * *changed* You are now provided with a link for Google Base to pull your feed automatically.
 * *changed* For new users only, the display of the 'panels' - existing users will need to amend the CSS (use the link provided on the Apperance > eShop page).
 * *added* hooks for copy emails (admin and customer)
+* *fixed* minor hidden bugs
 
 Version 5.7.3
 

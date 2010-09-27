@@ -229,14 +229,20 @@ function eshop_save_postdata( $post_id ) {
 		if(!is_numeric($_POST['eshop_price_'.$i]) && $_POST['eshop_price_'.$i]!=''){
 			add_filter('redirect_post_location','eshop_price_error');
 		}
-		$eshop_product['products'][$i]['download']=$thisdl=$_POST['eshop_download_'.$i];
-		$eshop_product['products'][$i]['weight']=$_POST['eshop_weight_'.$i];
-		if(!is_numeric($_POST['eshop_weight_'.$i]) && $_POST['eshop_weight_'.$i]!=''){
-			add_filter('redirect_post_location','eshop_weight_error');
+		if(isset($_POST['eshop_download_'.$i])){
+			$eshop_product['products'][$i]['download']=$thisdl=$_POST['eshop_download_'.$i];
 		}
-		$eshop_product['products'][$i]['stkqty']=$_POST['eshop_stkqty_'.$i];
-		if(!is_numeric($_POST['eshop_stkqty_'.$i]) && $_POST['eshop_stkqty_'.$i]!=''){
-			add_filter('redirect_post_location','eshop_stkqty_error');
+		if(isset($_POST['eshop_weight_'.$i])){
+			$eshop_product['products'][$i]['weight']=$_POST['eshop_weight_'.$i];
+			if(!is_numeric($_POST['eshop_weight_'.$i]) && $_POST['eshop_weight_'.$i]!=''){
+				add_filter('redirect_post_location','eshop_weight_error');
+			}
+		}
+		if(isset($_POST['eshop_stkqty_'.$i])){
+			$eshop_product['products'][$i]['stkqty']=$_POST['eshop_stkqty_'.$i];
+			if(!is_numeric($_POST['eshop_stkqty_'.$i]) && $_POST['eshop_stkqty_'.$i]!=''){
+				add_filter('redirect_post_location','eshop_stkqty_error');
+			}
 		}
 	}
 	$eshop_product['description']=htmlspecialchars($_POST['eshop_product_description']);
@@ -267,7 +273,7 @@ function eshop_save_postdata( $post_id ) {
 	$stocktable=$wpdb->prefix ."eshop_stock";
 	//test stk control per option
 	for($i=1;$i<=$numoptions;$i++){
-		if($eshop_product['products'][$i]['stkqty']!='' && is_numeric($eshop_product['products'][$i]['stkqty'])){
+		if(isset($eshop_product['products'][$i]['stkqty']) && $eshop_product['products'][$i]['stkqty']!='' && is_numeric($eshop_product['products'][$i]['stkqty'])){
 			$stkv=$eshop_product['products'][$i]['stkqty'];
 			// Clicking update appears to trigger this function twice (once to create a revision I think, and once to save).  Upshot is that we can't rely on the $post_id variable so...
 			$pid = $_POST['post_ID'];
@@ -282,29 +288,7 @@ function eshop_save_postdata( $post_id ) {
 			}
 		}
 	}
-	/*
-	$eshop_product['qty']=$_POST['eshop_stock_quantity'];
-	if($eshop_product['qty']!='' && is_numeric($eshop_product['qty'])){
-		$meta_value=$eshop_product['qty'];
-		$stocktable=$wpdb->prefix ."eshop_stock";
-		$results=$wpdb->get_results("select post_id, option_id from $stocktable");
-		if(!empty($results)){
-			$found='no';
-			foreach($results as $r){
-				if($id==$r->post_id && $optid==$r->option_id){//update
-					$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id='$id' && option_id=$optid'"));
-					$found='yes';
-				}
-			}
-			if($found=='no'){
-				$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($id,$optid,$meta_value,0)"));
-			}
-		}else{
-			$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($id,$optid,$meta_value,0)"));
-		}
-
-	}
-	*/
+	
 	//form setup
 	$eshop_product['cart_radio']=$_POST['eshop_cart_radio'];
 	//option sets
@@ -327,6 +311,4 @@ function eshop_save_postdata( $post_id ) {
 	}
 	return;
 }
- 
-		
 ?>

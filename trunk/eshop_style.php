@@ -102,22 +102,24 @@ $right_string = file_get_contents($eshop_goto, true);
 		$file = fread($f, filesize($styleFile));
 		echo $file;
 		fclose($f);
-	} else 
+	} else {
 		_e('Sorry. The file you are looking for could not be found','eshop');
-		?>
-	</textarea>
+	}
+?></textarea>
    <p class="submit eshop"><input type="submit" class="button-primary" value="<?php _e('Update Style','eshop'); ?>" name="submit" /></p>
   </fieldset>
 </form>
 </div>
 	<?php 
+	$left_string  = normalize_whitespace($left_string);
+	$right_string = normalize_whitespace($right_string);
 	if(isset($_GET['diff'])){
 		echo '<div class="wrap" id="diff">';
 		echo wp_text_diff( $right_string,$left_string, array( 'title' => __('Comparing Current Style with latest installed version of eShop','eshop'), 'title_right' => __('Latest(from plugin)','eshop'), 'title_left' => __('Current (in use)','eshop') ) );
 		echo '</div>';
-	}elseif($left_string!=$right_string){
+	}elseif(trim($left_string)!=trim($right_string)){
 		echo '<div class="wrap">';
-		echo '<p>'.__('There have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
+		echo '<p>'.__('There may have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
 		echo '</div>';
 	}else{
 		echo '<div class="wrap">';
