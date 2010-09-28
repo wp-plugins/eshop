@@ -46,7 +46,7 @@ function eshop_form_admin_style(){
 <div class="wrap">
 <h2><?php _e('Default Style','eshop'); ?></h2>
 <?php
-if(@file_exists(TEMPLATEPATH.'/eshop.css')) {
+if(@file_exists(STYLESHEETPATH.'/eshop.css')) {
 echo '<p>';
 _e('Your active theme has an eshop style sheet, eshop.css, and will be used in preference to the default style below. Therefore changes made via the style editor below will not show on your site.','eshop');
 echo '</p>';

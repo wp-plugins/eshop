@@ -42,7 +42,14 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-version 5.7.4
+Version 5.7.5
+
+* *added* ability to sort featured/sale products in the shortcode randomly (use sortby='random')
+* *removed* eShortcodes file due to confusion - contact me if you want it back!
+* *fixed* minor bugs
+* *fixed* issue with IIS and cannot redeclare add_user.
+
+Version 5.7.4
 
 * *fixed* Authorize.net issues for PHP5 users.
 * *fixed* checkout issues for some users.(mainly those hosting on IIS)

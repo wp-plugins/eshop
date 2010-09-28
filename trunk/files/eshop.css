@@ -154,13 +154,13 @@ form.dlproduct label {
     margin:10px auto;
     padding:0 1px 10px 1px;
     list-style:none;
-    text-align:center;
 }
 .eshoppanels li {
     display:-moz-inline-box;/* FF2 & under */
     display:inline-block;/* for modern browsers */
     vertical-align:top;
     margin:10px 3px 0 3px;
+    text-align:center;
 }
 
 
@@ -325,10 +325,7 @@ ul.eshop li a.itemref {
 	font-size:1.3em;
 }
 /* eshop panel listings */
-ul.eshoppanels li {
-	clear:none;
-	text-align:center;
-}
+
 ul.eshoppanels li a img {
 	float:none;
 	margin:0;

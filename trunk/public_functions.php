@@ -118,13 +118,7 @@ function eshop_bits_and_bobs(){
 	//long silly name to ensure it isn't used elsewhere!
 		eshop_download_the_product($_POST); 
 	}
-	if($eshopoptions['status']=='testing'){
-		//require_once( ABSPATH . WPINC . '/pluggable.php' );
-		if(is_user_logged_in() && current_user_can('eShop_admin')){
-			add_action('wp_head','eshop_test_mode');
-			add_action('wp_footer','eshop_test_mode_text');
-		}
-	}
+	
 	//add images to the search page if set
 	if('no' != $eshopoptions['search_img']){
 		add_filter('the_excerpt','eshop_excerpt_img');
@@ -134,36 +128,7 @@ function eshop_bits_and_bobs(){
 		add_filter('wp_list_pages_excludes', 'eshop_fold_menus');
 	}
 }
-if (!function_exists('eshop_test_mode_text')) {
-	function eshop_test_mode_text(){
-		echo '<div id="eshoptestmode" title="'.__("This note is only visible to eShop Admins",'eshop').'">'.__('Admin note: eShop is currently in test mode, and only admins can place orders.','eshop').'</div>';
-		return;
-	}
-}
 
-if (!function_exists('eshop_test_mode')) {
-	function eshop_test_mode(){
-		echo '<style type="text/css">
-			#eshoptestmode{
-				padding:5px 0;
-				text-align:center;
-				width:100%;
-				display:block;
-				color:#FFFFFF;
-				position:absolute;
-				top:0;
-				left:0;
-				background-color:#800;
-				filter:alpha(opacity=80);
-				-moz-opacity:0.8;
-				-khtml-opacity: 0.8;
-				opacity: 0.8;
-				font-weight:bold;
-			}
-			</style>';
-	return;
-	}
-}
 /* ajax */
 if (!function_exists('eshop_ajax_inc')) {
 	function eshop_ajax_inc(){
