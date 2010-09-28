@@ -16,7 +16,7 @@ global $eshopoptions, $charset_collate;
 /** create capability */
 if (!function_exists('eshop_caps')) {
     /**
-     * installation routine to set up tables
+     * installation routine to set user roles
      */
     function eshop_caps() {
         global $wpdb, $user_level, $wp_rewrite, $wp_version;

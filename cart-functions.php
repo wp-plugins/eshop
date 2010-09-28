@@ -779,7 +779,9 @@ if (!function_exists('orderhandle')) {
 					$edl=$thechk;
 				}
 				$eshop_product=get_post_meta( $post_id, '_eshop_product',true );
-				$dlchk=$eshop_product['products'][$edl]['download'];
+				$dlchk='';
+				if(isset($eshop_product['products'][$edl]['download']))
+					$dlchk=$eshop_product['products'][$edl]['download'];
 				if($dlchk!=''){
 					//there are downloads.
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
@@ -892,9 +894,11 @@ if (!function_exists('eshop_only_downloads')) {
 			$post_id=$opt['postid'];
 			$option=$opt['option'];
 			$eshop_product=get_post_meta( $post_id, '_eshop_product',true );
-			$dlchk=$eshop_product['products'][$option]['download'];
-			if($dlchk!='')
-				$num++;
+			if(isset($eshop_product['products'][$option]['download'])){
+				$dlchk=$eshop_product['products'][$option]['download'];
+				if($dlchk!='')
+					$num++;
+			}
 			$items++;
 		}
 		if($num==$items)
@@ -1512,8 +1516,9 @@ if (!function_exists('eshop_cart_process')) {
 			/* if download option then it must be free shipping */
 			$postid=$wpdb->escape($_POST['postid']);
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
-
-			$dlchk=$eshop_product['products'][$option]['download'];
+			$dlchk='';
+			if(isset($eshop_product['products'][$option]['download']))
+				$dlchk=$eshop_product['products'][$option]['download'];
 			if($dlchk!='')	$pclas='F';
 			$iprice= $eshop_product['products'][$option]['price'];
 			if($iprice==''){
@@ -1800,6 +1805,74 @@ if (!function_exists('eshop_send_customer_email')) {
 			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
 			"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 		}
+	}
+}
+if (!function_exists('eshop_test_or_live')) {
+	function eshop_test_or_live(){
+		global $eshopoptions, $wp_admin_bar;
+		if ( !is_object( $wp_admin_bar ) ) {
+			if($eshopoptions['status']=='testing'){
+				if(is_user_logged_in() && current_user_can('eShop_admin')){
+					add_action('wp_head','eshop_test_mode');
+					add_action('wp_footer','eshop_test_mode_text');
+				}
+			}
+		} else {
+			add_action( 'wp_before_admin_bar_render', 'eshop_admin_bar_menu', 150 );
+		}
+
+	}
+}
+if (!function_exists('eshop_admin_bar_menu')) {
+	function eshop_admin_bar_menu() {
+		global $eshopoptions, $wp_admin_bar;
+
+		if ( !is_object( $wp_admin_bar ) )
+			return false;
+		if($eshopoptions['status']=='testing'){
+			$title=__('eShop Test Mode','eshop');
+			$extras=__('Admin note: eShop is currently in test mode, and only admins can place orders.','eshop');
+		}else{
+			$title=__('eShop is Live','eshop');
+		}
+		/* Add the Blog Info menu */
+		$wp_admin_bar->add_menu( array( 'id' => 'eshopadminbar', 'title' => $title, 'href' => '' ) );
+		if(isset($extras))
+			$wp_admin_bar->add_menu(  array( 'parent'=>'eshopadminbar','id' => 'eshopadminbar-a', 'title' => $extras, 'href'=>'' ) );
+
+	}
+}
+
+if (!function_exists('eshop_test_mode_text')) {
+	function eshop_test_mode_text(){
+		echo '<div id="eshoptestmode" title="'.__("This note is only visible to eShop Admins",'eshop').'">'.__('Admin note: eShop is currently in test mode, and only admins can place orders.','eshop').'</div>';
+		return;
+	}
+}
+
+if (!function_exists('eshop_test_mode')) {
+	function eshop_test_mode(){
+	?>
+<style type="text/css">
+#eshoptestmode{
+	padding:5px 0;
+	text-align:center;
+	width:100%;
+	display:block;
+	color:#FFFFFF;
+	position:absolute;
+	top:0;
+	left:0;
+	background-color:#800;
+	filter:alpha(opacity=80);
+	-moz-opacity:0.8;
+	-khtml-opacity: 0.8;
+	opacity: 0.8;
+	font-weight:bold;
+}
+</style>
+<?php
+	return;
 	}
 }
 ?>

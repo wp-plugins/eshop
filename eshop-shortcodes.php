@@ -548,13 +548,14 @@ function eshop_list_featured_sale($atts, $type='featured'){
 	eshop_cache();
 	$paged=$post;
 	extract(shortcode_atts(array('class'=>'eshop'.$type,'panels'=>'no','form'=>'no','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
-	$allowedsort=array('post_date','post_title','menu_order');
+	$allowedsort=array('post_date','post_title','menu_order','random');
 	$allowedorder=array('ASC','DESC');
 	if(!in_array($sortby,$allowedsort)) 
 		$sortby='post_title';
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
-		
+	if($sortby=='random')
+		$sortby='rand()';
 	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 
 	if($pages) {
@@ -662,8 +663,8 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		if(isset($esale) && $esale=='yes')
 			$echo .= '<strong>'.__('On Sale','eshop').'</strong>';
 			
-		$w=get_option('thumbnail_size_w');
-		$h=get_option('thumbnail_size_h');
+		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
+		$h=apply_filters('eshop_thumbnail_size_h',get_option('thumbnail_size_h'));
 		if($imgsize!=''){
 			$w=round(($w*$imgsize)/100);
 			$h=round(($h*$imgsize)/100);
@@ -725,8 +726,8 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 				$xclass='<li class="sale"><strong>'.__('On Sale','eshop').'</strong>';
 		}
 		$echo .= $xclass;
-		$w=get_option('thumbnail_size_w');
-		$h=get_option('thumbnail_size_h');
+		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
+		$h=apply_filters('eshop_thumbnail_size_h',get_option('thumbnail_size_h'));
 		if($imgsize!=''){
 			$w=round(($w*$imgsize)/100);
 			$h=round(($h*$imgsize)/100);
@@ -1326,7 +1327,8 @@ function eshop_details($atts){
 						if(isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
 							$opt=$eshop_product['products'][$i]['option'];
 							$price=$eshop_product['products'][$i]['price'];
-							$downl=$eshop_product['products'][$i]['download'];
+							if(isset($eshop_product['products'][$i]['download']))
+								$downl=$eshop_product['products'][$i]['download'];
 							if(isset($eshop_product['products'][$i]['weight']) && $eshop_product['products'][$i]['weight']!='') 
 								$weight=$eshop_product['products'][$i]['weight'];
 							else

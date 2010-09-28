@@ -7,7 +7,7 @@ if(!defined('ESHOP_VERSION'))
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.7.4
+Version: 5.7.5
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -71,8 +71,7 @@ if(is_admin()){
 	include_once 'admin_functions.php';
 	include_once 'eshop_settings.php';
 	include_once( 'eshop-product-entry.php' );
-	include_once( 'eshop-eshortcodes.php');
-	
+
 	/* activations */
 	register_activation_hook(__FILE__,'eshop_install');
 	/*deactivation*/
@@ -120,4 +119,7 @@ if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
  		add_action( 'template_redirect', 'eshop_random' );
  	
 }
+//test/live mode
+add_action ('init','eshop_test_or_live');
+//remove_action( 'init', 'wp_admin_bar_init' );
 ?>
