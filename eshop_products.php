@@ -40,7 +40,8 @@ function eshop_products_manager() {
 		}
 		?>
 		<div class="wrap">
-		<div id="eshopicon" class="icon32"></div><h2><?php _e('Authors','eshop'); ?></h2>
+		<div id="eshopicon" class="icon32"></div><h2><?php _e('Products','eshop'); ?></h2>
+		<h3><?php _e('Authors','eshop'); ?></h3>
 		<?php if(isset($msg)) echo '<div class="updated fade"><p>'.$msg.'</p></div>'; ?>
 		<form action="" method="post" class="eshop filtering">
 		<p><label for="eshopfilter"><?php _e('Show products for','eshop'); ?></label><select name="eshopfilter" id="eshopfilter">
@@ -54,28 +55,15 @@ function eshop_products_manager() {
 	}
 	?>
 	<div class="wrap">
-	<h2><?php _e('Products','eshop'); ?></h2>
+	<h3><?php _e('Products Table','eshop'); ?></h3>
 	<p><?php _e('A reference table for identifying products','eshop'); ?>.</p>
 	<?php
 	if(isset($_POST['eshopqp']) && isset($_POST['product'])){
 		foreach($_POST['product'] as $id=>$type){
 			$pid=$id;
-			/*
-			$stkav=get_post_meta( $pid, '_eshop_stock',true );
-			$eshop_product=get_post_meta( $pid, '_eshop_product',true );
-			if(isset($type['stkqty']) && is_numeric($type['stkqty'])){
-				$meta_value=$type['stkqty'];
-				$stocktable=$wpdb->prefix ."eshop_stock";
-				$results=$wpdb->get_results("select post_id from $stocktable where post_id=$pid");
-				if(!empty($results)){
-					$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$pid"));
-				}else{
-					$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,available,purchases) VALUES ($pid,$meta_value,0)"));
-				}
-			}
-			*/	
 			$stocktable=$wpdb->prefix ."eshop_stock";
 			$eshop_product=get_post_meta( $pid, '_eshop_product',true );
+			$total=0;
 			for($i=1;$i<=$eshopoptions['options_num'];$i++){
 				if(isset($type[$i]['stkqty']) && is_numeric($type[$i]['stkqty'])){
 					$meta_value=$type[$i]['stkqty'];
@@ -85,6 +73,7 @@ function eshop_products_manager() {
 					}else{
 						$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($pid,$i,$meta_value,0)"));
 					}
+					$total=$total+$type[$i]['stkqty'];
 				}
 			}
 			if(isset($type['sale'])){
@@ -105,13 +94,26 @@ function eshop_products_manager() {
 				$stkav='1';
 			else
 				$stkav='0';
-
+			
+			if($stkav=='1' && ($eshop_product['description']=='' || $eshop_product['sku']=='' || $eshop_product['products']['1']['option']=='' || $eshop_product['products']['1']['price']=='')) {
+				$stkav='0';
+				$emsg[0] = 'set';
+			}
+			if($stkav=='1' && ($total==0 && 'yes' == $eshopoptions['stock_control'])){
+				$stkav='0';
+				$emsg [1]= 'set';
+			}
 			update_post_meta( $pid, '_eshop_stock', $stkav);
 			update_post_meta( $pid, '_eshop_product', $eshop_product);
 		}
-		echo'<div id="message" class="updated fade">'.__('Products have been updated','eshop')."</div>\n";
-
-	
+		if(isset($emsg)){
+			$msg='';
+			if(isset($emsg[0]))
+				$msg .=  __(' Some products were marked as not available due to missing information, check the individual product pages.','eshop');
+			if(isset($emsg[1]))
+				$msg .= __(' Some products were marked as not available as no stock was found.','eshop');
+		}
+		echo '<div id="message" class="updated fade">'.__('Products have been updated.','eshop'). $msg . "</div>\n";
 	}
 	//sort by switch statement
 	$csa=$csb=$csc=$csd=$cse=$csf='';
@@ -307,7 +309,7 @@ function eshop_products_manager() {
 				//check if downloadable product
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
 					if($eshop_product['products'][$i]['option']!=''){
-						if($eshop_product['products'][$i]['download']!=''){
+						if(isset($eshop_product['products'][$i]['download']) && $eshop_product['products'][$i]['download']!=''){
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
@@ -345,7 +347,7 @@ function eshop_products_manager() {
 
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
 					if($eshop_product['products'][$i]['option']!=''){
-						if($eshop_product['products'][$i]['download']!=''){
+						if(isset($eshop_product['products'][$i]['download']) && $eshop_product['products'][$i]['download']!=''){
 							$fileid=$eshop_product['products'][$i]['download'];
 							$purchases=$wpdb->get_var("SELECT purchases FROM $dltable WHERE id='$fileid'");
 							if($purchases!='')

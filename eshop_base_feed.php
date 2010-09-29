@@ -53,7 +53,7 @@ $basebrand=$eshopoptions['base_brand'];
 $baseptype=$eshopoptions['base_ptype'];
 $baseexpiry=$eshopoptions['base_expiry'];
 if($baseexpiry=='')$baseexpiry=28;
-$basedate=date('Y-m-d',mktime(0, 0, 0, date("m") , date("d")+$baseexpiry, date("Y")));
+$basedate=$basedatetoo=date('Y-m-d',mktime(0, 0, 0, date("m") , date("d")+$baseexpiry, date("Y")));
 $basepayment=$eshopoptions['base_payment'];
 $basepayments = explode(",", $basepayment);
 foreach($array as $foo=>$grabit){
@@ -95,7 +95,6 @@ foreach($array as $foo=>$grabit){
 		$baseean=$basedata->ean;
 		$baseisbn=$basedata->isbn;
 		$basempn=$basedata->mpn;
-		//need checks for qty
 		$baseqty=$basedata->qty;
 	}
 

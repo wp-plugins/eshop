@@ -114,6 +114,11 @@ class authorizenet_class {
 			$numberofproducts=$_POST['numberofproducts'];
 			$sep='<|>';
 			for($i=1;$i<=$numberofproducts;$i++){
+				if(strlen($_POST['item_name_'.$i]) > 25)
+					$_POST['item_name_'.$i] = substr($_POST['item_name_'.$i],0,25).'...';
+				if(strlen($_POST['item_number_'.$i]) > 249)
+					$_POST['item_number_'.$i] = substr($_POST['item_number_'.$i],0,249).'...';
+
 				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(',','',$_POST['amount_'.$i]).$sep.'N';
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />';
 			}

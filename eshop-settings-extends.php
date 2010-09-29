@@ -1317,12 +1317,12 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		$eshopfiles=eshop_files_directory();
 		$eshoppayment_text=$eshoppayment;
 		$eshoppayment = str_replace($replace, "", $eshoppayment);
-		if($eshoppayment_text=='cash'){
+		if($eshoppayment_text=='cash' && isset($eshopoptions['cash'])){
 			$eshopcash = $eshopoptions['cash'];
 			if($eshopcash['rename']!='')
 				$eshoppayment_text=$eshopcash['rename'];
 		}
-		if($eshoppayment_text=='bank'){
+		if($eshoppayment_text=='bank'  && isset($eshopoptions['bank'])){
 			$eshopbank = $eshopoptions['bank'];
 			if($eshopbank['rename']!='')
 				$eshoppayment_text=$eshopbank['rename'];
