@@ -197,7 +197,7 @@ if(!isset($_GET['change'])){
 				//check if downloadable product
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
 					if($eshop_product['products'][$i]['option']!=''){
-						if($eshop_product['products'][$i]['download']!=''){
+						if(isset($eshop_product['products'][$i]['download']) && $eshop_product['products'][$i]['download']!=''){
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;

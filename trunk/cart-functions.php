@@ -1150,8 +1150,9 @@ if (!function_exists('eshop_download_the_product')) {
 						//ob_clean();
     					//flush();
 						readfile("$dload");
-						//alternative download comment above, and uncomment below
+						//alternatives download methods comment above, and uncomment below
 						//eshop_readfile($dload);
+						//eshop_readfile_temp($dload,$item);
         	   			exit();
 					}
 				}
@@ -1224,6 +1225,47 @@ if (!function_exists('eshop_readfile')){
     return $status;
   }
 }
+
+//new alt
+if (!function_exists('eshop_readfile_temp')){
+  function eshop_readfile_temp($fileloc,$filename) {
+  	$download_attempt=0;
+	do {
+        $fs = fopen($fileloc, "rb");
+        $uploads = wp_upload_dir();
+		$temp_file_name=$uploads['basedir'].'/'.$filename;
+        if (!$fs) {
+          die (__('Sorry there was an error with the download','eshop'));
+        } else {
+          $fm = fopen ($temp_file_name, "w");
+          stream_set_timeout($fs, 30);
+
+          while(!feof($fs)) {
+            $contents = fread($fs, 4096); // Buffered download
+            fwrite($fm, $contents);
+            $info = stream_get_meta_data($fs);
+            if ($info['timed_out']) {
+              break;
+            }
+          }
+          fclose($fm);
+          fclose($fs);
+
+          if ($info['timed_out']) {
+            // Delete temp file if fails
+            unlink($temp_file_name);
+            $download_attempt++;
+          } else {
+			wp_redirect($uploads['baseurl'].'/'.$filename, '302');
+            unlink($temp_file_name);
+            //delete on success.
+          }
+        }
+      } while ($download_attempt < 5 && $info['timed_out']);
+	}
+}
+
+
 
 if (!function_exists('eshop_visible_credits')) {
 	function eshop_visible_credits($pee){
@@ -1554,14 +1596,18 @@ if (!function_exists('eshop_cart_process')) {
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
 			$optnum=$_SESSION['eshopcart'.$blog_id][$identifier]['option'];
 			$item=$eshop_product['products'][$_SESSION['eshopcart'.$blog_id][$identifier]['option']]['option'];
-			$stkqty = $eshop_product['products'][$optnum]['stkqty'];
-			//recheck stkqty
-			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid && option_id=$optnum");
-			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
-			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
-				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-			}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
-				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+			if('yes' == $eshopoptions['stock_control']){
+				$stkqty = $eshop_product['products'][$optnum]['stkqty'];
+				//recheck stkqty
+				$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid && option_id=$optnum");
+				if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
+				if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
+					$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+				}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
+					$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+				}else{
+					$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
+				}
 			}else{
 				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
 			}
@@ -1582,19 +1628,23 @@ if (!function_exists('eshop_cart_process')) {
 			}
 			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
 			$item=$eshop_product['products'][$optnum]['option'];
-			$stkqty = $eshop_product['products'][$optnum]['stkqty'];
+			if('yes' == $eshopoptions['stock_control']){
+				$stkqty = $eshop_product['products'][$optnum]['stkqty'];
 
-			//recheck stkqty
-			$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid && option_id=$optid");
-			if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
-			if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
-				$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
-			}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
-				$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
-				//$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
+				//recheck stkqty
+				$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid && option_id=$optid");
+				if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
+				if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
+					$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+				}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
+					$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+					//$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
+				}else{
+					$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
+				}
 			}else{
 				$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
-			}
+			}	
 			$_SESSION['lastproduct'.$blog_id]=$postid;
 			$_SESSION['eshopcart'.$blog_id][$identifier]['item']=$item;
 			$_SESSION['eshopcart'.$blog_id][$identifier]['option']=stripslashes($option);
@@ -1825,8 +1875,8 @@ if (!function_exists('eshop_test_or_live')) {
 }
 if (!function_exists('eshop_admin_bar_menu')) {
 	function eshop_admin_bar_menu() {
-		global $eshopoptions, $wp_admin_bar;
-
+		global $wp_admin_bar;
+		$eshopoptions = get_option('eshop_plugin_settings');
 		if ( !is_object( $wp_admin_bar ) )
 			return false;
 		if($eshopoptions['status']=='testing'){
