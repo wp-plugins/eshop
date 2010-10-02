@@ -62,7 +62,7 @@ function eshop_products_manager() {
 		foreach($_POST['product'] as $id=>$type){
 			$pid=$id;
 			$stocktable=$wpdb->prefix ."eshop_stock";
-			$eshop_product=get_post_meta( $pid, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $pid, '_eshop_product',true ));
 			$total=0;
 			for($i=1;$i<=$eshopoptions['options_num'];$i++){
 				if(isset($type[$i]['stkqty']) && is_numeric($type[$i]['stkqty'])){
@@ -426,7 +426,7 @@ function eshop_products_manager() {
 		?>
 		</tbody>
 		</table>
-		<p><input type="submit" name="eshopqp" id="submitit" class="submit button-primary" value="Update Products" /></p>
+		<p><input type="submit" name="eshopqp" id="submitit" class="submit button-primary" value="<?php _e('Update Products','eshop'); ?>" /></p>
 		</form>
 		<?php
 		//paginate
@@ -441,7 +441,7 @@ function eshop_products_manager() {
 			);
 			if(isset($eecho)){
 				$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
-				echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+				echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			}
 			echo '<br /></div>';
 

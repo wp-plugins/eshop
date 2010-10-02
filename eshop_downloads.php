@@ -404,7 +404,7 @@ function eshop_downloads_manager() {
 		//$thispage=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'].'&amp;viewall=yes';
 		if(isset($eecho)){
 			$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
-			echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 		}
 		echo '<br /></div>';
 	

@@ -3,7 +3,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 	global $wpdb,$post,$eshopchk,$eshopoptions;
 	if($postid=='') $postid=$post->ID;
 	$stkav=get_post_meta( $postid, '_eshop_stock',true);
-    $eshop_product=get_post_meta( $postid, '_eshop_product',true );
+    $eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 	$saleclass='';
 	if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
 		$saleclass=' sale';
@@ -24,7 +24,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 	}
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//need to precheck stock
-		if($post->ID!=''){
+		if($postid!=''){
 			if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 				$anystk=false;
 				$stkq=$wpdb->get_results("SELECT option_id, available from $stocktable where post_id=$postid");
@@ -140,7 +140,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 				}
 			}
 
-						
+					
 			if($eshopoptions['options_num']>1){
 			
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){

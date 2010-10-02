@@ -13,7 +13,8 @@ div.wrap {
 #wpbody{
 margin-left:0;
 }
-#wphead, #user_info, #adminmenu, #submenu, .wrap h2, form, #footer, .subsubsub, .noprint {
+#wphead, #user_info, #adminmenu, #submenu, .wrap h2, form, #footer, .subsubsub, .noprint,
+#contextual-help-link-wrap {
   display : none;
 }
 

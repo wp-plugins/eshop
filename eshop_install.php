@@ -597,6 +597,7 @@ if(isset($eshopoptions['version'])){
 		$sql = "CREATE TABLE ".$table." (
 		optid int(11) NOT NULL auto_increment,
 		name varchar(255) NOT NULL default '',
+		admin_name varchar(255) NOT NULL default ''
 		type tinyint(1) NOT NULL default '0',
 		`description` TEXT NOT NULL  default '',
 		  PRIMARY KEY  (optid)

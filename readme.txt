@@ -44,6 +44,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version 5.7.5
 
+* *added* admin short name for option sets
 * *added* ability to sort featured/sale products in the shortcode randomly (use sortby='random')
 * *fixed* issue with IIS and cannot redeclare add_user.
 * *fixed* Item line too long error for authorize.net users
@@ -62,6 +63,7 @@ Version 5.7.4
 * *changed* For new users only, the display of the 'panels' - existing users will need to amend the CSS (use the link provided on the Apperance > eShop page).
 * *added* hooks for copy emails (admin and customer)
 * *fixed* minor hidden bugs
+* *fixed* missing translation strings
 
 Version 5.7.3
 

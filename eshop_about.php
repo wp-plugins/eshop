@@ -26,7 +26,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
  <p style="text-align:center">Feeling generous? then please dig deep and donate as much as you can afford!</p>
  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
  <input type="hidden" name="cmd" value="_xclick" />
- <input type="hidden" name="business" value="mypaypal@blackwidows.co.uk" />
+ <input type="hidden" name="business" value="paypal@blackwidows.co.uk" />
  <input type="hidden" name="item_name" value="eShop donation" />
  <input type="hidden" name="buyer_credit_promo_code" value="" />
  <input type="hidden" name="buyer_credit_product_category" value="" />

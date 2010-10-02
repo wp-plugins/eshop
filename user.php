@@ -58,43 +58,43 @@ global $wpdb,$eshopoptions;
 <p><?php _e('Filling in fields here will save you having to enter them each time you purchase something from our shop.','eshop'); ?></p>
 <table class="form-table">
 <tr>
-<th><label for="company"><?php _e("Company"); ?></label></th>
+<th><label for="company"><?php _e("Company",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[company]" id="company" value="<?php if (isset($eshopuser['company'])) echo esc_attr( $eshopuser['company'] ); ?>" class="regular-text" /><br />
-<span class="description"><?php _e("Business users only."); ?></span></td>
+<span class="description"><?php _e("Business users only.",'eshop'); ?></span></td>
 </tr>
 <tr>
-<th><label for="phone"><?php _e("Phone"); ?></label></th>
+<th><label for="phone"><?php _e("Phone",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[phone]" id="phone" value="<?php if (isset($eshopuser['phone'])) echo esc_attr( $eshopuser['phone'] ); ?>" class="regular-text" /><br />
 </td>
 </tr>
 <tr>
-<th><label for="address1"><?php _e("Address"); ?></label></th>
+<th><label for="address1"><?php _e("Address",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[address1]" id="address1" value="<?php if (isset($eshopuser['address1'])) echo esc_attr( $eshopuser['address1'] ); ?>" class="regular-text" /><br />
 </td>
 </tr>
 <tr>
-<th><label for="address2"><?php _e("Address (continued)"); ?></label></th>
+<th><label for="address2"><?php _e("Address (continued)",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[address2]" id="address2" value="<?php if (isset($eshopuser['address2'])) echo esc_attr( $eshopuser['address2'] ); ?>" class="regular-text" /><br />
 </td>
 </tr>
 <tr>
-<th><label for="city"><?php _e("City"); ?></label></th>
+<th><label for="city"><?php _e("City",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[city]" id="city" value="<?php if (isset($eshopuser['city'])) echo esc_attr( $eshopuser['city'] ); ?>" class="regular-text" /><br />
 </td>
 </tr>
 <tr>
-<th><label for="province"><?php _e("State/County/Province"); ?></label></th>
+<th><label for="province"><?php _e("State/County/Province",'eshop'); ?></label></th>
 <td>
 <?php echo $estates; ?>
 </td>
 </tr>
 <tr>
-<th><label for="zip"><?php _e("Zip/Post code"); ?></label></th>
+<th><label for="zip"><?php _e("Zip/Post code",'eshop'); ?></label></th>
 <td>
 <input type="text" name="eshopuser[zip]" id="zip" value="<?php if (isset($eshopuser['zip'])) echo esc_attr( $eshopuser['zip'] ); ?>" class="short-text" /><br />
 </td>
