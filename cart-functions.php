@@ -99,15 +99,16 @@ if (!function_exists('display_cart')) {
 							$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
 							$x=0;
 							foreach($orowres as $orow){
-								//if(($orow->type=='2' || $orow->type=='3') && isset($newoptings[$x]['text']))
-								if((isset($newoptings[$x]['type']) && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3')) && isset($newoptings[$x]['text']))
-									$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
-								elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
-									$xxxx='';
-								else
-									$oset[]=$orow->name;
-								$addoprice=$addoprice+$orow->price;
-								$x++;
+								if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
+									if((isset($newoptings[$x]['type'])&& isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
+										$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+									}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
+										$xxxx='';
+									else
+										$oset[]=$orow->name;
+									$addoprice=$addoprice+$orow->price;
+									$x++;
+								}
 							}
 							$optset="\n".implode("\n",$oset);
 						}else{
@@ -1653,11 +1654,13 @@ if (!function_exists('eshop_cart_process')) {
 			$_SESSION['eshopcart'.$blog_id][$identifier]['pname']=stripslashes($pname);
 			$_SESSION['eshopcart'.$blog_id][$identifier]['price']=$iprice;
 			if(isset($_POST['optset'])){
-				$_SESSION['eshopcart'.$blog_id][$identifier]['optset']=serialize($_POST['optset']);
+				foreach($_POST['optset'] as $k=>$v)
+					$newoptset[]=$v;
+				
+				$_SESSION['eshopcart'.$blog_id][$identifier]['optset']=serialize($newoptset);
 				
 				$oset=$qb=array();
-				$optings=$_POST['optset'];
-
+				$optings=$newoptset;
 				//$opttable=$wpdb->prefix.'eshop_option_sets';
 				foreach($optings as $foo=>$opst){
 					$qb[]="id=$opst[id]";

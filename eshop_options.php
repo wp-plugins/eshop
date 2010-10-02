@@ -87,7 +87,7 @@ if (isset($_POST['eaddopt'])) {
 		$x++;
 	}
 	$name=$_POST['name'];
-	
+	$adminname=$_POST['admin_name'];
 	$description=$_POST['description'];
 	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',admin_name='%s',type='%d',description='%s' where optid='%d'",$name,$adminname,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Created','eshop').'</p>';
