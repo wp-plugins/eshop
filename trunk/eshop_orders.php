@@ -229,7 +229,7 @@ if (!function_exists('displayorders')) {
 				);
 				if(isset($eecho)){
 					$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
-					echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+					echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 				}
 				//echo '<p class="checkers">'.__('Bulk:','eshop').'<a href="javascript:checkedAll(\'orderstatus\', true)" title="'.__('Select all of the checkboxes above','eshop').'">'.__('Check','eshop').'</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="'.__('Deselect all of the checkboxes above','eshop').'">'.__('Uncheck','eshop').'</a></p>';
 				echo '<br /></div>';
@@ -310,7 +310,7 @@ if (!function_exists('displaystats')) {
 
 		$countprod=$countfeat=0;
 		foreach($stocked as $stock){
-		    $eshop_product=get_post_meta( $stock->post_id, '_eshop_product',true );
+		    $eshop_product=maybe_unserialize(get_post_meta( $stock->post_id, '_eshop_product',true ));
 		    if($eshop_product['featured']=='Yes')
 				$countfeat++;
 			$stkav=get_post_meta( $stock->post_id, '_eshop_stock',true );

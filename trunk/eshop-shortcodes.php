@@ -111,7 +111,7 @@ function eshop_list_alpha($atts){
 	 	$econtain.= '<li><span>0-9</span></li>'."\n";
 	}
 	$econtain.="</ul>\n";
-	if(in_array($dbletter,$letter_array))
+	if(isset($dbletter) && in_array($dbletter,$letter_array))
 		$qbuild=" AND UPPER(LEFT(post_title,1))='$dbletter'";
 	elseif(isset($eshopaz) && $eshopaz=='num')
 		$qbuild=" AND UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9'";
@@ -168,7 +168,7 @@ function eshop_list_alpha($atts){
 
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
@@ -272,7 +272,7 @@ function eshop_list_subpages($atts){
 		
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
@@ -380,7 +380,7 @@ function eshop_list_cat_tags($atts){
 		
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
@@ -451,7 +451,7 @@ function eshop_list_new($atts){
 		}
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
@@ -527,7 +527,7 @@ function eshop_best_sellers($atts){
 
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">View All</a>'."</li>\n</ul>\n";
+			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
@@ -691,7 +691,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		$echo .= apply_filters('the_excerpt', get_the_excerpt());
 
 		if($price!='no'){
-			$eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
@@ -751,7 +751,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span>'."\n";
 		
 		if($price!='no'){
-			$eshop_product=get_post_meta( $post->ID, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
@@ -1263,7 +1263,7 @@ function eshop_details($atts){
 	
 	$listed='';
 	$producttable = $wpdb->prefix ."eshop_downloads";
-	$eshop_product=get_post_meta($post->ID, '_eshop_product','true');
+	$eshop_product=maybe_unserialize(get_post_meta($post->ID, '_eshop_product','true'));
 	$eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
 	$numoptions=$eshopoptions['options_num'];
 	$currsymbol=$eshopoptions['currency_symbol'];
@@ -1327,6 +1327,7 @@ function eshop_details($atts){
 						if(isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
 							$opt=$eshop_product['products'][$i]['option'];
 							$price=$eshop_product['products'][$i]['price'];
+							$downl='';
 							if(isset($eshop_product['products'][$i]['download']))
 								$downl=$eshop_product['products'][$i]['download'];
 							if(isset($eshop_product['products'][$i]['weight']) && $eshop_product['products'][$i]['weight']!='') 
@@ -1422,6 +1423,7 @@ function eshop_details($atts){
 									$tbody.="</tr>\n";
 									$i++;
 								}
+								$listed.='<strong>'.stripslashes(esc_attr($ename)).'</strong><br />';
 								$listed.=nl2br(stripslashes(esc_attr($edesc)));
 								$listed.='<table class="eshop" summary="'.__('Product Options by option and price','eshop').'">
 								<thead><tr>

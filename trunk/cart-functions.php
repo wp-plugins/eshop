@@ -58,7 +58,7 @@ if (!function_exists('display_cart')) {
 					$alt = ($calt % 2) ? '' : ' class="alt"';
 					$echo.= "\n<tr".$alt.">";
 					//do the math for weight
-					$eshop_product=get_post_meta( $opt['postid'], '_eshop_product',true );
+					$eshop_product=maybe_unserialize(get_post_meta( $opt['postid'], '_eshop_product',true ));
 					$eimg='';
 					/* test image insertion */
 					if(is_numeric($eshopoptions['image_in_cart'])){
@@ -778,7 +778,7 @@ if (!function_exists('orderhandle')) {
 				}else{
 					$edl=$thechk;
 				}
-				$eshop_product=get_post_meta( $post_id, '_eshop_product',true );
+				$eshop_product=maybe_unserialize(get_post_meta( $post_id, '_eshop_product',true ));
 				$dlchk='';
 				if(isset($eshop_product['products'][$edl]['download']))
 					$dlchk=$eshop_product['products'][$edl]['download'];
@@ -893,7 +893,7 @@ if (!function_exists('eshop_only_downloads')) {
 		foreach ($eshopcartarray as $productid => $opt){
 			$post_id=$opt['postid'];
 			$option=$opt['option'];
-			$eshop_product=get_post_meta( $post_id, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $post_id, '_eshop_product',true ));
 			if(isset($eshop_product['products'][$option]['download'])){
 				$dlchk=$eshop_product['products'][$option]['download'];
 				if($dlchk!='')
@@ -951,7 +951,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$total=$total+$value;
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
-			if($itemid=='postage'){
+			if(trim($itemid)=='postage' || trim($itemid)==__('Shipping','eshop')){
 				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
 			}else{
 				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
@@ -1542,7 +1542,7 @@ if (!function_exists('eshop_cart_process')) {
 		}
 		if(isset($_POST['postid'])){
 			$stkav=get_post_meta( $_POST['postid'], '_eshop_stock',true );
-    		$eshop_product=get_post_meta( $_POST['postid'], '_eshop_product',true );
+    		$eshop_product=maybe_unserialize(get_post_meta( $_POST['postid'], '_eshop_product',true ));
     	}
 		if(isset($_POST['option']) && !isset($_POST['save'])){
 			$edown=$getprice=$option=$_POST['option'];
@@ -1557,7 +1557,7 @@ if (!function_exists('eshop_cart_process')) {
 			$pname=$_POST['pname'];
 			/* if download option then it must be free shipping */
 			$postid=$wpdb->escape($_POST['postid']);
-			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 			$dlchk='';
 			if(isset($eshop_product['products'][$option]['download']))
 				$dlchk=$eshop_product['products'][$option]['download'];
@@ -1593,7 +1593,7 @@ if (!function_exists('eshop_cart_process')) {
 		if(isset($_SESSION['eshopcart'.$blog_id][$identifier])){
 			$testqty=$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+$qty;
 			$eshopid=$_SESSION['eshopcart'.$blog_id][$identifier]['postid'];
-			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 			$optnum=$_SESSION['eshopcart'.$blog_id][$identifier]['option'];
 			$item=$eshop_product['products'][$_SESSION['eshopcart'.$blog_id][$identifier]['option']]['option'];
 			if('yes' == $eshopoptions['stock_control']){
@@ -1626,7 +1626,7 @@ if (!function_exists('eshop_cart_process')) {
 				$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
 				$testqty=$qty;
 			}
-			$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+			$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 			$item=$eshop_product['products'][$optnum]['option'];
 			if('yes' == $eshopoptions['stock_control']){
 				$stkqty = $eshop_product['products'][$optnum]['stkqty'];
@@ -1715,7 +1715,7 @@ if (!function_exists('eshop_cart_process')) {
 									unset($_SESSION['eshopcart'.$blog_id][$productid]);
 								}else{
 									$postid=$eshopid=$_SESSION['eshopcart'.$blog_id][$productid]['postid'];
-									$eshop_product=get_post_meta( $postid, '_eshop_product',true );
+									$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 									$optnum=$_SESSION['eshopcart'.$blog_id][$productid]['option'];
 									$stkqty = $eshop_product['products'][$_SESSION['eshopcart'.$blog_id][$productid]['option']]['stkqty'];
 									//recheck stkqty

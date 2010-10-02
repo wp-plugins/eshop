@@ -56,8 +56,9 @@ if (isset($_POST['delete'])) {
 		$x++;
 	}
 	$name=$_POST['name'];
+	$adminname=$_POST['admin_name'];
 	$description=$_POST['description'];
-	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
+	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',admin_name='%s',type='%d',description='%s' where optid='%d'",$name,$adminname,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Updated','eshop').'</p>';
 }
 
@@ -88,7 +89,7 @@ if (isset($_POST['eaddopt'])) {
 	$name=$_POST['name'];
 	
 	$description=$_POST['description'];
-	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',type='%d',description='%s' where optid='%d'",$name,$type,$description,$optid));
+	$wpdb->query($wpdb->prepare("UPDATE $opttable SET  name='%s',admin_name='%s',type='%d',description='%s' where optid='%d'",$name,$adminname,$type,$description,$optid));
 	echo '<p class="success">'.__('Option Set Created','eshop').'</p>';
 	createform($opttable);
 }elseif (isset($_POST['create'])) {
@@ -105,6 +106,7 @@ if (isset($_POST['eaddopt'])) {
 	$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price,weight from $optsettable where optid='%d' ORDER by id ASC",$optid));
 	$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
 	$ename=$egrab->name;
+	$adminename=$egrab->admin_name;
 	$etype=$egrab->type;
 	$edesc=$egrab->description;
 	$checkrows=sizeof($myrowres);
@@ -131,7 +133,7 @@ if (isset($_POST['eaddopt'])) {
 		<form id="eshopoptionsets" action="" method="post">
 			<fieldset>
 			<input type = "hidden" name="optid" id="optid" value = "<?php echo $optid; ?>" />
-			<label for="name"><?php _e('Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/>
+			<label for="name"><?php _e('Display Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/>
 			<label for="type"><?php _e('Set display type','eshop'); ?></label>
 			<select id="type" name="type">
 			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>><?php _e('Dropdown','eshop'); ?></option>
@@ -139,6 +141,7 @@ if (isset($_POST['eaddopt'])) {
 			<option value="2"<?php if($etype==2) echo ' selected="selected"';?>><?php _e('Text','eshop'); ?></option>
 			<option value="3"<?php if($etype==3) echo ' selected="selected"';?>><?php _e('Textarea','eshop'); ?></option>
 			</select><br />
+			<label for="adminname"><?php _e('Short Admin Name','eshop'); ?></label><input type = "text" name="admin_name" id="adminname" value = "<?php echo stripslashes(esc_attr($adminename)); ?>" size="35"/><br />
 			<label for="edesc"><?php _e('Description','eshop'); ?></label>
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">

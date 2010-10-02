@@ -29,7 +29,7 @@ function eshop_inner_custom_box($post) {
     $osets=array();
     if(isset($_REQUEST[ 'post' ])){
     	$stkav=get_post_meta( $_REQUEST[ 'post' ], '_eshop_stock',true );
-    	$eshop_product=get_post_meta( $_REQUEST[ 'post' ], '_eshop_product',true );
+    	$eshop_product=maybe_unserialize(get_post_meta( $_REQUEST[ 'post' ], '_eshop_product',true ));
     }else{
     	$stkav='';
     	$eshop_product=array();
@@ -41,7 +41,7 @@ function eshop_inner_custom_box($post) {
     $stocktable=$wpdb->prefix ."eshop_stock";
     if(isset($eshop_product['products'])){
 		for ( $i = 1; $i<= count( $eshop_product['products']); $i++) {
-			if ( isset( $eshop_product['products'] ) && !empty( $eshop_product['products'][$i]['option'] ) ) {
+			if ( isset( $eshop_product['products'][$i]['option'] ) && !empty( $eshop_product['products'][$i]['option'] ) ) {
 				$eshop_product['products'][$i]['stkqty'] = $wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID AND option_id=$i");
 			}
 		}
@@ -133,8 +133,11 @@ function eshop_inner_custom_box($post) {
 	$oi=1;
 	if(!is_array($osets)) $osets=array();
 	foreach($myrowres as $row){
+		$displayname=$row->name;
+		if(isset($row->admin_name) && $row->admin_name!='')
+			$displayname=$row->admin_name;
 	?>
-		<li><input type="checkbox" name="eshoposets[]" id="osets<?php echo $oi; ?>" value="<?php echo $row->optid; ?>"<?php if(in_array($row->optid,$osets)) echo ' checked="checked"'; ?> /><label for="osets<?php echo $oi; ?>"><?php echo stripslashes(esc_attr($row->name))?></label></li>
+		<li><input type="checkbox" name="eshoposets[]" id="osets<?php echo $oi; ?>" value="<?php echo $row->optid; ?>"<?php if(in_array($row->optid,$osets)) echo ' checked="checked"'; ?> /><label for="osets<?php echo $oi; ?>"><?php echo stripslashes(esc_attr($displayname))?></label></li>
 	<?php
 		$oi++;
 	}
@@ -221,7 +224,7 @@ function eshop_save_postdata( $post_id ) {
 		$id = $post_id;
   // OK, we're authenticated: we need to find and save the data
 	$stkav=get_post_meta( $post_id, '_eshop_stock',true );
-    $eshop_product=get_post_meta( $post_id, '_eshop_product',true );
+    $eshop_product=maybe_unserialize(get_post_meta( $post_id, '_eshop_product',true ));
 	
 	$eshop_product['sku']=htmlspecialchars($_POST['eshop_sku']);
 	$numoptions=$eshopoptions['options_num'];

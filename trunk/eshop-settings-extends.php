@@ -1142,7 +1142,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		?>
 		<fieldset>
 			<?php 		
-			$this->show_img('ideal');
+			$this->show_img('ideallite');
  
 			if(isset($eshopoptions['ideallite']))
 				$ideallite = $eshopoptions['ideallite']; 
