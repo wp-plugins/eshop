@@ -260,7 +260,6 @@ if (!function_exists('eshopShowform')) {
 			if(isset($qb)) unset($qb);
 			$oset=array();
 			$optings=unserialize($opt['optset']);
-			$opttable=$wpdb->prefix.'eshop_option_sets';
 			foreach($optings as $foo=>$opst){
 				if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')) 
 					$qb[]="id=$opst[id]";

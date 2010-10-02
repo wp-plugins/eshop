@@ -103,6 +103,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 									else
 										$addprice='';
 									$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset['.$enumb.'][id]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
+									$enumb++;
 								}
 								$replace.="</fieldset>\n";
 								break;
