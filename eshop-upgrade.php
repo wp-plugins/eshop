@@ -11,20 +11,20 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 global $wpdb;
 $eshopoptions = get_option('eshop_plugin_settings');
 if(version_compare($eshopoptions['version'], '5.7.6' ,'<')){
-	//changes for version 5.7.5
+	//changes for version 5.7.5 & 6
 	$eshopoptions['first_time']='yes';
 	update_option('eshop_plugin_settings',$eshopoptions);
 	$table = $wpdb->prefix ."eshop_option_names";
-		$tablefields = $wpdb->get_results("DESCRIBE {$table}");
-		$add_field = TRUE;
-		foreach ($tablefields as $tablefield) {
-			if(strtolower($tablefield->Field)=='admin_name') {
-				$add_field = FALSE;
-			}
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='admin_name') {
+			$add_field = FALSE;
 		}
-		if ($add_field) {
-			$sql="ALTER TABLE `".$table."` ADD admin_name varchar(255) NOT NULL default ''";
-			$wpdb->query($sql);
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` ADD admin_name varchar(255) NOT NULL default ''";
+		$wpdb->query($sql);
 	}
 }
 if(version_compare($eshopoptions['version'], '5.7.0' ,'<')){

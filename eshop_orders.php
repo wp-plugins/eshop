@@ -162,7 +162,7 @@ if (!function_exists('displayorders')) {
 			<caption class="offset">'.__('eshop Order Listing','eshop').'</caption>
 			<thead>
 			<tr>
-			<th id="line" title="Line number">#</th>
+			<th id="line" title="'.__('reference number', 'eshop').'">#</th>
 			<th id="date">'.__('Date/Time','eshop').'</th>
 			<th id="customer">'.__('Customer','eshop').'</th>
 			<th id="items">'.__('Items','eshop').'</th>
@@ -204,7 +204,7 @@ if (!function_exists('displayorders')) {
 					$currsymbol=$eshopoptions['currency_symbol'];
 					$ic=$x-1;
 					echo '<tr'.$alt.'>
-					<td headers="line" id="numb'.$c.'">'.$c.'</td>
+					<td headers="line" id="numb'.$c.'">'.$myrow->id.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
 					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
 					<td headers="items numb'.$c.'">'.$ic.'</td>
@@ -598,10 +598,10 @@ if(isset($_POST['mark']) && !isset($_POST['change'])){
 	echo '<p class="success">'.__('Order status changed successfully.','eshop').'</p>';
 }
 if (isset($_GET['view']) && is_numeric($_GET['view'])){
-	$view=$_GET['view'];
+	$view=$wpdb->escape($_GET['view']);
 	if (isset($_GET['adddown']) && is_numeric($_GET['adddown'])){
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
-		$adddown=$_GET['adddown'];
+		$adddown=$wpdb->escape($_GET['adddown']);
 		$wpdb->query("UPDATE $dordtable SET downloads=downloads+1 where id='$adddown' limit 1");
 		echo '<p class="success">'.__('Download allowance increased.','eshop').'</p>';
 	}
@@ -639,7 +639,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	</fieldset></form></div>
 	<?php
 	//order status box code end
-	echo '<h3 class="status"><span>'.$status.'</span> '.__('Order Details','eshop').'</h3>';
+	echo '<h3 class="status"><span>'.$status.'</span> '.__('Order Details','eshop').' <small>('.$view.')</small></h3>';
 	$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 	$total=0;
 	$calt=0;
