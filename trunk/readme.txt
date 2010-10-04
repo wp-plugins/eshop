@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.7.4
+Stable tag: 5.7.6
 
 An accessible Shopping Cart plugin.
 
@@ -42,18 +42,23 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version 5.7.5
+Version 5.7.6
 
 * *added* admin short name for option sets
 * *added* ability to sort featured/sale products in the shortcode randomly (use sortby='random')
 * *fixed* issue with IIS and cannot redeclare add_user.
 * *fixed* Item line too long error for authorize.net users
 * *fixed* minor bugs
+* *fixed* min/max bug in cart
 * *amended* support for older version of WordPress dropped.
 * *amended* Products page, added in extra check for marking products as having stock available.
 * *improved* upgrade routine - hopefully this will solve any issues when upgrading.
+* *improved* option set listings
 * *removed* eShortcodes file due to confusion - contact me if you want it back!
 
+Version 5.7.5
+
+* developer release only.
 
 Version 5.7.4
 

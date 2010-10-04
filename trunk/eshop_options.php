@@ -167,17 +167,37 @@ if (isset($_POST['eaddopt'])) {
 <?php
 function createform($opttable){
 	global $wpdb;
-	$myrowres=$wpdb->get_results("select *	from $opttable ORDER BY name ASC");
+	$myrowres=$wpdb->get_results("select *	from $opttable ORDER BY admin_name,name ASC");
 	createnew();
 	if(sizeof($myrowres)>0){
 		?>
 		<h3><?php _e('Existing Option Sets','eshop'); ?></h3>
-		<ul class="optionlist">
+		<table class="widefat" summary="<?php _e('Option Sets','eshop'); ?>">
+		<caption><?php _e('Option sets reference table','eshop'); ?></caption>
+		<thead>
+		<tr>
+		<th id="aname"><?php _e('Admin Name','eshop'); ?></th>
+		<th id="pname"><?php _e('Public Name','eshop'); ?></th>
+		<th id="type"><?php _e('Type','eshop'); ?></th>
+		</tr>
+		</thead>
+		<tbody>
 		<?php
+		$otypes=array('0'=>__('Dropdown','eshop'), '1'=>__('Checkboxes','eshop'), '2'=>__('Text','eshop'), '3'=>__('Textarea','eshop'));
+		$calt=0;
 		foreach($myrowres as $row){
-			echo '<li><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></li>\n";
+			$calt++;
+			$alt = ($calt % 2) ? '' : ' class="alt"';
+			echo '<tr'.$calt.'>';
+			echo '<td id="row'.$calt.'" headers="aname"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->admin_name))."</a></td>\n";
+			echo '<td headers="pname row'.$calt.'"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></td>\n";
+			echo '<td headers="pname row'.$calt.'">'.$otypes[$row->type]."</a></td>\n";
+			echo "</tr>\n";
 		}
-		echo "</ul>";
+		?>
+		</tbody>
+		</table>
+		<?php
 	}
 }
 function createnew(){

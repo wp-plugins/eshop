@@ -66,7 +66,7 @@ if (!function_exists('displaymyorders')) {
 			<caption class="offset">'.__('eshop Order Listing','eshop').'</caption>
 			<thead>
 			<tr>
-			<th id="line" title="Line number">#</th>
+			<th id="line" title="'.__('reference number', 'eshop').'">#</th>
 			<th id="date">'.__('Ordered on','eshop').'</th>
 			<th id="transid">'.__('Transaction ID','eshop').'</th>
 			<th id="items">'.__('Items','eshop').'</th>
@@ -112,7 +112,7 @@ if (!function_exists('displaymyorders')) {
 					}
 					$currsymbol=$eshopoptions['currency_symbol'];
 					echo '<tr'.$alt.'>
-					<td headers="line" id="numb'.$c.'">'.$c.'</td>
+					<td headers="line" id="numb'.$c.'">'.$myrow->id.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
 					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->transid.'</a></td>
 					<td headers="items numb'.$c.'">'.$x.'</td>
@@ -154,7 +154,7 @@ echo '<div class="wrap">';
 echo '<div id="eshopicon" class="icon32"></div><h2>'.__('My Orders','eshop')."</h2>\n";
 
 if (isset($_GET['view']) && is_numeric($_GET['view'])){
-	$view=$_GET['view'];
+	$view=$wpdb->escape($_GET['view']);
 	$dquery=$wpdb->get_results("Select * From $dtable where id='$view'");
 	foreach($dquery as $drow){
 		$status=$drow->status;
@@ -170,7 +170,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if($status=='Sent'){$status=__('Sent','eshop');}
 	if($status=='Deleted'){$status=__('Deleted','eshop');}
 	if($status=='Failed'){$status=__('Failed','eshop');}
-	echo '<h3 class="status">'.__('Order Details','eshop').' - <span>'.$status.'</span></h3>';
+	echo '<h3 class="status">'.__('Order Details','eshop').' - <span>'.$status.'</span> <small>('.$view.')</small></h3>';
 	$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 	$total=0;
 	$calt=0;
