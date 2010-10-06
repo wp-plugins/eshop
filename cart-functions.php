@@ -867,7 +867,7 @@ if(!function_exists('eshop_build_cookie')) {
 		$out='';
 	  if (is_array($var_array)) {
 		foreach ($var_array as $index => $data) {
-		  $out.= ($data!="") ? $index."=".stripslashes($data)."|" : "";
+		  $out.= ($data!="" && !is_array($data)) ? $index."=".stripslashes($data)."|" : "";
 		}
 	  }
 	  return rtrim($out,"|");
