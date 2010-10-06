@@ -29,7 +29,6 @@ class eshop_widget extends WP_Widget {
 			$eshopsize=0;
 			$eshopqty=0;
 			if(isset($_SESSION['eshopcart'.$blog_id])){
-				
 				$eshopsize=sizeof($_SESSION['eshopcart'.$blog_id]);
 				
 				foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
@@ -47,7 +46,7 @@ class eshop_widget extends WP_Widget {
 					}
 					if($showwhat=='qty' || $showwhat=='both'){
 						if($showwhat=='both') $eecho.= '<br />';
-						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopsize,'eshop'),$eshopsize);
+						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopqty,'eshop'),$eshopqty);
 					}
 					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
 					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';

@@ -42,6 +42,12 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 5.7.x
+
+* *fixed* item/products in cart count was incorrect.
+* *fixed* option set creation
+* *fixed* upgrading from older versions.
+
 Version 5.7.6
 
 * *added* admin short name for option sets

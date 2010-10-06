@@ -924,7 +924,9 @@ if (!function_exists('eshop_checkout')) {
 			$email=$_SESSION['addy'.$blog_id]['email'];
 			$address1=$_SESSION['addy'.$blog_id]['address1'];
 			$address2=$_SESSION['addy'.$blog_id]['address2'];
-			$city=$_SESSION['addy'.$blog_id]['city'];
+			$city='';
+			if(isset($_SESSION['addy'.$blog_id]['city']))
+				$city=$_SESSION['addy'.$blog_id]['city'];
 			$country=$_SESSION['addy'.$blog_id]['country'];
 			$state=$_SESSION['addy'.$blog_id]['state'];
 			if(isset($_SESSION['addy'.$blog_id]['altstate']))

@@ -224,6 +224,8 @@ global $eshopoptions;
 	<option value="2"><?php _e('Text','eshop'); ?></option>
 	<option value="3"><?php _e('Textarea','eshop'); ?></option>
 	</select><br />
+	<label for="adminname"><?php _e('Short Admin Name','eshop'); ?></label><input type = "text" name="admin_name" id="adminname" value = "<?php echo stripslashes(esc_attr($name)); ?>" size="35"/><br />
+
 	<label for="edesc"><?php _e('Description','eshop'); ?></label>
 	<textarea id="edesc" name="description" rows="3" cols="80"></textarea>
 	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">

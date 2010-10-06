@@ -193,6 +193,7 @@ switch ($eshopaction) {
 
 		$authorizenet = $eshopoptions['authorizenet']; 
 		$LID=$authorizenet['id'];
+		$Key=$authorizenet['key'];
 		$secret=$authorizenet['secret'];
 		$transid=$ps->ipn_data['x_trans_id'];
 		$amount=$ps->ipn_data["x_amount"];
@@ -200,11 +201,12 @@ switch ($eshopaction) {
 		$md5hash=$secret.$LID.$invoice.$amount;
 		$checked=md5($md5hash);
 		if( phpversion() >= '5.1.2' ){	
-			$fingerprint = strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount)); 
+			$fingerprint = strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount,$Key)); 
+			$ps->ipn_data["mycheckmd5"]=strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount,$Key)); 
 		}else{ 
 			$fingerprint = strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount))); 
+			$ps->ipn_data["mycheckmd5"]=strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount,$Key)));
 		}
-		$ps->ipn_data["mycheckmd5"]=strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount)));
 		$ps->ipn_data["mycheckedid"]=$checked;
 		if('1' == $_REQUEST["x_response_code"] && $ps->ipn_data["mycheckmd5"]==$ps->ipn_data["x_MD5_Hash"]){
 			if($eshopoptions['status']=='live'){
