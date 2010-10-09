@@ -1504,6 +1504,10 @@ if (!function_exists('eshop_cart_process')) {
 			unset($_SESSION['items'.$blog_id]);
 			$_POST['save']='false';
 		}
+		if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
+			$min=$eshopoptions['min_qty'];
+		if(isset($eshopoptions['max_qty']) && $eshopoptions['max_qty']!='') 
+			$max=$eshopoptions['max_qty'];
 		if(!isset($_POST['save'])){
 			//on windows this check isn't working correctly, so I've added ==0 
 			if (get_magic_quotes_gpc()) {
@@ -1516,10 +1520,6 @@ if (!function_exists('eshop_cart_process')) {
 			$_POST=sanitise_array($_POST);
 
 			//if adding a product to the cart
-			if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
-				$min=$eshopoptions['min_qty'];
-			if(isset($eshopoptions['max_qty']) && $eshopoptions['max_qty']!='') 
-				$max=$eshopoptions['max_qty'];
 			if(isset($_POST['qty']) && !isset($_POST['save']) && (!is_numeric(trim($_POST['qty']))|| strlen($_POST['qty'])>3)){
 				$qty=$_POST['qty']=1;
 				$v='999';
@@ -1597,6 +1597,20 @@ if (!function_exists('eshop_cart_process')) {
 				$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 				$optnum=$_SESSION['eshopcart'.$blog_id][$identifier]['option'];
 				$item=$eshop_product['products'][$_SESSION['eshopcart'.$blog_id][$identifier]['option']]['option'];
+				if(isset($min) && $testqty < $min){
+					$qty=0;
+					$v='999';
+					if(isset($max)) $v=$max;
+					$k=$min;
+					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				}
+				if(isset($max) && $testqty > $max){
+					$qty=0;
+					$v=$max;
+					$k=1;
+					if(isset($min)) $k=$min;
+					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				}
 				if('yes' == $eshopoptions['stock_control']){
 					$stkqty = $eshop_product['products'][$optnum]['stkqty'];
 					//recheck stkqty
@@ -1945,6 +1959,24 @@ if (!function_exists('eshop_test_mode')) {
 </style>
 <?php
 	return;
+	}
+}
+if (!function_exists('eshop_read_filesize')){
+	function eshop_read_filesize($size){
+	  if ($size == NULL){
+		 return "error";
+	  }
+	  $i=0;
+	  $iec = array("Bytes", "KB", "MB", "GB");
+	  while (($size/1024)>1) {
+		 $size=$size/1024;
+		 $i++;
+	  }
+	  if($iec[$i]=='Bytes'){
+		return '&lt; 1Kb';
+	  }else{
+		return substr($size,0,strpos($size,'.')+3).$iec[$i];
+	  }
 	}
 }
 ?>

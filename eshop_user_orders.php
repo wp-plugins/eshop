@@ -92,7 +92,7 @@ if (!function_exists('displaymyorders')) {
 				if($status=='Completed'){$status=__('Awaiting Dispatch','eshop');}
 				if($status=='Pending'){$status=__('Pending','eshop');}
 				if($status=='Waiting'){$status=__('Awaiting Payment','eshop');}
-				if($status=='Sent'){$status=__('Sent','eshop');}
+				if($status=='Sent'){$status=__('Shipped','eshop');}
 				if($status=='Deleted'){$status=__('Deleted','eshop');}
 				if($status=='Failed'){$status=__('Failed','eshop');}
 				if($x>0){
@@ -167,7 +167,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if($status=='Completed'){$status=__('Awaiting Dispatch','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
 	if($status=='Waiting'){$status=__('Awaiting Payment','eshop');}
-	if($status=='Sent'){$status=__('Sent','eshop');}
+	if($status=='Sent'){$status=__('Shipped','eshop');}
 	if($status=='Deleted'){$status=__('Deleted','eshop');}
 	if($status=='Failed'){$status=__('Failed','eshop');}
 	echo '<h3 class="status">'.__('Order Details','eshop').' - <span>'.$status.'</span> <small>('.$view.')</small></h3>';

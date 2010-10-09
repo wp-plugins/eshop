@@ -1,20 +1,5 @@
 <?php
-function eshop_read_filesize($size){
-  if ($size == NULL){
-     return "error";
-  }
-  $i=0;
-  $iec = array("Bytes", "KB", "MB", "GB");
-  while (($size/1024)>1) {
-     $size=$size/1024;
-     $i++;
-  }
-  if($iec[$i]=='Bytes'){
-  	return '&lt; 1Kb';
-  }else{
-  	return substr($size,0,strpos($size,'.')+3).$iec[$i];
-  }
-}
+
 function checkfordownloads($id){
 	global $wpdb;
 	//hopefully returns postids of products that have downloads
