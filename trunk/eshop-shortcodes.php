@@ -1250,7 +1250,7 @@ function eshop_details($atts){
 		$willshow=$allowedtoshow;
 	}
 	
-	$allowedtohide=array('option','price','download','weight','stockqty');
+	$allowedtohide=array('option','price','download','weight','stockqty','filesize');
 	$willhide=array();
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
@@ -1308,6 +1308,9 @@ function eshop_details($atts){
 	    			}
     				if($eshopdlavail>0 && !in_array('download',$willhide)){ 
     					$listed.='<th id="'.$eshopletter.'eshopdownload">'.__('Download','eshop').'</th>';
+    				}
+    				if($eshopdlavail>0 && !in_array('filesize',$willhide)){ 
+					    $listed.='<th id="'.$eshopletter.'eshopdownloadsize">'.__('File Size','eshop').'</th>';
     				} 
     				if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){
     					$listed.='<th id="'.$eshopletter.'eshopweight">'.__('Weight','eshop').'</th>';
@@ -1357,13 +1360,31 @@ function eshop_details($atts){
     						$myrowres=$wpdb->get_results("Select * From $producttable");
 							$listed.='<td headers="'.$eshopletter.'eshopdownload '.$eshopletter.'eshopnumrow'.$i.'">';
 							foreach($myrowres as $prow){
-								if( trim( $prow->id ) == trim( $downl ) )
+								if( trim( $prow->id ) == trim( $downl ) ){
 									$listed.=stripslashes(esc_attr($prow->title))."\n";
+									$filepath=eshop_download_directory().$prow->files;
+									$size = @filesize($filepath);
+									$downlsize=eshop_read_filesize($size);
+								}
 							}
 							$listed .="</td>";
 
 						}
-						
+						if($eshopdlavail>0 && !in_array('filesize',$willhide)){
+							$downlsize='';
+						    $myrowres=$wpdb->get_results("Select * From $producttable");
+							foreach($myrowres as $prow){
+								if( trim( $prow->id ) == trim( $downl ) ){
+									$filepath=eshop_download_directory().$prow->files;
+									$size = @filesize($filepath);
+									$downlsize=eshop_read_filesize($size);
+								}
+							}
+							$listed.='<td headers="'.$eshopletter.'eshopdownloadsize '.$eshopletter.'eshopnumrow'.$i.'">';
+							$listed.= $downlsize."\n";
+							$listed .="</td>";
+
+						}
 						if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){//shipping by weight 
 							/* ,'1- weight 2-weight symbol' */
 							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($weight,2),$weightsymbol).'</td>';

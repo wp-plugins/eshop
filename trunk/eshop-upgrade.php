@@ -501,6 +501,22 @@ if(version_compare($eshopoptions['version'], '5.7.6' ,'<')){
 		$wpdb->query($sql);
 	}
 }
+
+if(version_compare($eshopoptions['version'], '5.7.7' ,'<')){
+	$table = $wpdb->prefix . "eshop_option_names";
+	if ($wpdb->get_var("show tables like '$table'") != $table) {
+		$sql = "CREATE TABLE ".$table." (
+		optid int(11) NOT NULL auto_increment,
+		name varchar(255) NOT NULL default '',
+		admin_name varchar(255) NOT NULL default '',
+		type tinyint(1) NOT NULL default '0',
+		`description` TEXT NOT NULL  default '',
+		  PRIMARY KEY  (optid)
+		) $charset_collate;";
+
+		$wpdb->query($sql);
+	}
+}
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);

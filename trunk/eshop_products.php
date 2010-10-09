@@ -106,8 +106,8 @@ function eshop_products_manager() {
 			update_post_meta( $pid, '_eshop_stock', $stkav);
 			update_post_meta( $pid, '_eshop_product', $eshop_product);
 		}
+		$msg='';
 		if(isset($emsg)){
-			$msg='';
 			if(isset($emsg[0]))
 				$msg .=  __(' Some products were marked as not available due to missing information, check the individual product pages.','eshop');
 			if(isset($emsg[1]))

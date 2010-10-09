@@ -128,11 +128,11 @@ function eshop_boing($pee,$short='no',$postid=''){
 										$addprice='';
 										
 									$replace.="\n".'<span class="eshop etextarea"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
-									$replace.='<textarea id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" /></textarea>'."\n";
+									$replace.='<textarea id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" rows="4" cols="40"></textarea>'."\n";
 									$replace.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
 									$replace.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
 								}
-								$replace.="</select></span>\n";
+								$replace.="</span>\n";
 								break;
 						}
 						$enumb++;
