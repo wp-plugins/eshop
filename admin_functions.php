@@ -288,4 +288,18 @@ if (!function_exists('eshop_update_nag')) {
 		echo "<div id='update-nag'>$msg</div>";
 	}
 }
+if (!function_exists('eShopPluginUpdateMessage')) {
+	function eShopPluginUpdateMessage (){
+		define('PLUGIN_README_URL',  'http://svn.wp-plugins.org/eshop/trunk/readme.txt');
+		$response = wp_remote_get( PLUGIN_README_URL, array ('user-agent' => 'WordPress/eShop ' . ESHOP_VERSION . '; ' . get_bloginfo( 'url' ) ) );
+		if ( ! is_wp_error( $response ) || is_array( $response ) ) {
+			$data = $response['body'];
+			$bits=explode('== Changelog ==',$data);
+			$pieces=explode('Version '.ESHOP_VERSION,$bits['1']);
+			echo '<div id="eshop-upgrade"><p>'.nl2br(trim($pieces [0])).'</p></div>';
+		}else{
+			printf(__('<br /><strong style="color:#800;">Note:</strong> Please review the <a class="thickbox" href="%1$s">changelog</a> before upgrading.','eshop'),'plugin-install.php?tab=plugin-information&amp;plugin=eshop&amp;TB_iframe=true&amp;width=640&amp;height=594');
+		}
+	}
+}
 ?>

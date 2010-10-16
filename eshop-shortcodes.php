@@ -661,7 +661,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$echo .= apply_filters("the_title",$post->post_title);
 			
 		if(isset($esale) && $esale=='yes')
-			$echo .= '<strong>'.__('On Sale','eshop').'</strong>';
+			$echo .= '<strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
 			
 		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
 		$h=apply_filters('eshop_thumbnail_size_h',get_option('thumbnail_size_h'));
@@ -699,10 +699,9 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 
 		if($form=='yes'){
-			$short='yes';
-			$echo =eshop_boing($echo,$short,$post->ID);
-		}else
 			$short='no';
+			$echo =eshop_boing($echo,$short,$post->ID);
+		}
 		$echo .= '</li>'."\n";
 		//and then we re-add it
 		add_filter('the_content', 'eshop_boing');
@@ -723,7 +722,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
 			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
 			if($esale=='yes')
-				$xclass='<li class="sale"><strong>'.__('On Sale','eshop').'</strong>';
+				$xclass='<li class="sale"><strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
 		}
 		$echo .= $xclass;
 		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
@@ -762,8 +761,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		if($form=='yes'){
 			$short='yes';
 			$echo =eshop_boing($echo,$short,$post->ID);
-		}else
-			$short='no';
+		}
 		$echo .= '</li>'."\n";
 	}
 	$echo .= '</ul>';
@@ -1215,7 +1213,7 @@ function eshop_show_success(){
 		}elseif($eshopaction=='idealliteipn' && isset($_GET['ideal']['status']) ){
 			if($_GET['ideal']['status'] == md5("SUCCESS") ) {
 					$echo ='<h3 class="success">'.__('Thank you for your order','eshop')." !</h3>";
-					$echo.= '<p>'.__('Your iDEAL payment has been succesfully recieved.','eshop').'<br />';
+					$echo.= '<p>'.__('Your iDEAL payment has been succesfully received.','eshop').'<br />';
 					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
 			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
 					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";

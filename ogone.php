@@ -195,7 +195,7 @@ switch ($eshopaction) {
 		// class logs all IPN data to a text file.
 		// the loggin to a text file isn't working, so we have coded an email to be sent instead.
 
-			// Payment has been recieved and IPN is verified.  This is where you
+			// Payment has been received and IPN is verified.  This is where you
 			// update your database to activate or process the order, or setup
 			// the database with the user's order details, email an administrator,
 			// etc.  You can access a slew of information via the ipn_data() array.

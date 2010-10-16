@@ -79,14 +79,14 @@ class authorizenet_class {
 	     <p>'. __('If you are not automatically redirected to authorize.net, please use the <em>Proceed to Authorize.net</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->authorizenet_url.'">
           <p>';
-			$relayURL=$_POST['x_relay_URL'];
+			$relayURL=$_POST['x_relay_url'];
 			$amount=str_replace(',','',$_POST['amount']);
 			$shipping=str_replace(',','',$_POST['shipping_1']);
 
 			$echortn.='
 			<input type="hidden" name="x_show_form" value="PAYMENT_FORM" />
 			<input type="hidden" name="x_relay_response" value="TRUE" />
-			<input type="hidden" name="x_relay_URL" value="'.$relayURL.'" />
+			<input type="hidden" name="x_relay_url" value="'.$relayURL.'" />
 			<input type="hidden" name="x_version" value="3.1" />
 			';
 			if($eshopoptions['status']!='live'){

@@ -781,3 +781,11 @@ dl.eshop-def dd ul{
 	padding:2px;
 	background:#fffff5;
 }
+/* upgrade notice */
+#eshop-upgrade{ 
+	border: 1px solid #21759B; 
+	height: 8em; 
+	overflow: auto; 
+	width:100%;
+	background:transparent;
+}

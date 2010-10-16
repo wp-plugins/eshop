@@ -237,7 +237,7 @@ switch ($eshopaction) {
 		// the loggin to a text file isn't working, so we have coded an email to be sent instead.
 		$extradetails ='';
 		if ($p->validate_ipn()) {
-			// Payment has been recieved and IPN is verified.  This is where you
+			// Payment has been received and IPN is verified.  This is where you
 			// update your database to activate or process the order, or setup
 			// the database with the user's order details, email an administrator,
 			// etc.  You can access a slew of information via the ipn_data() array.
@@ -286,7 +286,7 @@ switch ($eshopaction) {
 			}elseif($_POST['payment_status']==' Refunded'){
 				$subject .=__("Refunded Payment",'eshop');
 				$ok='no';
-				$extradetails .= __("You have recieved a refund notification, eShop doesn't know how to handle these, but details of the notification are included below.",'eshop');
+				$extradetails .= __("You have received a refund notification, eShop doesn't know how to handle these, but details of the notification are included below.",'eshop');
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');
