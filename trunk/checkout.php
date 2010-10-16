@@ -752,7 +752,7 @@ if (!function_exists('eshop_checkout')) {
 		}else{
 			if(!isset($_GET['eshopaction'])){
 				$shipping=0;
-				$echoit.= "<div class=\"hr\"></div><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
+				$echoit.= "<div class=\"hr\"></div><div class=\"eshopcheckoutconf\"><h3>".__('<span class="noprint">Please Confirm </span>Your Details','eshop').'</h3>';
 				// create a custom id, and shove details in database
 				$date=date('YmdHis');
 				$_SESSION['date'.$blog_id]=$date;
@@ -843,7 +843,9 @@ if (!function_exists('eshop_checkout')) {
 					}
 				}
 				$echoit.= "\n";
+				$echoit .= "</div>\n";
 			}
+			
 			//add to a session to store address:
 			$_SESSION['addy'.$blog_id]['first_name']=$_POST['first_name'];
 			$_SESSION['addy'.$blog_id]['last_name']=$_POST['last_name'];
@@ -998,7 +1000,7 @@ if (!function_exists('eshop_checkout')) {
 		if($chkerror==0 && !isset($_GET['eshopaction'])){
 			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink($eshopoptions['cart']).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
 		}else{	
-			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+			$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
 		}
 	}else{
 		$echoit.= "<p><strong class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</strong></p>";

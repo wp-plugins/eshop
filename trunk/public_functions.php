@@ -1,4 +1,4 @@
-<?php
+ <?php
 if ('public-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 

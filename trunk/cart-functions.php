@@ -118,8 +118,8 @@ if (!function_exists('display_cart')) {
 						$optset='';
 					}
 					//$eshop_product['products'][$opt['item']]['option']
-					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem" class="leftb cartitem">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset).'</td>'."\n";
-					$echo.= "<td class=\"cqty lb\" headers=\"cartQty prod".$calt.$iswidget."\">";
+					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem'.$iswidget.'" class="leftb cartitem">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset).'</td>'."\n";
+					$echo.= "<td class=\"cqty lb\" headers=\"cartQty$iswidget prod".$calt.$iswidget."\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
 						//generate acceptable id
@@ -137,7 +137,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td>\n";
 					if($iswidget=='' && $change == 'true'){
 						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
 						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="deleteitem['.$productid.']" value="'.$key.'" title="'.__('Delete this item','eshop').'"/></td>';
@@ -162,7 +162,7 @@ if (!function_exists('display_cart')) {
 				$emptycell='<td headers="cartDelete" class="eshopempty"></td>';
 			else
 				$emptycell='';
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td>$emptycell</tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td>$emptycell</tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -231,7 +231,7 @@ if (!function_exists('display_cart')) {
 				//discount shipping?
 				if(is_shipfree(calculate_total())  || eshop_only_downloads()) $shipping=0;
 				
-				$echo.= '<tr class="alt"><th headers="cartItem" id="scharge" class="leftb">';
+				$echo.= '<tr class="alt"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
 				if($eshopoptions['shipping']=='4' && !eshop_only_downloads()){
 					$typearr=explode("\n", $eshopoptions['ship_types']);
 					//darn, had to add in unique to be able to go back a page
@@ -249,7 +249,7 @@ if (!function_exists('display_cart')) {
 				$_SESSION['shipping'.$blog_id]=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price'.$blog_id]=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal cartTotal\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, 2))."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, 2))."</strong></td></tr>";
 			}
 
 			$echo.= "</tbody></table>\n";
@@ -1316,7 +1316,7 @@ if (!function_exists('eshop_download_directory')) {
 		$dirs=wp_upload_dir();
         $upload_dir=$dirs['basedir'];
         $eshop_goto=$upload_dir.'/../eshop_downloads';
-		return $eshop_goto.'/';
+		return apply_filters('eshop_download_directory',$eshop_goto.'/');
     }
 }
 if (!function_exists('eshop_files_directory')) {
@@ -1977,6 +1977,69 @@ if (!function_exists('eshop_read_filesize')){
 	  }else{
 		return substr($size,0,strpos($size,'.')+3).$iec[$i];
 	  }
+	}
+}
+if (!function_exists('get_eshop_product')) {
+	function get_eshop_product($id=''){
+		/*
+		attempt to allow people to access product info correctly - currently not showing absolutely 
+		everything but may suffice.
+		*/
+		global $wpdb, $post, $wp_query,$eshopoptions;
+		if($id=='' && isset($post->ID))
+			$id=$post->ID;
+		//nothing to return, then return
+		if($id=='')
+			return;
+
+		$producttable = $wpdb->prefix ."eshop_downloads";
+		$eshop_product=maybe_unserialize(get_post_meta($id, '_eshop_product','true'));
+		$eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
+		$numoptions=$eshopoptions['options_num'];
+		$stocktable=$wpdb->prefix ."eshop_stock";
+
+		if('yes' == $eshopoptions['stock_control']){
+			$stkq=$wpdb->get_results("SELECT option_id, available from $stocktable where post_id=$id");
+			foreach($stkq as $thisstk){
+				if($thisstk->available<0) $thisstk->available=0;
+				$stkarr[$thisstk->option_id]=$thisstk->available;
+			}
+		}
+		for($i=1;$i<=$numoptions;$i++){
+			if(isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
+				if(isset($eshop_product['products'][$i]['stkqty']) && $eshop_product['products'][$i]['stkqty']!='' && 'yes' == $eshopoptions['stock_control'])
+					$eshop_product['products'][$i]['stkqty']=$stkarr[$i];
+				if($eshop_product['products'][$i]['option']=='' && $eshop_product['products'][$i]['price']=='')
+					unset($eshop_product['products'][$i]);
+				if(isset($eshop_product['products'][$i]['download']) && $eshop_product['products'][$i]['download']=='')
+					unset($eshop_product['products'][$i]['download']);
+			}
+		}
+		
+		if(isset($eshop_product['optset'])){
+			$osets=$eshop_product['optset'];
+			if(is_array($osets)){
+				$opttable=$wpdb->prefix.'eshop_option_names';
+				$optsettable=$wpdb->prefix.'eshop_option_sets';
+				foreach($osets as $optid){
+					$myrowres=$wpdb->get_results($wpdb->prepare("select name as optname, price,weight,id from $optsettable where optid='%d' ORDER by id ASC",$optid));
+					$egrab=$wpdb->get_row($wpdb->prepare("select * from $opttable where optid='%d' LIMIT 1",$optid));
+					if(isset($egrab->name)){
+						$eshop_product['optionset'][$optid]['optname']=$egrab->name;
+						foreach($myrowres as $myrow){
+							if($myrow->weight=='')
+								$myrow->weight='0';
+							$eshop_product['optionset'][$optid][$myrow->id]['name']=$myrow->optname;
+							$eshop_product['optionset'][$optid][$myrow->id]['price']=$myrow->price;
+							$eshop_product['optionset'][$optid][$myrow->id]['weight']=$myrow->weight;
+						}
+
+					}
+				}
+			}
+			unset($eshop_product['optset']);
+		}
+		return $eshop_product;
 	}
 }
 ?>

@@ -490,13 +490,20 @@ function eshopw_list_cat_tags($atts){
 	return;
 }
 function eshopw_listpages($subpages,$eshopclass){
-	global $wpdb, $post;
+	global $wpdb, $post,$eshopoptions;
 	$paged=$post;
 	$echo='';
 	$echo .='<ul class="'.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$echo .= '<li><a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a></li>';
+		$xclass='<li>';
+		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
+			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
+			if($esale=='yes')
+				$xclass='<li class="sale">';
+		}
+		$echo .= $xclass;
+		$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a></li>';
 	}
 	$echo .= '</ul>';
 	$post=$paged;
@@ -504,25 +511,32 @@ function eshopw_listpages($subpages,$eshopclass){
 }
 
 function eshopw_listpanels($subpages,$eshopclass,$size){
-	global $wpdb, $post;
+	global $wpdb, $post,$eshopoptions;
 	$paged=$post;
 	$post='';
 	$echo='';
 	$echo .='<ul class="'.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$w=get_option('thumbnail_size_w');
-		$h=get_option('thumbnail_size_h');
+		$xclass='<li>';
+		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
+			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
+			if($esale=='yes')
+				$xclass='<li class="sale"><strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
+		}
+		$echo .= $xclass;
+		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
+		$h=apply_filters('eshop_thumbnail_size_h',get_option('thumbnail_size_h'));
 		if($size!=''){
 			$w=round(($w*$size)/100);
 			$h=round(($h*$size)/100);
 		}
 		if (has_post_thumbnail( $post->ID ) ) {
-			$echo .='<li><a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a></li>'."\n";
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a></li>'."\n";
 		}else{
 			$eimage=eshop_files_directory();
 			$eshopnoimage=apply_filters('eshop_no_image',$eimage['1'].'noimage.png');
-			$echo .='<li><a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a></li>'."\n";
+			$echo .='<a class="itemref" href="'.get_permalink($post->ID).'"><img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" /></a></li>'."\n";
 		}
 	}
 	$echo .= '</ul>';
@@ -546,10 +560,13 @@ class eshop_search_widget extends WP_Widget {
 		$search = $instance['search'];
 		$find = $instance['find'];
 		if($search=='1'){
+			$sq=' ';
+			if(get_search_query()!='')
+				$sq=get_search_query();
 			$output.='
 			    <form id="eshopsearchform" method="get" action="'.get_bloginfo('url').'">
 				<div>
-					<input type="text" name="s" id="eshopws" size="20" value="'.get_search_query().'" />
+					<input type="text" name="s" id="eshopws" size="20" value="'.$sq.'" />
 					<input type="submit" value="'.__('Find','eshop').'" />
 					<input type="hidden" name="eshopsearch" value="'.$find.'" />
 				</div>

@@ -2,12 +2,12 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.7.7');
+	define('ESHOP_VERSION', '5.7.8');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.7.7
+Version: 5.7.8
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -27,10 +27,18 @@ Author URI: http://quirm.net/
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-$eshoplanguage=apply_filters( 'eshop_language_dir',dirname( plugin_basename( __FILE__ ) ) );
-load_plugin_textdomain('eshop', false, $eshoplanguage );
 //grab all options here in one go
 $eshopoptions = get_option('eshop_plugin_settings');
+
+add_action('init','eshop_load_lang',1);
+if (!function_exists('eshop_load_lang')) {
+	function eshop_load_lang(){
+		$eshoplanguage=apply_filters( 'eshop_language_dir',dirname( plugin_basename( __FILE__ ) ) );
+		load_plugin_textdomain('eshop', false, $eshoplanguage );
+		//grab all options here in one go 
+		$eshopoptions = get_option('eshop_plugin_settings');
+	}
+}
 
 /* eShop general (or not sure where they are utilised! */
 add_action('init','eshopsession',1);
@@ -80,6 +88,8 @@ if(is_admin()){
 	add_action('admin_init', 'eshop_admin_init');
 	add_action('admin_menu', 'eshop_admin');
 	add_action( 'admin_notices', 'eshop_update_nag');
+	add_action( 'in_plugin_update_message-eshop/eshop.php', 'eShopPluginUpdateMessage' );
+
 }else{
 	/* eShop Public facing only */
 	include_once 'public_functions.php';

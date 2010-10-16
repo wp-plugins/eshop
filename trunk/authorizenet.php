@@ -15,8 +15,7 @@ include_once (WP_PLUGIN_DIR.'/eshop/authorizenet/index.php');
 // Setup class
 require_once(WP_PLUGIN_DIR.'/eshop/authorizenet/authorizenet.class.php');  // include the class file
 $p = new authorizenet_class;             // initiate an instance of the class
-//https://secure.authorize.net/gateway/transact.dll
-//developer test only "https://test.authorize.net/gateway/transact.dll";
+
 if($eshopoptions['status']=='live'){
 	$p->authorizenet_url = 'https://secure.authorize.net/gateway/transact.dll';     // authorizenet url
 }else{
@@ -89,9 +88,9 @@ switch ($eshopaction) {
 		//only reqd for the developer
 		$authorizenet = $eshopoptions['authorizenet']; 
 		$authemail=$authorizenet['email'];
-		if(isset($authorizenet['developer']) && $authorizenet['developer']=='1')
+		if(isset($authorizenet['developer']) && $authorizenet['developer']=='1'){
 			$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
-
+		}
 		$echoit.=$p->eshop_submit_authorizenet_post($_POST);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
@@ -122,7 +121,7 @@ switch ($eshopaction) {
 		}else{
 			die('<p>'.$derror.'</p>');
 		}
-		$p->add_field('x_relay_URL', $ilink);
+		$p->add_field('x_relay_url', $ilink);
 
 		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
 		$sttable=$wpdb->prefix.'eshop_states';
@@ -173,7 +172,7 @@ switch ($eshopaction) {
 		// class logs all IPN data to a text file.
 		// the loggin to a text file isn't working, so we have coded an email to be sent instead.
 
-			// Payment has been recieved and IPN is verified.  This is where you
+			// Payment has been received and IPN is verified.  This is where you
 			// update your database to activate or process the order, or setup
 			// the database with the user's order details, email an administrator,
 			// etc.  You can access a slew of information via the ipn_data() array.
@@ -200,13 +199,7 @@ switch ($eshopaction) {
 		$invoice=$ps->ipn_data["x_invoice_num"];
 		$md5hash=$secret.$LID.$invoice.$amount;
 		$checked=md5($md5hash);
-		if( phpversion() >= '5.1.2' ){	
-			$fingerprint = strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount,$Key)); 
-			$ps->ipn_data["mycheckmd5"]=strtoupper(hash_hmac("md5", $secret.$LID.$transid.$amount,$Key)); 
-		}else{ 
-			$fingerprint = strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount))); 
-			$ps->ipn_data["mycheckmd5"]=strtoupper(bin2hex(mhash(MHASH_MD5,$secret.$LID.$transid.$amount,$Key)));
-		}
+		$ps->ipn_data["mycheckmd5"]=strtoupper(md5($secret.$LID.$transid.$amount));
 		$ps->ipn_data["mycheckedid"]=$checked;
 		if('1' == $_REQUEST["x_response_code"] && $ps->ipn_data["mycheckmd5"]==$ps->ipn_data["x_MD5_Hash"]){
 			if($eshopoptions['status']=='live'){
@@ -263,30 +256,7 @@ switch ($eshopaction) {
 				//lets make sure this is here and available
 				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 				eshop_send_customer_email($checked, '8');
-			/*
-				//this is an email sent to the customer:
-				//first extract the order details
-				$array=eshop_rtn_order_details($checked);
 
-				$etable=$wpdb->prefix.'eshop_emails';
-				//grab the template
-				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='8' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-				$this_email = stripslashes($thisemail->emailContent);
-				// START SUBST
-				$csubject=stripslashes($thisemail->emailSubject);
-				$this_email = eshop_email_parse($this_email,$array);
-
-				//try and decode various bits - may need tweaking Mike, we may have to write 
-				//a function to handle this depending on what you are using - but for now...
-				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				$headers=eshop_from_address();
-				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				//affiliate
-				if($array['affiliate']!=''){
-					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-				}
-			*/
 				do_shortcode('[eshop_show_success]');
 			}
 

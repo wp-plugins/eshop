@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.7.7
+Stable tag: 5.7.8
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 5.7.8
+
+* *fixed* authorize.net - should now work correctly?
+* *fixed* missing quantity field for shortcode listings
+* *added* more styling hooks
+* *added* function get_eshop_product which returns an array containing product info, an page id is not passed it will try to use the current post->ID
+* *added* notifications of change before upgrading for future releases.
+* *added* filter for eshop_download_directory (requires full path with trailing slash)
 
 Version 5.7.7
 
