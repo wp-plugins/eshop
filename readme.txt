@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.7.8
+Stable tag: 5.7.9
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,11 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 5.7.9
+
+* *Paypal Bug fixed* If using Paypal please upgrade to fix a potential security issue.
+* *added* filter eshop_options_order set this to false to show option sets after the main options, but before the quantity field.
 
 Version 5.7.8
 

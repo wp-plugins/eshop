@@ -55,6 +55,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 			$theid=sanitize_file_name($eshop_product['sku']);
 			//option sets
 			$optsets = $eshop_product['optset'];
+			$optsetsecho=$mainoptsecho='';
 			if(is_array($optsets)){	
 				$opttable=$wpdb->prefix.'eshop_option_sets';
 				$optnametable=$wpdb->prefix.'eshop_option_names';
@@ -81,20 +82,20 @@ function eshop_boing($pee,$short='no',$postid=''){
 					foreach($optarray as $optsets){
 						switch($optsets['type']){
 							case '0'://select
-								$replace.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][id]">'."\n";
+								$optsetsecho.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][id]">'."\n";
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
 										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
 									else
 										$addprice='';
 									
-									$replace.='<option value="'.$opsets['id'].'">'.stripslashes(esc_attr($opsets['label'])).$addprice.'</option>'."\n";
+									$optsetsecho.='<option value="'.$opsets['id'].'">'.stripslashes(esc_attr($opsets['label'])).$addprice.'</option>'."\n";
 								}
-								$replace.="</select></span>\n";
+								$optsetsecho.="</select></span>\n";
 								break;
 
 							case '1'://checkbox
-								$replace.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
+								$optsetsecho.="\n".'<fieldset class="eshop echeckbox"><legend>'.stripslashes(esc_attr($optsets['name'])).'</legend>'."\n";
 								$ox=0;
 								foreach($optsets['item'] as $opsets){
 									$ox++;
@@ -102,10 +103,10 @@ function eshop_boing($pee,$short='no',$postid=''){
 										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
 									else
 										$addprice='';
-									$replace.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset['.$enumb.'][id]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
+									$optsetsecho.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset['.$enumb.'][id]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
 									$enumb++;
 								}
-								$replace.="</fieldset>\n";
+								$optsetsecho.="</fieldset>\n";
 								break;
 							case '2'://text
 								foreach($optsets['item'] as $opsets){
@@ -113,12 +114,12 @@ function eshop_boing($pee,$short='no',$postid=''){
 										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
 									else
 										$addprice='';
-									$replace.="\n".'<span class="eshop etext"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
-									$replace.='<input type="text" id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" value="" />'."\n";
-									$replace.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
-									$replace.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
+									$optsetsecho.="\n".'<span class="eshop etext"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
+									$optsetsecho.='<input type="text" id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" value="" />'."\n";
+									$optsetsecho.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
+									$optsetsecho.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
 								}
-								$replace.="</span>\n";
+								$optsetsecho.="</span>\n";
 								break;
 							case '3'://textarea
 								foreach($optsets['item'] as $opsets){
@@ -127,12 +128,12 @@ function eshop_boing($pee,$short='no',$postid=''){
 									else
 										$addprice='';
 										
-									$replace.="\n".'<span class="eshop etextarea"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
-									$replace.='<textarea id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" rows="4" cols="40"></textarea>'."\n";
-									$replace.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
-									$replace.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
+									$optsetsecho.="\n".'<span class="eshop etextarea"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
+									$optsetsecho.='<textarea id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][text]" rows="4" cols="40"></textarea>'."\n";
+									$optsetsecho.='<input type="hidden" name="optset['.$enumb.'][id]" value="'.$opsets['id'].'" />'."\n";
+									$optsetsecho.='<input type="hidden" name="optset['.$enumb.'][type]" value="'.$optsets['type'].'" />'."\n";
 								}
-								$replace.="</span>\n";
+								$optsetsecho.="</span>\n";
 								break;
 						}
 						$enumb++;
@@ -147,7 +148,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
 					$opt=$eshopoptions['options_num'];
 					$uniq=apply_filters('eshop_uniq',$uniq);
-					$replace.="\n<ul class=\"eshopradio\">\n";
+					$mainoptsecho.="\n<ul class=\"eshopradio\">\n";
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
 						$price=$eshop_product['products'][$i]['price'];
@@ -160,22 +161,22 @@ function eshop_boing($pee,$short='no',$postid=''){
 						}
 						if($option!='' && $currst>0){
 							if($price!='0.00')
-								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2))."</label>\n</li>";
+								$mainoptsecho.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2))."</label>\n</li>";
 							else
-								$replace.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option" /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.stripslashes(esc_attr($option)).'</label>'."\n</li>";
+								$mainoptsecho.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option" /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.stripslashes(esc_attr($option)).'</label>'."\n</li>";
 						}
 					}
-					$replace.="</ul>\n";
+					$mainoptsecho.="</ul>\n";
 					//combine 2 into 1 then extract
-					$filterarray[0]=$replace;
+					$filterarray[0]=$mainoptsecho;
 					$filterarray[1]=$eshop_product;
 					$filterarray=apply_filters('eshop_after_radio',$filterarray);
-					$replace=$filterarray[0];
+					$mainoptsecho=$filterarray[0];
 					
 
 				}else{			
 					$opt=$eshopoptions['options_num'];
-					$replace.="\n".'<label for="eopt'.$theid.$uniq.'"><select id="eopt'.$theid.$uniq.'" name="option">';
+					$mainoptsecho.="\n".'<label for="eopt'.$theid.$uniq.'"><select id="eopt'.$theid.$uniq.'" name="option">';
 					for($i=1;$i<=$opt;$i++){
 						if(isset($eshop_product['products'][$i])){
 							$option=$eshop_product['products'][$i]['option'];
@@ -187,13 +188,13 @@ function eshop_boing($pee,$short='no',$postid=''){
 							}
 							if($option!='' && $currst>0){
 								if($price!='0.00')
-									$replace.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
+									$mainoptsecho.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
 								else
-									$replace.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
+									$mainoptsecho.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
 							}
 						}
 					}
-					$replace.='</select></label>';
+					$mainoptsecho.='</select></label>';
 				}
 			}else{
 				$option=$eshop_product['products']['1']['option'];
@@ -202,19 +203,28 @@ function eshop_boing($pee,$short='no',$postid=''){
 				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[1];
 				}
-				$replace .='<input type="hidden" name="option" value="1" />';
+				$mainoptsecho .='<input type="hidden" name="option" value="1" />';
 				if($currst>0){
 					if($price!='0.00'){
-						$replace.='
+						$mainoptsecho.='
 						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</span></span>
 						';
 					}else{
-						$replace.='
+						$mainoptsecho.='
 						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span></span>
 						';
 					}
 				}
 			}
+			/*
+			 default is set to true to show options sets followed by manin options
+			 change to false to show main option followed by option sets
+			*/
+			$eshopoptionsorder=apply_filters('eshop_options_order',true);
+			if($eshopoptionsorder)
+				$replace .= $optsetsecho.$mainoptsecho;
+			else
+				$replace .= $mainoptsecho.$optsetsecho;
 			$addqty=1;
 			if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
 				$addqty=$eshopoptions['min_qty'];
@@ -222,7 +232,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 			if($short=='yes'){
 				$replace .='<input type="hidden" name="qty" value="'.$addqty.'" />';
 			}else{
-				$replace .='<label for="qty'.$theid.$uniq.'" class="qty">'.__('<dfn title="Quantity">Qty</dfn>:','eshop').'</label>
+				$replace .='<label for="qty'.$theid.$uniq.'" class="qty">'.__('<abbr title="Quantity">Qty</abbr>:','eshop').'</label>
 				<input type="text" value="'.$addqty.'" id="qty'.$theid.$uniq.'" maxlength="3" size="3" name="qty" class="iqty" />';
 			}
 
