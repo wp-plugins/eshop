@@ -175,7 +175,7 @@ if (!function_exists('eshopShowform')) {
 	if('yes' != $eshopoptions['hide_addinfo']){
 		$echo .= '<fieldset class="eshop fld3">
 		<legend>'.__('Additional information','eshop').'</legend>
-		 <label for="reference">'.__('Reference or <dfn title="Purchase Order number">PO</dfn>','eshop').eshop_checkreqd($reqdarray,'ref').'<br />
+		 <label for="reference">'.__('Reference or <abbr title="Purchase Order number">PO</abbr>','eshop').eshop_checkreqd($reqdarray,'ref').'<br />
 		  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
 		 <label for="eshop-comments">'.__('Comments or special instructions','eshop').eshop_checkreqd($reqdarray,'comments').'<br />
 		  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';

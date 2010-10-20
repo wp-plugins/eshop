@@ -37,7 +37,7 @@ if (!function_exists('display_cart')) {
 			<thead>
 			<tr class="thead">';
 			$echo .='<th id="cartItem'.$iswidget.'" class="nb">'.__('Item Description','eshop').'</th>
-			<th id="cartQty'.$iswidget.'" class="bt">'.__('<dfn title="Quantity">Qty</dfn>','eshop').'</th>
+			<th id="cartQty'.$iswidget.'" class="bt">'.__('<abbr title="Quantity">Qty</abbr>','eshop').'</th>
 			<th id="cartTotal'.$iswidget.'" class="btbr">'.__('Total','eshop').'</th>';
 			if($iswidget=='' && $change == 'true'){
 				$eshopdeleteheaderimage=apply_filters('eshop_delete_header_image',WP_PLUGIN_URL.'/eshop/no.png');

@@ -269,6 +269,13 @@ switch ($eshopaction) {
 					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
+			//stop the evil buggers changing the currency
+			if($p->ipn_data['mc_currency']!=$eshopoptions['currency']){
+				$astatus='Failed';
+				$txn_id = __("Fraud-",'eshop').$wpdb->escape($txn_id);
+				$extradetails .= __("Currency codes do not match, someone was trying to make a fraudulent purchase!",'eshop');
+			}
+			
 			//check reciever email is correct - we will use business for now
 			if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
@@ -319,30 +326,6 @@ switch ($eshopaction) {
 				//lets make sure this is here and available
 				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 				eshop_send_customer_email($checked, '3');
-				/*
-				//this is an email sent to the customer:
-				//first extract the order details
-				$array=eshop_rtn_order_details($checked);
-
-				$etable=$wpdb->prefix.'eshop_emails';
-				//grab the template
-				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='3' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-				$this_email = stripslashes($thisemail->emailContent);
-				// START SUBST
-				$csubject=stripslashes($thisemail->emailSubject);
-				$this_email = eshop_email_parse($this_email,$array);
-
-				//try and decode various bits - may need tweaking Mike, we may have to write 
-				//a function to handle this depending on what you are using - but for now...
-				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				$headers=eshop_from_address();
-				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				//affiliate
-				if($array['affiliate']!=''){
-					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-				}
-				*/
 			}
 			
       	}else{
