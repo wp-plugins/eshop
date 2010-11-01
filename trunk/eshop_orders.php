@@ -64,25 +64,15 @@ if(isset($_POST['eshop-adnote'])){
 }
 
 if (!function_exists('displayorders')) {
-	function displayorders($type){
+	function displayorders($type,$default){
 		global $wpdb,$eshopoptions;
 		//these should be global, but it wasn't working *sigh*
 		$phpself=esc_url($_SERVER['REQUEST_URI']);
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
-		
-		if(isset($_POST['change'])){
-			if($_POST['move'][0]!=''){
-				foreach($_POST['move'] as $v=>$ch){
-					$mark=$_POST['mark'];
-					$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$ch'");
-				}
-				echo '<p class="updated fade">'.__('Order status changed successfully.','eshop').'</p>';
-			}else{
-				echo '<p class="error">'.__('No orders were selected.','eshop').'</p>';
-			}
-		}
-		
+		if(!isset($_GET['by']))
+			$_GET['by']=$default;
+			
 		$cda=$cdd=$ctn=$cca=$cna='';
 		if(isset($_GET['by'])){
 			switch ($_GET['by']) {
@@ -461,7 +451,7 @@ if (!function_exists('deleteorder')) {
 		$checkid=$wpdb->get_var("Select checkid From $dtable where id='$delid' && status='Deleted'");
 		$delquery2=$wpdb->get_results("DELETE FROM $itable WHERE checkid='$checkid'");
 		$delquery=$wpdb->get_results("DELETE FROM $dtable WHERE checkid='$checkid'");
-		echo '<p class="success">'.__('That order has now been deleted from the system.','eshop').'</p>';
+		echo '<div class="updated fade">'.__('That order has now been deleted from the system.','eshop').'</div>';
 	}
 }
 
@@ -521,7 +511,7 @@ if(isset($_GET['view'])){
 	$state=$status;
 }elseif(isset($_GET['action'])){
 	switch ($_GET['action']) {
-		case 'Dispatch':
+		case 'Completed':
 			$state=__('Active Orders','eshop');
 			break;
 		case 'Pending':
@@ -550,21 +540,6 @@ if(isset($_GET['view'])){
 }
 
 echo '<div id="eshopicon" class="icon32"></div><h2>'.$state."</h2>\n";
-echo '<ul class="subsubsub">';
-if(current_user_can('eShop_admin'))
-	$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Dispatch'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
-else
-	$stati=array('Stats'=>__('Stats','eshop'));
-
-foreach ( $stati as $status => $label ) {
-	$class = '';
-	if ( $status == $action_status )
-		$class = ' class="current"';
-
-	$status_links[] = "<li><a href=\"?page=eshop_orders.php&amp;action=$status\"$class>" . $label . '</a>';
-}
-echo implode(' | </li>', $status_links) . '</li>';
-echo '</ul><br class="clear" />';
 
 if(isset($_GET['delid']) && !isset($_GET['view'])){
 	deleteorder($_GET['delid']);
@@ -586,7 +561,7 @@ if(isset($_POST['dall'])){
 			$delquery2=$wpdb->query("DELETE FROM $itable WHERE checkid='$checkid'");
 			$query2=$wpdb->query("DELETE FROM $dtable WHERE status='Deleted' && checkid='$checkid' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
 		}
-		echo '<p class="success">'.__('Deleted orders older than','eshop').' '.$replace.' '.__('have now been <strong>completely</strong> deleted.','eshop').'</p>';
+		echo '<div class="updated fade">'.__('Deleted orders older than','eshop').' '.$replace.' '.__('have now been <strong>completely</strong> deleted.','eshop').'</div>';
 	}else{
 		echo '<p class="error">'.__('There was an error, and nothing has been deleted.','eshop').'</p>';
 	}
@@ -595,15 +570,57 @@ if(isset($_POST['mark']) && !isset($_POST['change'])){
 	$mark=$_POST['mark'];
 	$checkid=$_POST['checkid'];
 	$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$checkid'");
-	echo '<p class="success">'.__('Order status changed successfully.','eshop').'</p>';
+	echo '<div class="updated fade">'.__('Order status changed successfully.','eshop').'</div>';
 }
+
+if(isset($_POST['change'])){
+	if($_POST['move'][0]!=''){
+		foreach($_POST['move'] as $v=>$ch){
+			$mark=$_POST['mark'];
+			$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$ch'");
+		}
+		echo '<div class="updated fade">'.__('Order status changed successfully.','eshop').'</div>';
+	}else{
+		echo '<p class="error">'.__('No orders were selected.','eshop').'</p>';
+	}
+}
+
+
+echo '<ul class="subsubsub">';
+if(current_user_can('eShop_admin'))
+	$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Completed'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
+else
+	$stati=array('Stats'=>__('Stats','eshop'));
+
+
+$dtable=$wpdb->prefix.'eshop_orders';
+$myres=$wpdb->get_results("SELECT COUNT( id ) as amt, status FROM $dtable WHERE id >0 GROUP BY status");
+foreach ($myres as $row ){
+	$counted[$row->status]=$row->amt;
+}
+
+foreach ( $stati as $status => $label ) {
+	$class = '';
+	if ( $status == $action_status )
+		$class = ' class="current"';
+	$cnt='(0)';
+	if(isset($counted[$status]))
+		$cnt='('.$counted[$status].')';
+	if($status=='Stats') $cnt='';
+	$status_links[] = "<li><a href=\"?page=eshop_orders.php&amp;action=$status\"$class>" . $label . '</a>'.$cnt;
+}
+echo implode(' | </li>', $status_links) . '</li>';
+echo '</ul><br class="clear" />';
+
+
+
 if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	$view=$wpdb->escape($_GET['view']);
 	if (isset($_GET['adddown']) && is_numeric($_GET['adddown'])){
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
 		$adddown=$wpdb->escape($_GET['adddown']);
 		$wpdb->query("UPDATE $dordtable SET downloads=downloads+1 where id='$adddown' limit 1");
-		echo '<p class="success">'.__('Download allowance increased.','eshop').'</p>';
+		echo '<div class="updated fade">'.__('Download allowance increased.','eshop').'</div>';
 	}
 	
 	$dquery=$wpdb->get_results("Select * From $dtable where id='$view'");
@@ -824,25 +841,25 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	echo $delete;
 }else{
 
-	if (empty($_GET['action'])) $_GET['action'] = 'Dispatch';  
+	if (empty($_GET['action'])) $_GET['action'] = 'Completed';  
 	switch ($_GET['action']) {
-		case 'Dispatch':
-			displayorders('Completed');
+		case 'Completed':
+			displayorders('Completed','da');
 			break;
 		case 'Pending':
-			displayorders('Pending');
+			displayorders('Pending','da');
 			break;
 		case 'Failed':
-			displayorders('Failed');
+			displayorders('Failed','dd');
 			break;
 		case 'Waiting':
-			displayorders('Waiting');
+			displayorders('Waiting','da');
 			break;
 		case 'Sent':
-			displayorders('Sent');
+			displayorders('Sent','dd');
 			break;
 		case 'Deleted':
-			displayorders('Deleted');
+			displayorders('Deleted','dd');
 			break;
 		case 'stats':
 		default:

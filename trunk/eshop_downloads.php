@@ -45,7 +45,7 @@ function eshop_contains_files(){
 	}
 	if ($handle = opendir(eshop_download_directory())) {
 		while (false !== ($file = readdir($handle))) {
-			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != ".htpasswd" && !in_array($file,$indir)) {
+			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != ".htpasswd" && $file != "index.htm"  && !in_array($file,$indir)) {
 				$contains[]=$file;
 			}
 		}
@@ -104,12 +104,13 @@ function eshop_downloads_manager() {
 			$enttitle=$wpdb->escape($_POST['title']);
 			$wpdb->query("UPDATE $table SET title='$enttitle',added=NOW() WHERE id=$dafile");
 			echo '<div id="message" class="updated fade"><p>' . $_FILES["upfile"]["name"] . " ".__('has successfully overwritten existing file','eshop').'</p></div>';
-
+			do_action('eshop_file_upload',$dafile, $_POST);//file id & post variables
 		}elseif($error==''){ //ie a successful upload
 			$enttitle=$wpdb->escape($_POST['title']);
 			$entfile=$wpdb->escape($file_name);
 			$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$enttitle',NOW(),'$entfile')");
-
+			$dafile=$wpdb->get_var("SELECT id FROM $table WHERE files='$entfile'");
+			do_action('eshop_file_upload',$dafile,$_POST);//file id & post variables
 			echo '<div id="message" class="updated fade"><p>' . $_FILES["upfile"]["name"] . " ".__('has successfully uploaded','eshop').'</p></div>';
 		}else{ //ie a failed upload
 			echo '<div id="message" class="error fade">'.$error.'</div>';
@@ -137,6 +138,7 @@ function eshop_downloads_manager() {
 			//add in mysql update here
 			$query= 'UPDATE '.$table.' SET title = "'.$wpdb->escape($_POST['title']).'", downloads = "'.$wpdb->escape($_POST['downloads']).'", purchases = "'.$wpdb->escape($_POST['purchases']).'"  WHERE id = "'.$wpdb->escape($_POST['id']).'"';
 			$wpdb->query("$query");
+			do_action('eshop_file_upload_amend',$_POST['id'], $_POST);//file id & post variables
 			echo '<div id="message" class="updated fade"><p>'.__('File updated successfully','eshop').'</p></div>';
 		}else{
 			//error handling
@@ -185,6 +187,10 @@ function eshop_downloads_manager() {
 			  <th id="eddate"><?php _e('Upload Date','eshop'); ?></th>
 			  <th id="eddown"><?php _e('Downloads','eshop'); ?></th>
 			  <th id="edpurc"><?php _e('Purchases','eshop'); ?></th>
+			  <?php
+			  	$echo='';
+			  	echo apply_filters('eshop_download_table_extrahead',$echo);
+		  		?>
 			 </tr>
 			 </thead>
 			 <tbody>
@@ -200,6 +206,8 @@ function eshop_downloads_manager() {
 			   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";
 			   echo '<td headers="eddown redid'.$row->id.'">'.$row->downloads."</td>\n";
 			   echo '<td headers="edpurc redid'.$row->id.'">'.$row->purchases."</td>\n";
+			   	$echo='';
+		   		echo apply_filters('eshop_download_table_extracell',$echo,$row);
 			   echo "</tr>\n";
 			 ?>
 			 </tbody>
@@ -226,7 +234,10 @@ function eshop_downloads_manager() {
 			<label for="filetitle"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo $row->title; ?>" /><br />
 			<label for="downloads"><?php _e('Downloads','eshop'); ?></label><input type="text" name="downloads" id="downloads" size="5" value="<?php echo $row->downloads; ?>" /><br />
 			<label for="purchases"><?php _e('Purchases','eshop'); ?></label><input type="text" name="purchases" id="purchases" size="5" value="<?php echo $row->purchases; ?>" /><br />
-
+			<?php 
+				$echo='';
+				echo apply_filters('eshop_downloads_form_amend',$echo);
+			?>
 			</fieldset>
 			  <p class="submit"><input type="submit" name="editamend" value="<?php _e('Amend details','eshop'); ?>" class="button" /></p>
 			</form>
@@ -351,6 +362,10 @@ function eshop_downloads_manager() {
 		  <th id="eddate"><?php _e('Upload Date','eshop'); ?></th>
 		  <th id="eddown"><?php _e('Downloads','eshop'); ?></th>
 		  <th id="edpurch"><?php _e('Purchases','eshop'); ?></th>
+		  <?php
+		  	$echo='';
+		  	echo apply_filters('eshop_download_table_extrahead',$echo);
+		  ?>
 		 </tr>
 		 </thead>
 		 <tbody>
@@ -370,6 +385,8 @@ function eshop_downloads_manager() {
 		   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";
 		   echo '<td headers="eddown redid'.$row->id.'">'.$row->downloads."</td>\n";
 		   echo '<td headers="edpurch redid'.$row->id.'">'.$row->purchases."</td>\n";
+		   	$echo='';
+		   	echo apply_filters('eshop_download_table_extracell',$echo,$row);
 		   echo "</tr>\n";
 		 }
 		 ?>
@@ -406,6 +423,7 @@ function eshop_downloads_manager() {
 		</div>
 		<?php
 		$dirpath=eshop_download_directory();
+		
 		if(!is_writeable($dirpath)) {
 			echo '
 			<div id="message" class="error fade">
@@ -434,7 +452,10 @@ function eshop_downloads_manager() {
 				 <fieldset><legend><?php _e('Overwrite file if it exists','eshop'); ?></legend>
 				 <input name="overwrite" type="radio" id="overwrite" value="no" checked="checked" /><label for="overwrite"><?php _e('No','eshop'); ?></label>
 				 <input name="overwrite" type="radio" id="yesoverwrite" value="yes" /><label for="yesoverwrite"><?php _e('Yes','eshop'); ?></label>
-
+				<?php 
+				$echo='';
+				echo apply_filters('eshop_downloads_form',$echo);
+				?>
 				 </fieldset>
 				</fieldset>
 				  <p class="submit"><input type="submit" name="up" value="<?php _e('Upload File','eshop'); ?>" class="button-primary" /></p>

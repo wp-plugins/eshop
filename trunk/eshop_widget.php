@@ -1,6 +1,7 @@
 <?php
 function eshopwidgets_init(){
 	register_widget('eshop_widget');
+	register_widget('eshop_cart_widget');
 	register_widget('eshop_pay_widget');
 	register_widget('eshop_products_widget');
 	register_widget('eshop_search_widget');
@@ -36,8 +37,6 @@ class eshop_widget extends WP_Widget {
 				}
 				if($showwhat=='full'){
 					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'</div>';
-					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
-					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 					$eecho .='</div>';
 				}else{
 					$eecho='<p class="eshopwidget">';
@@ -116,6 +115,144 @@ class eshop_widget extends WP_Widget {
 	<?php
 	}
 }
+
+/* *********************************************
+** Main eShop cart widget - new and improved **
+*********************************************** */
+class eshop_cart_widget extends WP_Widget {
+
+	function eshop_cart_widget() {
+		$widget_ops = array('classname' => 'eshopcarti_widget', 'description' => __('Displays eShop cart','eshop'));
+		$this->WP_Widget('eshopwi_cart', __('eShop Cart (Improved)','eshop'), $widget_ops);
+	}
+
+	function widget( $args, $instance ) {
+		extract( $args );
+		global $blog_id,$eshopoptions;
+		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
+		$show = apply_filters( 'widget_text', $instance['show'], $instance );
+		$showwhat = apply_filters( 'widget_text', $instance['showwhat'], $instance );
+		$text = apply_filters( 'widget_text', $instance['text'], $instance );
+		$items = apply_filters( 'widget_text', $instance['items'], $instance );
+		$qty = apply_filters( 'widget_text', $instance['qty'], $instance );
+		$total = apply_filters( 'widget_text', $instance['total'], $instance );
+		$currsymbol=$eshopoptions['currency_symbol'];
+		if(isset($_SESSION['eshopcart'.$blog_id])){
+			$eshopsize=0;
+			$eshopqty=0;
+			$thetotal=0;
+			if(isset($_SESSION['eshopcart'.$blog_id])){
+				$eshopsize=sizeof($_SESSION['eshopcart'.$blog_id]);
+				
+				foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
+					$eshopqty+=$eshopwop['qty'];
+				}
+				
+				if(isset($_SESSION['final_price'.$blog_id])) $thetotal=$_SESSION['final_price'.$blog_id];
+				
+				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($_SESSION['final_price'.$blog_id],2));
+				if($showwhat=='full'){
+					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'';
+					$eecho .='</div></div>';
+				}else{
+					$any=0;
+					$eecho='<p class="eshopwidget">';
+					if(isset($items) & $items=='1'){
+						$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
+						$any++;
+					}
+					if(isset($qty) & $qty=='1'){
+						if($any>0) $eecho.= '<br />';
+						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopqty,'eshop'),$eshopqty);
+						$any++;
+					}
+					if(isset($total) & $total=='1'){
+						if($any>0) $eecho.= '<br />';
+						$eecho .=sprintf(__('<span>%s</span> cart total.','eshop'),$eshoptotal);
+					}
+					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+					$eecho .='</p>';
+				}			
+
+				echo $before_widget;
+				echo $before_title.$title.$after_title;
+				echo $eecho;
+				echo $after_widget;
+			}			
+		}elseif($show!='no'){
+			$eecho='';
+			if($showwhat=='full')
+				$eecho .= '<div class="ajaxcart">';
+			$eecho .= '<div class="eshopcartwidget"><p>'.$text.'</p><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+			$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p></div>';
+			if($showwhat=='full')
+				$eecho .= '</div>';
+			echo $before_widget;
+			echo $before_title.$title.$after_title;
+			echo $eecho;
+			echo $after_widget;
+		}else{
+			if($showwhat=='full'){
+				echo $before_widget;
+				//echo $before_title.$title.$after_title;
+				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
+				echo $after_widget;
+			}
+		}
+	}
+
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['show'] = strip_tags( $new_instance['show'] );
+		$instance['showwhat'] = strip_tags( $new_instance['showwhat'] );
+		$instance['total'] = strip_tags( $new_instance['total'] );
+		$instance['items'] = strip_tags( $new_instance['items'] );
+		$instance['qty'] = strip_tags( $new_instance['qty'] );
+
+		$instance['text'] = strip_tags( $new_instance['text'] );
+		return $instance;
+	}
+
+	function form( $instance ) {
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '', 'show'=>'no', 'showwhat'=>'', 'text'=>'', 'items'=>'','qty'=>'','total'=>'') );
+		$title = strip_tags($instance['title']);
+		$show = $instance['show'];
+		$showwhat = $instance['showwhat'];
+		$items = $instance['items'];
+		$qty = $instance['qty'];
+		$total = $instance['total'];
+		$text = $instance['text'];
+		?>
+		 <p>
+		    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
+		    <input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($title);?>" />
+		 </p>
+		 <p>
+		 	<label for="<?php echo $this->get_field_id('showwhat'); ?>"><?php _e('What to show','eshop'); ?></label>
+		 	<select id="<?php echo $this->get_field_id('showwhat'); ?>" name="<?php echo $this->get_field_name('showwhat'); ?>">
+		 	<option value="both"<?php selected( $showwhat, 'both' ); ?>><?php _e('Just totals','eshop'); ?></option>
+		 	<option value="full"<?php selected( $showwhat, 'full' ); ?>><?php _e('Full Cart','eshop'); ?></option>
+			</select><br />
+		  	<label for="<?php echo $this->get_field_id('show'); ?>"><?php _e('Show when empty','eshop'); ?></label>
+		  	<select id="<?php echo $this->get_field_id('show'); ?>" name="<?php echo $this->get_field_name('show'); ?>">
+		  	<option value="yes"<?php selected( $show, 'yes' ); ?>><?php _e('Yes','eshop'); ?></option>
+		  	<option value="no"<?php selected( $show, 'no' ); ?>><?php _e('No','eshop'); ?></option>
+			</select><br />
+			<input type="checkbox" value="1" <?php checked( $items, '1' ); ?> id="<?php echo $this->get_field_id('items'); ?>" name="<?php echo $this->get_field_name('items'); ?>" /><label for="<?php echo $this->get_field_id('items'); ?>"><?php _e('Total Number of Items','eshop'); ?></label><br />
+			<input type="checkbox" value="1" <?php checked( $qty, '1' ); ?> id="<?php echo $this->get_field_id('qty'); ?>" name="<?php echo $this->get_field_name('qty'); ?>" /><label for="<?php echo $this->get_field_id('qty'); ?>"><?php _e('Total Quantity of Items','eshop'); ?></label><br />
+			<input type="checkbox" value="1" <?php checked( $total, '1' ); ?> id="<?php echo $this->get_field_id('total'); ?>" name="<?php echo $this->get_field_name('total'); ?>" /><label for="<?php echo $this->get_field_id('total'); ?>"><?php _e('Cart Total','eshop'); ?></label><br />
+			
+		</p>
+		<p>
+		    <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('Text to show when Cart is empty:','eshop'); ?></label>
+		    <input type="text" id="<?php echo $this->get_field_id('text'); ?>" name="<?php echo $this->get_field_name('text'); ?>" value="<?php echo esc_attr($text);?>" />
+		</p>
+	<?php
+	}
+}
+
 /* *******************************
 ** eShop payment options widget **
 ******************************** */

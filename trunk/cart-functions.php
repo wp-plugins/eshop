@@ -79,16 +79,27 @@ if (!function_exists('display_cart')) {
 					}
 					/* end */
 					//opsets
-					
+
 					if(isset($opt['optset'])){
 						$oset=$qb=array();
 						$optings=unserialize($opt['optset']);
+						//then sort it how we want.
+						$B = new eshop_multi_sort;
+						$B->aData = $optings;
+						$B->aSortkeys =  array('id');
+						$B->sort();
+						$optings=$B->aData;
+
 						$c=0;
 						if(isset($newoptings)) unset($newoptings);
+
 						foreach($optings as $foo=>$opst){
-							$qb[]="id=$opst[id]";
-							if((isset($opst['text']) && $opst['text']!='') || !isset($opst['text'])){
+							if(!isset($opst['type']) 
+							|| (($opst['type']=='2' || $opst['type']=='3') && (isset($opst['text']) && trim($opst['text'])!=''))
+							){
 								$newoptings[]=$optings[$c];
+								$qb[]="id=$opst[id]";
+
 							}
 							$c++;
 						}
@@ -100,7 +111,7 @@ if (!function_exists('display_cart')) {
 							$x=0;
 							foreach($orowres as $orow){
 								if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
-									if((isset($newoptings[$x]['type'])&& isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
+									if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
 										$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
 									}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
 										$xxxx='';
@@ -162,7 +173,7 @@ if (!function_exists('display_cart')) {
 				$emptycell='<td headers="cartDelete" class="eshopempty"></td>';
 			else
 				$emptycell='';
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format($sub_total,2))."</td>$emptycell</tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,2))."</td>$emptycell</tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -277,6 +288,13 @@ if (!function_exists('display_cart')) {
 		//test
 		if(isset($totalweight))
 			$_SESSION['eshop_totalweight'.$blog_id]['totalweight']=$totalweight;
+			
+			
+		if($iswidget=='w'){
+			$echo.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
+			$echo .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+		}
+
 		return $echo;
 	}
 }
@@ -1867,30 +1885,38 @@ if (!function_exists('eshop_contains')) {
 if (!function_exists('eshop_send_customer_email')) {
     function eshop_send_customer_email($checked, $mg_id){
     	global $wpdb;
-    	//this is an email sent to the customer:
-		//first extract the order details
-		$array=eshop_rtn_order_details($checked);
-		$etable=$wpdb->prefix.'eshop_emails';
-		
-		//grab the template
-		$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='".$mg_id."' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-		$this_email = stripslashes($thisemail->emailContent);
-		
-		// START SUBST
-		$csubject=stripslashes($thisemail->emailSubject);
-		$this_email = eshop_email_parse($this_email,$array);
+    	//runcode - return false to stop the rest from running.
+    	//checked is reference for db, mg_id is the email template to use
+    	$runcode=true;
+    	$runcode=apply_filters('eshop_send_customer_email_replace',$runcode,$checked, $mg_id);
+    	if($runcode==true){
+			//this is an email sent to the customer:
+			//first extract the order details
+			$array=eshop_rtn_order_details($checked);
+			$etable=$wpdb->prefix.'eshop_emails';
 
-		//try and decode various bits
-		$this_email=html_entity_decode($this_email,ENT_QUOTES);
-		
-		$headers=eshop_from_address();
-		wp_mail($array['eemail'], $csubject, $this_email,$headers);
+			//grab the template
+			$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='".$mg_id."' AND emailUse='1') OR id='1'  order by id DESC limit 1");
+			$this_email = stripslashes($thisemail->emailContent);
+
+			// START SUBST
+			$csubject=stripslashes($thisemail->emailSubject);
+			$this_email = eshop_email_parse($this_email,$array);
+
+			//try and decode various bits
+			$this_email=html_entity_decode($this_email,ENT_QUOTES);
+
+			$headers=eshop_from_address();
+			wp_mail($array['eemail'], $csubject, $this_email,$headers);
+		}
 		do_action('eshop_send_customer_email', $csubject, $this_email, $headers, $array);
 		//affiliate
 		if($array['affiliate']!=''){
 			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
 			"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 		}
+		//this is fired on successful purchase, so might as well have this action here
+		do_action('eshop_on_success',$checked);
 	}
 }
 if (!function_exists('eshop_test_or_live')) {
@@ -2040,6 +2066,25 @@ if (!function_exists('get_eshop_product')) {
 			unset($eshop_product['optset']);
 		}
 		return $eshop_product;
+	}
+}
+if(!class_exists('eshop_multi_sort')){
+	class eshop_multi_sort {
+		var $aData;//the array we want to sort.
+		var $aSortkeys;//the order in which we want the array to be sorted.
+		function sortcmp($a, $b, $i=0) {
+			$r = strnatcmp($a[$this->aSortkeys[$i]],$b[$this->aSortkeys[$i]]);
+			if($r==0) {
+				$i++;
+				if ($this->aSortkeys[$i]) $r = $this->sortcmp($a, $b, $i+1);
+			}
+			return $r;
+		}
+		function sort() {
+			if(count($this->aSortkeys)) {
+				usort($this->aData,array($this,"sortcmp"));
+			}
+		}
 	}
 }
 ?>

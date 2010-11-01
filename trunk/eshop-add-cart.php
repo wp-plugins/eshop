@@ -142,9 +142,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 				}
 			}
 
-					
-			if($eshopoptions['options_num']>1){
-			
+			if($eshopoptions['options_num']>1 && !empty($eshop_product['products']['2']['option']) && !empty($eshop_product['products']['2']['price'])){
 				if(isset($eshop_product['cart_radio']) && $eshop_product['cart_radio']=='1'){
 					$opt=$eshopoptions['options_num'];
 					$uniq=apply_filters('eshop_uniq',$uniq);

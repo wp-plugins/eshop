@@ -274,7 +274,7 @@ if(version_compare($eshopoptions['version'], '3.9.0' ,'<')){
 }
 if(version_compare($eshopoptions['version'], '4.0.0' ,'<')){
 	$table = $wpdb->prefix . "eshop_option_sets";
-	if ($wpdb->get_var("show tables like '$table'") != $table) {
+	if ($wpdb->get_var("show tables like '$table'") == $table) {
 		$sql = "CREATE TABLE ".$table." (
 		id int(11) NOT NULL auto_increment,
 		optid int(11) NOT NULL default '0',
@@ -287,7 +287,7 @@ if(version_compare($eshopoptions['version'], '4.0.0' ,'<')){
 		dbDelta($sql);
 	}
 	$table = $wpdb->prefix . "eshop_option_names";
-	if ($wpdb->get_var("show tables like '$table'") != $table) {
+	if ($wpdb->get_var("show tables like '$table'") == $table) {
 		$sql = "CREATE TABLE ".$table." (
 		optid int(11) NOT NULL auto_increment,
 		name varchar(255) NOT NULL default '',
@@ -504,7 +504,7 @@ if(version_compare($eshopoptions['version'], '5.7.6' ,'<')){
 
 if(version_compare($eshopoptions['version'], '5.7.7' ,'<')){
 	$table = $wpdb->prefix . "eshop_option_names";
-	if ($wpdb->get_var("show tables like '$table'") != $table) {
+	if ($wpdb->get_var("show tables like '$table'") == $table) {
 		$sql = "CREATE TABLE ".$table." (
 		optid int(11) NOT NULL auto_increment,
 		name varchar(255) NOT NULL default '',
@@ -517,6 +517,91 @@ if(version_compare($eshopoptions['version'], '5.7.7' ,'<')){
 		$wpdb->query($sql);
 	}
 }
+if(version_compare($eshopoptions['version'], '5.8.1' ,'<')){
+	$charset_collate='';
+	if ( ! empty($wpdb->charset) )
+		$charset_collate = "CHARACTER SET $wpdb->charset";
+	if ( ! empty($wpdb->collate) )
+		$charset_collate .= " COLLATE $wpdb->collate";
+		
+	$table = $wpdb->prefix . "eshop_states";
+		$wpdb->query("ALTER TABLE $table CHANGE `code` `code` char(4) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `stateName` `stateName` varchar(30) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `list` `list` char(2) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix . "eshop_shipping_rates";
+		$wpdb->query("ALTER TABLE $table CHANGE `class` `class` char(1) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix . "eshop_order_items";
+		$wpdb->query("ALTER TABLE $table CHANGE `checkid` `checkid` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `item_id` `item_id` varchar(255) $charset_collate NOT NULL default '0'");
+		$wpdb->query("ALTER TABLE $table CHANGE `optname` `optname` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `optsets` `optsets` TEXT $charset_collate");
+	$table = $wpdb->prefix . "eshop_orders";
+		$wpdb->query("ALTER TABLE $table CHANGE `checkid` `checkid` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `first_name` `first_name` varchar(50) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `last_name` `last_name` varchar(50) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `company` `company` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `email` `email` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `phone` `phone` varchar(30) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `address1` `address1` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `address2` `address2` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `city` `city` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `state` `state` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `zip` `zip` varchar(20) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `country` `country` varchar(3) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `reference` `reference` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_name` `ship_name` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_company` `ship_company` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_phone` `ship_phone` varchar(30) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_address` `ship_address` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_city` `ship_city` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_state` `ship_state` varchar(100) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_postcode` `ship_postcode` varchar(20) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ship_country` `ship_country` varchar(3) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `custom_field` `custom_field` varchar(15) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `transid` `transid` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `paidvia` `paidvia` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `affiliate` `affiliate` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `comments` `comments` TEXT $charset_collate");
+		$wpdb->query("ALTER TABLE $table CHANGE `thememo` `thememo` TEXT $charset_collate");
+		$wpdb->query("ALTER TABLE $table CHANGE `admin_note` `admin_note` TEXT $charset_collate");
+		$wpdb->query("ALTER TABLE $table CHANGE `user_notes` `user_notes` TEXT $charset_collate");
+	$table = $wpdb->prefix ."eshop_downloads";
+		$wpdb->query("ALTER TABLE $table CHANGE `title` `title` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `files` `files` varchar(255) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix ."eshop_download_orders";
+		$wpdb->query("ALTER TABLE $table CHANGE `checkid` `checkid` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `title` `title` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `files` `files` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `code` `code` varchar(20) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `email` `email` varchar(255) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix . "eshop_countries";
+		$wpdb->query("ALTER TABLE $table CHANGE `code` `code` char(2) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `country` `country` varchar(50) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix ."eshop_base_products";
+		$wpdb->query("ALTER TABLE $table CHANGE `brand` `brand` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ptype` `ptype` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `thecondition` `thecondition` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `ean` `ean` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `isbn` `isbn` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `mpn` `mpn` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `img` `img` TEXT $charset_collate");
+		$wpdb->query("ALTER TABLE $table CHANGE `xtra` `xtra` TEXT $charset_collate");
+	$table = $wpdb->prefix ."eshop_discount_codes";
+		$wpdb->query("ALTER TABLE $table CHANGE `disccode` `disccode` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `remain` `remain` varchar(11) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `live` `live` char(3) $charset_collate NOT NULL default 'no'");
+	$table = $wpdb->prefix . "eshop_option_sets";
+		$wpdb->query("ALTER TABLE $table CHANGE `name` `name` varchar(255) $charset_collate NOT NULL default ''");
+	$table = $wpdb->prefix . "eshop_option_names";
+		$wpdb->query("ALTER TABLE $table CHANGE `name` `name` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `admin_name` `admin_name` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `description` `description` TEXT $charset_collate");
+	$table = $wpdb->prefix ."eshop_emails";
+		$wpdb->query("ALTER TABLE $table CHANGE `emailType` `emailType` varchar(50) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `emailSubject` `emailSubject` varchar(255) $charset_collate NOT NULL default ''");
+		$wpdb->query("ALTER TABLE $table CHANGE `emailContent` `emailContent` TEXT $charset_collate");
+}
+
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);

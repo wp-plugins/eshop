@@ -225,8 +225,8 @@ class paypal_class {
 
       }
       
-      if (eregi("VERIFIED",$this->ipn_response)) {
-  
+     // if (eregi("verified",$this->ipn_response)) {
+  	if(stristr($this->ipn_response, 'VERIFIED')) {
          // Valid IPN transaction.
          $this->log_ipn_results(true);
          return true;       

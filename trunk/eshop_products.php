@@ -11,23 +11,6 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-class eshop_multi_sort {
-    var $aData;//the array we want to sort.
-    var $aSortkeys;//the order in which we want the array to be sorted.
-    function sortcmp($a, $b, $i=0) {
-        $r = strnatcmp($a[$this->aSortkeys[$i]],$b[$this->aSortkeys[$i]]);
-        if($r==0) {
-            $i++;
-            if ($this->aSortkeys[$i]) $r = $this->sortcmp($a, $b, $i+1);
-        }
-        return $r;
-    }
-    function sort() {
-        if(count($this->aSortkeys)) {
-            usort($this->aData,array($this,"sortcmp"));
-        }
-    }
-}
 
 function eshop_products_manager() {
 	global $wpdb, $user_ID,$eshopoptions;
@@ -216,11 +199,11 @@ function eshop_products_manager() {
 			if($eshopfilter=='all')
 				$addtoq='';
 			elseif(is_numeric($eshopfilter))
-				$addtoq="AND posts.post_author = $eshopfilter";
+				$addtoq="AND posts.post_author = '$eshopfilter'";
 			else
 				die('There was an error');
 		}else{
-			$addtoq="AND posts.post_author = $user_ID ";
+			$addtoq="AND posts.post_author = '$user_ID' ";
 		}
 
 		$myrowres=$wpdb->get_results("
@@ -238,8 +221,9 @@ function eshop_products_manager() {
 		$x=0;
 		//add in post id( doh! )
 		foreach($myrowres as $row){
-			$grabit[$x]=get_post_custom($row->post_id);
-			$grabit[$x]['id']=array($row->post_id);
+			$grabit[$x]=maybe_unserialize(get_post_meta( $row->post_id, '_eshop_product',true ));//get_post_custom($row->post_id);
+			$grabit[$x]['_eshop_stock']=get_post_meta( $row->post_id, '_eshop_stock',true );//get_post_custom($row->post_id);
+			$grabit[$x]['id']=$row->post_id;
 			$x++;
 			
 		}
@@ -248,10 +232,11 @@ function eshop_products_manager() {
 		* could be rather slow, but easier than trying to create
 		* a different method, at least for now!
 		*/
+		/*
 		foreach($grabit as $foo=>$k){
 			foreach($k as $bar=>$v){
 				if($bar=='_eshop_product'){
-					$x=unserialize($v[0]);
+					$x=maybe_unserialize($v[0]);
 					foreach($x as $nowt=>$val){
 						$array[$foo][$nowt]=$val;
 					}
@@ -261,11 +246,15 @@ function eshop_products_manager() {
 				}
 			}
 		}
+		*/
+		$array=$grabit;
+
 		//then sort it how we want.
 		$B = new eshop_multi_sort;
 		$B->aData = $array;
 		$B->aSortkeys =  array($sortby);
-		$B->sort();
+		//hiding errors, can't figure out they are appearing :(
+		@$B->sort();
 		$grab=$B->aData;
 	?>	
 		<form action="" method="post" class="eshop">
@@ -291,9 +280,9 @@ function eshop_products_manager() {
 		<tbody>
 		<?php
 		$scc=0;
-		foreach($grab as $foo=>$grabit){
-			$eshop_product=unserialize($grabit['_eshop_product']);
-			if(isset($grabit['_eshop_stock']))
+		foreach($grab as $grabit){
+			$eshop_product=$grabit;
+			if(isset($grabit['_eshop_stock']) && is_numeric($grabit['_eshop_stock']))
 				$stkav=$grabit['_eshop_stock'];
 			else
 				$stkav=0;

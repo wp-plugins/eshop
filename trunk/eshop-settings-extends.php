@@ -682,7 +682,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			}
 			?>
 		</select><br />
-		<label for="eshop_downloads_only"><?php _e('Minimal checkout form.','eshop'); ?></label>
+		<label for="eshop_downloads_only"><?php _e('Minimal checkout form. (this also disables shipping costs)','eshop'); ?></label>
 		<select name="eshop_downloads_only" id="eshop_downloads_only">
 		<?php
 		if('yes' == $eshopoptions['downloads_only']){

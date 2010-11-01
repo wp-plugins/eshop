@@ -7,12 +7,180 @@ if (file_exists(ABSPATH . 'wp-admin/includes/upgrade.php')) {
 } else {
     require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 }
-global $charset_collate;
+/**
+ * installation routine to set user roles
+ */
+if (!function_exists('eshop_caps')) {
+	function eshop_caps() {
+		global $wpdb, $user_level, $wp_rewrite, $wp_version;
+			$role = get_role('administrator');
+			if ($role !== NULL){
+				$role->add_cap('eShop');
+				$role->add_cap('eShop_admin');
+			}
+			$role = get_role('editor');
+			if ($role !== NULL)
+				$role->add_cap('eShop');
+	}
+}
+if (!function_exists('eshop_option_setup')) {
+	function eshop_option_setup() {
+		$new_options = array(
+			'addtocart_image'=>'',
+			'base_brand'=>'',
+			'base_condition'=>'',
+			'base_expiry'=>'',
+			'base_payment'=>'',
+			'base_ptype'=>'',
+			'business'=>'',
+			'cart'=>'',
+			'cart_cancel'=>'',
+			'cart_nostock'=>'Out of Stock',
+			'cart_shipping'=>'',
+			'cart_success'=>'',
+			'checkout'=>'',
+			'credits'=> 'no',
+			'cron_email'=>'',
+			'currency_symbol'=>'&pound;',
+			'currency'=>'GBP',
+			'discount_shipping'=>'',
+			'discount_spend1'=>'',
+			'discount_value1'=>'',
+			'discount_spend2'=>'',
+			'discount_value2'=>'',
+			'discount_spend3'=>'',
+			'discount_value3'=>'',
+			'downloads_hideall'=>'no',
+			'downloads_num'=>'3',
+			'downloads_only'=> 'no',
+			'first_time'=> 'yes',
+			'fold_menu'=> 'no',
+			'from_email'=>'',
+			'hide_addinfo'=>'yes',
+			'hide_cartco'=>'',
+			'hide_shipping'=>'',
+			'image_in_cart'=>'',
+			'location'=>'GB',
+			'method'=>array('paypal'),
+			'options_num'=>'3',
+			'paypal_noemail'=>'',
+			'records'=>'10',
+			'search_img'=> 'no',
+			'set_cacheability'=>'no',
+			'shipping_state'=> 'GB',
+			'shipping_zone'=> 'country',
+			'shipping'=> '1',
+			'shop_page'=>'',
+			'show_allstates'=>'',
+			'show_downloads'=>'',
+			'show_forms'=>'',
+			'show_zones'=>'no',
+			'status'=> 'testing',
+			'stock_control'=>'no',
+			'style' => 'yes',
+			'sysemails' =>'',
+			'tandc'=>'',
+			'tandc_id'=>'',
+			'tandc_use'=>'',
+			'unknown_state'=> '5',
+			'version'=>'',
+			'xtra_help' =>'',
+			'xtra_privacy' =>''
+		);
+		add_option( 'eshop_plugin_settings', $new_options );
+	}
+}
+/* directory creation, and file transfer */
+if (!function_exists('eshop_create_dirs')) {
+	function eshop_create_dirs(){
+		$dirs=wp_upload_dir();
+		if(isset($dirs['basedir']))
+			$upload_dir=$dirs['basedir'];
+		else
+			return false;
+		$eshopoptions = get_option('eshop_plugin_settings');
+		if(wp_mkdir_p( $upload_dir )){
+			$url_dir=$dirs['baseurl'];
+			if(substr($url_dir, -1)!='/')$url_dir.='/';
+			$plugin_dir=WP_PLUGIN_DIR;
+			//files
+			$eshop_goto=$upload_dir.'/eshop_files';
+			$eshop_from=$plugin_dir.'/eshop/files';
+			if(!file_exists($eshop_goto.'/eshop.css')){
+				if(wp_mkdir_p( $eshop_goto )){
+					if ($handle = opendir($eshop_from)) {
+						/* This is the correct way to loop over the directory. */
+						while (false !== ($file = readdir($handle))) {
+							if($file!='' && $file!='.' && $file!='..'){
+								copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+								chmod($eshop_goto.'/'.$file,0666);
+							}
+						}
+						closedir($handle);
+					}
+				}else{
+					return false;
+				}
+			}
+			if($eshopoptions['version']<='5.0.0'){
+				copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
+				chmod($eshop_goto.'/noimage.png',0666);
+				copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
+				chmod($eshop_goto.'/eshop-onload.js',0666);
+			}
+			//downloads
+			$eshop_goto=$upload_dir.'/../eshop_downloads';
+			$eshop_from=$plugin_dir.'/eshop/downloads';
+			if(!file_exists($eshop_goto.'/.htaccess')){
+				if(wp_mkdir_p( $eshop_goto )){
+					if ($handle = opendir($eshop_from)) {
+						/* This is the correct way to loop over the directory. */
+						while (false !== ($file = readdir($handle))) {
+							if($file!='' && $file!='.' && $file!='..'){
+								copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
+								chmod($eshop_goto.'/'.$file,0666);
+							}
+						}
+						closedir($handle);
+					}
+				}else{
+					return false;
+				}
+			}
+			//pay images
+			$eshop_goto=$upload_dir.'/eshop_files';
+			 //make sure directory exists
+			if(wp_mkdir_p( $eshop_goto )){
+				$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite','ogone','bank');
+				foreach ($files as $file){
+					if(!file_exists($eshop_goto.'/'.$file.'.png')){
+						//copy the files
+						copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
+						chmod($eshop_goto.'/'.$file.'.png',0666);
+					}
+				}
+			}else{
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+}
+global $wpdb;
+$charset_collate='';
+if ( ! empty($wpdb->charset) )
+	$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+if ( ! empty($wpdb->collate) )
+	$charset_collate .= " COLLATE $wpdb->collate";
+	
 $eshopoptions = get_option('eshop_plugin_settings');
 if(isset($eshopoptions['version'])){
 	//then we must be updating!
-	include_once('eshop-upgrade.php');
-}else{
+	//so we now do nothing...
+	// was include_once('eshop-upgrade.php');
+	// in theory after WP3.1 this section will never be hit, leaving in for backwards compat.
+	}else{
 	//then it must be new
 	if(eshop_create_dirs()==false){
 		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
@@ -798,165 +966,5 @@ if(isset($eshopoptions['version'])){
 	/* version number store - add/update */
 	$eshopoptions['version']=ESHOP_VERSION;
 	update_option('eshop_plugin_settings', $eshopoptions);
-}
-//changes that need to be run just before version is updated:
-
-
-/**
- * installation routine to set user roles
- */
-function eshop_caps() {
-	global $wpdb, $user_level, $wp_rewrite, $wp_version;
-		$role = get_role('administrator');
-		if ($role !== NULL){
-			$role->add_cap('eShop');
-			$role->add_cap('eShop_admin');
-		}
-		$role = get_role('editor');
-		if ($role !== NULL)
-			$role->add_cap('eShop');
-}
-
-function eshop_option_setup() {
-	$new_options = array(
-		'addtocart_image'=>'',
-		'base_brand'=>'',
-		'base_condition'=>'',
-		'base_expiry'=>'',
-		'base_payment'=>'',
-		'base_ptype'=>'',
-		'business'=>'',
-		'cart'=>'',
-		'cart_cancel'=>'',
-		'cart_nostock'=>'Out of Stock',
-		'cart_shipping'=>'',
-		'cart_success'=>'',
-		'checkout'=>'',
-		'credits'=> 'no',
-		'cron_email'=>'',
-		'currency_symbol'=>'&pound;',
-		'currency'=>'GBP',
-		'discount_shipping'=>'',
-		'discount_spend1'=>'',
-		'discount_value1'=>'',
-		'discount_spend2'=>'',
-		'discount_value2'=>'',
-		'discount_spend3'=>'',
-		'discount_value3'=>'',
-		'downloads_hideall'=>'no',
-		'downloads_num'=>'3',
-		'downloads_only'=> 'no',
-		'first_time'=> 'yes',
-		'fold_menu'=> 'no',
-		'from_email'=>'',
-		'hide_addinfo'=>'yes',
-		'hide_cartco'=>'',
-		'hide_shipping'=>'',
-		'image_in_cart'=>'',
-		'location'=>'GB',
-		'method'=>array('paypal'),
-		'options_num'=>'3',
-		'paypal_noemail'=>'',
-		'records'=>'10',
-		'search_img'=> 'no',
-		'set_cacheability'=>'no',
-		'shipping_state'=> 'GB',
-		'shipping_zone'=> 'country',
-		'shipping'=> '1',
-		'shop_page'=>'',
-		'show_allstates'=>'',
-		'show_downloads'=>'',
-		'show_forms'=>'',
-		'show_zones'=>'no',
-		'status'=> 'testing',
-		'stock_control'=>'no',
-		'style' => 'yes',
-		'sysemails' =>'',
-		'tandc'=>'',
-		'tandc_id'=>'',
-		'tandc_use'=>'',
-		'unknown_state'=> '5',
-		'version'=>'',
-		'xtra_help' =>'',
-		'xtra_privacy' =>''
-	);
-	add_option( 'eshop_plugin_settings', $new_options );
-}
-
-/* directory creation, and file transfer */
-
-function eshop_create_dirs(){
-	$dirs=wp_upload_dir();
-	if(isset($dirs['basedir']))
-		$upload_dir=$dirs['basedir'];
-	else
-		return false;
-	$eshopoptions = get_option('eshop_plugin_settings');
-	if(wp_mkdir_p( $upload_dir )){
-		$url_dir=$dirs['baseurl'];
-		if(substr($url_dir, -1)!='/')$url_dir.='/';
-		$plugin_dir=WP_PLUGIN_DIR;
-		//files
-		$eshop_goto=$upload_dir.'/eshop_files';
-		$eshop_from=$plugin_dir.'/eshop/files';
-		if(!file_exists($eshop_goto.'/eshop.css')){
-			if(wp_mkdir_p( $eshop_goto )){
-				if ($handle = opendir($eshop_from)) {
-					/* This is the correct way to loop over the directory. */
-					while (false !== ($file = readdir($handle))) {
-						if($file!='' && $file!='.' && $file!='..'){
-							copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-							chmod($eshop_goto.'/'.$file,0666);
-						}
-					}
-					closedir($handle);
-				}
-			}else{
-				return false;
-			}
-		}
-		if($eshopoptions['version']<='5.0.0'){
-			copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
-			chmod($eshop_goto.'/noimage.png',0666);
-			copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
-			chmod($eshop_goto.'/eshop-onload.js',0666);
-		}
-		//downloads
-		$eshop_goto=$upload_dir.'/../eshop_downloads';
-		$eshop_from=$plugin_dir.'/eshop/downloads';
-		if(!file_exists($eshop_goto.'/.htaccess')){
-			if(wp_mkdir_p( $eshop_goto )){
-				if ($handle = opendir($eshop_from)) {
-					/* This is the correct way to loop over the directory. */
-					while (false !== ($file = readdir($handle))) {
-						if($file!='' && $file!='.' && $file!='..'){
-							copy($eshop_from.'/'.$file,$eshop_goto.'/'.$file);
-							chmod($eshop_goto.'/'.$file,0666);
-						}
-					}
-					closedir($handle);
-				}
-			}else{
-				return false;
-			}
-		}
-		//pay images
-		$eshop_goto=$upload_dir.'/eshop_files';
-		 //make sure directory exists
-		if(wp_mkdir_p( $eshop_goto )){
-			$files=array('paypal','payson','cash','epn','webtopay','authorizenet', 'ideallite','ogone','bank');
-			foreach ($files as $file){
-				if(!file_exists($eshop_goto.'/'.$file.'.png')){
-					//copy the files
-					copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
-					chmod($eshop_goto.'/'.$file.'.png',0666);
-				}
-			}
-		}else{
-			return false;
-		}
-		return true;
-	}
-	return false;
 }
 ?>
