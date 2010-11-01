@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.7.9
+Stable tag: 5.8.1
 
 An accessible Shopping Cart plugin.
 
@@ -42,6 +42,24 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 5.8.1
+
+* *fixed*    incorrect back link appearing on checkout page
+* *fixed*    option set prices not being correctly identified for some configurations.
+* *fixed*    character set and collation on database tables.
+* *updated*  portion of the paypal validation script that may have affected a small proportion of users.
+* *updated*  shortcodes, when using panels changing form value to 'yesqty' will now also show the qty field.
+* *updated*  add to cart, drop down select/radio buttons now only show if there are more than 1 option.
+* *added*    filter eshop_states_na, to remove the not applicable from the state/county/province drop down box.
+* *added*    class per product to enable targetting of specific products for styling.
+* *added*    filters to the list cat tags shortcode.
+* *added*    improved cart widget, old cart widget remains for now. This also features a total price for the cart.
+* *added*    filter for the ajax timings.
+* *improved* activation routine, only affected a few people.
+* *improved* upgrade routine for those upgrading manually.
+* *amended*  default listing for the admin order pages.
+
+ 
 Version 5.7.9
 
 * *Paypal Bug fixed* If using Paypal please upgrade to fix a potential security issue.
@@ -374,5 +392,5 @@ Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
-= 5.6.0 =
+= 5.8.0 =
 Please remember to backup your database before upgrading. 

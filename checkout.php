@@ -114,7 +114,7 @@ if (!function_exists('eshopShowform')) {
 			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').eshop_checkreqd($reqdarray,'state').'<br />
 			  <select class="med pointer" name="state" id="state">';
 			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
-			$echo .='<option value="">'.__('not applicable','eshop').'</option>';
+			$echo .= apply_filters('eshop_states_na','<option value="">'.__('not applicable','eshop').'</option>');
 			foreach($stateList as $code => $value){
 				if(isset($value['list'])) $li=$value['list'];
 				else $li='1';
@@ -199,7 +199,7 @@ if (!function_exists('eshopShowform')) {
 				  <select class="med pointer" name="ship_state" id="shipstate">';
 				//state list from db, as above
 				$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
-				$echo .='<option value="">'.__('not applicable','eshop').'</option>';
+				$echo .=apply_filters('eshop_states_na','<option value="">'.__('not applicable','eshop').'</option>');
 				foreach($eshopstatelist as $egroup =>$value){
 					$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
 
@@ -382,7 +382,8 @@ if (!function_exists('eshopShowform')) {
 if (!function_exists('eshop_checkout')) {
  	function eshop_checkout($_POST){
  		$_POST=stripslashes_deep($_POST);
- 		global $blog_id,$eshopoptions;
+ 		global $blog_id,$eshopoptions,$wpdb;
+ 		$contineproceed='1';
  		//cache
 		eshop_cache();
 		$echoit='';
@@ -396,8 +397,6 @@ if (!function_exists('eshop_checkout')) {
 		}else{
 			$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
 		}
-		global $wpdb;
-
 		//left over from previous script, leaving in just in case another payment method is used.
 		$chkerror=0;
 		$numberofproducts=0;
@@ -580,6 +579,7 @@ if (!function_exists('eshop_checkout')) {
 			$echoit.= display_cart($_SESSION['eshopcart'.$blog_id], false,$eshopoptions['checkout'],$pzone,$shiparray);
 		}
 	}
+	$error='';
 
 	if (isset ($_POST['submit'])) {
 		//form handling
@@ -594,7 +594,6 @@ if (!function_exists('eshop_checkout')) {
 		foreach($_POST as $key=>$value) {
 			$key = $value;
 			}
-		$error='';
 		if($eshopoptions['shipping']=='4' && 'no' == $eshopoptions['downloads_only'] && !isset($_POST['eshop_shiptype']) && !eshop_only_downloads()){
 			$error.= '<li>'.__('<strong>Shipping</strong> - not selected.','eshop').'</li>';
 		}
@@ -914,6 +913,7 @@ if (!function_exists('eshop_checkout')) {
 			$biscuits=eshop_build_cookie($array);
 			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
 			include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php');
+			$contineproceed='3';
 		}
 	}else{
 		//for first time form usage.
@@ -997,11 +997,18 @@ if (!function_exists('eshop_checkout')) {
 	}
 
 	if(isset($_SESSION['eshopcart'.$blog_id])){
-		if($chkerror==0 && !isset($_GET['eshopaction'])){
-			$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink($eshopoptions['cart']).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
-		}else{	
-			$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+		switch($contineproceed){
+			case ('1'):
+				$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink($eshopoptions['cart']).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
+				break;
+			case ('2'):
+				$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+				break;
+			case ('3'):
+				$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+				break;
 		}
+
 	}else{
 		$echoit.= "<p><strong class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</strong></p>";
 	}

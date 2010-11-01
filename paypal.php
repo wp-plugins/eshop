@@ -101,6 +101,7 @@ switch ($eshopaction) {
 		$p->add_field('business', $eshopoptions['business']);
 		if($eshopoptions['cart_success']!=''){
 			$slink=add_query_arg('eshopaction','success',get_permalink($eshopoptions['cart_success']));
+			$slink=apply_filters('eshop_paypal_return_link',$slink);
 		}else{
 			die('<p>'.$derror.'</p>');
 		}

@@ -239,7 +239,7 @@ function eshop_list_subpages($atts){
 	}
 	if(!isset($offset)) $offset='0';
 	$args = array(
-	'post_type' => 'page',
+	'post_type' => $pagetype,
 	'post_status' => null,
 	'post_parent' => $eshopid, // any parent
 	'orderby'=> $orderby,
@@ -287,12 +287,23 @@ function eshop_list_cat_tags($atts){
 	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag','links'=>'yes','price'=>'no'), $atts));
 	$echo='';
 	$allowedtype=array('cat','category_name','tag','tag_id');
-	if(!in_array($type,$allowedtype))  $type='tag';
+	$allowedtype=apply_filters('eshop_list_cat_tags_types',$allowedtype);
+	if(!in_array($type,$allowedtype))  
+		$type='tag';
 	
 	$allowedsort=array('post_date','post_title','menu_order');
-	$allowedorder=array('ASC','DESC');
+	$allowedsort=apply_filters('eshop_list_cat_tags_orderby',$allowedsort);
 	if(!in_array($sortby,$allowedsort)) 
 		$sortby='post_title';
+	$orderby=$sortby;
+
+	$allowedorder=array('ASC','DESC');
+	$allowedorder=apply_filters('eshop_list_cat_tags_order',$allowedorder);
+	if(!in_array($order,$allowedorder)) 
+		$order='ASC';
+	
+	
+	//defaults only.
 	switch($sortby){
 		case ('post_date'):
 			$orderby='date';
@@ -301,12 +312,9 @@ function eshop_list_cat_tags($atts){
 			$orderby='menu_order';
 			break;
 		case ('post_title'):
-		default:
 			$orderby='title';
 			break;
 	}
-	if(!in_array($order,$allowedorder)) 
-		$order='ASC';
 	
 	$thisispage=get_permalink($post->ID);
 	$array=array('post','page');
@@ -648,11 +656,11 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 	$tempost=$post;
 	foreach ($subpages as $post){	
 		setup_postdata($post);
-		$xclass='<li>';
+		$xclass='<li class="eshop-product-'.$post->ID.'">';
 		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
 			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
 			if($esale=='yes')
-				$xclass='<li class="sale">';
+				$xclass='<li class="sale eshop-product-'.$post->ID.'">';
 		}
 		$echo .= $xclass;
 		if($links=='yes')
@@ -698,8 +706,9 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			}
 		}
 
-		if($form=='yes'){
-			$short='no';
+		if($form=='yes' || $form=='yesqty'){
+			if($form=='yesqty') $form='no';
+			$short=$form;
 			$echo =eshop_boing($echo,$short,$post->ID);
 		}
 		$echo .= '</li>'."\n";
@@ -718,11 +727,11 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 	$echo ='<ul class="eshop '.$eshopclass.'">';
 	foreach ($subpages as $post) {
 		setup_postdata($post);
-		$xclass='<li>';
+		$xclass='<li class="eshop-product-'.$post->ID.'">';
 		if(isset($eshopoptions['sale']) && $eshopoptions['sale']=='yes'){
 			$esale=get_post_meta( $post->ID, '_eshop_sale',true );
 			if($esale=='yes')
-				$xclass='<li class="sale"><strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
+				$xclass='<li class="sale eshop-product-'.$post->ID.'"><strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
 		}
 		$echo .= $xclass;
 		$w=apply_filters('eshop_thumbnail_size_w',get_option('thumbnail_size_w'));
@@ -758,8 +767,9 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 		
 		include_once( 'eshop-add-cart.php' );
-		if($form=='yes'){
-			$short='yes';
+		if($form=='yes' || $form=='yesqty'){
+			if($form=='yesqty') $form='no';
+			$short=$form;
 			$echo =eshop_boing($echo,$short,$post->ID);
 		}
 		$echo .= '</li>'."\n";
@@ -1460,8 +1470,8 @@ function eshop_details($atts){
 								$eshopletter++;
 							}
 						}
+						$listed.="</dd>\n";
 					}
-					$listed.="</dd>\n";
 				}
 				break;
 			case 'shipping':
