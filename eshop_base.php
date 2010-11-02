@@ -11,23 +11,6 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
-class eshop_multi_sort {
-    var $aData;//the array we want to sort.
-    var $aSortkeys;//the order in which we want the array to be sorted.
-    function sortcmp($a, $b, $i=0) {
-        $r = strnatcmp($a[$this->aSortkeys[$i]],$b[$this->aSortkeys[$i]]);
-        if($r==0) {
-            $i++;
-            if ($this->aSortkeys[$i]) $r = $this->sortcmp($a, $b, $i+1);
-        }
-        return $r;
-    }
-    function sort() {
-        if(count($this->aSortkeys)) {
-            usort($this->aData,array($this,"sortcmp"));
-        }
-    }
-}
 
 function eshop_base_manager() {
 	global $wpdb,$eshopoptions;
@@ -241,7 +224,7 @@ if(!isset($_GET['change'])){
 						}
 					}
 				}else{
-					$pravailable.=__('n/a','eshop').'<br />';
+					$pravailable=__('n/a','eshop').'<br />';
 				}
 				echo '<td headers="stk sku'.$calt.'">'.$pravailable.'</td>';
 				

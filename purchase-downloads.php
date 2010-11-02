@@ -64,7 +64,7 @@ if (!function_exists('eshop_downloads')) {
 					';
 				}
 				//allow plugin to change output, validated email/passcode already
-				$echo=apply_filters('eshop_download_page',$echo);
+				$echo=apply_filters('eshop_download_page',$echo,$code,$email);
 			}else{
 				$prevdlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code'");
 				if($dlcount==$prevdlcount){

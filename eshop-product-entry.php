@@ -230,6 +230,7 @@ function eshop_save_postdata( $post_id ) {
 	$numoptions=$eshopoptions['options_num'];
 	for($i=1;$i<=$numoptions;$i++){
 		$eshop_product['products'][$i]['option']=htmlspecialchars($_POST['eshop_option_'.$i]);
+		if($_POST['eshop_price_'.$i]=='0') $_POST['eshop_price_'.$i]='0.00';
 		$eshop_product['products'][$i]['price']=$_POST['eshop_price_'.$i];
 		if(!is_numeric($_POST['eshop_price_'.$i]) && $_POST['eshop_price_'.$i]!=''){
 			add_filter('redirect_post_location','eshop_price_error');

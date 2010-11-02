@@ -236,7 +236,7 @@ function eshop_downloads_manager() {
 			<label for="purchases"><?php _e('Purchases','eshop'); ?></label><input type="text" name="purchases" id="purchases" size="5" value="<?php echo $row->purchases; ?>" /><br />
 			<?php 
 				$echo='';
-				echo apply_filters('eshop_downloads_form_amend',$echo);
+				echo apply_filters('eshop_downloads_form_amend',$echo, $row);
 			?>
 			</fieldset>
 			  <p class="submit"><input type="submit" name="editamend" value="<?php _e('Amend details','eshop'); ?>" class="button" /></p>
