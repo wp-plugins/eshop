@@ -1,5 +1,5 @@
 <?php
-function eshop_boing($pee,$short='no',$postid=''){
+function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 	global $wpdb,$post,$eshopchk,$eshopoptions;
 	if($postid=='') $postid=$post->ID;
 	$stkav=get_post_meta( $postid, '_eshop_stock',true);
@@ -10,6 +10,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 	}
     $stocktable=$wpdb->prefix ."eshop_stock";
     $uniq=rand();
+
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
 	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
@@ -20,7 +21,9 @@ function eshop_boing($pee,$short='no',$postid=''){
 			$details.=" class='".esc_attr($eshopoptions['details']['class'])."'";
 		if($eshopoptions['details']['hide']!='')
 			$details.=" options_hide='".esc_attr($eshopoptions['details']['hide'])."'";
-		$pee.= do_shortcode('[eshop_details'.$details.']');
+			
+		if($isshortcode=='n')
+			$pee.= do_shortcode('[eshop_details'.$details.']');
 	}
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//need to precheck stock
@@ -47,6 +50,7 @@ function eshop_boing($pee,$short='no',$postid=''){
 			}
 		}
 		$replace='';
+		$stkav=apply_filters('eshop_show_addtocart',$stkav,$postid, $post);
 		if($stkav=='1'){
 			$currsymbol=$eshopoptions['currency_symbol'];
 			$replace .= '
@@ -64,8 +68,9 @@ function eshop_boing($pee,$short='no',$postid=''){
 					$qb[]="(n.optid=$opset && n.optid=s.optid)";
 				}
 				$qbs = implode("OR", $qb);
+				$optionsetord=apply_filters('eshop_option_set_ordering','ORDER BY type, id ASC');
 				$myrowres=$wpdb->get_results("select n.optid,n.name as name, n.type, s.name as label, s.price, s.id from $opttable as s, 
-					$optnametable as n where $qbs ORDER BY type, id ASC");
+					$optnametable as n where $qbs $optionsetord");
 				$x=0;
 				foreach($myrowres as $myrow){
 					$optarray[$myrow->optid]['name']=$myrow->name;

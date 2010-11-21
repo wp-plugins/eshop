@@ -27,7 +27,7 @@ function eshop_small_stats($stock,$limit=5){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop_downloads.php&edit='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
+				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop_downloads.php&amp;edit='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
 				echo '<td headers="eddown'.$rand.' redid'.$row->id.'">'.$row->downloads."</td>\n";
 				echo '<td headers="edpurch'.$rand.' redid'.$row->id.'">'.$row->purchases."</td>\n";
 				echo '</tr>'."\n";

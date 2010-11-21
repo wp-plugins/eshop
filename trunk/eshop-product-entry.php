@@ -164,8 +164,9 @@ function eshop_inner_custom_box($post) {
 		$shipcodes=array('A','B','C','D','E','F');
 		$size = sizeof($shipcodes)-1;
 		for($i=0;$i<=$size;$i++){
+			$disshipclass=apply_filters('eshop_shipping_rate_class',$shipcodes[$i]);
 			$checked = ( trim($shipcodes[$i]) == trim( $eshop_product['shiprate'] ) ) ? 'selected="selected"' : '';
-			echo '<option value="'.$shipcodes[$i].'"'.$checked.'>'.$shipcodes[$i]."</option>\n";
+			echo '<option value="'.$shipcodes[$i].'"'.$checked.'>'.$disshipclass."</option>\n";
 		}
 		?>
     </select></p>

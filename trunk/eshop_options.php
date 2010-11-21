@@ -188,10 +188,10 @@ function createform($opttable){
 		foreach($myrowres as $row){
 			$calt++;
 			$alt = ($calt % 2) ? '' : ' class="alt"';
-			echo '<tr'.$calt.'>';
+			echo '<tr'.$alt.'>';
 			echo '<td id="row'.$calt.'" headers="aname"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->admin_name))."</a></td>\n";
 			echo '<td headers="pname row'.$calt.'"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></td>\n";
-			echo '<td headers="pname row'.$calt.'">'.$otypes[$row->type]."</a></td>\n";
+			echo '<td headers="pname row'.$calt.'">'.$otypes[$row->type]."</td>\n";
 			echo "</tr>\n";
 		}
 		?>

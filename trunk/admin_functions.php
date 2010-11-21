@@ -263,29 +263,12 @@ if (!function_exists('eshop_deactivate')) {
     	wp_clear_scheduled_hook('eshop_event');
     }
 }
-
-if (!function_exists('eshop_show_credits')) {
-	function eshop_show_credits(){
-	//for admin
-	$version = explode(".", ESHOP_VERSION);
-	?>
-	<p class="creditline"><?php _e('Powered by','eshop'); ?> <a href="http://www.quirm.net/" title="<?php _e('Created by','eshop'); ?> Rich Pedley">eShop</a>
-	<dfn title="<?php echo ESHOP_VERSION; ?>">v.<?php echo $version[0]; ?></dfn></p> 
-	<?php 
-	}
-}
-if (!function_exists('eshop_update_nag')) {
-	function eshop_update_nag() {
-		global $eshopoptions;
-		if ( $eshopoptions['version']!='' && $eshopoptions['version'] >= ESHOP_VERSION )
-			return false;
-
-		if ( current_user_can('manage_options') )
-			$msg = sprintf( __('<strong>eShop %1$s</strong> is now ready to use. <strong>You must now <a href="%2$s">deactivate and re-activate the plugin</a></strong>.','eshop'), ESHOP_VERSION, 'plugins.php#active-plugins-table' );
-		else
-			$msg = sprintf( __('<strong>eShop %1$s<strong> needs updating! Please notify the site administrator.','eshop'), ESHOP_VERSION );
-
-		echo "<div id='update-nag'>$msg</div>";
+if (!function_exists('eshop_admin_footer_text')) {
+	function eshop_admin_footer_text($default_text)  {
+		$version = explode(".", ESHOP_VERSION);
+		$default_text .=' <span class="eshopcredit">| '.__('Powered by','eshop').' <a href="http://www.quirm.net/" title="'.__('Created by','eshop').' Rich Pedley">eShop</a>
+		<dfn title="'.ESHOP_VERSION.'">v.'.$version[0].'</dfn></span>';
+		return $default_text;
 	}
 }
 if (!function_exists('eShopPluginUpdateMessage')) {

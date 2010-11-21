@@ -210,6 +210,7 @@ function eshop_list_subpages($atts){
 	$thisispage=get_permalink($post->ID);
 	$pagetype=apply_filters('eshop_sub_page_type','page');
 	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
+	if($records>$show) $records=$show;
 	if($max>$show)
 		$max=$show;
 	if($max>0){
@@ -323,8 +324,10 @@ function eshop_list_cat_tags($atts){
 	'post_type' => $array,
 	'post_status' => 'publish',
 	$type => $find, 
-	'meta_key'=>'_eshop_product'
+	'meta_key'=>'_eshop_product',
+	'posts_per_page'=>-1
 	); 
+	if($records>$show) $records=$show;
 	$max = sizeof(query_posts($args));
 	if($max>$show)
 		$max=$show;
@@ -403,10 +406,11 @@ function eshop_list_new($atts){
 	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
 	$echo='';
 	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	if($records>$show) $records=$show;
+
 	if($max>$show)
 		$max=$show;
-	if($show<$records)
-		$records=$show;
+
 	if($max>0){
 		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
 		else $epage='1';
@@ -479,6 +483,8 @@ function eshop_best_sellers($atts){
 		from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 		WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
+	if($records>$show) $records=$show;
+
 	if($max>$show)
 		$max=$show;
 	if($max>0){
@@ -633,7 +639,6 @@ function eshop_show_product($atts){
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($pages,$thispage['0']);
 		}
-
 		if(sizeof($pages)>0){//if nothing found - don't do this
 			if($panels=='no'){
 				$echo = eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
@@ -707,9 +712,9 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 
 		if($form=='yes' || $form=='yesqty'){
-			if($form=='yesqty') $form='no';
-			$short=$form;
-			$echo =eshop_boing($echo,$short,$post->ID);
+			if($form=='yesqty') $short='no';
+			else $short=$form;
+			$echo =eshop_boing($echo,$short,$post->ID,'y');
 		}
 		$echo .= '</li>'."\n";
 		//and then we re-add it
@@ -725,6 +730,8 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 	$paged=$post;
 	$eshopprodimg='_eshop_prod_img';
 	$echo ='<ul class="eshop '.$eshopclass.'">';
+	include_once( 'eshop-add-cart.php' );
+
 	foreach ($subpages as $post) {
 		setup_postdata($post);
 		$xclass='<li class="eshop-product-'.$post->ID.'">';
@@ -765,12 +772,10 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
 			}
 		}
-		
-		include_once( 'eshop-add-cart.php' );
 		if($form=='yes' || $form=='yesqty'){
-			if($form=='yesqty') $form='no';
-			$short=$form;
-			$echo =eshop_boing($echo,$short,$post->ID);
+			if($form=='yesqty') $short='no';
+			else $short=$form;
+			$echo =eshop_boing($echo,$short,$post->ID,'y');
 		}
 		$echo .= '</li>'."\n";
 	}
@@ -846,7 +851,7 @@ function eshop_show_payments(){
 			$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
 			$eshopmerchantimgpath=$eshopmi['path'];
 			$eshopmerchantimgurl=$eshopmi['url'];
-			$dims='';
+			$dims=array('3'=>'');
 			if(file_exists($eshopmerchantimgpath))
 				$dims=getimagesize($eshopmerchantimgpath);
 			$echo.= '<li><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></li>'."\n";
@@ -869,7 +874,7 @@ function eshop_show_shipping($atts) {
 
 		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'" class="eshopshiprates eshop">';
 		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
-		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1">'.__('Zone 1','eshop').'</th><th id="zone2">'.__('Zone 2','eshop').'</th><th id="zone3">'.__('Zone 3','eshop').'</th><th id="zone4">'.__('Zone 4','eshop').'</th><th id="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
+		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1" class="zone1">'.__('Zone 1','eshop').'</th><th id="zone2" class="zone2">'.__('Zone 2','eshop').'</th><th id="zone3" class="zone3">'.__('Zone 3','eshop').'</th><th id="zone4" class="zone4">'.__('Zone 4','eshop').'</th><th id="zone5" class="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
 		$eshopshiptable.='<tbody>'."\n";
 		$x=1;
 		$calt=0;
@@ -882,17 +887,18 @@ function eshop_show_shipping($atts) {
 					if(in_array($row->class,$shipclasses)){
 						$calt++;
 						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$row->class=apply_filters('eshop_shipping_rate_class',$row->class);
 						$eshopshiptable.= '<tr'.$alt.'>';
 						if($row->items==1){
 							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
 						}else{
 							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 						}
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -904,13 +910,14 @@ function eshop_show_shipping($atts) {
 					if(in_array($row->class,$shipclasses)){
 						$calt++;
 						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$row->class=apply_filters('eshop_shipping_rate_class',$row->class);
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -924,13 +931,14 @@ function eshop_show_shipping($atts) {
 					if(in_array($row->class,$shipclasses)){
 						$calt++;
 						$alt = ($calt % 2) ? ' class="eshoprow'.$x.'"' : ' class="alt eshoprow'.$x.'"';
+						$row->class=apply_filters('eshop_shipping_rate_class',$row->class);
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
+						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -940,8 +948,9 @@ function eshop_show_shipping($atts) {
 		if(in_array('F',$shipclasses)){
 			$calt++;
 			$alt = ($calt % 2) ? ' class="eshoprowf"' : ' class="alt eshoprowf"';
+			$row->class=apply_filters('eshop_shipping_rate_class','F');
 			$eshopshiptable.= '<tr'.$alt.'>';
-			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">F <small>'.__('(Free)','eshop').'</small></th>'."\n";
+			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Free)','eshop').'</small></th>'."\n";
 			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n('0',2)).'</td>'."\n";
 			$eshopshiptable.= '</tr>';
 		}
@@ -963,11 +972,11 @@ function eshop_show_shipping($atts) {
 				<thead>
 				<tr>
 				<th id="'.$eshopletter.'weight">'. __('Starting weight','eshop').'</th>
-				<th id="'.$eshopletter.'zone1">'. __('Zone 1','eshop').'</th>
-				<th id="'.$eshopletter.'zone2">'. __('Zone 2','eshop').'</th>
-				<th id="'.$eshopletter.'zone3">'. __('Zone 3','eshop').'</th>
-				<th id="'.$eshopletter.'zone4">'. __('Zone 4','eshop').'</th>
-				<th id="'.$eshopletter.'zone5">'. __('Zone 5','eshop').'</th>
+				<th id="'.$eshopletter.'zone1" class="zone1">'. __('Zone 1','eshop').'</th>
+				<th id="'.$eshopletter.'zone2" class="zone2">'. __('Zone 2','eshop').'</th>
+				<th id="'.$eshopletter.'zone3" class="zone3">'. __('Zone 3','eshop').'</th>
+				<th id="'.$eshopletter.'zone4" class="zone4">'. __('Zone 4','eshop').'</th>
+				<th id="'.$eshopletter.'zone5" class="zone5">'. __('Zone 5','eshop').'</th>
 				</tr>
 				</thead>
 				<tbody>';
@@ -979,11 +988,11 @@ function eshop_show_shipping($atts) {
 					$eshopshiptable.='
 					<tr'.$alt.'>
 					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</td>
-					<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
-					<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
-					<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
-					<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
-					<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
+					<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
+					<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
+					<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
+					<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
+					<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
 					</tr>';
 					$x++;
 				}
@@ -1102,7 +1111,7 @@ function eshop_addtocart($atts){
 	if($hide!='' && !is_user_logged_in())
 		return;
 	include_once( 'eshop-add-cart.php' );
-	return eshop_boing('','short',$id);
+	return eshop_boing('','short',$id,'y');
 }
 function eshop_welcome($atts, $content = ''){
 	global $blog_id;
@@ -1258,7 +1267,7 @@ function eshop_details($atts){
 		$willshow=$allowedtoshow;
 	}
 	
-	$allowedtohide=array('option','price','download','weight','stockqty','filesize');
+	$allowedtohide=array('price','download','weight','stockqty','filesize');
 	$willhide=array();
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
@@ -1358,7 +1367,7 @@ function eshop_details($atts){
 						if($opt=='') break;
 						$alt = ($i % 2) ? '' : ' class="alt"';
 						$listed.='<tr'.$alt.'>';
-						$listed.='<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+						$listed.='<th id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</th>';
 						if(!in_array('option',$willhide))
 							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
 						if(!in_array('price',$willhide))
@@ -1440,7 +1449,7 @@ function eshop_details($atts){
 										$myrow->weight='0';
 									$alt = ($i % 2) ? '' : ' class="alt"';
 									$tbody.="<tr".$alt.">\n".
-									'<td id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</td>';
+									'<th id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</th>';
 									if(!in_array('option',$willhide))
 										$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
 									if(!in_array('price',$willhide))
@@ -1526,7 +1535,7 @@ function eshop_details($atts){
 							/* ,'1- weight 2-weight symbol' */
 							$eshopshiptable.='
 							<tr'.$alt.'>
-							<td headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</td>
+							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</th>
 							<td headers="'.$eshopletter.'zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
 							<td headers="'.$eshopletter.'zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
 							<td headers="'.$eshopletter.'zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
@@ -1546,7 +1555,10 @@ function eshop_details($atts){
 		}
 	}
 	if($listed!='')
-		$echo ='<div class="'.$class.'"><dl>'."\n".$listed.'</dl></div>';
+		$addclass='';
+		if($class!='' || $class!='eshopdetails')
+			$addclass=' '.$class;
+		$echo ='<div class="eshopdetails'.$class.'"><dl>'."\n".$listed.'</dl></div>';
 	
 	return $echo;
 	

@@ -44,11 +44,11 @@ if (!function_exists('eshopShowform')) {
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 			<thead>
 			<tr>
-			<th id="'.$eshopletter.'zone1">'. __('Zone 1','eshop').'</th>
-			<th id="'.$eshopletter.'zone2">'. __('Zone 2','eshop').'</th>
-			<th id="'.$eshopletter.'zone3">'. __('Zone 3','eshop').'</th>
-			<th id="'.$eshopletter.'zone4">'. __('Zone 4','eshop').'</th>
-			<th id="'.$eshopletter.'zone5">'. __('Zone 5','eshop').'</th>
+			<th id="'.$eshopletter.'zone1" class="zone1">'. __('Zone 1','eshop').'</th>
+			<th id="'.$eshopletter.'zone2" class="zone2">'. __('Zone 2','eshop').'</th>
+			<th id="'.$eshopletter.'zone3" class="zone3">'. __('Zone 3','eshop').'</th>
+			<th id="'.$eshopletter.'zone4" class="zone4">'. __('Zone 4','eshop').'</th>
+			<th id="'.$eshopletter.'zone5" class="zone5">'. __('Zone 5','eshop').'</th>
 			</tr>
 			</thead>
 			<tbody>';
@@ -58,11 +58,11 @@ if (!function_exists('eshopShowform')) {
 				$alt = ($x % 2) ? '' : ' class="alt"';
 				$eshopshiptable.='
 				<tr'.$alt.'>
-				<td headers="'.$eshopletter.'zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
-				<td headers="'.$eshopletter.'zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
-				<td headers="'.$eshopletter.'zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
-				<td headers="'.$eshopletter.'zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
-				<td headers="'.$eshopletter.'zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
+				<td headers="'.$eshopletter.'zone1" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
+				<td headers="'.$eshopletter.'zone2" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
+				<td headers="'.$eshopletter.'zone3" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
+				<td headers="'.$eshopletter.'zone4" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
+				<td headers="'.$eshopletter.'zone5" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
 				</tr>';
 				$x++;
 			}
@@ -81,25 +81,25 @@ if (!function_exists('eshopShowform')) {
 	}else{
 		$echo .='<legend>'.__('Contact Details','eshop').'</legend>';
 	}
-	$echo .='<label for="first_name">'.__('First Name','eshop').eshop_checkreqd($reqdarray,'first_name').'<br />
-	  <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="40" size="40" /></label><br />
-	 <label for="last_name">'.__('Last Name','eshop').eshop_checkreqd($reqdarray,'last_name').'<br />
-	  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /></label><br />';
+	$echo .='<label for="first_name">'.__('First Name','eshop').eshop_checkreqd($reqdarray,'first_name').'</label>
+	  <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="40" size="40" /><br />
+	 <label for="last_name">'.__('Last Name','eshop').eshop_checkreqd($reqdarray,'last_name').'</label>
+	  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /><br />';
 	if('no' == $eshopoptions['downloads_only']){
-	$echo .='<span class="company"><label for="company">'.__('Company','eshop').eshop_checkreqd($reqdarray,'company').'<br />
-	  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" /></label><br /></span>';
+	$echo .='<span class="company"><label for="company">'.__('Company','eshop').eshop_checkreqd($reqdarray,'company').'</label>
+	  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" /><br /></span>';
 	}
-	$echo .='<label for="email">'.__('Email','eshop').eshop_checkreqd($reqdarray,'email').'<br />
-	  <input class="med" type="text" name="email" value="'.$email.'" id="email" maxlength="100" size="40" /></label><br />';
+	$echo .='<label for="email">'.__('Email','eshop').eshop_checkreqd($reqdarray,'email').'</label>
+	  <input class="med" type="text" name="email" value="'.$email.'" id="email" maxlength="100" size="40" /><br />';
 	if('no' == $eshopoptions['downloads_only']){
-		$echo .='<label for="phone">'.__('Phone','eshop').eshop_checkreqd($reqdarray,'phone').'<br />
-		  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /></label><br />
-		 <label for="address1">'.__('Address','eshop').eshop_checkreqd($reqdarray,'address').'<br />
-		  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /></label><br />
-		 <label for="address2">'.__('Address (continued)','eshop').'<br />
-		  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /></label><br />
-		 <label for="city">'.__('City or town','eshop').eshop_checkreqd($reqdarray,'city').'<br />
-		  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /></label><br />'."\n";
+		$echo .='<label for="phone">'.__('Phone','eshop').eshop_checkreqd($reqdarray,'phone').'</label>
+		  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /><br />
+		 <label for="address1">'.__('Address','eshop').eshop_checkreqd($reqdarray,'address').'</label>
+		  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /><br />
+		 <label for="address2">'.__('Address (continued)','eshop').'</label>
+		  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /><br />
+		 <label for="city">'.__('City or town','eshop').eshop_checkreqd($reqdarray,'city').'</label>
+		  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /><br />'."\n";
 
 		// state list from db
 		$table=$wpdb->prefix.'eshop_states';
@@ -111,7 +111,7 @@ if (!function_exists('eshopShowform')) {
 		}
 		
 		if(sizeof($stateList)>0){
-			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').eshop_checkreqd($reqdarray,'state').'<br />
+			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').eshop_checkreqd($reqdarray,'state').'</label>
 			  <select class="med pointer" name="state" id="state">';
 			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
 			$echo .= apply_filters('eshop_states_na','<option value="">'.__('not applicable','eshop').'</option>');
@@ -134,16 +134,16 @@ if (!function_exists('eshopShowform')) {
 				}
 				$echo .="</optgroup>\n";
 			}
-			$echo.= "</select></label><br /></span>\n";
+			$echo.= "</select><br /></span>\n";
 		}else{
 			$echo .='<input type="hidden" name="state" value="" />';
 		}
-		$echo .= '<span class="altstate"><label for="altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
-				  <input class="short" type="text" name="altstate" value="'.$altstate.'" id="altstate" size="20" /></label><br /></span>';
+		$echo .= '<span class="altstate"><label for="altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').'</label>
+				  <input class="short" type="text" name="altstate" value="'.$altstate.'" id="altstate" size="20" /><br /></span>';
 		$echo .= '
-		 <label for="zip">'.__('Zip/Post code','eshop').eshop_checkreqd($reqdarray,'zip').'<br />
-		  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /></label><br />
-		 <label for="country">'.__('Country','eshop').eshop_checkreqd($reqdarray,'country').'<br />
+		 <label for="zip">'.__('Zip/Post code','eshop').eshop_checkreqd($reqdarray,'zip').'</label>
+		  <input class="short" type="text" name="zip" value="'.$zip.'" id="zip" maxlength="20" size="20" /><br />
+		 <label for="country">'.__('Country','eshop').eshop_checkreqd($reqdarray,'country').'</label>
 		  <select class="med pointer" name="country" id="country">
 		';
 		// country list from db
@@ -166,7 +166,7 @@ if (!function_exists('eshopShowform')) {
 				$echo.="<option value=\"$code\">$label</option>";
 			}
 		}
-		$echo.= "</select></label>";
+		$echo.= "</select>";
 	}
 	$echo .="</fieldset>";
 	
@@ -175,27 +175,27 @@ if (!function_exists('eshopShowform')) {
 	if('yes' != $eshopoptions['hide_addinfo']){
 		$echo .= '<fieldset class="eshop fld3">
 		<legend>'.__('Additional information','eshop').'</legend>
-		 <label for="reference">'.__('Reference or <abbr title="Purchase Order number">PO</abbr>','eshop').eshop_checkreqd($reqdarray,'ref').'<br />
-		  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /></label><br />
-		 <label for="eshop-comments">'.__('Comments or special instructions','eshop').eshop_checkreqd($reqdarray,'comments').'<br />
-		  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></label></fieldset>';
+		 <span class="eshopreference"><label for="reference">'.__('Reference or <abbr title="Purchase Order number">PO</abbr>','eshop').eshop_checkreqd($reqdarray,'ref').'</label>
+		  <input type="text" class="med" name="reference" value="'.$reference.'" id="reference" size="30" /><br /></span>
+		 <label for="eshop-comments">'.__('Comments or special instructions','eshop').eshop_checkreqd($reqdarray,'comments').'</label>
+		  <textarea class="textbox" name="comments" id="eshop-comments" cols="60" rows="5">'.$comments.'</textarea></fieldset>';
 	}
 	if('no' == $eshopoptions['downloads_only']){
 		if('yes' != $eshopoptions['hide_shipping']){
 			$echo .='<fieldset class="eshop fld4">
 			<legend>'.__('Shipping address (if different)','eshop').'</legend>
-			 <label for="ship_name">'.__('Name','eshop').'<br />
-			  <input class="med" type="text" name="ship_name" id="ship_name" value="'.stripslashes(esc_attr($ship_name)).'" maxlength="40" size="40" /></label><br />
-			 <span class="ship_company"><label for="ship_company">'.__('Company','eshop').'<br />
-			  <input class="med" type="text" name="ship_company" value="'.stripslashes(esc_attr($ship_company)).'" id="ship_company" size="40" /></label><br /></span>
-			 <label for="ship_phone">'.__('Phone','eshop').'<br />
-			  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /></label><br />
-			 <label for="ship_address">'.__('Address','eshop').'<br />
-			  <input class="med" type="text" name="ship_address" id="ship_address" value="'.stripslashes(esc_attr($ship_address)).'" maxlength="40" size="40" /></label><br />
-			 <label for="ship_city">'.__('City or town','eshop').'<br />
-			  <input class="med" type="text" name="ship_city" id="ship_city" value="'.stripslashes(esc_attr($ship_city)).'" maxlength="40" size="40" /></label><br />'."\n";
+			 <label for="ship_name">'.__('Name','eshop').'</label>
+			  <input class="med" type="text" name="ship_name" id="ship_name" value="'.stripslashes(esc_attr($ship_name)).'" maxlength="40" size="40" /><br />
+			 <span class="ship_company"><label for="ship_company">'.__('Company','eshop').'</label>
+			  <input class="med" type="text" name="ship_company" value="'.stripslashes(esc_attr($ship_company)).'" id="ship_company" size="40" /><br /></span>
+			 <label for="ship_phone">'.__('Phone','eshop').'</label>
+			  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /><br />
+			 <label for="ship_address">'.__('Address','eshop').'</label>
+			  <input class="med" type="text" name="ship_address" id="ship_address" value="'.stripslashes(esc_attr($ship_address)).'" maxlength="40" size="40" /><br />
+			 <label for="ship_city">'.__('City or town','eshop').'</label>
+			  <input class="med" type="text" name="ship_city" id="ship_city" value="'.stripslashes(esc_attr($ship_city)).'" maxlength="40" size="40" /><br />'."\n";
 			if(isset($stateList) && sizeof($stateList)>0){
-				$echo .='<span class="ship_state"><label for="shipstate">'.__('State/County/Province','eshop').'<br />
+				$echo .='<span class="ship_state"><label for="shipstate">'.__('State/County/Province','eshop').'</label>
 				  <select class="med pointer" name="ship_state" id="shipstate">';
 				//state list from db, as above
 				$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
@@ -214,17 +214,17 @@ if (!function_exists('eshopShowform')) {
 					}
 					$echo .="</optgroup>\n";
 				}
-				$echo .= '</select></label><br /></span>';
+				$echo .= '</select><br /></span>';
 			}else{
 				$echo .='<input type="hidden" name="ship_state" value="" />';
 			}
-			$echo .= '<span class="ship_altstate"><label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').' <br />
-					 <input class="short" type="text" name="ship_altstate" value="'.stripslashes(esc_attr($ship_altstate)).'" id="ship_altstate" size="20" /></label><br /></span>';
+			$echo .= '<span class="ship_altstate"><label for="ship_altstate">'.__('State/County/Province <small>if not listed above</small>','eshop').'</label>
+					 <input class="short" type="text" name="ship_altstate" value="'.stripslashes(esc_attr($ship_altstate)).'" id="ship_altstate" size="20" /><br /></span>';
 
-			$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'<br />
-			  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" /></label>
+			$echo .='<label for="ship_postcode">'.__('Zip/Post Code','eshop').'</label>
+			  <input class="short" type="text" name="ship_postcode" id="ship_postcode" value="'.$ship_postcode.'" maxlength="20" size="20" />
 			  <br />
-			<label for="shipcountry">'.__('Country','eshop').'<br />
+			<label for="shipcountry">'.__('Country','eshop').'</label>
 			  <select class="med pointer" name="ship_country" id="shipcountry">
 			';
 			$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
@@ -236,7 +236,7 @@ if (!function_exists('eshopShowform')) {
 					$echo.="<option value=\"$code\">$label</option>";
 				}
 			}
-			$echo.= "</select></label>";
+			$echo.= "</select>";
 			$echo .='</fieldset>';
 		}
 	}
@@ -318,7 +318,7 @@ if (!function_exists('eshopShowform')) {
 				$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
 				$eshopmerchantimgpath=$eshopmi['path'];
 				$eshopmerchantimgurl=$eshopmi['url'];
-				$dims='';
+				$dims=array('3'=>'');
 				if(file_exists($eshopmerchantimgpath))
 					$dims=getimagesize($eshopmerchantimgpath);
 				$echo .='<li><input class="rad" type="radio" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /><label for="eshop_payment'.$i.'"><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /></label></li>'."\n";
@@ -339,9 +339,12 @@ if (!function_exists('eshopShowform')) {
 					if($eshopbank['rename']!='')
 						$eshoppayment_text=$eshopbank['rename'];
 				}
-				$eshopmerchantimgpath=apply_filters('eshop_merchant_img_path_'.$eshoppayment,$eshopfiles['0'].$eshoppayment.'.png');
-				$eshopmerchantimgurl=apply_filters('eshop_merchant_img__url'.$eshoppayment,$eshopfiles['1'].$eshoppayment.'.png');
-				$dims=getimagesize($eshopmerchantimgpath);
+				$eshopmi=apply_filters('eshop_merchant_img_'.$eshoppayment,array('path'=>$eshopfiles['0'].$eshoppayment.'.png','url'=>$eshopfiles['1'].$eshoppayment.'.png'));
+				$eshopmerchantimgpath=$eshopmi['path'];
+				$eshopmerchantimgurl=$eshopmi['url'];
+				$dims='';
+				if(file_exists($eshopmerchantimgpath))
+					$dims=getimagesize($eshopmerchantimgpath);
 				$echo .='<li><img src="'.$eshopmerchantimgurl.'" '.$dims[3].' alt="'.__('Pay via','eshop').' '.$eshoppayment_text.'" title="'.__('Pay via','eshop').' '.$eshoppayment_text.'" /><input type="hidden" name="eshop_payment" value="'.$eshoppayment.'" id="eshop_payment'.$i.'" /></li>'."\n";
 				$i++;
 			}
@@ -400,15 +403,18 @@ if (!function_exists('eshop_checkout')) {
 		//left over from previous script, leaving in just in case another payment method is used.
 		$chkerror=0;
 		$numberofproducts=0;
-
+		//filter for plugin merchant gateways
+		$eshopmgincpath=apply_filters('eshop_mg_inc_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php',$paymentmethod);
 		// if everything went ok do the following, hopefully the rest won't happen!
 		if(isset($_GET['eshopaction'])){
 			if($_GET['eshopaction']=='success'){
-				include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php');
+				include($eshopmgincpath);
 			}
 		}
-
-		include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'/index.php');
+		//filter for plugin merchant gateways
+		$eshopmgincidxpath=apply_filters('eshop_mg_inc_idx_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'/index.php',$paymentmethod);
+		if(file_exists($eshopmgincidxpath))
+			include($eshopmgincidxpath);
 
 		if(isset($_SESSION['eshopcart'.$blog_id])){
 			$shopcart=$_SESSION['eshopcart'.$blog_id];
@@ -803,7 +809,7 @@ if (!function_exists('eshop_checkout')) {
 				if(!isset($_POST['comments'])) $_POST['comments']='';
 				if( (trim($_POST['reference'])!='') && trim($_POST['comments'])==''){
 					$echoit.= "<div class=\"eshop fld3\"><h4>".__('Additional information','eshop')."</h4>\n<ul class=\"eshop confirmref\">\n";
-					$echoit.= '<li><span class="items">'.__('Reference or PO:','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
+					$echoit.= '<li><span class="items">'.__('Reference or <abbr title="Purchase Order number">PO</abbr>','eshop').'</span> '.$_POST['reference'].'</li>'."\n";
 					$echoit.= '</ul></div>'."\n";
 				}
 				if( (trim($_POST['reference'])=='') && trim($_POST['comments'])!=''){
@@ -912,7 +918,8 @@ if (!function_exists('eshop_checkout')) {
 			$array['comments']=$array['reference']='';
 			$biscuits=eshop_build_cookie($array);
 			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
-			include(WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php');
+			$eshopmgincpath=apply_filters('eshop_mg_inc_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php',$paymentmethod);
+			include($eshopmgincpath);
 			$contineproceed='3';
 		}
 	}else{

@@ -136,6 +136,9 @@ class eshop_cart_widget extends WP_Widget {
 		$items = apply_filters( 'widget_text', $instance['items'], $instance );
 		$qty = apply_filters( 'widget_text', $instance['qty'], $instance );
 		$total = apply_filters( 'widget_text', $instance['total'], $instance );
+		//$fc=apply_filters( 'widget_text', $instance['fc'], $instance );
+		//$fcimg=apply_filters( 'widget_text', $instance['fcimg'], $instance );
+
 		$currsymbol=$eshopoptions['currency_symbol'];
 		if(isset($_SESSION['eshopcart'.$blog_id])){
 			$eshopsize=0;
@@ -207,16 +210,31 @@ class eshop_cart_widget extends WP_Widget {
 		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['show'] = strip_tags( $new_instance['show'] );
 		$instance['showwhat'] = strip_tags( $new_instance['showwhat'] );
-		$instance['total'] = strip_tags( $new_instance['total'] );
-		$instance['items'] = strip_tags( $new_instance['items'] );
-		$instance['qty'] = strip_tags( $new_instance['qty'] );
-
+		
+		$instance['qty']=$instance['items']=$instance['total'] = '';
+		
+		if(isset($new_instance['total']))
+			$instance['total'] = strip_tags( $new_instance['total'] );
+		if(isset($new_instance['items']))
+			$instance['items'] = strip_tags( $new_instance['items'] );
+		if(isset($new_instance['qty']))
+			$instance['qty'] = strip_tags( $new_instance['qty'] );
+			
+		$instance['fc'] = strip_tags( $new_instance['fc'] );
+		$instance['fcimg'] = strip_tags( $new_instance['fcimg'] );
 		$instance['text'] = strip_tags( $new_instance['text'] );
+		
+		//need access elsewhere - restricts to one setting sadly.
+		$eshopoptions = get_option('eshop_plugin_settings');
+		$eshopoptions['widget_cart_type']=$instance['fc'];
+		$eshopoptions['widget_cart_img']=$instance['fcimg'];
+		update_option('eshop_plugin_settings',$eshopoptions);
+		
 		return $instance;
 	}
 
 	function form( $instance ) {
-		$instance = wp_parse_args( (array) $instance, array( 'title' => '', 'show'=>'no', 'showwhat'=>'', 'text'=>'', 'items'=>'','qty'=>'','total'=>'') );
+		$instance = wp_parse_args( (array) $instance, array( 'title' => '', 'show'=>'no', 'showwhat'=>'', 'text'=>'', 'items'=>'','qty'=>'','total'=>'','fc'=>'2','fcimg'=>'') );
 		$title = strip_tags($instance['title']);
 		$show = $instance['show'];
 		$showwhat = $instance['showwhat'];
@@ -224,6 +242,8 @@ class eshop_cart_widget extends WP_Widget {
 		$qty = $instance['qty'];
 		$total = $instance['total'];
 		$text = $instance['text'];
+		$fc=$instance['fc'];
+		$fcimg=$instance['fcimg'];
 		?>
 		 <p>
 		    <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:'); ?></label>
@@ -240,10 +260,20 @@ class eshop_cart_widget extends WP_Widget {
 		  	<option value="yes"<?php selected( $show, 'yes' ); ?>><?php _e('Yes','eshop'); ?></option>
 		  	<option value="no"<?php selected( $show, 'no' ); ?>><?php _e('No','eshop'); ?></option>
 			</select><br />
+		<p>Just Totals:<br />
 			<input type="checkbox" value="1" <?php checked( $items, '1' ); ?> id="<?php echo $this->get_field_id('items'); ?>" name="<?php echo $this->get_field_name('items'); ?>" /><label for="<?php echo $this->get_field_id('items'); ?>"><?php _e('Total Number of Items','eshop'); ?></label><br />
 			<input type="checkbox" value="1" <?php checked( $qty, '1' ); ?> id="<?php echo $this->get_field_id('qty'); ?>" name="<?php echo $this->get_field_name('qty'); ?>" /><label for="<?php echo $this->get_field_id('qty'); ?>"><?php _e('Total Quantity of Items','eshop'); ?></label><br />
 			<input type="checkbox" value="1" <?php checked( $total, '1' ); ?> id="<?php echo $this->get_field_id('total'); ?>" name="<?php echo $this->get_field_name('total'); ?>" /><label for="<?php echo $this->get_field_id('total'); ?>"><?php _e('Cart Total','eshop'); ?></label><br />
-			
+		</p>
+		<p><label for="<?php echo $this->get_field_id('fc'); ?>">Full Cart</label><br />
+			<select id="<?php echo $this->get_field_id('fc'); ?>" name="<?php echo $this->get_field_name('fc'); ?>">
+				<option value="0" <?php selected( $fc, '0' ); ?>><?php _e('Image + Text','eshop'); ?></option>
+				<option value="1" <?php selected( $fc, '1' ); ?>><?php _e('Image','eshop'); ?></option>
+				<option value="2" <?php selected( $fc, '2' ); ?>><?php _e('Text','eshop'); ?></option>
+			</select><br />
+			<label for="<?php echo $this->get_field_id('fcimg'); ?>"><?php _e('% size image to display','eshop'); ?></label>
+			   <input type="text" id="<?php echo $this->get_field_id('fcimg'); ?>" name="<?php echo $this->get_field_name('fcimg'); ?>" value="<?php echo esc_attr($fcimg);?>" />
+
 		</p>
 		<p>
 		    <label for="<?php echo $this->get_field_id('text'); ?>"><?php _e('Text to show when Cart is empty:','eshop'); ?></label>

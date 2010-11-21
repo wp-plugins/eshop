@@ -25,7 +25,24 @@ if ('webtopay.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
  * 
  *******************************************************************************
 */
+function signRequest($request, $password) {
+	  $fields = array(
+			   'projectid', 'orderid', 'lang', 'amount', 'currency',
+			   'accepturl', 'cancelurl', 'callbackurl', 'payment', 'country',
+			   'p_firstname', 'p_lastname', 'p_email', 'p_street',
+			   'p_city', 'p_state', 'p_zip', 'p_countrycode', 'test',
+			   'version'
+		   );
+	   $data = '';
+	   foreach ($fields as $key) {
+		   if (isset($request[$key]) && trim($request[$key]) != '') {
+			   $data .= $request[$key];
+		   }
+	   }
+	   $request['sign'] = md5($data . $password);
 
+	   return $request;
+}
 class webtopay_class {
     
    var $last_error;                 // holds the last error encountered
@@ -87,103 +104,74 @@ class webtopay_class {
 			
 			$ExtraCost = $_POST['shipping_1'];
 			
-			$desc = str_replace($replace, " ", $webtopay['description']);
-			
-			if($_POST['amount']<$webtopay['minimum'])
-			{
-				$adjust = $webtopay['minimum'] - $_POST['amount'];
-				
-				$Cost = $Cost + $adjust;
-				
-				$desc .= ' '.sprintf(__('webtopay minimum of %s applied.','eshop'),$webtopay['minimum']);
-			}
 			
 			// - Callback cannot be with GET vars -
 			
-			$callbackURL = strtr($_POST['notify_url'], array('&amp;' => '&'));
+			//$callbackURL = strtr($_POST['notify_url'], array('&amp;' => '&'));
+			$_POST['notify_url']=strtr($_POST['notify_url'], array('&amp;' => '&'));
+			//list($callbackURL, $getCallback) = explode('?', $callbackURL);
 			
-			list($callbackURL, $getCallback) = explode('?', $callbackURL);
+			//some location may be inaccurate, change them here:
+			$changeloc=array('GB'=>'UK');
+			$eshoploc=$eshopoptions['location'];
+			if(isset($changeloc[$eshopoptions['location']]))
+				$eshoploc=$changeloc[$eshopoptions['location']];
 						
 			# *************************************************
 			# -- How we create sign param --
 			$signFields = array( 
-				'merchantid' => $webtopay['id'], 
+				'projectid' => $webtopay['projectid'], 
 				'orderid' => $_POST['RefNr'], 
 				'lang' => $webtopay['lang'], 
 				'amount' => (($Cost + $ExtraCost) * 100), 
 				'currency' => $eshopoptions['currency'], 
 				'accepturl' => get_permalink($eshopoptions['cart_success']), 
-				'cancelurl' => get_permalink($eshopoptions['checkout']), 
-				'callbackurl' => $callbackURL, 
-				'payment' => __('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop'), 
-				'country' => '', 
-				'logo' => '', 
+				'cancelurl' => get_permalink($eshopoptions['cart_cancel']), 
+				'callbackurl' => $_POST['notify_url'],
+				'payment'=>'',
+				'country' => $eshoploc, 
 				'p_firstname' => $_POST['first_name'], 
 				'p_lastname' => $_POST['last_name'], 
 				'p_email' => $_POST['email'], 
-				'p_street' => $_POST['address1'].' '. $_POST['address2'], 
+				'p_street' => trim($_POST['address1'].' '. $_POST['address2']), 
 				'p_city' => $_POST['city'], 
 				'p_state' => $_POST['state'], 
 				'p_zip' => $_POST['zip'], 
-				'p_countrycode' => $_POST['country'], 
-				'test'  => ($eshopoptions['status']=='live' ? 0 : 1)
+				'p_countrycode' => $_POST['country'],
+				'test'=>($eshopoptions['status']=='live' ? 0 : 1),
+				'version'=>'1.3'
 			);
+			$asigned=signRequest($signFields,$webtopay['signature']);
 			
-			foreach ($signFields as $num => $value)
-				$dString .= trim($value) != '' ? sprintf("%03d", strlen($value)) . strtolower($value) : NULL;
-			
-			$sign = md5($dString . $webtopay['signature']);
+			$sign = $asigned['sign'];
 			# *************************************************
 						
 			$echortn.=' 
-			<input type="hidden" name="MerchantID" value="'.$webtopay['id'].'" />
-			<input type="hidden" name="ProjectID" value="'.$webtopay['projectid'].'" />
-			<input type="hidden" name="OrderID" value="'.$_POST['RefNr'].'" />
-			<input type="hidden" name="Lang" value="' . $webtopay['lang'] . '" />
-			<input type="hidden" name="Currency" value="' . $eshopoptions['currency'] . '" />
 			
-			<input type="hidden" name="Amount" value="'. (($Cost + $ExtraCost) * 100) .'" />
-			
-			<input type="hidden" name="AcceptURL" value="'.get_permalink($eshopoptions['cart_success']).'" />
-			
-			<input type="hidden" name="CancelUrl" value="'.get_permalink($eshopoptions['checkout']).'" />
-			<input type="hidden" name="CallbackURL" value="'.$callbackURL.'" />
-			
-			<input type="hidden" name="PayText" value="'.__('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop').'" />
-			
+			<input type="hidden" name="projectid" value="'.$webtopay['projectid'].'" />
+			<input type="hidden" name="orderid" value="'.$_POST['RefNr'].'" />
+			<input type="hidden" name="lang" value="' . $webtopay['lang'] . '" />
+			<input type="hidden" name="amount" value="'. (($Cost + $ExtraCost) * 100) .'" />
+			<input type="hidden" name="currency" value="' . $eshopoptions['currency'] . '" />
+			<input type="hidden" name="accepturl" value="'.get_permalink($eshopoptions['cart_success']).'" />
+			<input type="hidden" name="cancelurl" value="'.get_permalink($eshopoptions['cart_cancel']).'" />
+			<input type="hidden" name="callbackurl" value="'.$_POST['notify_url'].'" />
+			<input type="hidden" name="country" value="'.$eshoploc.'">	
+			<input type="hidden" name="paytext" value="'. __('Payment for goods and services (of no. [order_nr]) ([site_name])','eshop').'" />
 			<input type="hidden" name="p_firstname" value="'.$_POST['first_name'].'">			
 			<input type="hidden" name="p_lastname" value="'.$_POST['last_name'].'">			
 			<input type="hidden" name="p_email" value="'.$_POST['email'].'">			
-			<input type="hidden" name="p_street" value="' . $_POST['address1'].' '. $_POST['address2'] . '">			
+			<input type="hidden" name="p_street" value="' . trim($_POST['address1'].' '. $_POST['address2']) . '">			
 			<input type="hidden" name="p_city" value="'.$_POST['city'].'">			
 			<input type="hidden" name="p_state" value="'.$_POST['state'].'">			
 			<input type="hidden" name="p_zip" value="'.$_POST['zip'].'">			
 			<input type="hidden" name="p_countrycode" value="'.$_POST['country'].'">	
-			
-			<input type="hidden" name="sign" value="'.$sign.'">	
-			
-			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
-			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
-			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
-			<input type="hidden" name="RefNr" value="'.$_POST['RefNr'].'" />
-			<input type="hidden" name="custom" value="'.$_POST['custom'].'" />
-			<input type="hidden" name="OkUrl" value="'.$_POST['notify_url'].'" />';
-			
-			if (trim($getCallback) != '')
-			{
-				$arrCallback = explode('&', $getCallback);
-
-				foreach ($arrCallback as $num => $value)
-				{
-					list($num, $value) = explode('=', $value);
-					
-					$echortn .= '<input type="hidden" name="' . $num . '" value="' . $value . '" />';
-				}
-			}
-			
-			$echortn.=' 			
 			<input type="hidden" name="test" value="'.($eshopoptions['status']=='live' ? 0 : 1).'" />
+			<input type="hidden" name="version" value="1.3" />
+			<input type="hidden" name="sign" value="'.$sign.'">
+			<input type="hidden" name="RefNr" value="'.$_POST['RefNr'].'" />';
 
+			$echortn.=' 			
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to webtopay &raquo;','eshop').'" /></p>
 	     </form>
 	  </div>';
@@ -198,5 +186,6 @@ class webtopay_class {
       }
      
    }
+   
 
 }   

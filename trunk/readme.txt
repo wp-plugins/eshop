@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.8.2
+Stable tag: 5.9.0
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,27 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 5.8.x
+
+* *AMENDED* 	labels and code on checkout page, to reset things as they appeared before, add this to your style: .fld2 label, .fld4 label{display:block;} May affect customised style as well.
+* *amended* 	security fix for Users orders page.
+* *amended* 	eshop_details removed stockqty from _what to show_, and added to _what to hide_. Also removed _option_ from what to hide, as it caused errors.
+* *amended* 	small tweaks to Paypal error notifications.
+* *fixed* 	issue with option sets.
+* *fixed* 	product listing with forms when set to 'yesqty'
+* *fixed* 	number of results returned by cat tags shortcode.
+* *fixed* 	issue with eshop_details shortcode causing details to appear twice.
+* *fixed* 	Webtopay, now works solely for Webtopay verion 1.3 - please check the settings page.
+* *fixed* 	Small bug with shortcodes.
+* *fixed* 	more validation issues.
+* *added* 	filter for amending the option set display order.
+* *added* 	filters and actions required for merchant gateway plugins.
+* *added* 	option set names for all now show in the cart, not just text and textareas.
+* *added* 	classes to shipping table to enable hiding of unused shipping zones
+* *added* 	filter for eShop Shipping Classes (eshop_shipping_rate_class).
+* *added* 	ability to hide reference/po number from checkout via class eshopreference
+* *added* 	to the cart widget - ability to show image, text, or both. Image is also resizeable.
 
 Version 5.8.2
 

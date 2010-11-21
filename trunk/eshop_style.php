@@ -119,14 +119,12 @@ $right_string = file_get_contents($eshop_goto, true);
 		echo '</div>';
 	}elseif(trim($left_string)!=trim($right_string)){
 		echo '<div class="wrap">';
-		echo '<p>'.__('There may have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
+		echo '<p>'.__('There may have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&amp;diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
 		echo '</div>';
 	}else{
 		echo '<div class="wrap">';
 		echo '<p>'.__('Your CSS matches that included with eShop.','eshop').'</p>';
 		echo '</div>';
 	}
-	//end custom styling
-	eshop_show_credits();
 }
 ?>

@@ -461,11 +461,11 @@ default:
 	<caption><?php _e('Shipping rates by class and zone','eshop'); ?></caption>
 	<tr>
 	<th id="class"><?php _e('Class','eshop'); ?></th>
-	<th id="zone1"><?php _e('Zone 1','eshop'); ?></th>
-	<th id="zone2"><?php _e('Zone 2','eshop'); ?></th>
-	<th id="zone3"><?php _e('Zone 3','eshop'); ?></th>
-	<th id="zone4"><?php _e('Zone 4','eshop'); ?></th>
-	<th id="zone5"><?php _e('Zone 5','eshop'); ?></th>
+	<th id="zone1" class="zone1"><?php _e('Zone 1','eshop'); ?></th>
+	<th id="zone2" class="zone2"><?php _e('Zone 2','eshop'); ?></th>
+	<th id="zone3" class="zone3"><?php _e('Zone 3','eshop'); ?></th>
+	<th id="zone4" class="zone4"><?php _e('Zone 4','eshop'); ?></th>
+	<th id="zone5" class="zone5"><?php _e('Zone 5','eshop'); ?></th>
 	</tr>
 	<?php
 	/* although this could be condensed, I'll split each method up for ease and future expansion */
@@ -478,17 +478,18 @@ default:
 			foreach ($query as $row){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr'.$alt.'>';
 				if($row->items==1){
-					echo '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
+					echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(First Item)','eshop').'</small></th>'."\n";
 				}else{
-					echo '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
+					echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 				}
-				echo '<td headers="zone1 cname'.$x.'"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
 				echo '</tr>';
 				$x++;
 			}
@@ -500,13 +501,14 @@ default:
 			foreach ($query as $row){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr'.$alt.'>';
-				echo '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-				echo '<td headers="zone1 cname'.$x.'"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.'</th>'."\n";
+				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
 				echo '</tr>';
 				$x++;
 			}
@@ -514,15 +516,15 @@ default:
 		case '3'://( one overall charge no matter how many are ordered )
 			$x=1;
 			$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='".__('A','eshop')."' ORDER BY 'class'  ASC");
-
 			foreach ($query as $row){
+				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr class="alt">';
-				echo '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-				echo '<td headers="zone1 cname'.$x.'"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1','eshop').'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2','eshop').'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3','eshop').'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4','eshop').'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5','eshop').'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
+				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1','eshop').'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2','eshop').'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3','eshop').'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4','eshop').'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
+				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5','eshop').'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
 				echo '</tr>';
 			}
 			break;
@@ -549,11 +551,11 @@ default:
 		<thead>
 		<tr>
 		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone1"><?php _e('Zone 1','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone2"><?php _e('Zone 2','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone3"><?php _e('Zone 3','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone4"><?php _e('Zone 4','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone5"><?php _e('Zone 5','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone1" class="zone1"><?php _e('Zone 1','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone2" class="zone2"><?php _e('Zone 2','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone3" class="zone3"><?php _e('Zone 3','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone4" class="zone4"><?php _e('Zone 4','eshop'); ?></th>
+		<th id="<?php echo $eshopletter; ?>zone5" class="zone5"><?php _e('Zone 5','eshop'); ?></th>
 		</tr>
 		</thead>
 		<tbody>
@@ -564,11 +566,11 @@ default:
 			$alt = ($x % 2) ? '' : ' class="alt"';
 			echo '<tr'.$alt.'>';
 			echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="'.$row->weight.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="'.$row->zone1.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="'.$row->zone2.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="'.$row->zone3.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="'.$row->zone4.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="'.$row->zone5.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="'.$row->zone1.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="'.$row->zone2.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="'.$row->zone3.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="'.$row->zone4.'" /></td>'."\n";
+			echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="'.$row->zone5.'" /></td>'."\n";
 			echo '</tr>';
 			$x++;
 		}
@@ -601,11 +603,11 @@ function extraeshopweights($start,$eshopletter,$k){
 		$alt = ($x % 2) ? '' : ' class="alt"';
 		echo '<tr'.$alt.'>';
 		echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="" /></td>'."\n";
+		echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="" /></td>'."\n";
 		echo '</tr>';
 		$x++;
 	}
@@ -613,4 +615,3 @@ function extraeshopweights($start,$eshopletter,$k){
 	<?php
 }
 ?>
-<?php eshop_show_credits(); ?>

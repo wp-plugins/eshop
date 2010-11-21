@@ -514,7 +514,7 @@ if(!isset($_GET['change'])){
 				}else{
 					$sel='';
 				}
-			}elseif($code==$basecondition){
+			}elseif($code==$eshopoptions['base_condition']){
 				$sel=' selected="selected"';
 			}else{
 				$sel='';
@@ -595,6 +595,5 @@ if(!isset($_GET['change'])){
 	<?php
 	}
 }
-	eshop_show_credits();
 }
 ?>

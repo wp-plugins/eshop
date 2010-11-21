@@ -45,6 +45,7 @@ if (!function_exists('eshop_pre_wp_head')) {
 				include_once 'ogone.php';
 				//exit;
 			}
+			do_action('eshop_include_mg_ipn',$eshopaction);
 		}
 		if(isset($_POST['eshopident_1'])){
 			ob_start();
