@@ -480,6 +480,5 @@ function eshop_downloads_manager() {
 			<?php
 		}
 	}
-	eshop_show_credits();
 }
 ?>

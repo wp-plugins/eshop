@@ -691,7 +691,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$total=$total+$value;
 		$itemid=$myrow->item_id;
 		if($myrow->optsets!='')
-			$itemid.='<span class="eshoptext">'.nl2br($myrow->optsets).'</span>';
+			$itemid.='<span class="eshopoptsets">'.nl2br($myrow->optsets).'</span>';
 		//check if downloadable product
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
 		$downstable=$wpdb->prefix.'eshop_downloads';
@@ -871,5 +871,4 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 echo '<br class="clearbr" />&nbsp;</div>';
 
 }
-eshop_show_credits();
 ?>

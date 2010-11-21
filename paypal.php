@@ -178,7 +178,6 @@ switch ($eshopaction) {
       	break;
       
    case 'success':      // Order was successful...
-   			// NOW HANDLED BY ESHOP.PHP with <!--eshop_show_success-->
 		// This is where you would probably want to thank the user for their order
 		// or what have you.  The order information at this point is in POST 
 		// variables.  However, you don't want to "process" the order until you
@@ -250,7 +249,7 @@ switch ($eshopaction) {
  		/*
 		updating db.
 		*/
-			$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
+			$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 
 			if($eshopoptions['status']=='live'){
@@ -266,21 +265,21 @@ switch ($eshopaction) {
 			foreach($checktrans as $trans){
 				if(strpos($trans->transid, $p->ipn_data['txn_id'])===true){
 					$astatus='Failed';
-					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($txn_id);
+					$txn_id .= __(" - Duplicated",'eshop');
 					$extradetails .= __("Duplicated Transaction Id.",'eshop');
 				}
 			}
 			//stop the evil buggers changing the currency
 			if($p->ipn_data['mc_currency']!=$eshopoptions['currency']){
 				$astatus='Failed';
-				$txn_id = __("Fraud-",'eshop').$wpdb->escape($txn_id);
+				$txn_id .= __(" - Fraud",'eshop');
 				$extradetails .= __("Currency codes do not match, someone was trying to make a fraudulent purchase!",'eshop');
 			}
 			
 			//check reciever email is correct - we will use business for now
 			if($p->ipn_data['receiver_email']!= $eshopoptions['business']){
 				$astatus='Failed';
-				$txn_id = __("Fraud-",'eshop').$wpdb->escape($txn_id);
+				$txn_id .= __(" - Fraud",'eshop');
 				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
 			}
 			//add any memo from user at paypal here

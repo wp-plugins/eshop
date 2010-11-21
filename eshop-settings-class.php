@@ -208,30 +208,6 @@ function on_contentbox_1_content($eshopoptions) {
 </fieldset>
 <?php
 }
-	function on_contentbox_2_content($data) {
-		sort($data);
-		?>
-		<p>The given parameter at <b>reverse sorted</b> order are: <em><?php echo implode(' | ', array_reverse($data)); ?></em></p>
-		<?php
-	}
-	function on_contentbox_3_content($data) {
-		?>
-		<p>This metabox can be dragged an placed where ever you want but <b>can't be hidden</b> using the <em>Screen Options</em> tab slider!</p>
-		<?php
-		//'
-	}
-	function on_contentbox_additional_1_content($data) {
-		?>
-		<p>This and the 2nd <em>additional</em> box will be addressed by an other group identifier to render it by calling with this dedicated name.</p>
-		<p>You can have as much as needed box groups.</p>
-		<?php
-	}
-	function on_contentbox_additional_2_content($data) {
-		?>
-			<p>metabox showcase - copyright &copy; 2009 Heiko Rabe (<a target="_blank" href="http://www.code-styling.de">www.code-styling.de</a>)</p>
-			<p>requires at least WordPress 2.7 version, supports new box management of WordPress 2.8</p>
-		<?php
-	}
-	
+
 }
 ?>

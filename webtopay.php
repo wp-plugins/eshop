@@ -2,6 +2,7 @@
 /*  based on:
  * PHP Payson IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
+ * help file: https://www.mokejimai.lt/new/en/pay_specifications/popup/1.3/macro
 */
 global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;;
 $detailstable=$wpdb->prefix.'eshop_orders';
@@ -138,48 +139,37 @@ switch ($eshopaction) {
 		function getCert($cert = null) {
 			$fp = fsockopen("downloads.webtopay.com", 80, $errno, $errstr, 30);
 			if (!$fp)
-			    exit("Cert error: $errstr ($errno)<br />\n");
+			    exit(__("Cert error: $errstr ($errno)<br />\n",'eshop'));
 			else {
-			    $out = "GET /download/" . ($cert ? $cert : 'public.key') . " HTTP/1.1\r\n";
-			    $out .= "Host: downloads.webtopay.com\r\n";
-			    $out .= "Connection: Close\r\n\r\n";
-			
-			    $content = '';
-			    
-			    fwrite($fp, $out);
-			    while (!feof($fp)) $content .= fgets($fp, 8192);
-			    fclose($fp);
-			    
-			    list($header, $content) = explode("\r\n\r\n", $content, 2);
-		
-			    return $content;
+			    $out = "GET /download/" . $cert . " HTTP/1.1\r\n";
+				$out .= "Host: downloads.webtopay.com\r\n";
+				$out .= "Connection: Close\r\n\r\n";
+				$content = '';
+				fwrite($fp, $out);
+				while (!feof($fp)) $content .= fgets($fp, 8192);
+				fclose($fp);
+				list($header, $content) = explode("\r\n\r\n", $content, 2);
+        		return $content;
 			}
 		}
 		
 		function checkCert($cert = null) {
-		
 			$pKeyP = getCert($cert);
-		
-			if (!$pKeyP) return false;
-			        
+			if (!$pKeyP) exit("Can't obtain Cert.");
 			$pKey = openssl_pkey_get_public($pKeyP);
-			         
-			if (!$pKey) return false;
-			        
+			if (!$pKey) exit(__('"Cert. not validated"','eshop').$pKeyP);
 			$_SS2 = "";
-			
-			foreach ($_GET As $key => $value) if ($key!='_ss2') $_SS2 .= "{$value}|";
-			        
-			$ok = openssl_verify($_SS2, base64_decode($_GET['_ss2']), $pKey);
-			        
+			foreach ($_GET as $key => $value) 
+				if ($key!='wp__ss2' && $key!='eshopaction' && $key!='page_id') $_SS2 .= "{$value}|";
+			$ok = openssl_verify($_SS2, base64_decode($_GET['wp__ss2']), $pKey);
+			if($ok!==1) exit (__('SS2 not verified','eshop'));
 			return ($ok === 1);
 		}
-		
+			
 		function goodRequest()
 		{
-			if (checkCert()) return true;
-			
-			return checkCert('public_old.key');
+			//if (checkCert()) return true;
+			return checkCert('public.key');
 		}
 	 
 	    # --
@@ -191,17 +181,17 @@ switch ($eshopaction) {
 			foreach ($_REQUEST as $field=>$value) { 
 			  $ps->ipn_data["$field"] = $value;
 			}
-	
+
 			$webtopay = $eshopoptions['webtopay']; 
 			$Key=$webtopay['id'];
 
-			if ($webtopay['id'] != $_GET['merchantid']) exit('Incorrect MerchantID!');
+			if ($webtopay['id'] != $_GET['wp_receiverid']) exit('Incorrect MerchantID!');
 			
-			if ($webtopay['projectid'] != $_GET['projectid'] && $webtopay['projectid'] > 0) exit('Incorrect ProjectID!');
+			if ($webtopay['projectid'] != $ps->ipn_data['wp_projectid'] && $webtopay['projectid'] > 0) exit('Incorrect ProjectID!');
 			
-			if ($_GET['status'] != '1') exit('Status not accepted: ' . $_GET['status']);
+			if ($ps->ipn_data['wp_status'] != '1') exit(__('Status not accepted: ','eshop') . $ps->ipn_data['wp_status']);
 			
-			$checked = $ps->ipn_data["refnr"];
+			$checked = $ps->ipn_data["wp_refnr"];
 
 			$SQL = "select status from $detailstable where checkid='$checked' limit 1";
 			
@@ -209,6 +199,7 @@ switch ($eshopaction) {
 		
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending'){
+				$txn_id=$ps->ipn_data['wp_orderid'];
 				$eshopdosend='yes';
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
@@ -216,7 +207,7 @@ switch ($eshopaction) {
 			}
 			
 			if($eshopdosend=='yes'){
-				$subject .=__(" Ref:",'eshop').$ps->ipn_data['RefNr'];
+				$subject .=__(" Ref:",'eshop').$ps->ipn_data['wp_orderid'];
 				// email to business a complete copy of the notification from webtopay to keep!!!!!
 				$array=eshop_rtn_order_details($checked);
 				$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
@@ -238,30 +229,6 @@ switch ($eshopaction) {
 				//lets make sure this is here and available
 				include_once(ABSPATH.'wp-content/plugins/eshop/cart-functions.php');
 				eshop_send_customer_email($checked, '7');
-			/*
-				//this is an email sent to the customer:
-				//first extract the order details
-				$array=eshop_rtn_order_details($checked);
-
-				$etable=$wpdb->prefix.'eshop_emails';
-				//grab the template
-				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='7' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-				$this_email = stripslashes($thisemail->emailContent);
-				// START SUBST
-				$csubject=stripslashes($thisemail->emailSubject);
-				$this_email = eshop_email_parse($this_email,$array);
-
-				//try and decode various bits - may need tweaking Mike, we may have to write 
-				//a function to handle this depending on what you are using - but for now...
-				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				$headers=eshop_from_address();
-				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				//affiliate
-				if($array['affiliate']!=''){
-					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-				}
-			*/
 			}
 	
 	    	//- Answer for webtopay server -

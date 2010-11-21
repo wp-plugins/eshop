@@ -368,7 +368,7 @@ function eshop_products_manager() {
 				else
 					$salechk='';
 				$onsale='<label for="sale'.$calt.'">'.__('Product On Sale','eshop').'</label><input type="checkbox" value="1" name="product['.$getid.'][sale]" id="sale'.$calt.'"'.$salechk.' />';
-				echo '<td headers="sale sku'.$calt.'">'.$onsale.'</td>';
+				echo '<td headers="onsale sku'.$calt.'">'.$onsale.'</td>';
 				echo '<td headers="opt sku'.$calt.'" class="optline">';
 				for($i=1;$i<=$numoptions;$i++){
 					if($eshop_product['products'][$i]['option']!=''){
@@ -439,7 +439,6 @@ function eshop_products_manager() {
 		echo '<p>'.__('There are no products available.','eshop').'</p>';
 	}
 	echo '</div>';
-	eshop_show_credits();
 }
 function eshop_authors($filter=''){
 	global $wpdb;

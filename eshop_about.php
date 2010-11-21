@@ -124,4 +124,3 @@ update_option('eshop_plugin_settings',$eshopoptions);
   </ul>
 </div>
 </div>
-<?php eshop_show_credits(); ?>

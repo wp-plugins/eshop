@@ -184,7 +184,9 @@ if(isset($eshopoptions['version'])){
 	//then it must be new
 	if(eshop_create_dirs()==false){
 		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
-		wp_die(__('ERROR! eShop requires that the wp-content directory is writable before the plugin can be activated.','eshop')); 
+		$path= esc_attr(get_option('upload_path'));
+		if($path=='') $path='wp-content/uploads';
+		wp_die(sprintf(__('ERROR! eShop requires that the %1$s directory is writable before the plugin can be activated.','eshop'),$path)); 
 	}
 	/** create capability */
 	eshop_caps();

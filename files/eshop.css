@@ -559,3 +559,7 @@ a.eshopmore {
 	text-align:center;
 	font-size:.7em;
 }
+/* reset checkout to original */
+.fld2 label, .fld4 label{
+	display:block;
+}

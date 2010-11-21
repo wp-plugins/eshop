@@ -60,9 +60,13 @@ if (!function_exists('display_cart')) {
 					//do the math for weight
 					$eshop_product=maybe_unserialize(get_post_meta( $opt['postid'], '_eshop_product',true ));
 					$eimg='';
-					/* test image insertion */
-					if(is_numeric($eshopoptions['image_in_cart'])){
+					/* image insertion */
+					if( is_numeric($eshopoptions['image_in_cart']) || (isset($eshopoptions['widget_cart_type']) && $eshopoptions['widget_cart_type']<='1' && $iswidget=='w' ) ){
 						$imgsize=$eshopoptions['image_in_cart'];
+						if($iswidget=='w'){
+							$imgsize=$eshopoptions['widget_cart_img'];
+							if($imgsize=='') $imgsize=100;
+						}
 						$w=get_option('thumbnail_size_w');
 						$h=get_option('thumbnail_size_h');
 						if($imgsize!=''){
@@ -81,55 +85,25 @@ if (!function_exists('display_cart')) {
 					//opsets
 
 					if(isset($opt['optset'])){
-						$oset=$qb=array();
-						$optings=unserialize($opt['optset']);
-						//then sort it how we want.
-						$B = new eshop_multi_sort;
-						$B->aData = $optings;
-						$B->aSortkeys =  array('id');
-						$B->sort();
-						$optings=$B->aData;
-
-						$c=0;
-						if(isset($newoptings)) unset($newoptings);
-
-						foreach($optings as $foo=>$opst){
-							if(!isset($opst['type']) 
-							|| (($opst['type']=='2' || $opst['type']=='3') && (isset($opst['text']) && trim($opst['text'])!=''))
-							){
-								$newoptings[]=$optings[$c];
-								$qb[]="id=$opst[id]";
-
-							}
-							$c++;
-						}
-						if(isset($newoptings)){
-							$qbs = implode(" OR ", $qb);
-							$otable=$wpdb->prefix.'eshop_option_sets';
-							$otablename=$wpdb->prefix.'eshop_option_names';
-							$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
-							$x=0;
-							foreach($orowres as $orow){
-								if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
-									if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
-										$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
-									}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
-										$xxxx='';
-									else
-										$oset[]=$orow->name;
-									$addoprice=$addoprice+$orow->price;
-									$x++;
-								}
-							}
-							$optset="\n".implode("\n",$oset);
-						}else{
-							$optset='';
-						}
+						$data['optset']=$opt['optset'];
+						$data['addoprice']=$addoprice;
+						$data=eshop_parse_optsets($data);
+						$optset=$data['optset'];
+						$addoprice=$data['addoprice'];
 					}else{
 						$optset='';
 					}
-					//$eshop_product['products'][$opt['item']]['option']
-					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem'.$iswidget.'" class="leftb cartitem">'.$eimg.'<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset).'</td>'."\n";
+					
+					$textdesc='<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset);
+					$echoimg=$eimg;
+					if(isset($eshopoptions['widget_cart_type']) && $eshopoptions['widget_cart_type']=='1' && $iswidget=='w'  ){
+						$textdesc='';
+					}
+					if($iswidget=='w' && isset($eshopoptions['widget_cart_type']) && $eshopoptions['widget_cart_type']=='2'){
+						$echoimg='';
+					}
+					$echo.= '<td id="prod'.$calt.$iswidget.'" headers="cartItem'.$iswidget.'" class="leftb cartitem">'.$echoimg.$textdesc.'</td>'."\n";
+
 					$echo.= "<td class=\"cqty lb\" headers=\"cartQty$iswidget prod".$calt.$iswidget."\">";
 					// if we allow changes, quantities are in text boxes
 					if ($change == true){
@@ -246,7 +220,7 @@ if (!function_exists('display_cart')) {
 				if($eshopoptions['shipping']=='4' && !eshop_only_downloads()){
 					$typearr=explode("\n", $eshopoptions['ship_types']);
 					//darn, had to add in unique to be able to go back a page
-					$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a>';
+					$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a> ';
 				}
 				$echo .=__('Shipping','eshop');
 				if($eshopoptions['cart_shipping']!=''){
@@ -535,11 +509,12 @@ if (!function_exists('orderhandle')) {
 		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;
-			require_once ( ABSPATH . WPINC . '/registration.php' );
+			//require_once ( ABSPATH . WPINC . '/registration.php' );
 			//auto create a new user if they don't exist - only works if not logged in ;)
 			$user_email=$_POST['email'];
 			$utable=$wpdb->prefix ."users";
-			$names=str_replace(" ","",$_POST['first_name'].$_POST['last_name']);
+			$filtnames=apply_filters('eshop_add_username',$_POST['first_name'],$_POST['last_name']);
+			$names=str_replace(" ","",$filtnames);
 			$username = strtolower($names);
 			$eshopch = $wpdb->get_results("SHOW TABLE STATUS LIKE '$utable'");
 
@@ -752,38 +727,11 @@ if (!function_exists('orderhandle')) {
 				$dlchking=$_POST['eshopident_'.$i];
 				//add opt sets
 				if(isset($_SESSION['eshopcart'.$blog_id][$dlchking]['optset'])){
-					$oset=$qb=array();
-					$optings=unserialize($_SESSION['eshopcart'.$blog_id][$dlchking]['optset']);
-					//$opttable=$wpdb->prefix.'eshop_option_sets';
-					$c=0;
-					if(isset($newoptings)) unset($newoptings);
-					foreach($optings as $foo=>$opst){
-						if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')){
-							$qb[]="id=$opst[id]";
-							$newoptings[]=$optings[$c];
-						}
-						$c++;
-					}
-					if(isset($newoptings)){
-						$qbs = implode(" OR ", $qb);
-						$otable=$wpdb->prefix.'eshop_option_sets';
-						$otablename=$wpdb->prefix.'eshop_option_names';
-						$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
-						$x=0;
-						foreach($orowres as $orow){
-							if(($orow->type=='2' || $orow->type=='3') && isset($newoptings[$x]['text']))
-								$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
-							elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
-								$xxxx='';
-							else
-								$oset[]=$orow->name;
-							$addoprice=$addoprice+$orow->price;
-							$x++;
-						}
-						$optset="\n".implode("\n",$oset);
-					}else{
-						$optset='';
-					}
+					$data['optset']=$_SESSION['eshopcart'.$blog_id][$dlchking]['optset'];
+					$data['addoprice']=$addoprice;
+					$data=eshop_parse_optsets($data);
+					$optset=$data['optset'];
+					$addoprice=$data['addoprice'];
 				}else{
 					$optset='';
 				}
@@ -1400,7 +1348,7 @@ if (!function_exists('eshop_plural')) {
 if (!function_exists('eshop_email_parse')) {
 	function eshop_email_parse($this_email,$array, $d='yes'){
 		global $eshopoptions;
-		require_once ( ABSPATH . WPINC . '/registration.php' );
+	//	require_once ( ABSPATH . WPINC . '/registration.php' );
 		$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 		$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
 		$this_email = str_replace('{NAME}', $array['ename'], $this_email);
@@ -1889,24 +1837,25 @@ if (!function_exists('eshop_send_customer_email')) {
     	//checked is reference for db, mg_id is the email template to use
     	$runcode=true;
     	$runcode=apply_filters('eshop_send_customer_email_replace',$runcode,$checked, $mg_id);
-    	if($runcode==true){
-			//this is an email sent to the customer:
-			//first extract the order details
-			$array=eshop_rtn_order_details($checked);
-			$etable=$wpdb->prefix.'eshop_emails';
 
-			//grab the template
-			$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='".$mg_id."' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-			$this_email = stripslashes($thisemail->emailContent);
+		//this is an email sent to the customer:
+		//first extract the order details
+		$array=eshop_rtn_order_details($checked);
+		$etable=$wpdb->prefix.'eshop_emails';
 
-			// START SUBST
-			$csubject=stripslashes($thisemail->emailSubject);
-			$this_email = eshop_email_parse($this_email,$array);
+		//grab the template
+		$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='".$mg_id."' AND emailUse='1') OR id='1'  order by id DESC limit 1");
+		$this_email = stripslashes($thisemail->emailContent);
 
-			//try and decode various bits
-			$this_email=html_entity_decode($this_email,ENT_QUOTES);
+		// START SUBST
+		$csubject=stripslashes($thisemail->emailSubject);
+		$this_email = eshop_email_parse($this_email,$array);
 
-			$headers=eshop_from_address();
+		//try and decode various bits
+		$this_email=html_entity_decode($this_email,ENT_QUOTES);
+
+		$headers=eshop_from_address();
+		if($runcode==true){
 			wp_mail($array['eemail'], $csubject, $this_email,$headers);
 		}
 		do_action('eshop_send_customer_email', $csubject, $this_email, $headers, $array);
@@ -1941,17 +1890,13 @@ if (!function_exists('eshop_admin_bar_menu')) {
 		$eshopoptions = get_option('eshop_plugin_settings');
 		if ( !is_object( $wp_admin_bar ) )
 			return false;
-		if($eshopoptions['status']=='testing'){
+		if($eshopoptions['status']=='testing')
 			$title=__('eShop Test Mode','eshop');
-			$extras=__('Admin note: eShop is currently in test mode, and only admins can place orders.','eshop');
-		}else{
+		else
 			$title=__('eShop is Live','eshop');
-		}
+		
 		/* Add the Blog Info menu */
-		$wp_admin_bar->add_menu( array( 'id' => 'eshopadminbar', 'title' => $title, 'href' => '' ) );
-		if(isset($extras))
-			$wp_admin_bar->add_menu(  array( 'parent'=>'eshopadminbar','id' => 'eshopadminbar-a', 'title' => $extras, 'href'=>'' ) );
-
+		$wp_admin_bar->add_menu( array( 'id' => 'eshopadminbar', 'title' => $title, 'href' => get_option( 'siteurl' ).'/wp-admin/options-general.php?page=eshop_settings.php' ) );
 	}
 }
 
@@ -2085,6 +2030,60 @@ if(!class_exists('eshop_multi_sort')){
 				usort($this->aData,array($this,"sortcmp"));
 			}
 		}
+	}
+}
+if (!function_exists('eshop_parse_optsets')){
+	function eshop_parse_optsets($data){
+		global $wpdb;
+		$opt['optset']=$data['optset'];
+		$addoprice=$data['addoprice'];
+		$oset=$qb=array();
+		$optings=unserialize($opt['optset']);
+		//then sort it how we want.
+		$B = new eshop_multi_sort;
+		$B->aData = $optings;
+		$B->aSortkeys =  array('id');
+		$B->sort();
+		$optings=$B->aData;
+
+		$c=0;
+		if(isset($newoptings)) unset($newoptings);
+
+		foreach($optings as $foo=>$opst){
+			if(!isset($opst['type']) 
+			|| (($opst['type']=='2' || $opst['type']=='3') && (isset($opst['text']) && trim($opst['text'])!=''))
+			){
+				$newoptings[]=$optings[$c];
+				$qb[]="id=$opst[id]";
+
+			}
+			$c++;
+		}
+		if(isset($newoptings)){
+			$qbs = implode(" OR ", $qb);
+			$otable=$wpdb->prefix.'eshop_option_sets';
+			$otablename=$wpdb->prefix.'eshop_option_names';
+			$orowres=$wpdb->get_results("select o.name, o.price, o.id, t.type,t.name as oname from $otable as o, $otablename as t where ($qbs) && o.optid=t.optid ORDER BY id ASC");
+			$x=0;
+			foreach($orowres as $orow){
+				if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
+					if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
+						$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+					}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
+						$xxxx='';
+					else
+						$oset[]=$orow->oname.": \n".'<span class="eshoptext">'.$orow->name.'</span>';
+					$addoprice=$addoprice+$orow->price;
+					$x++;
+				}
+			}
+			$optset="\n".implode("\n",$oset);
+		}else{
+			$optset='';
+		}
+		$data['optset']=$optset;
+		$data['addoprice']=$addoprice;
+		return $data;
 	}
 }
 ?>
