@@ -42,7 +42,11 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version 5.8.x
+Version 5.9.1
+
+* *fixed*  	upgrade routine causing failed upgrades...
+
+Version 5.9.0
 
 * *AMENDED* 	labels and code on checkout page, to reset things as they appeared before, add this to your style: .fld2 label, .fld4 label{display:block;} May affect customised style as well.
 * *amended* 	security fix for Users orders page.

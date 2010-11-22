@@ -173,7 +173,7 @@ function eshop_updatestockcontrol(){
 	}
 }
 $eshopoptions = get_option('eshop_plugin_settings');
-if(isset(get_option('eshop_version') && get_option('eshop_version')!='');
+if(get_option('eshop_version')!='')
 	$eshopoptions['version']=get_option('eshop_version');
 	
 if(version_compare($eshopoptions['version'], '3.0.0' ,'<')){
