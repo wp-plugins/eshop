@@ -93,8 +93,9 @@ if (!function_exists('display_cart')) {
 					}else{
 						$optset='';
 					}
-					
-					$textdesc='<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.nl2br($optset);
+					$echooptset=apply_filters('eshop_optset_cart_display',$optset);
+					if( !has_filter( 'eshop_optset_cart_display') ) $echooptset=nl2br($optset);
+					$textdesc='<a href="'.get_permalink($opt['postid']).'">'.stripslashes($opt["pname"]).' <span class="eshopidetails">('.$opt['pid'].' : '.stripslashes($opt['item']).')</span></a>'.$echooptset;
 					$echoimg=$eimg;
 					if(isset($eshopoptions['widget_cart_type']) && $eshopoptions['widget_cart_type']=='1' && $iswidget=='w'  ){
 						$textdesc='';
@@ -509,7 +510,8 @@ if (!function_exists('orderhandle')) {
 		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;
-			//require_once ( ABSPATH . WPINC . '/registration.php' );
+			if(get_bloginfo('version')<='3.0.1')
+				require_once ( ABSPATH . WPINC . '/registration.php' );
 			//auto create a new user if they don't exist - only works if not logged in ;)
 			$user_email=$_POST['email'];
 			$utable=$wpdb->prefix ."users";
@@ -2068,11 +2070,11 @@ if (!function_exists('eshop_parse_optsets')){
 			foreach($orowres as $orow){
 				if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
 					if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
-						$oset[]=$orow->name.": \n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+						$oset[]='<span class="eshopoptname">'.$orow->name.":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
 					}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
 						$xxxx='';
 					else
-						$oset[]=$orow->oname.": \n".'<span class="eshoptext">'.$orow->name.'</span>';
+						$oset[]='<span class="eshopoptname">'.$orow->oname.":</span>\n".'<span class="eshoptext">'.$orow->name.'</span>';
 					$addoprice=$addoprice+$orow->price;
 					$x++;
 				}
