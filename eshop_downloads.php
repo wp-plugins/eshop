@@ -337,7 +337,7 @@ function eshop_downloads_manager() {
 	<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<?php
-		$apge=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'];
+		$apge=get_admin_url().'admin.php?page=eshop_downloas.pgp';
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ia"'.$cia.'>'.__('ID Number','eshop').'</a></li>';
@@ -403,7 +403,6 @@ function eshop_downloads_manager() {
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
 		);
-		//$thispage=esc_url($_SERVER['PHP_SELF']).'?page='.$_GET['page'].'&amp;action='.$_GET['action'].'&amp;viewall=yes';
 		if(isset($eecho)){
 			$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
 			echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";

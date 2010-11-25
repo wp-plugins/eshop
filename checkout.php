@@ -299,7 +299,7 @@ if (!function_exists('eshopShowform')) {
 	if(is_array($eshopoptions['method'])){
 		$i=1;
 		$eshopfiles=eshop_files_directory();
-		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via:', 'eshop').eshop_checkreqd($reqdarray,'pay').'</legend>'."\n<ul>\n";
+		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via', 'eshop').eshop_checkreqd($reqdarray,'pay').'</legend>'."\n<ul>\n";
 		if(sizeof((array)$eshopoptions['method'])!=1){
 			foreach($eshopoptions['method'] as $k=>$eshoppayment){
 				$replace = array(".");
@@ -1025,7 +1025,7 @@ if (!function_exists('eshop_checkout')) {
 if (!function_exists('eshop_checkreqd')) {
  	function eshop_checkreqd($reqdarray,$tocheck){
 		if(in_array($tocheck,$reqdarray)){
-			$reqd=' <span class="reqd">*</span>';
+			$reqd='<span class="reqd">*</span>';
 		}else{
 			$reqd='';
 		}
