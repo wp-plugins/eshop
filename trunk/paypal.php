@@ -59,7 +59,9 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
-		$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
+		//$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
+		$checkid=md5($eshopoptions['business'].$token.number_format($_POST['amount'],2));
+
 		//affiliates
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
@@ -286,11 +288,11 @@ switch ($eshopaction) {
 			$memo=$wpdb->escape($p->ipn_data['memo']);
 			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
-			if($astatus=='Pending' && $_POST['payment_status']=='Completed'){
+			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$subject .=__("Completed Payment",'eshop');	
 				$ok='yes';
 				eshop_mg_process_product($txn_id,$checked);
-			}elseif($_POST['payment_status']==' Refunded'){
+			}elseif($p->ipn_data['payment_status']==' Refunded'){
 				$subject .=__("Refunded Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("You have received a refund notification, eShop doesn't know how to handle these, but details of the notification are included below.",'eshop');
@@ -299,7 +301,7 @@ switch ($eshopaction) {
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
-				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
+				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
 			$subject .=" Ref:".$txn_id;

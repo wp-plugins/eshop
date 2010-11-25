@@ -1459,7 +1459,7 @@ if (!function_exists('eshop_cart_process')) {
 			return;
 		}
 		wp_verify_nonce('eshop_add_product_cart');
-		
+		unset($_POST['eshopnon']);
 		//setup variables:
 		$option=$qty=$pclas=$productid=$pid=$pname=$iprice='';
 		$echo='';
@@ -1500,14 +1500,14 @@ if (!function_exists('eshop_cart_process')) {
 				$v='999';
 				if(isset($max)) $v=$max;
 				$k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($max) && isset($_POST['qty']) && $_POST['qty'] > $max){
 				$qty=$_POST['qty']=$max;
 				$v=$max;
 				$k=1;
 				if(isset($min)) $k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($_POST['postid'])){
 				$stkav=get_post_meta( $_POST['postid'], '_eshop_stock',true );
@@ -1570,14 +1570,14 @@ if (!function_exists('eshop_cart_process')) {
 					$v='999';
 					if(isset($max)) $v=$max;
 					$k=$min;
-					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 				}
 				if(isset($max) && $testqty > $max){
 					$qty=0;
 					$v=$max;
 					$k=1;
 					if(isset($min)) $k=$min;
-					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 				}
 				if('yes' == $eshopoptions['stock_control']){
 					$stkqty = $eshop_product['products'][$optnum]['stkqty'];
@@ -1695,14 +1695,14 @@ if (!function_exists('eshop_cart_process')) {
 				$v='999';
 				if(isset($max)) $v=$max;
 				$k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($max) && isset($_POST['qty']) && $_POST['qty'] > $max){
 				$qty=$_POST['qty']=$max;
 				$v=$max;
 				$k=1;
 				if(isset($min)) $k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			//update products in the cart
 			if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
@@ -1737,13 +1737,13 @@ if (!function_exists('eshop_cart_process')) {
 										$v='999';
 										if(isset($max)) $v=$max;
 										$k=$min;
-										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 									}elseif(isset($max) && isset($qty) && $qty > $max){
 										$qty=$max;
 										$v=$max;
 										$k=1;
 										if(isset($min)) $k=$min;
-										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 									}else{
 										$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
 									}

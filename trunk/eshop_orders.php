@@ -135,7 +135,7 @@ if (!function_exists('displayorders')) {
 			//
 			$myrowres=$wpdb->get_results("Select * From $dtable where status='$type' $sortby LIMIT $offset, $records");
 			$calt=0;
-			$apge=esc_url($_SERVER['PHP_SELF'].'?page='.$_GET['page'].'&amp;action='.$_GET['action']);
+			$apge=get_admin_url().'admin.php?page='.$_GET['page'].'&amp;action='.$_GET['action'];
 			echo '<ul id="eshopsubmenu">';
 			echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascending','eshop').'</a></li>';
