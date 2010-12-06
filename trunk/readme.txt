@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 6.0.0
+Stable tag: 6.0.1
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,10 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.0.1
+
+* *added/fixed* 	eship_list_subpages shortcode, new attribute depts, set to yes by default to show department pages - if a featured image is chosen for that page it will show that as well. To hide them set it to no.
 
 Version 6.0.0
 

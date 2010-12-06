@@ -191,7 +191,7 @@ function eshop_list_alpha($atts){
 function eshop_list_subpages($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>'','links'=>'yes','price'=>'no','outofstock'=>'yes'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>'','links'=>'yes','price'=>'no','outofstock'=>'yes','depts'=>'yes'), $atts));
 	$echo='';
 	if($id!='')
 		$eshopid=$id;
@@ -220,10 +220,14 @@ function eshop_list_subpages($atts){
 	$addwhere="_eshop_stock";
 	if($outofstock=='yes')
 		$addwhere="_eshop_product";
-		
+	
+	$addingthis='';
+	if($depts!='yes')
+		$addingthis = "$wpdb->postmeta.meta_key='$addwhere' AND";
+
 	$thisispage=get_permalink($post->ID);
 	$pagetype=apply_filters('eshop_sub_page_type','page');
-	$max = $wpdb->get_var("SELECT count(DISTINCT($wpdb->posts.ID)) from $wpdb->posts,$wpdb->postmeta WHERE $wpdb->postmeta.meta_key='$addwhere' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
+	$max = $wpdb->get_var("SELECT count(DISTINCT($wpdb->posts.ID)) from $wpdb->posts,$wpdb->postmeta WHERE $addingthis $wpdb->posts.ID=$wpdb->postmeta.post_id AND post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
 
 	if($records>$show) $records=$show;
 	if($max>$show)
@@ -260,10 +264,12 @@ function eshop_list_subpages($atts){
 	'post_parent' => $eshopid, // any parent
 	'orderby'=> $orderby,
 	'order'=> $order,
-	'meta_key'=> $addwhere,
 	'numberposts' => $records, 
 	'offset' => $offset,
 	); 
+	if($addingthis!='')
+		$args['meta_key']= $addwhere;
+
 	$pages = get_posts($args);
 	wp_reset_query();
 
