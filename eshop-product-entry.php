@@ -61,6 +61,7 @@ function eshop_inner_custom_box($post) {
     $eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
     $numoptions=$eshopoptions['options_num'];
     ?>
+    <div class="eshopwidetable">
     <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">
     <caption><?php _e('Product Options','eshop'); ?></caption>
     <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
@@ -87,8 +88,9 @@ function eshop_inner_custom_box($post) {
 			}else{
 				$stkqty=$weight=$opt=$price=$downl='';
 			}
+			$alt = ($i % 2) ? '' : ' class="alternate"';
 			?>
-			<tr>
+			<tr<?php echo $alt; ?>>
 			<th id="eshopnumrow<?php echo $i; ?>" headers="eshopnum"><?php echo $i; ?></th>
 			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option_<?php echo $i; ?>" value="<?php echo $opt; ?>" type="text" size="20" /></td>
 			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price_<?php echo $i; ?>" value="<?php echo $price; ?>" type="text" size="6" /></td>
@@ -120,6 +122,7 @@ function eshop_inner_custom_box($post) {
     ?>
     </tbody>
 	</table>
+	</div>
 	<?php
 	$opttable=$wpdb->prefix.'eshop_option_names';
 	$myrowres=$wpdb->get_results("select *	from $opttable ORDER BY name ASC");
@@ -304,11 +307,15 @@ function eshop_save_postdata( $post_id ) {
 	}else{
 		$eshop_product['optset']='';
 	}
-	update_post_meta( $id, '_eshop_stock', $stkav);
 	update_post_meta( $id, '_eshop_product', $eshop_product);
-	
+	if($stkav=='0')
+		delete_post_meta( $id, '_eshop_stock');
+	else
+		update_post_meta( $id, '_eshop_stock', $stkav);
+
+		
 	if($stkav=='1' && ($eshop_product['sku']=='' || $eshop_product['description']=='' || $eshop_product['products']['1']['option']=='' || $eshop_product['products']['1']['price']=='')){
-		update_post_meta( $id, '_eshop_stock', '0');
+		delete_post_meta( $id, '_eshop_stock');
 		add_filter('redirect_post_location','eshop_error');
 	}
 	if($stkav=='0' && $eshop_product['sku']=='' && $eshop_product['description']=='' && $eshop_product['products']['1']['option']=='' && $eshop_product['products']['1']['price']==''){

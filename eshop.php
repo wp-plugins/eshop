@@ -2,12 +2,12 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '5.9.3');
+	define('ESHOP_VERSION', '6.0.0');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 5.9.3
+Version: 6.0.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -72,8 +72,12 @@ add_action('init','eshop_update_routine',1);
 if (!function_exists('eshop_update_routine')) {
 	function eshop_update_routine(){
 		$eshopoptions = get_option('eshop_plugin_settings');
+		if(get_option('eshop_version')!='')
+			$eshopoptions['version']=get_option('eshop_version');
+		
 		if ( $eshopoptions['version']=='' || $eshopoptions['version'] >= ESHOP_VERSION )
 			return false;
+		
 		include_once('eshop-upgrade.php');
 	}
 }
@@ -139,5 +143,6 @@ if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
  	
 }
 //test/live mode
+
 add_action ('init','eshop_test_or_live');
 ?>

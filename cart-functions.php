@@ -18,6 +18,12 @@ if (!function_exists('display_cart')) {
 		$tempshiparray=array();
 		//this checks for an empty cart, may not be required but leaving in just in case.
 		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+		
+		if($change==true){
+			if(isset($_SESSION['eshop_discount'.$blog_id]))
+				unset($_SESSION['eshop_discount'.$blog_id]);
+		}
+		
 		foreach ($eshopcartarray as $productid => $opt){
 			if(is_array($opt)){
 				foreach($opt as $qty){
@@ -804,6 +810,7 @@ if (!function_exists('orderhandle')) {
 			if(eshop_discount_codes_check()){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
 					$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
+					do_action('eshop_discount_code_used',$checkid,$discvalid);
 					$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
 
 					$remaining=$wpdb->get_var("SELECT remain FROM $disctable where disccode='$discvalid' && dtype!='2' && dtype!='5' limit 1");
@@ -1099,6 +1106,7 @@ if (!function_exists('eshop_download_the_product')) {
 				if($chkcount>0){
 					foreach($chkresult as $chkrow){
 						// make sure output buffering is disabled
+						session_write_close();
 					   	ob_end_clean();
 						set_time_limit(0);
 						$item=$chkrow->files;
@@ -1107,22 +1115,25 @@ if (!function_exists('eshop_download_the_product')) {
 						$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$chkrow->title' && files='$item' limit 1");
 						//force download - should bring up save box, but it doesn't!
 						$dload=$dir_upload.$item;
-						header("Pragma: public"); // required
-						header("Expires: 0");
-						header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-						header("Cache-Control: private",false); // required for certain browsers 
-						header("Content-Type: application/force-download");
-						// it even allows spaces in filenames
-						header('Content-Disposition: attachment; filename="'.$item.'"');
-						header("Content-Transfer-Encoding: binary");
-						header("Content-Length: ".filesize($dload));
-						//ob_clean();
-    					//flush();
-						readfile("$dload");
-						//alternatives download methods comment above, and uncomment below
-						//eshop_readfile($dload);
-						//eshop_readfile_temp($dload,$item);
-        	   			exit();
+						$dlfilter=apply_filters('eshop_download_filter',$dload,$item);
+						if( !has_filter( 'eshop_download_filter') ) {
+							header("Pragma: public"); // required
+							header("Expires: 0");
+							header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+							header("Cache-Control: private",false); // required for certain browsers 
+							header("Content-Type: application/force-download");
+							// it even allows spaces in filenames
+							header('Content-Disposition: attachment; filename="'.$item.'"');
+							header("Content-Transfer-Encoding: binary");
+							header("Content-Length: ".filesize($dload));
+							//ob_clean();
+							//flush();
+							readfile("$dload");
+							//alternatives download methods comment above, and uncomment below
+							//eshop_readfile($dload);
+							//eshop_readfile_temp($dload,$item);
+							exit();
+						}
 					}
 				}
 			}else{

@@ -68,14 +68,18 @@ function eshop_empty_cart($atts, $content = '') {
 function eshop_list_alpha($atts){
 	global $wpdb, $post,$wp_rewrite,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopalpha','panels'=>'no','form'=>'no','records'=>'25','imgsize'=>'','links'=>'yes','price'=>'no','outofstock'=>'no'), $atts));
 	//a-z listing
 	$letter_array = range('A','Z');
 	$fullarray=$letter_array;
 	$fullarray[]='num';
 	$used=array();
-	$usedaz=$wpdb->get_results("SELECT DISTINCT UPPER(LEFT(post_title,1)) as letters FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' ORDER BY letters");
-	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	$addwhere="$wpdb->postmeta.meta_key='_eshop_stock' AND";
+	if($outofstock!='no')
+		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
+	
+	$usedaz=$wpdb->get_results("SELECT DISTINCT UPPER(LEFT(post_title,1)) as letters FROM $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' ORDER BY letters");
+	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	foreach($usedaz as $usethis){
 		$used[]=$usethis->letters;
 	}
@@ -116,73 +120,78 @@ function eshop_list_alpha($atts){
 		$qbuild=" AND UPPER(LEFT(post_title,1))='$dbletter'";
 	elseif(isset($eshopaz) && $eshopaz=='num')
 		$qbuild=" AND UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9'";
-	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild");
-	if($max>0){
-		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
-		else $epage='1';
-		if(!isset($wp_query->query_vars['eshopall'])){
-			$page_links = paginate_links( array(
-				'base' => add_query_arg( '_p', '%#%' ),
-				'format' => '',
-				'total' => ceil($max / $records),
-				'current' => $epage,
-				'type'=>'array'
+	else
+		$qbuild='';
+	
+	if($qbuild!=''){
+		$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild");
+		if($max>0){
+			if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
+			else $epage='1';
+			if(!isset($wp_query->query_vars['eshopall'])){
+				$page_links = paginate_links( array(
+					'base' => add_query_arg( '_p', '%#%' ),
+					'format' => '',
+					'total' => ceil($max / $records),
+					'current' => $epage,
+					'type'=>'array'
+					));
+				$offset=($epage*$records)-$records;
+			}else{
+				$page_links = paginate_links( array(
+					'base' => add_query_arg( '_p', '%#%' ),
+					'format' => '',
+					'total' => ceil($max / $records),
+					'current' => $epage,
+					'type'=>'array',
+					'show_all' => true,
 				));
-			$offset=($epage*$records)-$records;
-		}else{
-			$page_links = paginate_links( array(
-				'base' => add_query_arg( '_p', '%#%' ),
-				'format' => '',
-				'total' => ceil($max / $records),
-				'current' => $epage,
-				'type'=>'array',
-				'show_all' => true,
-			));
-			$offset='0';
-			$records=$max;
-		}
-	}
-	
-	
-	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
-	if($pages) {
-		//paginate
-		$echo = '<div class="paginate">';
-		if($records!=$max){
-			$eecho = $page_links;
-		}
-		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
-			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
-			number_format_i18n( min( $epage * $records, $max ) ),
-			number_format_i18n( $max)
-		);
-			
-		$echo .= '</div>';
-		//end
-		if($panels=='no'){
-			$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
-		}else{
-			if($class=='eshopalpha') $class='eshoppanels';
-			$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links,$price);
+				$offset='0';
+				$records=$max;
+			}
 		}
 
-		if(isset($eecho)){
-			$thispage=add_query_arg('eshopall','yes',$thisispage);
-			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
-		}else{
-			$echo .= '<br class="pagfoot" />';
-		}
-		return $econtain.$echo;
-	} 
-	
+
+		if(!isset($offset)) $offset='0';
+		$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
+		if($pages) {
+			//paginate
+			$echo = '<div class="paginate">';
+			if($records!=$max){
+				$eecho = $page_links;
+			}
+			$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+				number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+				number_format_i18n( min( $epage * $records, $max ) ),
+				number_format_i18n( $max)
+			);
+
+			$echo .= '</div>';
+			//end
+			if($panels=='no'){
+				$echo .= eshop_listpages($pages,$class,$form,$imgsize,$links,$price);
+			}else{
+				if($class=='eshopalpha') $class='eshoppanels';
+				$echo .= eshop_listpanels($pages,$class,$form,$imgsize,$links,$price);
+			}
+
+			if(isset($eecho)){
+				$thispage=add_query_arg('eshopall','yes',$thisispage);
+				$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
+				$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+			}else{
+				$echo .= '<br class="pagfoot" />';
+			}
+			return $econtain.$echo;
+		} 
+	}
+
 	return $econtain .'<p>'. __('No products found for that letter or number.','eshop').'</p>';
 } 
 function eshop_list_subpages($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>'','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','id'=>'','links'=>'yes','price'=>'no','outofstock'=>'yes'), $atts));
 	$echo='';
 	if($id!='')
 		$eshopid=$id;
@@ -208,9 +217,14 @@ function eshop_list_subpages($atts){
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
 	
+	$addwhere="_eshop_stock";
+	if($outofstock=='yes')
+		$addwhere="_eshop_product";
+		
 	$thisispage=get_permalink($post->ID);
 	$pagetype=apply_filters('eshop_sub_page_type','page');
-	$max = $wpdb->get_var("SELECT count(ID) from $wpdb->posts WHERE post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
+	$max = $wpdb->get_var("SELECT count(DISTINCT($wpdb->posts.ID)) from $wpdb->posts,$wpdb->postmeta WHERE $wpdb->postmeta.meta_key='$addwhere' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND post_type='$pagetype' AND post_parent='$eshopid' AND post_status='publish'");
+
 	if($records>$show) $records=$show;
 	if($max>$show)
 		$max=$show;
@@ -246,6 +260,7 @@ function eshop_list_subpages($atts){
 	'post_parent' => $eshopid, // any parent
 	'orderby'=> $orderby,
 	'order'=> $order,
+	'meta_key'=> $addwhere,
 	'numberposts' => $records, 
 	'offset' => $offset,
 	); 
@@ -286,7 +301,7 @@ function eshop_list_subpages($atts){
 function eshop_list_cat_tags($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopcats','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','sortby'=>'post_title','order'=>'ASC','imgsize'=>'','find'=>'','type'=>'tag','links'=>'yes','price'=>'no','outofstock'=>'yes'), $atts));
 	$echo='';
 	$allowedtype=array('cat','category_name','tag','tag_id');
 	$allowedtype=apply_filters('eshop_list_cat_tags_types',$allowedtype);
@@ -317,7 +332,11 @@ function eshop_list_cat_tags($atts){
 			$orderby='title';
 			break;
 	}
-	
+	$addwhere="_eshop_stock";
+	if($outofstock=='yes')
+		$addwhere="_eshop_product";
+		
+		
 	$thisispage=get_permalink($post->ID);
 	$array=array('post','page');
 	$array=apply_filters('eshop_post_types',$array);
@@ -325,7 +344,7 @@ function eshop_list_cat_tags($atts){
 	'post_type' => $array,
 	'post_status' => 'publish',
 	$type => $find, 
-	'meta_key'=>'_eshop_product',
+	'meta_key'=>$addwhere,
 	'posts_per_page'=>-1
 	); 
 	if($records>$show) $records=$show;
@@ -362,7 +381,7 @@ function eshop_list_cat_tags($atts){
 	'post_type' => $array,
 	'post_status' => 'publish',
 	$type => $find, 
-	'meta_key'=>'_eshop_product',
+	'meta_key'=> $addwhere,
 	'orderby'=> $orderby,
 	'order'=> $order,
 	'numberposts' => $records, 
@@ -404,9 +423,14 @@ function eshop_list_cat_tags($atts){
 function eshop_list_new($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopsubpages','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes','price'=>'no','outofstock'=>'no'), $atts));
 	$echo='';
-	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	
+	$addwhere="$wpdb->postmeta.meta_key='_eshop_stock' AND";
+	if($outofstock!='no')
+		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
+	
+	$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
 	if($records>$show) $records=$show;
 
 	if($max>$show)
@@ -439,7 +463,7 @@ function eshop_list_new($atts){
 		}
 	}
 	if(!isset($offset)) $offset='0';
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' order by post_date DESC limit $offset,$records");
 
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
@@ -477,13 +501,18 @@ function eshop_list_new($atts){
 function eshop_best_sellers($atts){
 	global $wpdb, $post,$wp_query;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('class'=>'eshopbestsellers','panels'=>'no','form'=>'no','show'=>'100','records'=>'10','imgsize'=>'','links'=>'yes','price'=>'no','outofstock'=>'yes'), $atts));
 	$echo='';
 	$stktable=$wpdb->prefix.'eshop_stock';
+	
+	$addwhere="$wpdb->postmeta.meta_key='_eshop_stock' AND";
+	if($outofstock=='yes')
+		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
+		
 	$max=$wpdb->get_var("SELECT COUNT($wpdb->postmeta.post_id)
 		from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-		WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
-	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
+		WHERE $addwhere
+		$wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
 	if($records>$show) $records=$show;
 
 	if($max>$show)
@@ -516,8 +545,8 @@ function eshop_best_sellers($atts){
 	if(!isset($offset)) $offset='0';
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.*
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-	WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' 
-	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
+	WHERE $addwhere
+	$wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 	order by stk.purchases DESC limit $offset,$records");
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
@@ -571,7 +600,8 @@ function eshop_list_featured_sale($atts, $type='featured'){
 		$order='ASC';
 	if($sortby=='random')
 		$sortby='rand()';
-	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND pm.meta_value='Yes' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
+	
+	$pages=$wpdb->get_results("SELECT p.* from $wpdb->postmeta as pm,$wpdb->posts as p WHERE pm.meta_key='_eshop_".$type."' AND p.post_status='publish' AND p.ID=pm.post_id ORDER BY $sortby $order");
 
 	if($pages) {
 		if($panels=='no'){
@@ -592,7 +622,7 @@ function eshop_list_random($atts){
 	//cache
 	eshop_cache();
 	$paged=$post;
-	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0','links'=>'yes','price'=>'no'), $atts));
+	extract(shortcode_atts(array('list' => 'yes','class'=>'eshoprandomlist','panels'=>'no','form'=>'no','show'=>'6','records'=>'6','imgsize'=>'','excludes'=>'0','links'=>'yes','price'=>'no','outofstock'=>'yes'), $atts));
 	if($list!='yes' && $class='eshoprandomlist'){
 		$class='eshoprandomproduct';
 	}
@@ -612,7 +642,11 @@ function eshop_list_random($atts){
 		$subquery= ' AND '.implode(' AND ',$subq);
 	}
 	
-	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
+	$addwhere="$wpdb->postmeta.meta_key='_eshop_stock' AND";
+	if($outofstock=='yes')
+		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
+	
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'$subquery order by rand() limit $elimit");
 
 	if($pages) {
 		if($panels=='no'){
@@ -631,12 +665,13 @@ function eshop_show_product($atts){
 	global $wpdb, $post;
 	eshop_cache();
 	$paged=$post;
+
 	extract(shortcode_atts(array('id'=>'0','class'=>'eshopshowproduct','panels'=>'no','form'=>'no','imgsize'=>'','links'=>'yes','price'=>'no'), $atts));
 	if($id!=0){
 		$pages=array();
 		$theids = explode(",", $id);
 		foreach($theids as $thisid){
-			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_stock' AND $wpdb->postmeta.meta_value='1' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
+			$thispage=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $wpdb->postmeta.meta_key='_eshop_product' AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND $wpdb->posts.ID='$thisid'");
 			if(sizeof($thispage)>0)//only add if it exists
 				array_push($pages,$thispage['0']);
 		}
@@ -875,7 +910,12 @@ function eshop_show_shipping($atts) {
 
 		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'" class="eshopshiprates eshop">';
 		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
-		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th><th id="zone1" class="zone1">'.__('Zone 1','eshop').'</th><th id="zone2" class="zone2">'.__('Zone 2','eshop').'</th><th id="zone3" class="zone3">'.__('Zone 3','eshop').'</th><th id="zone4" class="zone4">'.__('Zone 4','eshop').'</th><th id="zone5" class="zone5">'.__('Zone 5','eshop').'</th></tr></thead>'."\n";
+		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th>';
+		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+			$y='zone'.$z;
+			$eshopshiptable.='<th id="'.$y.'" class="'.$y.'">'.sprintf(__('Zone %1$d','eshop'),$z).'</th>';
+		}
+		$eshopshiptable.='</tr></thead>'."\n";
 		$eshopshiptable.='<tbody>'."\n";
 		$x=1;
 		$calt=0;
@@ -895,11 +935,10 @@ function eshop_show_shipping($atts) {
 						}else{
 							$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 						}
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$y='zone'.$z;
+							$eshopshiptable.= '<td headers="zone'.$z.' cname'.$x.'" class="zone'.$z.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>'."\n";
+						}
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -914,11 +953,10 @@ function eshop_show_shipping($atts) {
 						$row->class=apply_filters('eshop_shipping_rate_class',$row->class);
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.'</th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";	
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$y='zone'.$z;
+							$eshopshiptable.= '<td headers="'.$y.' cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>'."\n";
+						}
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -935,11 +973,10 @@ function eshop_show_shipping($atts) {
 						$row->class=apply_filters('eshop_shipping_rate_class',$row->class);
 						$eshopshiptable.= '<tr'.$alt.'>';
 						$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-						$eshopshiptable.= '<td headers="zone1 cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone2 cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone3 cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone4 cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>'."\n";
-						$eshopshiptable.= '<td headers="zone5 cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>'."\n";
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$y='zone'.$z;
+							$eshopshiptable.= '<td headers="'.$y.' cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>'."\n";
+						}
 						$eshopshiptable.= '</tr>';
 						$x++;
 					}
@@ -952,7 +989,11 @@ function eshop_show_shipping($atts) {
 			$row->class=apply_filters('eshop_shipping_rate_class','F');
 			$eshopshiptable.= '<tr'.$alt.'>';
 			$eshopshiptable.= '<th id="cname'.$x.'" headers="class">'.$row->class.' <small>'.__('(Free)','eshop').'</small></th>'."\n";
-			$eshopshiptable.= '<td headers="zone1 zone2 zone3 zone4 zone5 cname'.$x.'" colspan="5" class="center">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n('0',2)).'</td>'."\n";
+			$yzones='';
+			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++)
+				$yzones.='zone'.$z.' ';
+				
+			$eshopshiptable.= '<td headers="'.$yzones.' cname'.$x.'" colspan="'.$eshopoptions['numb_shipzones'].'" class="center">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n('0',2)).'</td>'."\n";
 			$eshopshiptable.= '</tr>';
 		}
 		$eshopshiptable.='</tbody>'."\n";
@@ -972,13 +1013,12 @@ function eshop_show_shipping($atts) {
 				<caption>'.stripslashes(esc_attr($type)).'</caption>
 				<thead>
 				<tr>
-				<th id="'.$eshopletter.'weight">'. __('Starting weight','eshop').'</th>
-				<th id="'.$eshopletter.'zone1" class="zone1">'. __('Zone 1','eshop').'</th>
-				<th id="'.$eshopletter.'zone2" class="zone2">'. __('Zone 2','eshop').'</th>
-				<th id="'.$eshopletter.'zone3" class="zone3">'. __('Zone 3','eshop').'</th>
-				<th id="'.$eshopletter.'zone4" class="zone4">'. __('Zone 4','eshop').'</th>
-				<th id="'.$eshopletter.'zone5" class="zone5">'. __('Zone 5','eshop').'</th>
-				</tr>
+				<th id="'.$eshopletter.'weight">'. __('Starting weight','eshop').'</th>';
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$y='zone'.$z;
+					$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. sprintf(__('Zone %1$d','eshop'),$z).'</th>';
+				}
+				$eshopshiptable.='</tr>
 				</thead>
 				<tbody>';
 				$x=1;
@@ -988,13 +1028,12 @@ function eshop_show_shipping($atts) {
 					/* '1 - weight 2-weight symbol' */
 					$eshopshiptable.='
 					<tr'.$alt.'>
-					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</td>
-					<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
-					<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
-					<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
-					<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
-					<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
-					</tr>';
+					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</td>';
+					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+						$y='zone'.$z;
+						$eshopshiptable.='<td headers="'.$eshopletter.$y.' ' .$eshopletter.'cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+					}
+					$eshopshiptable.='</tr>';
 					$x++;
 				}
 				$eshopletter++;
@@ -1045,7 +1084,7 @@ if (!function_exists('eshop_show_zones')) {
 			$echo.= '</select></label> 
 			<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
-			if(isset($_POST) && $_POST['country']!=''){
+			if(isset($_POST['country']) && $_POST['country']!=''){
 				$qccode=$wpdb->escape($_POST['country']);
 				$qcountry = $wpdb->get_row("SELECT country,zone FROM $tablec WHERE code='$qccode' limit 1",ARRAY_A);
 				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qcountry['country'],$qcountry['zone']).'.</p>';
@@ -1259,6 +1298,7 @@ function eshop_details($atts){
 	extract(shortcode_atts(array('class'=>'eshopdetails','show'=>'','options_hide'=>''), $atts));
 	$echo='';
 	$allowedtoshow=array('sku','description','options','optionset','shipping');
+	$willshow=array();
 	if($show!=''){
 		$wanttoshow=explode(",", $show);
 		foreach($wanttoshow as $showit){
@@ -1520,29 +1560,27 @@ function eshop_details($atts){
 						<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 						<thead>
 						<tr>
-						<th id="'.$eshopletter.'wt">'. __('Weight','eshop').'</th>
-						<th id="'.$eshopletter.'zone1">'. __('Zone 1','eshop').'</th>
-						<th id="'.$eshopletter.'zone2">'. __('Zone 2','eshop').'</th>
-						<th id="'.$eshopletter.'zone3">'. __('Zone 3','eshop').'</th>
-						<th id="'.$eshopletter.'zone4">'. __('Zone 4','eshop').'</th>
-						<th id="'.$eshopletter.'zone5">'. __('Zone 5','eshop').'</th>
-						</tr>
+						<th id="'.$eshopletter.'wt">'. __('Weight','eshop').'</th>';
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$y='zone'.$z;
+							$eshopshiptable.='<th id="'.$eshopletter.$y.'">'. sprintf(__('Zone %1$d','eshop'),$z).'</th>';
+						}
+						$eshopshiptable.='</tr>
 						</thead>
 						<tbody>';
 						$x=1;
-						$query=$wpdb->get_results("SELECT weight,zone1,zone2,zone3,zone4,zone5 from $dtable  where ($cartweight) &&  ship_type='$k' order by weight ASC");
+						$query=$wpdb->get_results("SELECT * from $dtable  where ($cartweight) &&  ship_type='$k' order by weight ASC");
 						foreach ($query as $row){
 							$alt = ($x % 2) ? '' : ' class="alt"';
 							/* ,'1- weight 2-weight symbol' */
 							$eshopshiptable.='
 							<tr'.$alt.'>
-							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</th>
-							<td headers="'.$eshopletter.'zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
-							<td headers="'.$eshopletter.'zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
-							<td headers="'.$eshopletter.'zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
-							<td headers="'.$eshopletter.'zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
-							<td headers="'.$eshopletter.'zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
-							</tr>';
+							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</th>';
+							for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+								$y='zone'.$z;
+								$eshopshiptable.='<td headers="'.$eshopletter.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+							}
+							$eshopshiptable.='</tr>';
 							$x++;
 						}
 						$eshopletter++;
@@ -1592,7 +1630,8 @@ function eshop_show_cart() {
 			$return=get_permalink($eshopoptions['cart']);
 		}
 		$echo.= display_cart($_SESSION['eshopcart'.$blog_id],'true', $eshopoptions['checkout']);
-		$echo.='<ul class="continue-proceed"><li><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
+		$echo.='<ul class="continue-proceed"><li class="rtnshopping"><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li>
+		<li class="gotocheckout"><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
 	}else{
 		//can be altered as desired.
 		$echo.= '<p><strong class="error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';

@@ -263,12 +263,9 @@ class eshop_search {
 		if ( isset( $_GET['eshopsearch'] ) && is_search()) {
 			global $wpdb, $wp;
 			$meta='_eshop_product';
-			$metavalue="";
-			if($_GET['eshopsearch'] == 'instock'){
+			if($_GET['eshopsearch'] == 'instock')
 				$meta='_eshop_stock';
-				$metavalue=" AND $wpdb->postmeta.meta_value= '1' ";		
-			}
-			$where .= " AND $wpdb->postmeta.meta_key = '{$meta}'{$metavalue}";
+			$where .= " AND $wpdb->postmeta.meta_key = '{$meta}'";
 			add_filter('posts_join_request', array(&$this, 'search_join'));
 		}
 		return $where;

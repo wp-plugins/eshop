@@ -344,6 +344,7 @@ default:
 		$eshopoptions['unknown_state']=$_POST['eshop_unknown_state'];
 		$eshopoptions['ship_types']=trim($_POST['eshop_ship_types']);
 		$eshopoptions['weight_unit']=$_POST['eshop_weight_unit'];
+		$eshopoptions['numb_shipzones']=$_POST['eshop_numb_shipzones'];
 		update_option('eshop_plugin_settings',$eshopoptions);
 	}
 	if(isset($_POST['eshopstd'])){
@@ -363,12 +364,23 @@ default:
 		}
 	}
 	if(isset($_POST['eshopwgt'])){
-		$build="INSERT INTO $dtable (`zone1`,`zone2`,`zone3`,`zone4`,`zone5`,`weight`,`ship_type`) VALUES";
+		$barray=array();
+		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+			$barray[]='zone'.$z;
+		}
+		$build="INSERT INTO $dtable (`".implode("`, `",$barray)."`,`weight`,`ship_type`) VALUES";
+		
+
 		foreach($_POST['row'] as $k=>$v){
 			//$k == ship_type
+			$bvarray=array();
 			foreach($v as $f=>$value){
-				if($value['weight']!='')
-					$build.="('".$value['zone1']."','".$value['zone2']."','".$value['zone3']."','".$value['zone4']."','".$value['zone5']."','".$value['weight']."','".$k."'),";
+				if($value['weight']!=''){
+					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+						$bvarray[]=$value['zone'.$z];
+					}
+					$build.="('".implode("', '",$bvarray)."','".$value['weight']."','".$k."'),";
+				}
 			}
 		}
 		$queri=trim($build,',');
@@ -416,17 +428,30 @@ default:
 	}
 	?>
 	</select><br />
+	<?php
+	$eshopavailzones=apply_filters('eshop_available_zones','9');
+	?>
+	<label for="eshop_numb_shipzones"><?php _e('Number of Zones to utilise','eshop'); ?></label>
+			<select id="eshop_numb_shipzones" name="eshop_numb_shipzones">
+			<?php
+			for($i=1;$i<=$eshopavailzones;$i++){
+			?>
+				<option value="<?php echo $i; ?>"<?php selected($i,$eshopoptions['numb_shipzones']) ?>><?php echo $i; ?></option>
+			<?php
+			}
+			?>
+	</select><br />
 	<label for="eshop_unknown_state"><?php _e('Default Zone for unknown State/County/Province','eshop'); ?></label>
 		<select id="eshop_unknown_state" name="eshop_unknown_state">
 		<?php
-		for($i=1;$i<=5;$i++){
+		for($i=1;$i<=$eshopavailzones;$i++){
 		?>
 			<option value="<?php echo $i; ?>"<?php if($i==$eshopoptions['unknown_state']) echo ' selected="selected"'; ?>><?php echo $i; ?></option>
 		<?php
 		}
 		?>
 	</select><br />
-	<label for="eshop_show_zones"><?php _e('Show Shipping Zones on Shipping Page','eshop'); ?></label>
+	<label for="eshop_show_zones"><?php _e('Show Shipping Zones on Shipping Rates Page','eshop'); ?></label>
 	<select id="eshop_show_zones" name="eshop_show_zones">
 	<?php
 	if('yes' == $eshopoptions['show_zones']){
@@ -461,11 +486,13 @@ default:
 	<caption><?php _e('Shipping rates by class and zone','eshop'); ?></caption>
 	<tr>
 	<th id="class"><?php _e('Class','eshop'); ?></th>
-	<th id="zone1" class="zone1"><?php _e('Zone 1','eshop'); ?></th>
-	<th id="zone2" class="zone2"><?php _e('Zone 2','eshop'); ?></th>
-	<th id="zone3" class="zone3"><?php _e('Zone 3','eshop'); ?></th>
-	<th id="zone4" class="zone4"><?php _e('Zone 4','eshop'); ?></th>
-	<th id="zone5" class="zone5"><?php _e('Zone 5','eshop'); ?></th>
+	<?php
+	for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+	?>
+		<th id="zone<?php echo $z; ?>" class="zone<?php echo $z; ?>"><?php echo sprintf(__('Zone %1$d','eshop'),$z); ?></th>
+	<?php
+	}
+	?>
 	</tr>
 	<?php
 	/* although this could be condensed, I'll split each method up for ease and future expansion */
@@ -485,11 +512,10 @@ default:
 				}else{
 					echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(Additional Items)','eshop').'</small></th>'."\n";
 				}
-				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$y='zone'.$z;
+					echo '<td headers="zone'.$z.' cname'.$x.'" class="zone'.$z.'"><label for="'.$row->class.$row->items.'zone'.$z.'">'.sprintf(__('Zone %1$d class','eshop'),$z).' '.$row->class.$row->items.'</label><input id="'.$row->class.$row->items.'zone'.$z.'" name="'.$row->class.$row->items.'zone'.$z.'" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+				}
 				echo '</tr>';
 				$x++;
 			}
@@ -504,11 +530,10 @@ default:
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr'.$alt.'>';
 				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.'</th>'."\n";
-				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5 class','eshop').' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$y='zone'.$z;
+					echo '<td headers="zone'.$z.' cname'.$x.'" class="zone'.$z.'"><label for="'.$row->class.$row->items.'zone'.$z.'">'.sprintf(__('Zone %1$d class','eshop'),$z).' '.$row->class.'</label><input id="'.$row->class.$row->items.'zone'.$z.'" name="'.$row->class.$row->items.'zone'.$z.'" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+				}
 				echo '</tr>';
 				$x++;
 			}
@@ -520,11 +545,10 @@ default:
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr class="alt">';
 				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
-				echo '<td headers="zone1 cname'.$x.'" class="zone1"><label for="'.$row->class.$row->items.'zone1">'.__('Zone 1','eshop').'</label><input id="'.$row->class.$row->items.'zone1" name="'.$row->class.$row->items.'zone1" type="text" value="'.$row->zone1.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone2 cname'.$x.'" class="zone2"><label for="'.$row->class.$row->items.'zone2">'.__('Zone 2','eshop').'</label><input id="'.$row->class.$row->items.'zone2" name="'.$row->class.$row->items.'zone2" type="text" value="'.$row->zone2.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone3 cname'.$x.'" class="zone3"><label for="'.$row->class.$row->items.'zone3">'.__('Zone 3','eshop').'</label><input id="'.$row->class.$row->items.'zone3" name="'.$row->class.$row->items.'zone3" type="text" value="'.$row->zone3.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone4 cname'.$x.'" class="zone4"><label for="'.$row->class.$row->items.'zone4">'.__('Zone 4','eshop').'</label><input id="'.$row->class.$row->items.'zone4" name="'.$row->class.$row->items.'zone4" type="text" value="'.$row->zone4.'" size="6" maxlength="6" /></td>'."\n";
-				echo '<td headers="zone5 cname'.$x.'" class="zone5"><label for="'.$row->class.$row->items.'zone5">'.__('Zone 5','eshop').'</label><input id="'.$row->class.$row->items.'zone5" name="'.$row->class.$row->items.'zone5" type="text" value="'.$row->zone5.'" size="6" maxlength="6" /></td>'."\n";
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$y='zone'.$z;
+					echo '<td headers="zone'.$z.' cname'.$x.'" class="zone'.$z.'"><label for="'.$row->class.$row->items.'zone'.$z.'">'.sprintf(__('Zone %1$d','eshop'),$z).'</label><input id="'.$row->class.$row->items.'zone'.$z.'" name="'.$row->class.$row->items.'zone'.$z.'" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+				}
 				echo '</tr>';
 			}
 			break;
@@ -546,16 +570,18 @@ default:
 	foreach ($typearr as $k=>$type){
 		$k++;
 		?>
-		<table class="hidealllabels widefat" summary="Shipping rates per mode">
+		<table class="hidealllabels" summary="Shipping rates per mode">
 		<caption><?php echo stripslashes(esc_attr($type)); ?></caption>
 		<thead>
 		<tr>
 		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone1" class="zone1"><?php _e('Zone 1','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone2" class="zone2"><?php _e('Zone 2','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone3" class="zone3"><?php _e('Zone 3','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone4" class="zone4"><?php _e('Zone 4','eshop'); ?></th>
-		<th id="<?php echo $eshopletter; ?>zone5" class="zone5"><?php _e('Zone 5','eshop'); ?></th>
+		<?php
+		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+		?>
+			<th id="<?php echo $eshopletter.'zone'. $z; ?>" class="zone<?php echo $z; ?>"><?php echo sprintf(__('Zone %1$d','eshop'),$z); ?></th>
+		<?php
+		}
+		?>
 		</tr>
 		</thead>
 		<tbody>
@@ -566,11 +592,10 @@ default:
 			$alt = ($x % 2) ? '' : ' class="alt"';
 			echo '<tr'.$alt.'>';
 			echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="'.$row->weight.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="'.$row->zone1.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="'.$row->zone2.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="'.$row->zone3.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="'.$row->zone4.'" /></td>'."\n";
-			echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="'.$row->zone5.'" /></td>'."\n";
+			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+				$y='zone'.$z;
+				echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.sprintf(__('Zone %1$d','eshop'),$z).'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="row['.$k.']['.$x.']['.$y.']" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+			}
 			echo '</tr>';
 			$x++;
 		}
@@ -603,11 +628,10 @@ function extraeshopweights($start,$eshopletter,$k){
 		$alt = ($x % 2) ? '' : ' class="alt"';
 		echo '<tr'.$alt.'>';
 		echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight"><label for="'.$eshopletter.'weight'.$x.'">'.__('Weight','eshop').'</label><input id="'.$eshopletter.'weight'.$x.'" name="row['.$k.']['.$x.'][weight]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone1 '.$eshopletter.'cname'.$x.'" class="zone1"><label for="'.$eshopletter.'zone1'.$x.'">'.__('Zone 1','eshop').'</label><input id="'.$eshopletter.'zone1'.$x.'" name="row['.$k.']['.$x.'][zone1]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone2 '.$eshopletter.'cname'.$x.'" class="zone2"><label for="'.$eshopletter.'zone2'.$x.'">'.__('Zone 2','eshop').'</label><input id="'.$eshopletter.'zone2'.$x.'" name="row['.$k.']['.$x.'][zone2]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone3 '.$eshopletter.'cname'.$x.'" class="zone3"><label for="'.$eshopletter.'zone3'.$x.'">'.__('Zone 3','eshop').'</label><input id="'.$eshopletter.'zone3'.$x.'" name="row['.$k.']['.$x.'][zone3]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone4 '.$eshopletter.'cname'.$x.'" class="zone4"><label for="'.$eshopletter.'zone4'.$x.'">'.__('Zone 4','eshop').'</label><input id="'.$eshopletter.'zone4'.$x.'" name="row['.$k.']['.$x.'][zone4]" type="text" value="" /></td>'."\n";
-		echo '<td headers="'.$eshopletter.'zone5 '.$eshopletter.'cname'.$x.'" class="zone5"><label for="'.$eshopletter.'zone5'.$x.'">'.__('Zone 5','eshop').'</label><input id="'.$eshopletter.'zone5'.$x.'" name="row['.$k.']['.$x.'][zone5]" type="text" value="" /></td>'."\n";
+		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+			$y='zone'.$z;
+			echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.sprintf(__('Zone %1$d','eshop'),$z).'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="row['.$k.']['.$x.']['.$y.']" type="text" value="" size="6" maxlength="16" /></td>'."\n";
+		}
 		echo '</tr>';
 		$x++;
 	}

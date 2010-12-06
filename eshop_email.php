@@ -36,6 +36,9 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 		$headers=eshop_from_address();
 	}
 	wp_mail($to, $subject, $body, $headers);
+	//in case admins want to be copied in on correspondence etc.
+	do_action('eshop_copy_admin_order_email',$to, $subject, $body, $headers);
+	
 	$page='?page='.$_GET['page'].'&amp;view='.$_POST['id'];
 	echo '<p class="success">'.__('Email sent successfully.','eshop').'</p>';
 	echo '<p><a class="return" href="'.$page.'">'.__('&laquo; Return to Order Detail','eshop').'</a></p>';
