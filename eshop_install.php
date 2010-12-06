@@ -70,7 +70,7 @@ if (!function_exists('eshop_option_setup')) {
 			'shipping_state'=> 'GB',
 			'shipping_zone'=> 'country',
 			'shipping'=> '1',
-			'numb_shipzones'='5',
+			'numb_shipzones'=>'5',
 			'shop_page'=>'',
 			'show_allstates'=>'',
 			'show_downloads'=>'',
