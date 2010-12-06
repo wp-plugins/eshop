@@ -43,27 +43,25 @@ if (!function_exists('eshopShowform')) {
 			<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'" /> <label for="eshop_shiptype'.$k.'">'.stripslashes(esc_attr($type)).' '.__('Shipping','eshop').'</label></span>
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 			<thead>
-			<tr>
-			<th id="'.$eshopletter.'zone1" class="zone1">'. __('Zone 1','eshop').'</th>
-			<th id="'.$eshopletter.'zone2" class="zone2">'. __('Zone 2','eshop').'</th>
-			<th id="'.$eshopletter.'zone3" class="zone3">'. __('Zone 3','eshop').'</th>
-			<th id="'.$eshopletter.'zone4" class="zone4">'. __('Zone 4','eshop').'</th>
-			<th id="'.$eshopletter.'zone5" class="zone5">'. __('Zone 5','eshop').'</th>
-			</tr>
+			<tr>';
+			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+				$y='zone'.$z;
+				$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. sprintf(__('Zone %1$d','eshop'),$z) .'</th>';
+			}
+			$eshopshiptable.='</tr>
 			</thead>
 			<tbody>';
 			$x=1;
-			$query=$wpdb->get_results("SELECT zone1,zone2,zone3,zone4,zone5 from $dtable  where weight<='$cartweight' &&  ship_type='$k' order by weight DESC limit 1");
+			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  ship_type='$k' order by weight DESC limit 1");
 			foreach ($query as $row){
 				$alt = ($x % 2) ? '' : ' class="alt"';
 				$eshopshiptable.='
-				<tr'.$alt.'>
-				<td headers="'.$eshopletter.'zone1" class="zone1">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone1).'</td>
-				<td headers="'.$eshopletter.'zone2" class="zone2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone2).'</td>
-				<td headers="'.$eshopletter.'zone3" class="zone3">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone3).'</td>
-				<td headers="'.$eshopletter.'zone4" class="zone4">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone4).'</td>
-				<td headers="'.$eshopletter.'zone5" class="zone5">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->zone5).'</td>
-				</tr>';
+				<tr'.$alt.'>';
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$y='zone'.$z;
+					$eshopshiptable.='<td headers="'.$eshopletter.$y.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+				}
+				$eshopshiptable.='</tr>';
 				$x++;
 			}
 			$eshopletter++;
@@ -1006,13 +1004,13 @@ if (!function_exists('eshop_checkout')) {
 	if(isset($_SESSION['eshopcart'.$blog_id])){
 		switch($contineproceed){
 			case ('1'):
-				$echoit.='<ul class="continue-proceed"><li><a href="'.get_permalink($eshopoptions['cart']).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
+				$echoit.='<ul class="continue-proceed"><li class="editcart"><a href="'.get_permalink($eshopoptions['cart']).'">'.__('&laquo; Edit Cart or Continue Shopping','eshop').'</a></li></ul>';
 				break;
 			case ('2'):
-				$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+				$echoit.='<ul class="continue-proceed redirect"><li class="editcheckout"><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
 				break;
 			case ('3'):
-				$echoit.='<ul class="continue-proceed redirect"><li><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
+				$echoit.='<ul class="continue-proceed redirect"><li class="editcheckout"><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('&laquo; Edit Details or Continue Shopping','eshop').'</a></li></ul>';
 				break;
 		}
 

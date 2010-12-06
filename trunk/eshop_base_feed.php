@@ -1,4 +1,5 @@
 <?php
+$eshopref=apply_filters('eshop_add_ref_feed','');
 $data="<?xml version='1.0' encoding='utf-8' ?>\n";
 $data.='<rss version="2.0" 
 xmlns:g="http://base.google.com/ns/1.0" 
@@ -7,7 +8,7 @@ xmlns:c="http://base.google.com/cns/1.0">
 <copyright>'.get_bloginfo_rss('name').'</copyright>
 <pubDate>'.date("r").'</pubDate>
 <title>'.get_bloginfo_rss('name').'</title>
-<link>'.get_bloginfo_rss('url').'</link>
+<link>'.get_bloginfo_rss('url').$eshopref.'</link>
 <description>Product feed for '.get_bloginfo_rss('name').'</description>
 <generator>eShop: Accessible e-commerce plugin for Wordpress</generator>'."\n";
 
@@ -69,7 +70,7 @@ foreach($array as $foo=>$grabit){
 		$basetitle=$pdata->post_title;
 	}
 	//automatic data
-	$baselink=get_permalink($rid);
+	$baselink=get_permalink($rid).$eshopref;
 	$baseid=$rid;
 	$baseprice=$grabit['products']['1']['price'];
 	if (has_post_thumbnail( $rid ) ) {

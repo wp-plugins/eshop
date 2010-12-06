@@ -18,7 +18,19 @@ if (!function_exists('eshopdata')) {
 		
 	}
 }    
-     
+if (!function_exists('eshop_caps_check')) {
+	function eshop_caps_check() {
+		global $wpdb, $user_level, $wp_rewrite, $wp_version;
+			$role = get_role('administrator');
+			if ($role !== NULL){
+				$role->add_cap('eShop');
+				$role->add_cap('eShop_admin');
+			}
+			$role = get_role('editor');
+			if ($role !== NULL)
+				$role->add_cap('eShop');
+	}
+}  
 if (!function_exists('eshop_admin')) {
     /**
      * used by the admin panel hook
@@ -66,7 +78,8 @@ if (!function_exists('eshop_admin_init')) {
 		wp_register_style('eShopAdminPrint', WP_PLUGIN_URL . '/eshop/eshop-print.css','','','print');
 		wp_register_script('eShopCheckAll', WP_PLUGIN_URL . '/eshop/eshopcheckall.js', array('jquery'));
 		wp_enqueue_style('eShopAdminStyles');
-
+		//recall this function to fix multisite
+		eshop_caps_check();
 	}
 }
 

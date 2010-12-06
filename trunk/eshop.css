@@ -785,3 +785,8 @@ dl.eshop-def dd ul{
 	width:100%;
 	background:transparent;
 }
+/* product entry and wide table fix */
+.eshopwidetable{
+	width:100%;
+	overflow:auto;
+}

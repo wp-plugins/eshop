@@ -385,6 +385,7 @@ if (!function_exists('displaystats')) {
 				<ul class="eshop-stats">
 				<?php
 				foreach($paytype as $gatetype){
+					$gatetype=str_replace(".","",$gatetype);//mainly for authorize.net
 					$mcount=$wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE paidvia='$gatetype'");
 					?>
 					<li><strong><?php echo $mcount; ?></strong> <?php echo ucwords($gatetype).' '.eshop_plural($mcount,__('order','eshop'),__('orders','eshop')); ?></li>
@@ -695,14 +696,16 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		//check if downloadable product
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
 		$downstable=$wpdb->prefix.'eshop_downloads';
+		$downloadable='';
 		if($myrow->down_id!='0'){
 			//item is a download
-			$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
-			$dltable=$wpdb->prefix.'eshop_downloads';
 			$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
-			$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
-		}else{
-			$downloadable='';
+			if(isset($dlinfo->downloads)){
+				$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
+				$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
+			}else{
+				$downloadable = __('Download Item Missing','eshop');
+			}
 		}
 	
 		// add in a check if postage here as well as a link to the product

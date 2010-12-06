@@ -69,20 +69,28 @@ function eshop_option_upgrade() {
 		'unknown_state'=> '5',
 		'version'=>'',
 		'xtra_help' =>'',
-		'xtra_privacy' =>''
+		'xtra_privacy' =>'',
 	);
 
 	// if old options exist, update to new system only need pre 5.0
 	foreach( $new_options as $key => $value ) {
+		$existing='';
 		$existing = get_option( 'eshop_' . $key );
-		if($existing!='')
-			$new_options[$key] = $existing;
+		$newer_options[$key] = $existing;
 		delete_option( 'eshop_' . $key );
 	}
-	add_option( 'eshop_plugin_settings', $new_options );
+	delete_option( 'eshop_authorizenet');
+	delete_option( 'eshop_cash');
+	delete_option( 'eshop_epn');
+	delete_option( 'eshop_ideallite');
+	delete_option( 'eshop_payson');
+	delete_option( 'eshop_show_sku');
+	delete_option( 'eshop_show_stock');
+	delete_option( 'eshop_webtopay');
+	update_option( 'eshop_plugin_settings', $newer_options );
 }
 function eshop_postmeta_upgrade() {
-	$eshopoptions = get_option('eshop_plugin_settings');
+	global $eshopoptions;
 	$new_options = array(
 	'_Sku'=>'sku',
 	'_Product Description'=>'description',
@@ -100,44 +108,42 @@ function eshop_postmeta_upgrade() {
 	}
 	//go through every page and post
 	$args = array(
-		'post_type' => 'any',
-		'numberposts' => -1,
-		); 
-	if ( isset($eshopoptions['version']) && $eshopoptions['version'] < '5.2.0' ){
-		//add in transfer from prod download to _download here
-		$allposts = get_posts($args);
-		foreach( $allposts as $postinfo) {
-			//if(get_post_meta($postinfo->ID, '_eshop_product')!='')
-			//	break;
-			foreach($new_options as $oldfield=>$newfield){
-				$eshopvalue=get_post_meta($postinfo->ID, $oldfield,true);
-				if(is_array($newfield)){
-					foreach($newfield as $k=>$v){
-						$thenew_options['products'][$k][$v]=$eshopvalue;
-					}
-				}else{
-					$thenew_options[$newfield]=$eshopvalue;
-				}
-				if($oldfield=='_Featured Product' && $eshopvalue=='Yes'){
-					add_post_meta( $postinfo->ID, '_eshop_featured', 'Yes');
-				}
-			}
-			if($thenew_options['sku']!='' && $thenew_options['description']!='' && $thenew_options['products']['1']['option']!='' && $thenew_options['products']['1']['price']!=''){
-				add_post_meta( $postinfo->ID, '_eshop_product', $thenew_options);
-			}
-			$stock=get_post_meta($postinfo->ID, '_Stock Available',true);
-			if(trim($stock)=='Yes'){
-				add_post_meta( $postinfo->ID, '_eshop_stock', '1');
-			}
-		}
-		//just make sure they are all gone
+	'post_type' => 'any',
+	'numberposts' => -1,
+	); 
+	//add in transfer from prod download to _download here
+	$allposts = get_posts($args);
+	foreach( $allposts as $postinfo) {
+		//if(get_post_meta($postinfo->ID, '_eshop_product')!='')
+		//	break;
 		foreach($new_options as $oldfield=>$newfield){
-			delete_post_meta_by_key($oldfield);
+			$eshopvalue=get_post_meta($postinfo->ID, $oldfield,true);
+			if(is_array($newfield)){
+				foreach($newfield as $k=>$v){
+					$thenew_options['products'][$k][$v]=$eshopvalue;
+				}
+			}else{
+				$thenew_options[$newfield]=$eshopvalue;
+			}
+			if($oldfield=='_Featured Product' && $eshopvalue=='Yes'){
+				add_post_meta( $postinfo->ID, '_eshop_featured', 'Yes');
+			}
 		}
-		delete_post_meta_by_key('_Stock Available');
-		delete_post_meta_by_key('_eshop_prod_img');
+		if($thenew_options['sku']!='' && $thenew_options['description']!='' && $thenew_options['products']['1']['option']!='' && $thenew_options['products']['1']['price']!=''){
+			add_post_meta( $postinfo->ID, '_eshop_product', $thenew_options);
+		}
+		$stock=get_post_meta($postinfo->ID, '_Stock Available',true);
+		if(trim($stock)=='Yes'){
+			add_post_meta( $postinfo->ID, '_eshop_stock', '1');
+		}
 	}
-	
+	//just make sure they are all gone
+	foreach($new_options as $oldfield=>$newfield){
+		delete_post_meta_by_key($oldfield);
+	}
+	delete_post_meta_by_key('_Stock Available');
+	delete_post_meta_by_key('_eshop_prod_img');
+
 	/* post meta end */
 }
 //update post meta if stock control is on only
@@ -175,7 +181,9 @@ function eshop_updatestockcontrol(){
 $eshopoptions = get_option('eshop_plugin_settings');
 if(get_option('eshop_version')!='')
 	$eshopoptions['version']=get_option('eshop_version');
-	
+
+
+
 if(version_compare($eshopoptions['version'], '3.0.0' ,'<')){
 	// lumping all changes prior to 3.0.0
 	/* db changes */
@@ -338,8 +346,8 @@ if(version_compare($eshopoptions['version'], '5.0.0' ,'<')){
 	}
 }
 if(version_compare($eshopoptions['version'], '5.2.0' ,'<')){
-	eshop_postmeta_upgrade();
 	eshop_option_upgrade();
+	eshop_postmeta_upgrade();
 	$table = $wpdb->prefix . "eshop_orders";
 	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
 	$add_field = TRUE;
@@ -353,6 +361,7 @@ if(version_compare($eshopoptions['version'], '5.2.0' ,'<')){
 		$wpdb->query($sql);
 	}
 }
+$eshopoptions = get_option('eshop_plugin_settings');
 
 if(version_compare($eshopoptions['version'], '5.3.0' ,'<')){
 	$table = $wpdb->prefix . "eshop_order_items";
@@ -489,7 +498,7 @@ if(version_compare($eshopoptions['version'], '5.7.0' ,'<')){
 if(version_compare($eshopoptions['version'], '5.7.6' ,'<')){
 	//changes for version 5.7.5 & 6
 	$eshopoptions['first_time']='yes';
-	update_option('eshop_plugin_settings',$eshopoptions);
+	//update_option('eshop_plugin_settings',$eshopoptions);
 	$table = $wpdb->prefix ."eshop_option_names";
 	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
 	$add_field = TRUE;
@@ -602,6 +611,28 @@ if(version_compare($eshopoptions['version'], '5.8.1' ,'<')){
 		$wpdb->query("ALTER TABLE $table CHANGE `emailType` `emailType` varchar(50) $charset_collate NOT NULL default ''");
 		$wpdb->query("ALTER TABLE $table CHANGE `emailSubject` `emailSubject` varchar(255) $charset_collate NOT NULL default ''");
 		$wpdb->query("ALTER TABLE $table CHANGE `emailContent` `emailContent` TEXT $charset_collate");
+}
+
+if(version_compare($eshopoptions['version'], '6.0.0' ,'<')){
+	$table = $wpdb->prefix ."eshop_shipping_rates";
+	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='zone6') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$sql="ALTER TABLE `".$table."` 
+		ADD zone6 FLOAT( 16, 2 ) NOT NULL AFTER zone5 ,
+		ADD zone7 FLOAT( 16, 2 ) NOT NULL AFTER zone6 ,
+		ADD zone8 FLOAT( 16, 2 ) NOT NULL AFTER zone7 ,
+		ADD zone9 FLOAT( 16, 2 ) NOT NULL AFTER zone8 ";
+		$wpdb->query($sql);
+	}
+	if(!isset($eshopoptions['numb_shipzones'])){
+		$eshopoptions['numb_shipzones']='5';
+	}
 }
 
 //then do the necessary:

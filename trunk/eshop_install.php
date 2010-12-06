@@ -70,6 +70,7 @@ if (!function_exists('eshop_option_setup')) {
 			'shipping_state'=> 'GB',
 			'shipping_zone'=> 'country',
 			'shipping'=> '1',
+			'numb_shipzones'='5',
 			'shop_page'=>'',
 			'show_allstates'=>'',
 			'show_downloads'=>'',
@@ -375,6 +376,10 @@ if(isset($eshopoptions['version'])){
 		zone3 float(16,2) NOT NULL default '0.00',
 		zone4 float(16,2) NOT NULL default '0.00',
 		zone5 float(16,2) NOT NULL default '0.00',
+		zone6 float(16,2) NOT NULL default '0.00',
+		zone7 float(16,2) NOT NULL default '0.00',
+		zone8 float(16,2) NOT NULL default '0.00',
+		zone9 float(16,2) NOT NULL default '0.00',
 		weight float(16,2) NOT NULL default '0.00', 
 		ship_type int(11) NOT NULL default '0',
 		  PRIMARY KEY  (id)

@@ -86,7 +86,11 @@ function eshop_products_manager() {
 				$stkav='0';
 				$emsg [1]= 'set';
 			}
-			update_post_meta( $pid, '_eshop_stock', $stkav);
+			if($stkav=='1')
+				update_post_meta( $pid, '_eshop_stock', $stkav);
+			else
+				delete_post_meta( $id, '_eshop_stock');
+				
 			update_post_meta( $pid, '_eshop_product', $eshop_product);
 		}
 		$msg='';
@@ -258,6 +262,7 @@ function eshop_products_manager() {
 		$grab=$B->aData;
 	?>	
 		<form action="" method="post" class="eshop">
+		<div class="eshopwidetable">
 		<table id="listing" class="hidealllabels" summary="product listing">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
@@ -415,6 +420,7 @@ function eshop_products_manager() {
 		?>
 		</tbody>
 		</table>
+		</div>
 		<p><input type="submit" name="eshopqp" id="submitit" class="submit button-primary" value="<?php _e('Update Products','eshop'); ?>" /></p>
 		</form>
 		<?php

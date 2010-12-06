@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 5.9.3
+Stable tag: 6.0.0
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,18 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.0.0
+
+* *NEW* 	shipping zones, number utilised can now be set between 1 & 9.
+* *NEW* 	added outofstock attribute to some listing shortcodes - you can now decide whether to show out of stock items in the listings or not
+* *added*  	action, eshop_copy_admin_order_email, for cc'ing that email.
+* *added*	filter, eshop_add_ref_feed, for adding a reference to links in feed for affiliates. 
+* *added* 	extra classes for styling
+* *fixed* 	for users of WP Replicator who were unable to access eShop menu's - hopefully.
+* *fixed* 	issue with some shortcodes and widgets showing incorrect number of products.
+* *fixed* 	small fix for cancelled orders and discount codes.
+* *fixed* 	small fix in admin for product tables.
 
 Version 5.9.3
 
