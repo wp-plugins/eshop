@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, paypal, payson, eProcessingNetwork, Webtopay, ideal, stock control, cart, e-commerce, wpmu, multisite, authorize.net, cash
 Requires at least: 3.0
 Tested up to: 3.0
-Stable tag: 6.0.1
+Stable tag: 6.0.2
 
 An accessible Shopping Cart plugin.
 
@@ -41,6 +41,12 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.0.2
+
+* *fixed* 	issue with Shipping Method's clearing all values.
+* *fixed* 	errors when allowing user to sign up to your site from the checkout.
+* *added* 	version 6 broke the renaming of shipping zones, a new method has therefore been created, see the [wiki](http://quirm.net/wiki/eshop/changing-displayed-text/#Renaming-Shipping-Zones)
 
 Version 6.0.1
 

@@ -46,7 +46,11 @@ if (!function_exists('eshopShowform')) {
 			<tr>';
 			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 				$y='zone'.$z;
-				$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. sprintf(__('Zone %1$d','eshop'),$z) .'</th>';
+				$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+				$dispzone=apply_filters('eshop_rename_ship_zone',array());
+				if(isset($dispzone[$z]))
+					$echozone=$dispzone[$z];
+				$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. $echozone .'</th>';
 			}
 			$eshopshiptable.='</tr>
 			</thead>
