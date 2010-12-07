@@ -1015,7 +1015,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		add_meta_box('eshop-m-authorizenet', __('Authorize.net','eshop'), array(&$this, 'authorizenet_box'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-m-ogone', __('ogone','eshop'), array(&$this, 'ogone_box'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
-		do_action('eshop_setting_merchant_load',&$this);
+		do_action('eshop_setting_merchant_load', array(&$this));
 
 	}
 	function general_box($eshopoptions) {
