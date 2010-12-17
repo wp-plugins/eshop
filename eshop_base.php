@@ -231,7 +231,7 @@ if(!isset($_GET['change'])){
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
 					if($eshop_product['products'][$i]['option']!=''){
-						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format_i18n($eshop_product['products'][$i]['price'],2)).'<br />';
+						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($eshop_product['products'][$i]['option'])), $currsymbol, number_format_i18n($eshop_product['products'][$i]['price'],__('2','eshop'))).'<br />';
 					}
 				}
 				echo '</td>';
@@ -441,7 +441,7 @@ if(!isset($_GET['change'])){
 				echo '<td headers="opt sku'.$calt.'">';
 				for($i=1;$i<=$numoptions;$i++){
 					if(isset($grabit['products'][$i]['option']) && $grabit['products'][$i]['option']!=''){
-						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($grabit['products'][$i]['option'])), $currsymbol, number_format_i18n($grabit['products'][$i]['price'],2)).'<br />';
+						echo sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($grabit['products'][$i]['option'])), $currsymbol, number_format_i18n($grabit['products'][$i]['price'],__('2','eshop'))).'<br />';
 					}
 				}
 				echo '</td>';

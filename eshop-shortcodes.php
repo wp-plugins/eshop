@@ -749,7 +749,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
-				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
+				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
 			}
 		}
 
@@ -811,7 +811,7 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
-				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],2)).'</span>';
+				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
 			}
 		}
 		if($form=='yes' || $form=='yesqty'){
@@ -856,7 +856,7 @@ function eshop_show_discounts(){
 			$echo .='
 			<tr>
 			<th headers="elevel"  id="row'.$x.'">'.$x.'</th>
-			<td headers="elevel espend row'.$x.'" class="amts">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($amt,2)).'</td>
+			<td headers="elevel espend row'.$x.'" class="amts">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($amt,__('2','eshop'))).'</td>
 			<td headers="elevel ediscount row'.$x.'" class="disc">'.$percent.'</td>
 			</tr>';
 		}
@@ -864,7 +864,7 @@ function eshop_show_discounts(){
 	}
 	if($shipdisc>0){
 		$echo .='
-		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshopoptions['discount_shipping'],2)).'</span></p>';
+		<p class="shipdiscount">'.__('Free Shipping if you spend over','eshop').' <span>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshopoptions['discount_shipping'],__('2','eshop'))).'</span></p>';
 	}
 	return $echo;
 }
@@ -1003,7 +1003,7 @@ function eshop_show_shipping($atts) {
 			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++)
 				$yzones.='zone'.$z.' ';
 				
-			$eshopshiptable.= '<td headers="'.$yzones.' cname'.$x.'" colspan="'.$eshopoptions['numb_shipzones'].'" class="center">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n('0',2)).'</td>'."\n";
+			$eshopshiptable.= '<td headers="'.$yzones.' cname'.$x.'" colspan="'.$eshopoptions['numb_shipzones'].'" class="center">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n('0',__('2','eshop'))).'</td>'."\n";
 			$eshopshiptable.= '</tr>';
 		}
 		$eshopshiptable.='</tbody>'."\n";
@@ -1042,7 +1042,7 @@ function eshop_show_shipping($atts) {
 					/* '1 - weight 2-weight symbol' */
 					$eshopshiptable.='
 					<tr'.$alt.'>
-					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</td>';
+					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</td>';
 					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 						$y='zone'.$z;
 						$eshopshiptable.='<td headers="'.$eshopletter.$y.' ' .$eshopletter.'cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
@@ -1174,10 +1174,17 @@ function eshop_welcome($atts, $content = ''){
 	$echo='';
 	if($before!='')
 		$echo.=$before.' ';
-	if(isset($_COOKIE["eshopcart"])){
+	if(isset($_COOKIE["eshopcart"]) || is_user_logged_in()){
 		if($returning!='')
 			$echo.=$returning.' ';
-		$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
+		if(isset($_COOKIE["eshopcart"]))
+			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
+		if(is_user_logged_in()){
+			global $current_user;
+		     get_currentuserinfo();
+			$crumbs['first_name']=$current_user->display_name;
+			$crumbs['last_name']='';
+		}
 		$echo .=$crumbs['first_name'].' '.$crumbs['last_name'];
 	}else{
 		$echo.=$guest.' ';
@@ -1426,7 +1433,7 @@ function eshop_details($atts){
 						if(!in_array('option',$willhide))
 							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
 						if(!in_array('price',$willhide))
-							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</td>';
+							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</td>';
 						
 						if($eshopdlavail>0 && !in_array('download',$willhide)){
     						$myrowres=$wpdb->get_results("Select * From $producttable");
@@ -1459,7 +1466,7 @@ function eshop_details($atts){
 						}
 						if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){//shipping by weight 
 							/* ,'1- weight 2-weight symbol' */
-							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($weight,2),$weightsymbol).'</td>';
+							$listed.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($weight,__('2','eshop')),$weightsymbol).'</td>';
 						}
     					if(!in_array('stockqty',$willhide) && 'yes' == $eshopoptions['stock_control']){//stock
     						if(isset($stkarr[$i])) 
@@ -1508,10 +1515,10 @@ function eshop_details($atts){
 									if(!in_array('option',$willhide))
 										$tbody.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($myrow->optname)).'</td>';
 									if(!in_array('price',$willhide))
-										$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($myrow->price,2)).'</td>';
+										$tbody.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($myrow->price,__('2','eshop'))).'</td>';
 									if($eshopoptions['shipping']=='4' && !in_array('weight',$willhide)){
 										/* ,'1- weight 2-weight symbol' */
-										$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($myrow->weight,2),$weightsymbol).'</td>';
+										$tbody.='<td headers="'.$eshopletter.'eshopweight '.$eshopletter.'eshopnumrow'.$i.'">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($myrow->weight,__('2','eshop')),$weightsymbol).'</td>';
 									}
 									$tbody.="</tr>\n";
 									$i++;
@@ -1593,7 +1600,7 @@ function eshop_details($atts){
 							/* ,'1- weight 2-weight symbol' */
 							$eshopshiptable.='
 							<tr'.$alt.'>
-							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,2),$weightsymbol).'</th>';
+							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</th>';
 							for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 								$y='zone'.$z;
 								$eshopshiptable.='<td headers="'.$eshopletter.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
@@ -1657,7 +1664,12 @@ function eshop_show_cart() {
 	return $echo;
 }
 
-function eshop_show_checkout(){
+function eshop_show_checkout($atts, $content = ''){
+	global $blog_id;
+	extract(shortcode_atts(array('membersonly'=>''), $atts));
+	if($membersonly!='' &&  !is_user_logged_in()){
+		return $content;
+	}
 	include_once 'checkout.php';
 	return eshop_checkout($_POST);
 }

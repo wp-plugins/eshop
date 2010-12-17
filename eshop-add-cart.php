@@ -90,7 +90,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 								$optsetsecho.="\n".'<span class="eshop eselect"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($optsets['name'])).'</label><select id="exopt'.$optsets['optid'].$enumb.$uniq.'" name="optset['.$enumb.'][id]">'."\n";
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
-										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],__('2','eshop')));
 									else
 										$addprice='';
 									
@@ -105,7 +105,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 								foreach($optsets['item'] as $opsets){
 									$ox++;
 									if($opsets['price']!='0.00')
-										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],__('2','eshop')));
 									else
 										$addprice='';
 									$optsetsecho.='<span><input type="checkbox" value="'.$opsets['id'].'" id="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'" name="optset['.$enumb.'][id]" /><label for="exopt'.$optsets['optid'].$enumb.'i'.$ox.$uniq.'">'.stripslashes(esc_attr($opsets['label'])). $addprice.'</label></span>'."\n";
@@ -116,7 +116,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 							case '2'://text
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
-										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],__('2','eshop')));
 									else
 										$addprice='';
 									$optsetsecho.="\n".'<span class="eshop etext"><label for="exopt'.$optsets['optid'].$enumb.$uniq.'">'.stripslashes(esc_attr($opsets['label'])).'<span>'.$addprice.'</span></label>'."\n";
@@ -129,7 +129,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 							case '3'://textarea
 								foreach($optsets['item'] as $opsets){
 									if($opsets['price']!='0.00')
-										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],2));
+										$addprice=sprintf( __(' + %1$s%2$s','eshop'), $currsymbol, number_format_i18n($opsets['price'],__('2','eshop')));
 									else
 										$addprice='';
 										
@@ -164,7 +164,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 						}
 						if($option!='' && $currst>0){
 							if($price!='0.00')
-								$mainoptsecho.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2))."</label>\n</li>";
+								$mainoptsecho.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option"'.$esel.' /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,__('2','eshop')))."</label>\n</li>";
 							else
 								$mainoptsecho.='<li><input type="radio" value="'.$i.'" id="eshopopt'.$theid.'_'.$i.$uniq.'" name="option" /><label for="eshopopt'.$theid.'_'.$i.$uniq.'">'.stripslashes(esc_attr($option)).'</label>'."\n</li>";
 						}
@@ -191,7 +191,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 							}
 							if($option!='' && $currst>0){
 								if($price!='0.00')
-									$mainoptsecho.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,2)).'</option>'."\n";
+									$mainoptsecho.='<option value="'.$i.'">'.sprintf( __('%1$s @ %2$s%3$s','eshop'),stripslashes(esc_attr($option)), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</option>'."\n";
 								else
 									$mainoptsecho.='<option value="'.$i.'">'.stripslashes(esc_attr($option)).'</option>'."\n";
 							}
@@ -210,7 +210,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 				if($currst>0){
 					if($price!='0.00'){
 						$mainoptsecho.='
-						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,2)).'</span></span>
+						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</span></span>
 						';
 					}else{
 						$mainoptsecho.='

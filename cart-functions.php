@@ -129,7 +129,7 @@ if (!function_exists('display_cart')) {
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
 					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,2))."</td>\n";
+					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,__('2','eshop')))."</td>\n";
 					if($iswidget=='' && $change == 'true'){
 						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
 						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="deleteitem['.$productid.']" value="'.$key.'" title="'.__('Delete this item','eshop').'"/></td>';
@@ -154,7 +154,7 @@ if (!function_exists('display_cart')) {
 				$emptycell='<td headers="cartDelete" class="eshopempty"></td>';
 			else
 				$emptycell='';
-			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,2))."</td>$emptycell</tr>\n";
+			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,__('2','eshop')))."</td>$emptycell</tr>\n";
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -236,12 +236,12 @@ if (!function_exists('display_cart')) {
 				}
 	
 				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,2)).'</td>
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,__('2','eshop'))).'</td>
 				</tr>';
 				$_SESSION['shipping'.$blog_id]=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price'.$blog_id]=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, 2))."</strong></td></tr>";
+				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, __('2','eshop')))."</strong></td></tr>";
 			}
 
 			$echo.= "</tbody></table>\n";
@@ -925,12 +925,15 @@ if (!function_exists('eshop_rtn_order_details')) {
 		foreach($result as $myrow){
 			$value=$myrow->item_qty * $myrow->item_amt;
 			$total=$total+$value;
+			$shipping_charge=0;
+
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
 			if(trim($itemid)=='postage' || trim($itemid)==__('Shipping','eshop')){
-				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."\n\n";
+				$shipping_charge=number_format_i18n($value, __('2','eshop'));
 			}else{
-				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."\n\n";
+				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."\n\n";
 			}
 		
 			//check if downloadable product
@@ -939,7 +942,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			}
 		}
 		$arrtotal=number_format($total, 2);
-		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, 2))."\n";
+		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."\n";
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);
@@ -1009,7 +1012,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$firstname=html_entity_decode($firstname);
 		$ename=html_entity_decode($ename);
 		$address=html_entity_decode($address);
-		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal,"dbid"=>$dbid);
+		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge);
 		$secarray=apply_filters('eshoprtndetails',$dquery);
 		$retarray=array_merge($array,$secarray);
 		return $retarray;
@@ -1308,7 +1311,7 @@ if (!function_exists('eshop_files_directory')) {
 		$urlpath=$url_dir.'eshop_files/';
 		$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
 		$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
-		return $rtn;
+		return apply_filters('eshop_files_directory',$rtn);;
     }
 }
 
@@ -1874,7 +1877,10 @@ if (!function_exists('eshop_send_customer_email')) {
 		do_action('eshop_send_customer_email', $csubject, $this_email, $headers, $array);
 		//affiliate
 		if($array['affiliate']!=''){
-			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
+			// to allow for the removal of shipping vlaue from the order. total is sent by default, shipping can be removed.
+			$sale_amt=apply_filters('eShop_aff_order_total',$array['total'],$array['shipping_charge']);
+			//for affiliates.
+			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$sale_amt, 
 			"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 		}
 		//this is fired on successful purchase, so might as well have this action here
@@ -2081,11 +2087,11 @@ if (!function_exists('eshop_parse_optsets')){
 			foreach($orowres as $orow){
 				if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
 					if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
-						$oset[]='<span class="eshopoptname">'.$orow->name.":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+						$oset[]='<span class="eshopoptname">'.stripslashes($orow->name).":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
 					}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
 						$xxxx='';
 					else
-						$oset[]='<span class="eshopoptname">'.$orow->oname.":</span>\n".'<span class="eshoptext">'.$orow->name.'</span>';
+						$oset[]='<span class="eshopoptname">'.stripslashes($orow->oname).":</span>\n".'<span class="eshoptext">'.stripslashes($orow->name).'</span>';
 					$addoprice=$addoprice+$orow->price;
 					$x++;
 				}
