@@ -337,7 +337,7 @@ function eshop_downloads_manager() {
 	<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<?php
-		$apge=get_admin_url().'admin.php?page=eshop_downloas.pgp';
+		$apge=get_admin_url().'admin.php?page=eshop_downloads.php';
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ia"'.$cia.'>'.__('ID Number','eshop').'</a></li>';

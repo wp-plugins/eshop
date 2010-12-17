@@ -42,6 +42,16 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version next
+
+* *fixed* 	small bug with listing on the downloads page.
+* *fixed* 	slashes issue with option sets
+* *fixed* 	eshop_welcome shortcode now picks up loged in users display name if set.
+* *added* 	generic eshop-widget class to eShop widgets
+* *added* 	filter for the eshop_files_directory
+* *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
+* *added* 	number of decimals is now translatable.
+
 Version 6.0.2
 
 * *fixed* 	issue with Shipping Method's clearing all values.
@@ -320,100 +330,6 @@ Version 5.5.0
 * *fixed* bug with notes for the customer not saving
 * *fixed* bug with entering a 0 into the cart
 
-Version 5.4.2
-
-* *fixed* CSS display issue for new users (others can add fieldset.eshoppayvia li{padding:5px;} to their css)
-* *fixed* bug with CSS not being correctly parsed for multisite users
-* *fixed?* possible bug with checkout
-
-Version 5.4.1
-
-* *fixed* bug with checkout State/County/Province sending a number to various merchant gateways
-* *fixed* bug with shortcode  - eshop_cart_items
-
-Version 5.4.0
-
-* *added* enhancements for WP3.0, ability for buyer to sign up to the site at checkout stage. This gives the customer an order status page if they login, and ability to save address etc.
-* *added* new shipping method - ship by weight, this also allows several different methods of shipping to be set.
-* *changed* cart widget can now show the full cart
-* *fixed* many small bugs
-
-Version 5.3.0
-
-* beta version not released
-
-Version 5.2.3
-
-* further fix for translations - this one works...
-
-Version 5.2.3
-
-* cleaned up install and uninstall, shouldn't be producing errors in the error log any more.
-* cron notification now links to active orders page
-* slight change for translations - please let me know asap if it causes an issue.
-
-Version 5.2.2
-
-* *fixed* major bug in checkout
-
-Version 5.2.1
-
-* *fixed* various small back end bugs
-
-Version 5.2.0
-
-* *added* integration with WP Affiliate.
-* *added* extra help for Paypal users on the help page.
-* *added* integration with eShortcodes
-* *fixed* error on eShop products page
-* *fixed* error with pagination for cats and tags shortcode
-* *fixed* error with shipping (one price per rate)
-
-
-Version 5.1.0
-
-* *fixed* style page not updating correctly
-* *added* ability to set featured product, stock and stock availability on the products quick reference page
-* *added* new shortcode attribute - links, useful when used with form
-
-
-Version 5.0.4
-
-* *fixed* featured product count on stats page
-* *fixed* featured products on products page
-* *fixed* eshop downloads page on editing information, now stays on that page.
-* *fixed* issue with deleting option sets
-* *fixed* downloads can only be deleted when download is not assocaited with a product.
-
-Version 5.0.3
-
-* *fixed* hopefully... downloadables in orders
-* *fixed* widget for featured products
-* *amended* widget text for eShop cart
-* *fixed* mis-spelling in help.
-* *fixed* small eShop downloads page error.
-
-Version 5.0.2
-
-* *fixed* pagination issue when viewing all products
-
-Version 5.0.1
-
-* *all* anyone who installed/upgraded to version 5.0.0 will need to revist the eShop Settings page to check that things are ok
-* *fixed* product image in shopping cart
-* *fixed* spelling error on help page
-* *fixed* options page
-* *fixed* product options select box in the add to cart form
-* *fixed* multiple addto cart forms on one page
-* *fixed* quantity error when updating cart
-
-Version 5.0.0
-
-* *all* files amended and many small bug fixes implemented.
-* *all* data is now stored differently in the database - please ensure you backup your database before upgrading to this version.
-* *changed* method for thumbnails, this affects all users upgrading. Please use the thumbnail option on the post/page edit screen. Previous thumbnail image are _not_ used.
-* *added* to help with the above a default image has been included for products with no thumbnail.
-* *added* eshop_list_cat_tags shortcode, listing for products by category and tags. See help page for more details. The functionality has also been added into the the eShop product widget.
 
 == Installation ==
 

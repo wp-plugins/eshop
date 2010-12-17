@@ -120,7 +120,7 @@ if (!function_exists('displaymyorders')) {
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
 					<td headers="transid numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->transid.'</a></td>
 					<td headers="items numb'.$c.'">'.$x.'</td>
-					<td headers="price numb'.$c.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, 2)).'</td>
+					<td headers="price numb'.$c.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop'))).'</td>
 					<td headers="state numb'.$c.'" class="right">'.$status.'</td>
 					</tr>';
 				}
@@ -234,12 +234,12 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			<td headers="opname onum'.$calt.'">'.$itemid.'</td>
 			<td headers="opname onum'.$calt.'">'.$downloadable.'</td>
 			<td headers="opname onum'.$calt.'">'.$myrow->item_qty.'</td>
-			<td headers="opname onum'.$calt.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, 2))."</td></tr>\n";
+			<td headers="opname onum'.$calt.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."</td></tr>\n";
 		}
 		if($transid==__('Processing&#8230;','eshop'))
-			echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, 2))."</td></tr>\n";
+			echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td></tr>\n";
 		else
-			echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, 2))."</td></tr>\n";
+			echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td></tr>\n";
 		echo "</tbody></table>\n";
 
 		$cyear=substr($custom, 0, 4);

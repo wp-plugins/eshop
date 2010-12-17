@@ -14,7 +14,7 @@ add_action("widgets_init", "eshopwidgets_init");
 class eshop_widget extends WP_Widget {
 
 	function eshop_widget() {
-		$widget_ops = array('classname' => 'eshopcart_widget', 'description' => __('Displays a simplified or full cart','eshop'));
+		$widget_ops = array('classname' => 'eshop-widget eshopcart_widget', 'description' => __('Displays a simplified or full cart','eshop'));
 		$this->WP_Widget('eshopw_cart', __('eShop Cart','eshop'), $widget_ops);
 	}
 
@@ -122,7 +122,7 @@ class eshop_widget extends WP_Widget {
 class eshop_cart_widget extends WP_Widget {
 
 	function eshop_cart_widget() {
-		$widget_ops = array('classname' => 'eshopcarti_widget', 'description' => __('Displays eShop cart','eshop'));
+		$widget_ops = array('classname' => 'eshop-widget eshopcarti_widget', 'description' => __('Displays eShop cart','eshop'));
 		$this->WP_Widget('eshopwi_cart', __('eShop Cart (Improved)','eshop'), $widget_ops);
 	}
 
@@ -153,7 +153,7 @@ class eshop_cart_widget extends WP_Widget {
 				
 				if(isset($_SESSION['final_price'.$blog_id])) $thetotal=$_SESSION['final_price'.$blog_id];
 				
-				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($_SESSION['final_price'.$blog_id],2));
+				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($_SESSION['final_price'.$blog_id],__('2','eshop')));
 				if($showwhat=='full'){
 					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'';
 					$eecho .='</div></div>';
@@ -289,7 +289,7 @@ class eshop_cart_widget extends WP_Widget {
 class eshop_pay_widget extends WP_Widget {
 
 	function eshop_pay_widget() {
-		$widget_ops = array('classname' => 'eshoppay_widget', 'description' => __('Displays accepted payment logos','eshop'));
+		$widget_ops = array('classname' => 'eshop-widget eshoppay_widget', 'description' => __('Displays accepted payment logos','eshop'));
 		$this->WP_Widget('eshopw_pay', __('eShop Payments Accepted','eshop'), $widget_ops);
 	}
 
@@ -356,7 +356,7 @@ class eshop_pay_widget extends WP_Widget {
 class eshop_products_widget extends WP_Widget {
 
 	function eshop_products_widget() {
-		$widget_ops = array('classname' => 'eshopproducts_widget', 'description' => __('Displays products','eshop'));
+		$widget_ops = array('classname' => 'eshop-widget eshopproducts_widget', 'description' => __('Displays products','eshop'));
 		$this->WP_Widget('eshopw_prod', __('eShop Products','eshop'), $widget_ops);
 	}
 
@@ -715,7 +715,7 @@ function eshopw_listpanels($subpages,$eshopclass,$size){
 class eshop_search_widget extends WP_Widget {
 
 	function eshop_search_widget() {
-		$widget_ops = array('classname' => 'eshop_search_widget', 'description' => __('Displays a product search, optional link to an index page, and a random wiki page link','eshop'));
+		$widget_ops = array('classname' => 'eshop-widget eshop_search_widget', 'description' => __('Displays a product search, optional link to an index page, and a random wiki page link','eshop'));
 		$this->WP_Widget('eshop_search_widget', __('eShop Product Search','eshop'), $widget_ops);
 	}
 

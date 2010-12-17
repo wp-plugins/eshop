@@ -36,7 +36,7 @@ if (!function_exists('eshopShowform')) {
 		$weightsymbol=$eshopoptions['weight_unit'];
 		$currsymbol=$eshopoptions['currency_symbol'];
 		/* '1- text 2 - weight 3-weight symbol' */
-		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,2),$weightsymbol).'</p>';
+		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
 		foreach ($typearr as $k=>$type){
 			$k++;
 			$eshopshiptable.='
