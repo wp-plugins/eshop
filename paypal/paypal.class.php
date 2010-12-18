@@ -135,12 +135,12 @@ class paypal_class {
       echo "<h3>Please wait, your order is being processed&#8230;</h3>\n";
 */
 	// remove echo and hopefully I can echo this later
-      $echo= "<form method=\"post\" class=\"eshop\" action=\"".$this->autoredirect."\"><div>\n";
+      $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
          $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
       }
-      $echo.='<label for="ppsubmit"><small>'.__('<strong>Note:</strong> Submit to finalize order at PayPal.','eshop').'</small><br />
+      $echo.='<label for="ppsubmit" class="finalize"><small>'.__('<strong>Note:</strong> Submit to finalize order at PayPal.','eshop').'</small><br />
       <input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="'.__('Proceed to Checkout &raquo;','eshop').'" /></label>';
 	  $echo.="</div></form>\n";
       
