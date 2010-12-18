@@ -85,14 +85,14 @@ class ideallite_class {
 		// "Please wait, your order is being processed..." and then immediately
 		// is redirected to ideallite.
 
-		$echo= "<form method=\"post\" class=\"eshop\" action=\"".$this->autoredirect."\"><div>\n";
+		$echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
 		foreach ($this->fields as $name => $value) {
 			$echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
 		}
 		$refid=uniqid();
 		$echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
-		$echo.='<label for="ppsubmit"><small>'.__('<strong>Note:</strong> Submit to finalize order at iDeal.','eshop').'</small><br />
+		$echo.='<label for="ppsubmit" class="finalize"><small>'.__('<strong>Note:</strong> Submit to finalize order at iDeal.','eshop').'</small><br />
 		<input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="'.__('Proceed to Checkout &raquo;','eshop').'" /></label>';
 	  $echo.="</div></form>\n";
 		

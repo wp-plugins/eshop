@@ -51,6 +51,7 @@ Version next
 * *added* 	filter for the eshop_files_directory
 * *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
 * *added* 	number of decimals is now translatable.
+* *added* 	extra CSS hooks to checkout confirmation page.
 
 Version 6.0.2
 
