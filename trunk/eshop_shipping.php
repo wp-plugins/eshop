@@ -333,7 +333,7 @@ case ('states'):
 	break;
 case ('shipping'):
 default:
-	$dtable=$wpdb->prefix.'eshop_shipping_rates';
+	$dtable=$wpdb->prefix.'eshop_rates';
 	$error='';
 
 	if(isset($_POST['shipmethod'])){
@@ -368,23 +368,24 @@ default:
 		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 			$barray[]='zone'.$z;
 		}
-		$build="INSERT INTO $dtable (`".implode("`, `",$barray)."`,`weight`,`ship_type`) VALUES";
+		$build="INSERT INTO $dtable (`".implode("`, `",$barray)."`,`weight`,`class`,`rate_type`, `area`) VALUES";
+		$shipwletter = "a";
 		
-
 		foreach($_POST['row'] as $k=>$v){
-			//$k == ship_type
+		$eshoparea=$_POST['eshop_shipping_area'][$k];
 			foreach($v as $f=>$value){
 				if($value['weight']!=''){
 					$bvarray=array();
 					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 						$bvarray[]=$value['zone'.$z];
 					}
-					$build.="('".implode("', '",$bvarray)."','".$value['weight']."','".$k."'),";
+					$build.="('".implode("', '",$bvarray)."','".$value['weight']."','".$k."','ship_weight','$eshoparea'),";
+					$shipwletter++;
 				}
 			}
 		}
 		$queri=trim($build,',');
-		$wpdb->query("DELETE from $dtable where items='0'");
+		$wpdb->query("DELETE from $dtable where rate_type='ship_weight'");
 		$wpdb->query($queri);
 	}
 	if($error!=''){
@@ -416,16 +417,11 @@ default:
 		echo '<input type="radio" class="radio" name="eshop_shipping" id="eshop_shipping'.$i.'" value="'.$i.'" '.$selected.'/><label for="eshop_shipping'.$i.'">'.__('Method ','eshop').$i.$extra.'</label><br />';
 	}
 	?>
-	<label for="eshop_shipping_zone"><?php _e('Shipping Zones by','eshop'); ?></label>
+	<label for="eshop_shipping_zone"><?php _e('Shipping Zones by (for Methods 1-3)','eshop'); ?></label>
 	<select id="eshop_shipping_zone" name="eshop_shipping_zone">
 	<?php
-	if('country' == $eshopoptions['shipping_zone']){
-		echo '<option value="country" selected="selected">'.__('Country','eshop').'</option>';
-		echo '<option value="state">'.__('State/County/Province','eshop').'</option>';
-	}else{
-		echo '<option value="country">'.__('Country','eshop').'</option>';
-		echo '<option value="state" selected="selected">'.__('State/County/Province','eshop').'</option>';
-	}
+	echo '<option value="country" '.selected($eshopoptions['shipping_zone'],'country',false).'>'.__('Country','eshop').'</option>';
+	echo '<option value="state"'.selected($eshopoptions['shipping_zone'],'state',false).'>'.__('State/County/Province','eshop').'</option>';
 	?>
 	</select><br />
 	<?php
@@ -454,13 +450,8 @@ default:
 	<label for="eshop_show_zones"><?php _e('Show Shipping Zones on Shipping Rates Page','eshop'); ?></label>
 	<select id="eshop_show_zones" name="eshop_show_zones">
 	<?php
-	if('yes' == $eshopoptions['show_zones']){
-		echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
-		echo '<option value="no">'.__('No','eshop').'</option>';
-	}else{
-		echo '<option value="yes">'.__('Yes','eshop').'</option>';
-		echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
-	}
+	echo '<option value="yes" '.selected($eshopoptions['show_zones'],'yes',false).'>'.__('Yes','eshop').'</option>';
+	echo '<option value="no" '.selected($eshopoptions['show_zones'],'no',false).'>'.__('No','eshop').'</option>';
 	?>
 	</select><br />
 	<label for="eshop_ship_types"><?php _e('Shipping Modes (by weight) - 1 mode per line','eshop'); ?></label><br />
@@ -504,7 +495,7 @@ default:
 		case '1':// ( per quantity of 1, prices reduced for additional items )
 			$x=1;
 			$calt=0;
-			$query=$wpdb->get_results("SELECT * from $dtable where ship_type=0 ORDER BY class ASC, items ASC");
+			$query=$wpdb->get_results("SELECT * from $dtable where rate_type='shipping' ORDER BY class ASC, items ASC");
 
 			foreach ($query as $row){
 				$calt++;
@@ -531,7 +522,7 @@ default:
 		case '2'://( once per shipping class no matter what quantity is ordered )
 			$x=1;
 			$calt=0;
-			$query=$wpdb->get_results("SELECT * from $dtable where items='1' ORDER BY 'class'  ASC");
+			$query=$wpdb->get_results("SELECT * from $dtable where items='1' && rate_type='shipping' ORDER BY 'class'  ASC");
 			foreach ($query as $row){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
@@ -552,7 +543,7 @@ default:
 			break;
 		case '3'://( one overall charge no matter how many are ordered )
 			$x=1;
-			$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='".__('A','eshop')."' ORDER BY 'class'  ASC");
+			$query=$wpdb->get_results("SELECT * from $dtable where items='1' and rate_type='shipping' and class='".__('A','eshop')."' ORDER BY 'class'  ASC");
 			foreach ($query as $row){
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr class="alt">';
@@ -580,14 +571,25 @@ default:
 	?>
 	<form id="shipform" action="" method="post">
 	<fieldset><legend><span><?php _e('Shipping Modes, by weight and zone','eshop'); ?></span></legend>
+	
 	<?php
 	$typearr=explode("\n", $eshopoptions['ship_types']);
 	$eshopletter = "A";
 	foreach ($typearr as $k=>$type){
 		$k++;
+		$query=$wpdb->get_results("SELECT * from $dtable where rate_type='ship_weight' and class='$k' ORDER BY weight ASC");
+		$eshoparea=$query[0]->area;
 		?>
+		<fieldset>
+		<legend><?php echo stripslashes(esc_attr($type)); ?></legend>
+		<label for="eshop_shipping_area<?php echo $eshopletter; ?>"><?php _e('Shipping Zones by','eshop'); ?></label>
+		<select id="eshop_shipping_area<?php echo $eshopletter; ?>" name="eshop_shipping_area[<?php echo $k; ?>]">
+		<?php
+		echo '<option value="country" '.selected($eshoparea,'country',false).'>'.__('Country','eshop').'</option>';
+		echo '<option value="state"'.selected($eshoparea,'state',false).'>'.__('State/County/Province','eshop').'</option>';
+		?>
+		</select>
 		<table class="hidealllabels" summary="Shipping rates per mode">
-		<caption><?php echo stripslashes(esc_attr($type)); ?></caption>
 		<thead>
 		<tr>
 		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>
@@ -607,7 +609,6 @@ default:
 		<tbody>
 		<?php
 		$x=1;
-		$query=$wpdb->get_results("SELECT * from $dtable where ship_type='$k' ORDER BY weight ASC");
 		foreach ($query as $row){
 			$alt = ($x % 2) ? '' : ' class="alt"';
 			echo '<tr'.$alt.'>';
@@ -628,6 +629,7 @@ default:
 		?>
 		</tbody>
 		</table>
+		</fieldset>
 		<?php
 	}
 	?>

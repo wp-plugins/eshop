@@ -168,7 +168,7 @@ if (!function_exists('display_cart')) {
 				}else{
 					$table=$wpdb->prefix.'eshop_states';
 				}
-				$table2=$wpdb->prefix.'eshop_shipping_rates';
+				$table2=$wpdb->prefix.'eshop_rates';
 				switch($eshopoptions['shipping']){
 					case '1'://( per quantity of 1, prices reduced for additional items )
 						foreach ($shiparray as $nowt => $shipclass){
@@ -177,13 +177,13 @@ if (!function_exists('display_cart')) {
 								if($shipclass!='F'){
 									array_push($tempshiparray, $shipclass);
 									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
+									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
 									$shipping+=$shipcost;
 								}
 							}else{
 								if($shipclass!='F'){
 									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' limit 1");
+									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' and rate_type='shipping' limit 1");
 									$shipping+=$shipcost;
 								}
 							}
@@ -195,7 +195,7 @@ if (!function_exists('display_cart')) {
 								array_push($tempshiparray, $shipclass);
 								if($shipclass!='F'){
 									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' limit 1");
+									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
 									$shipping+=$shipcost;
 								}
 							}
@@ -206,7 +206,7 @@ if (!function_exists('display_cart')) {
 						foreach ($shiparray as $nowt => $shipclass){
 							if($shipclass!='F'){
 								$shipzone='zone'.$pzone;						
-								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' limit 1");
+								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' and rate_type='shipping' limit 1");
 								$shipping+=$shipcost;
 							}
 						}
@@ -214,7 +214,7 @@ if (!function_exists('display_cart')) {
 					case '4'://by weight/zone etc
 						//$totalweight
 						$shipzone='zone'.$pzone;
-						$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight<='$totalweight' && ship_type='$shiparray' order by weight DESC limit 1");
+						$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight <= '$totalweight' && class='$shiparray' and rate_type='ship_weight' order by weight DESC limit 1");
 						$shipping+=$shipcost;
 						$_SESSION['eshopshiptype'.$blog_id]=$shiparray;
 				}

@@ -33,6 +33,7 @@ if(isset($_POST['delete'])){
 	//tables
 	$etable[] = $wpdb->prefix . "eshop_states";
 	$etable[] = $wpdb->prefix . "eshop_shipping_rates";
+	$etable[] = $wpdb->prefix . "eshop_rates";
 	$etable[] = $wpdb->prefix . "eshop_order_items";
 	$etable[] = $wpdb->prefix . "eshop_orders";
 	$etable[] = $wpdb->prefix ."eshop_stock";

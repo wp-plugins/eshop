@@ -768,13 +768,16 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 			echo $qcountry."</address>";
+			/*
 			if($eshopoptions['shipping_zone']=='country'){
 				$qzone=$countryzone;
 			}else{
 				$qzone=$statezone;
 				if($statezone=='') $qzone=$eshopoptions['unknown_state'];
 			}
-			echo '<p>'.__('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p></div>\n";
+			echo '<p>'.__('Shipping Zone: ','eshop')."<strong>".$qzone."</strong></p>
+			*/
+			echo "</div>\n";
 			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
 				echo "<div class=\"shippingaddress\"><h4>".__('Shipping','eshop')."</h4>";
 				echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->ship_name."<br />\n";
@@ -798,13 +801,16 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 				echo $qcountry."</address>";
+				/*
 				if($eshopoptions['shipping_zone']=='country'){
 					$qzone=$countryzone;
 				}else{
 					$qzone=$statezone;
 					if($statezone=='') $qzone=$eshopoptions['unknown_state'];
 				}
-				echo '<p>'. __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p></div>\n";
+				echo '<p>'. __('Shipping Zone:','eshop')." <strong>".$qzone."</strong></p>
+				*/
+				echo "</div>\n";
 			}
 		}else{
 			echo '</p></div>';
