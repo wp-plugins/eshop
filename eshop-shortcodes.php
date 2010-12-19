@@ -910,8 +910,8 @@ function eshop_show_shipping($atts) {
 	if($eshopoptions['shipping']!='4'){
 		extract(shortcode_atts(array('shipclass'=>'A,B,C,D,E,F'), $atts));
 		$shipclasses = explode(",", $shipclass);
-		$dtable=$wpdb->prefix.'eshop_shipping_rates';
-		$query=$wpdb->get_results("SELECT * from $dtable");
+		$dtable=$wpdb->prefix.'eshop_rates';
+		$query=$wpdb->get_results("SELECT * from $dtable where rate_type='shipping' OR rate_type='ship_weight'");
 		$currsymbol=$eshopoptions['currency_symbol'];
 
 		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'" class="eshopshiprates eshop">';
@@ -932,7 +932,7 @@ function eshop_show_shipping($atts) {
 		switch ($eshopoptions['shipping']){
 			case '1':// ( per quantity of 1, prices reduced for additional items )
 
-				$query=$wpdb->get_results("SELECT * from $dtable ORDER BY class ASC, items ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where rate_type='shipping' ORDER BY class ASC, items ASC");
 
 				foreach ($query as $row){
 					if(in_array($row->class,$shipclasses)){
@@ -955,7 +955,7 @@ function eshop_show_shipping($atts) {
 				}
 				break;
 			case '2'://( once per shipping class no matter what quantity is ordered )
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' ORDER BY 'class'  ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where items='1' && rate_type='shipping' ORDER BY 'class'  ASC");
 				foreach ($query as $row){
 					if(in_array($row->class,$shipclasses)){
 						$calt++;
@@ -974,7 +974,7 @@ function eshop_show_shipping($atts) {
 				break;
 			case '3'://( one overall charge no matter how many are ordered )
 
-				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='A' ORDER BY 'class'  ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where items='1' and class='A' and rate_type='shipping' ORDER BY 'class'  ASC");
 
 				foreach ($query as $row){
 					if(in_array($row->class,$shipclasses)){
@@ -1010,7 +1010,7 @@ function eshop_show_shipping($atts) {
 		$eshopshiptable.='</table>'."\n";
 	}else{
 		if(isset($eshopoptions['ship_types'])){
-			$dtable=$wpdb->prefix.'eshop_shipping_rates';
+			$dtable=$wpdb->prefix.'eshop_rates';
 			$eshopshiptable='';
 			$typearr=explode("\n", $eshopoptions['ship_types']);
 			$eshopletter = "A";
@@ -1036,7 +1036,7 @@ function eshop_show_shipping($atts) {
 				</thead>
 				<tbody>';
 				$x=1;
-				$query=$wpdb->get_results("SELECT * from $dtable where ship_type='$k' ORDER BY weight ASC");
+				$query=$wpdb->get_results("SELECT * from $dtable where class='$k' && rate_type='ship_weight' ORDER BY weight ASC");
 				foreach ($query as $row){
 					$alt = ($x % 2) ? '' : ' class="alt"';
 					/* '1 - weight 2-weight symbol' */
@@ -1572,8 +1572,7 @@ function eshop_details($atts){
 					$cartweight="weight<='".implode("' || weight<='",$weight)."'";
 					$typearr=explode("\n", $eshopoptions['ship_types']);
 					$eshopshiptable='';
-					
-					$dtable=$wpdb->prefix.'eshop_shipping_rates';
+					$dtable=$wpdb->prefix.'eshop_rates';
 					foreach ($typearr as $k=>$type){
 						$k++;
 						$eshopshiptable.='<span>'.
@@ -1594,7 +1593,8 @@ function eshop_details($atts){
 						</thead>
 						<tbody>';
 						$x=1;
-						$query=$wpdb->get_results("SELECT * from $dtable  where ($cartweight) &&  ship_type='$k' order by weight ASC");
+						
+						$query=$wpdb->get_results("SELECT * from $dtable  where ($cartweight) && class='$k' && rate_type='ship_weight' order by weight ASC");
 						foreach ($query as $row){
 							$alt = ($x % 2) ? '' : ' class="alt"';
 							/* ,'1- weight 2-weight symbol' */

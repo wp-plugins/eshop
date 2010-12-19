@@ -32,13 +32,16 @@ if (!function_exists('eshopShowform')) {
 		$cartweight=$_SESSION['eshop_totalweight'.$blog_id]['totalweight'];
 		$eshopshiptable='';
 		$eshopletter = "A";
-		$dtable=$wpdb->prefix.'eshop_shipping_rates';
+		$dtable=$wpdb->prefix.'eshop_rates';
 		$weightsymbol=$eshopoptions['weight_unit'];
 		$currsymbol=$eshopoptions['currency_symbol'];
 		/* '1- text 2 - weight 3-weight symbol' */
 		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
 		foreach ($typearr as $k=>$type){
 			$k++;
+			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  class='$k' && rate_type='ship_weight' order by weight DESC limit 1");
+			if(count($query)==0) 
+				break;
 			$eshopshiptable.='
 			<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'" /> <label for="eshop_shiptype'.$k.'">'.stripslashes(esc_attr($type)).' '.__('Shipping','eshop').'</label></span>
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
@@ -56,7 +59,6 @@ if (!function_exists('eshopShowform')) {
 			</thead>
 			<tbody>';
 			$x=1;
-			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  ship_type='$k' order by weight DESC limit 1");
 			foreach ($query as $row){
 				$alt = ($x % 2) ? '' : ' class="alt"';
 				$eshopshiptable.='
@@ -481,23 +483,27 @@ if (!function_exists('eshop_checkout')) {
 				$_POST['ship_state']=$_POST['state'];
 				$_POST['ship_altstate']=$_POST['altstate'];
 			}
-
-			if($eshopoptions['shipping_zone']=='country'){
+			$tablecountries=$wpdb->prefix.'eshop_countries';
+			$tablestates=$wpdb->prefix.'eshop_states';
+			$shippingzone=$eshopoptions['shipping_zone'];
+			if(isset($_POST['eshop_shiptype'])){
+				$sztype=$_POST['eshop_shiptype'];
+				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
+			}
+			if($shippingzone=='country'){
 				if($_POST['ship_country']!=''){
 					$pzoneid=$_POST['ship_country'];
 				}else{
 					$pzoneid=$_POST['country'];
 				}
-				$table=$wpdb->prefix.'eshop_countries';
-				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzoneid' LIMIT 1");
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
 			}else{
 				if($_POST['ship_state']!=''){
 					$pzoneid=$_POST['ship_state'];
 				}else{
 					$pzoneid=$_POST['state'];
 				}
-				$table=$wpdb->prefix.'eshop_states';
-				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE id='$pzoneid' LIMIT 1");
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
 				if($_POST['altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
@@ -505,16 +511,24 @@ if (!function_exists('eshop_checkout')) {
 					$pzone=$eshopoptions['unknown_state'];
 				}
 			}
+			
+			
 		}else{
 			$pzoneid='';
-			if($eshopoptions['shipping_zone']=='country'){
+			$tablecountries=$wpdb->prefix.'eshop_countries';
+			$tablestates=$wpdb->prefix.'eshop_states';
+			$shippingzone=$eshopoptions['shipping_zone'];
+			if(isset($_POST['eshop_shiptype'])){
+				$sztype=$_POST['eshop_shiptype'];
+				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
+			}
+			if($shippingzone=='country'){
 				if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
 					$pzoneid=$_POST['ship_country'];
 				}elseif(isset($_POST['country']) && $_POST['country']!=''){
 					$pzoneid=$_POST['country'];
 				}
-				$table=$wpdb->prefix.'eshop_countries';
-				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE code='$pzoneid' LIMIT 1");
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
 
 			}else{
 				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
@@ -523,8 +537,7 @@ if (!function_exists('eshop_checkout')) {
 				if(isset($_POST['state']) && $_POST['state']!=''){
 					$pzoneid=$_POST['state'];
 				}
-				$table=$wpdb->prefix.'eshop_states';
-				$pzone=$wpdb->get_var("SELECT zone FROM $table WHERE id='$pzoneid' LIMIT 1");
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
 				if(isset($_POST['altstate']) && $_POST['altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
