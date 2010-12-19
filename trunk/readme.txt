@@ -44,6 +44,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version next
 
+* *Warning* 	Please backup your database before upgrading.
 * *fixed* 	small bug with listing on the downloads page.
 * *fixed* 	slashes issue with option sets
 * *fixed* 	eshop_welcome shortcode now picks up loged in users display name if set.
@@ -52,6 +53,7 @@ Version next
 * *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
 * *added* 	number of decimals is now translatable.
 * *added* 	extra CSS hooks to checkout confirmation page.
+* *added* 	action eshop_sold_product which is sent the post id of the product that was sold.
 * *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode.
 
 Version 6.0.2
@@ -373,5 +375,4 @@ Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
-= 5.8.0 =
 Please remember to backup your database before upgrading. 

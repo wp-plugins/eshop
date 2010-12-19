@@ -635,6 +635,21 @@ if(version_compare($eshopoptions['version'], '6.0.0' ,'<')){
 	}
 }
 
+
+if(version_compare($eshopoptions['version'], '6.1.0' ,'<')){
+	//updating database
+	$shippingzone=$eshopoptions['shipping_zone'];
+	$table = $wpdb->prefix ."eshop_shipping_rates";
+	$newtable=$wpdb->prefix ."eshop_rates";
+	$wpdb->query("RENAME TABLE $table TO $newtable");
+	$wpdb->query("ALTER TABLE $newtable ADD `area` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT ''");
+ 	$wpdb->query("ALTER TABLE $newtable ADD `rate_type` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT 'shipping'");
+ 	$wpdb->query("ALTER TABLE $newtable CHANGE `class` `class` VARCHAR( 3 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT ''");
+ 	$wpdb->query("UPDATE $newtable set rate_type='ship_weight', area='$shippingzone', class=ship_type where ship_type>0");
+ 	$wpdb->query("ALTER TABLE $newtable DROP `ship_type`");
+}
+
+
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);

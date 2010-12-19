@@ -1801,6 +1801,7 @@ if (!function_exists('eshop_mg_process_product')) {
 		$query=$wpdb->get_results("SELECT item_qty,post_id,option_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");
 		foreach($query as $row){
 			$pid=$row->post_id;
+			do_action('eshop_sold_product',$pid);
 			$uqty=$row->item_qty;
 			$optid=$row->option_id;
 			////test downloads
