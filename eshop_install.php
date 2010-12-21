@@ -85,6 +85,13 @@ if (!function_exists('eshop_option_setup')) {
 			'tandc_use'=>'',
 			'unknown_state'=> '5',
 			'version'=>'',
+			'location'=>'United Kingdom',
+			'state_location'=>'',
+			'tax_symbol'=>'VAT',
+			'tax1'=>'0',
+			'tax2'=>'0',
+			'tax3'=>'0',
+			'tax_method'=>'1',
 			'xtra_help' =>'',
 			'xtra_privacy' =>''
 		);
@@ -400,6 +407,21 @@ if(isset($eshopoptions['version'])){
 		('E',2, 25.00, 30.00, 60.00, 40.00, 30.00);");
 	}
 
+	/*$table = $wpdb->prefix . "eshop_tax";
+	if ($wpdb->get_var("show tables like '$table'") != $table) {
+		$sql = "CREATE TABLE ".$table." (
+		id int(11) NOT NULL auto_increment,
+		tax_symbol varchar(255) NOT NULL default '',
+		tax1 varchar(255) NOT NULL default '0',
+		tax2 varchar(255) NOT NULL default '0',
+		tax3 varchar(255) NOT NULL default '0',
+	    	  PRIMARY KEY  (id),
+		KEY custom_field (id)
+		) $charset_collate;";
+
+		dbDelta($sql);
+	}*/
+	
 	$table = $wpdb->prefix . "eshop_order_items";
 	if ($wpdb->get_var("show tables like '$table'") != $table) {
 		$sql = "CREATE TABLE ".$table." (
@@ -409,7 +431,7 @@ if(isset($eshopoptions['version'])){
 		item_qty int(11) NOT NULL default '0',
 		item_amt float(16,2) NOT NULL default '0.00',
 		optname varchar(255) NOT NULL default '',
-		optsets text NOT NULL default '',
+		optsets text NOT NULL,
 		post_id int(11) NOT NULL default '0',
 		option_id int(11) NOT NULL default '0',
 		down_id int(11) NOT NULL default '0',
@@ -449,15 +471,15 @@ if(isset($eshopoptions['version'])){
 		ship_country varchar(3) NOT NULL default '',
 		custom_field varchar(15) NOT NULL default '',
 		transid varchar(255) NOT NULL default '',
-		comments text NOT NULL default '',
-		thememo text NOT NULL default '',
+		comments text NOT NULL,
+		thememo text NOT NULL,
 		edited datetime NOT NULL default '0000-00-00 00:00:00',
 		downloads set('yes','no') NOT NULL default 'no',
-		admin_note TEXT NOT NULL default '',
+		admin_note TEXT NOT NULL,
 		paidvia VARCHAR(255) NOT NULL default '',
 		affiliate varchar(255) NOT NULL default '',
 		user_id int(11) NOT NULL,
-		user_notes text NOT NULL default '',
+		user_notes text NOT NULL,
 		  PRIMARY KEY  (id),
 		KEY custom_field (checkid),
 		KEY status (status)
@@ -721,7 +743,7 @@ if(isset($eshopoptions['version'])){
 	if ($wpdb->get_var("show tables like '$table'") != $table) {
 		$sql = "CREATE TABLE ".$table." (
 		  post_id bigint(20) NOT NULL default '0',
-		  img text NOT NULL default '',
+		  img text NOT NULL,
 		  brand varchar(255) NOT NULL default '',
 		  ptype varchar(255) NOT NULL default '',
 		  thecondition varchar(255) NOT NULL default '',
@@ -730,7 +752,7 @@ if(isset($eshopoptions['version'])){
 		  isbn varchar(255) NOT NULL default '',
 		  mpn varchar(255) NOT NULL default '',
 		  qty int(5) NOT NULL default '0',
-		  xtra text NOT NULL default '',
+		  xtra text NOT NULL,
 		  PRIMARY KEY  (post_id)
 		) $charset_collate;";
 
@@ -774,7 +796,7 @@ if(isset($eshopoptions['version'])){
 		name varchar(255) NOT NULL default '',
 		admin_name varchar(255) NOT NULL default '',
 		type tinyint(1) NOT NULL default '0',
-		`description` TEXT NOT NULL  default '',
+		`description` varchar(255) NOT NULL DEFAULT '',
 		  PRIMARY KEY  (optid)
 		) $charset_collate;";
 
@@ -789,7 +811,7 @@ if(isset($eshopoptions['version'])){
 			`emailUse` tinyint(1) NOT NULL default '0',
 			`emailType` VARCHAR( 50 ) NOT NULL default '',
 			`emailSubject` VARCHAR( 255 ) NOT NULL default '',
-			`emailContent` TEXT NOT NULL default '',
+			`emailContent` TEXT NOT NULL,
 			PRIMARY KEY ( `id` )
 			) $charset_collate;";
 

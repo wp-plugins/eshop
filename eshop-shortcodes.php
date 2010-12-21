@@ -1042,7 +1042,7 @@ function eshop_show_shipping($atts) {
 					/* '1 - weight 2-weight symbol' */
 					$eshopshiptable.='
 					<tr'.$alt.'>
-					<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</td>';
+					<th id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</th>';
 					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 						$y='zone'.$z;
 						$eshopshiptable.='<td headers="'.$eshopletter.$y.' ' .$eshopletter.'cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
@@ -1059,7 +1059,18 @@ function eshop_show_shipping($atts) {
 	}
 
 	if('yes' == $eshopoptions['show_zones']){
-		$eshopshiptable.=eshop_show_zones();
+		if('country' == $eshopoptions['shipping_zone'])
+			$array=array('country');
+		if('state' == $eshopoptions['shipping_zone'])
+			$array=array('state');
+		if( '4' == $eshopoptions['shipping'] ){
+			$array=array();
+			$dtable=$wpdb->prefix.'eshop_rates';
+			$query=$wpdb->get_results("SELECT area from $dtable where rate_type='ship_weight'");
+			foreach ($query as $row) 
+				$array[]=$row->area;
+		}
+		$eshopshiptable.=eshop_show_zones($array);
 	}
 	return $eshopshiptable;
 
@@ -1069,10 +1080,11 @@ if (!function_exists('eshop_show_zones')) {
     /**
      * returns a table of the ones, state or country depending on what is chosen.
      */
-    function eshop_show_zones() { 
+    function eshop_show_zones($array) { 
 		global $wpdb,$eshopoptions;
 		eshop_cache();
-		if('country' == $eshopoptions['shipping_zone']){
+		$echo='';
+		if(in_array('country', $array)){
 			//countries
 			$tablec=$wpdb->prefix.'eshop_countries';
 			$List=$wpdb->get_results("SELECT code,country FROM $tablec GROUP BY list,country",ARRAY_A);
@@ -1084,10 +1096,10 @@ if (!function_exists('eshop_show_zones')) {
 			if(isset($_POST['country']) && $_POST['country']!=''){
 				$country=$_POST['country'];
 			}
-			$echo ='<form action="#customzone" method="post" class="eshop eshopzones"><fieldset>
+			$echo .='<form action="#customzone" method="post" class="eshop eshopzones eshopcountryz"><fieldset>
 			<legend>'.__('Check your shipping zone','eshop').'</legend>
 			 <label for="country">'.__('Country','eshop').' <select class="med" name="country" id="country">';
-			$echo .='<option value="" selected="selected">'.__('Select your Country','eshop').'</option>';
+			$echo .='<option value="">'.__('Select your Country','eshop').'</option>';
 			foreach($countryList as $code => $label)	{
 				if (isset($country) && $country == $code){
 					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -1096,7 +1108,7 @@ if (!function_exists('eshop_show_zones')) {
 				}
 			}
 			$echo.= '</select></label> 
-			<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></span>
+			<span class="buttonwrap"><input type="submit" class="button" id="submititc" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
 			if(isset($_POST['country']) && $_POST['country']!=''){
 				$qccode=$wpdb->escape($_POST['country']);
@@ -1104,7 +1116,8 @@ if (!function_exists('eshop_show_zones')) {
 				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qcountry['country'],$qcountry['zone']).'.</p>';
 			}
 
-		}else{
+		}
+		if(in_array('state', $array)){
 			//each time re-request from the database
 			// state list from db
 			$table=$wpdb->prefix.'eshop_states';
@@ -1118,10 +1131,10 @@ if (!function_exists('eshop_show_zones')) {
 			if(isset($_POST['state']) && $_POST['state']!=''){
 				$state=$_POST['state'];
 			}
-			$echo ='<form action="#customzone" method="post" class="eshopzones"><fieldset>
+			$echo .='<form action="#customzone" method="post" class="eshop eshopzones eshopstatez"><fieldset>
 			<legend>'.__('Check your shipping zone','eshop').'</legend>
 			<label for="state">'.__('State','eshop').'<select class="med" name="state" id="state">';
-			$echo .='<option value="" selected="selected">'.__('Select your State','eshop').'</option>';
+			$echo .='<option value="">'.__('Select your State','eshop').'</option>';
 
 			foreach($stateList as $code => $value){
 				if(isset($value['list'])) $li=$value['list'];
@@ -1144,7 +1157,7 @@ if (!function_exists('eshop_show_zones')) {
 				$echo .="</optgroup>\n";
 			}
 			$echo.= "</select></label>\n".'
-			<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Submit','eshop').'" /></span>
+			<span class="buttonwrap"><input type="submit" class="button" id="submitist" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
 			if(isset($_POST['state']) && $_POST['state']!=''){
 				$qccode=$wpdb->escape($_POST['state']);
