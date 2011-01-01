@@ -48,6 +48,7 @@ Version next
 * *fixed* 	small bug with listing on the downloads page.
 * *fixed* 	slashes issue with option sets
 * *fixed* 	eshop_welcome shortcode now picks up loged in users display name if set.
+* *fixed* 	slashes appearing in emails.(hopefully)
 * *added* 	generic eshop-widget class to eShop widgets
 * *added* 	filter for the eshop_files_directory
 * *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]

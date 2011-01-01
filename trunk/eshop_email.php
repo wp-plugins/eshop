@@ -21,11 +21,8 @@ echo '<div class="wrap">';
 echo '<h2>'.__('eShop Customer Contact','eshop').'</h2><p>'.__('Use this form to notify the selected customer at any time, for any reason.','eshop').'</p>';
 
 if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
-	if (get_magic_quotes_gpc()) {
-		$_POST['thisemail'] = stripslashes($_POST['thisemail']);
-		$_POST['subject'] = stripslashes($_POST['subject']);
-
-	}
+	$_POST['thisemail'] = stripslashes($_POST['thisemail']);
+	$_POST['subject'] = stripslashes($_POST['subject']);
 	$body=wordwrap($_POST['thisemail'],75,"\n");
 	$from=$_POST['from'];
 	$subject=$_POST['subject'];
