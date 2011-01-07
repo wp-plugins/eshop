@@ -1,5 +1,5 @@
 <?php
-if ('eshop_settings.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-settings.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -16,7 +16,7 @@ require (WP_PLUGIN_DIR."/eshop/eshop-settings-extends.php");
 include_once (WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 include_once (WP_PLUGIN_DIR.'/eshop/eshop-base-functions.php');
 
-define('ESHOP_SETTINGS_PAGE_NAME', 'eshop_settings.php');
+define('ESHOP_SETTINGS_PAGE_NAME', 'eshop-settings.php');
 add_filter('query_vars', 'add_settings_query_vars');
 function add_settings_query_vars($aVars) {
 	$aVars[] = "mstatus";    // represents the name of the product category as shown in the URL
@@ -51,6 +51,9 @@ switch($action_status){
 		break;
 	case ('Base'):
 		$eshop_metabox_plugin = new eshop_setting_base_class();
+		break;
+	case ('Tax'):
+		$eshop_metabox_plugin = new eshop_setting_tax();
 		break;
 }
 ?>

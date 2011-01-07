@@ -45,7 +45,14 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$payson = $eshopoptions['payson']; 
 		$Key=$payson['key'];
-		$Cost=$_POST['amount']-$_POST['shipping_1'];
+		
+		$theamount=str_replace(',','',$_POST['amount']);
+		if(isset($_POST['tax']))
+			$theamount += str_replace(',','',$_POST['tax']);
+					
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];	
+		
+		$Cost=$theamount-$_POST['shipping_1'];
 		$ExtraCost=$_POST['shipping_1'];
 		//payson uses comma not decimal point
 		$Cost=number_format($Cost, 2, ',', '');
@@ -99,7 +106,7 @@ switch ($eshopaction) {
 		}
 		$p->add_field('notify_url', $ilink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -214,7 +221,7 @@ switch ($eshopaction) {
 				 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 				 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 				 if(isset($array['dbid']))
-				 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+				 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 
 				 foreach ($ps->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 				 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
@@ -228,30 +235,6 @@ switch ($eshopaction) {
 				//lets make sure this is here and available
 				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 				eshop_send_customer_email($checked, '4');
-			/*
-				//this is an email sent to the customer:
-				//first extract the order details
-				$array=eshop_rtn_order_details($checked);
-
-				$etable=$wpdb->prefix.'eshop_emails';
-				//grab the template
-				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='4' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-				$this_email = stripslashes($thisemail->emailContent);
-				// START SUBST
-				$csubject=stripslashes($thisemail->emailSubject);
-				$this_email = eshop_email_parse($this_email,$array);
-
-				//try and decode various bits - may need tweaking Mike, we may have to write 
-				//a function to handle this depending on what you are using - but for now...
-				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				$headers=eshop_from_address();
-				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				//affiliate
-				if($array['affiliate']!=''){
-					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-				}
-			*/
 			}
 
 		}else{

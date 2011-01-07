@@ -1,5 +1,5 @@
 <?php
-if ('eshop_about.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-about.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
     
 $eshopoptions = get_option('eshop_plugin_settings');

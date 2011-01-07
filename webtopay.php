@@ -41,8 +41,14 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$webtopay = $eshopoptions['webtopay']; 
-
-		$Cost = $_POST['amount']-$_POST['shipping_1'];
+		$theamount=str_replace(',','',$_POST['amount']);
+		if(isset($_POST['tax']))
+			$theamount += str_replace(',','',$_POST['tax']);
+			
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];		
+		
+		$Cost = $theamount-$_POST['shipping_1'];
+		
 		$ExtraCost = $_POST['shipping_1'];
 		//webtopay uses comma not decimal point
 
@@ -92,7 +98,7 @@ switch ($eshopaction) {
 		
 		$p->add_field('notify_url', $ilink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -215,7 +221,7 @@ switch ($eshopaction) {
 				 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 				 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 				 if(isset($array['dbid']))
-				 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+				 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 
 				 foreach ($ps->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 				 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";

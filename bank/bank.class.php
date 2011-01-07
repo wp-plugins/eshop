@@ -58,7 +58,12 @@ class bank_class {
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
-         $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			$pos = strpos($name, 'amount');
+			if ($pos === false) {
+			   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			}else{
+				$echo .= eshopTaxCartFields($name,$value);
+      	    }
       }
       $refid=uniqid(rand());
       $echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";

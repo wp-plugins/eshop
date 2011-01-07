@@ -1,5 +1,5 @@
 <?php
-if ('eshop_shipping.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-shipping.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -46,7 +46,7 @@ foreach ( $stati as $status => $label ) {
 	if ( $status == $action_status )
 		$class = ' class="current"';
 
-	$status_links[] = "<li><a href=\"?page=eshop_shipping.php&amp;eshopaction=$status\"$class>" . $label . '</a>';
+	$status_links[] = "<li><a href=\"?page=eshop-shipping.php&amp;eshopaction=$status\"$class>" . $label . '</a>';
 }
 $echosub.= implode(' | </li>', $status_links) . '</li>';
 $echosub.= '</ul><br class="clear" />';

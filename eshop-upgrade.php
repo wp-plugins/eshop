@@ -647,6 +647,9 @@ if(version_compare($eshopoptions['version'], '6.1.0' ,'<')){
  	$wpdb->query("ALTER TABLE $newtable CHANGE `class` `class` VARCHAR( 3 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT ''");
  	$wpdb->query("UPDATE $newtable set rate_type='ship_weight', area='$shippingzone', class=ship_type where ship_type>0");
  	$wpdb->query("ALTER TABLE $newtable DROP `ship_type`");
+ 	// add in drop old table
+ 	$wpdb->query("ALTER TABLE `wp_eshop_order_items` ADD `tax_rate` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `item_amt`");
+ 	$wpdb->query("ALTER TABLE `wp_eshop_order_items` ADD `tax_amt` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `tax_rate`");
 }
 
 

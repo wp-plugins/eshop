@@ -44,6 +44,10 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 Version next
 
+* *WARNING* 	__Back up your database before upgrading__
+* *NEW* 	__Sales Tax__ can now be added. (settable per product option after 'tax bands' has been entered).
+* *NEW* 	Extra Stats.
+* *FIXED/Added* Secondary address box for Paypal, finally allowing non main account email addresses to be used!
 * *Warning* 	Please backup your database before upgrading.
 * *fixed* 	small bug with listing on the downloads page.
 * *fixed* 	slashes issue with option sets
@@ -56,6 +60,10 @@ Version next
 * *added* 	extra CSS hooks to checkout confirmation page.
 * *added* 	action eshop_sold_product which is sent the post id of the product that was sold.
 * *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode.
+* *added* 	missing strings for translations
+* *changed* 	removed _ from filenames and replaced with -, easier for developers.
+* *changed* 	Discount Codes are no longer case sensitive
+* *Note* 	after upgrading you may need tp refresh the page due to the change above.
 
 Version 6.0.2
 

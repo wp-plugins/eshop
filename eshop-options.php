@@ -1,5 +1,5 @@
 <?php
-if ('eshop_options.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-options.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -21,7 +21,7 @@ $optsettable=$wpdb->prefix.'eshop_option_sets';
 <?php
 if(isset($_GET['optid']) && !isset($_POST['delete']) && !isset($_POST['eaddopt'])){
 ?>
-<p><a href="admin.php?page=eshop_options.php"><?php _e('Return','eshop'); ?></a></p>
+<p><a href="admin.php?page=eshop-options.php"><?php _e('Return','eshop'); ?></a></p>
 <?php
 }
 // updating options
@@ -189,8 +189,8 @@ function createform($opttable){
 			$calt++;
 			$alt = ($calt % 2) ? '' : ' class="alt"';
 			echo '<tr'.$alt.'>';
-			echo '<td id="row'.$calt.'" headers="aname"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->admin_name))."</a></td>\n";
-			echo '<td headers="pname row'.$calt.'"><a href="admin.php?page=eshop_options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></td>\n";
+			echo '<td id="row'.$calt.'" headers="aname"><a href="admin.php?page=eshop-options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->admin_name))."</a></td>\n";
+			echo '<td headers="pname row'.$calt.'"><a href="admin.php?page=eshop-options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></td>\n";
 			echo '<td headers="pname row'.$calt.'">'.$otypes[$row->type]."</td>\n";
 			echo "</tr>\n";
 		}

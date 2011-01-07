@@ -1,5 +1,5 @@
 <?php
-if ('eshop_products.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-products.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -260,10 +260,15 @@ function eshop_products_manager() {
 		//hiding errors, can't figure out they are appearing :(
 		@$B->sort();
 		$grab=$B->aData;
+		
+		//grabs some tax data
+		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
+		$etax = $eshopoptions['etax'];
+		if(!isset($etax['bands']) || $etax['bands']=='') $etax['bands']='0';
 	?>	
 		<form action="" method="post" class="eshop">
 		<div class="eshopwidetable">
-		<table id="listing" class="hidealllabels" summary="product listing">
+		<table class="hidealllabels widefat" summary="product listing">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -278,6 +283,9 @@ function eshop_products_manager() {
 		<th id="ftrd"><abbr title="<?php _e('Marked as Featured','eshop'); ?>"><?php _e('Feat.','eshop'); ?></abbr></th>
 		<th id="onsale" title="<?php _e('Product on sale','eshop'); ?>"><?php _e('Sale','eshop'); ?></th>
 		<th id="opt"><?php _e('Option/Price','eshop'); ?></th>
+		<?php if ( $etax['bands'] > 0 ) : ?>
+		<th id="tax"><?php _e('Tax','eshop'); ?></th>
+		<?php endif; ?>
 		<th id="stk"><abbr title="<?php _e('Stock Level','eshop'); ?>"><?php _e('Stk','eshop'); ?></abbr></th>
 		<th id="associmg"><?php _e('Thumbnail','eshop'); ?></th>
 		</tr>
@@ -307,7 +315,7 @@ function eshop_products_manager() {
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+							$pdown.='<a href="admin.php?page=eshop-downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
 							$pdownloads='yes';
 						}else{
 							$pdown.='<br />';
@@ -319,7 +327,7 @@ function eshop_products_manager() {
 				else
 					$posttitle=$ptitle->post_title;
 				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$eshop_product['sku'].'</td>';
 				echo '<td headers="ids sku'.$calt.'">'.$getid.'<input type="hidden" value="1" name="product['.$getid.'][theid]" /></td>';
@@ -381,6 +389,21 @@ function eshop_products_manager() {
 					}
 				}
 				echo '</td>';
+				if ( $etax['bands'] > 0 ) {
+					echo '<td headers="tax sku'.$calt.'" class="optline">';
+					for($i=1;$i<=$numoptions;$i++){
+						if(isset($eshop_product['products'][$i]['tax']) && $eshop_product['products'][$i]['tax']!=''){
+							$tzone=sprintf(__('Band %1$d','eshop'),$eshop_product['products'][$i]['tax']);
+							$disptzone=apply_filters('eshop_rename_tax_zone',array());
+							if(isset($disptzone[$eshop_product['products'][$i]['tax']]))
+								$tzone=$disptzone[$eshop_product['products'][$i]['tax']];
+							echo $tzone.'<br />';
+						}else{
+							echo '<br />';
+						}
+					}
+					echo '</td>';
+				}
 				//reset the string to stop multiple boxes!
 				$pravailable='';
 				if($eshopoptions['stock_control']=='yes'){

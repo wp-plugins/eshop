@@ -60,8 +60,15 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		//$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
-		$checkid=md5($eshopoptions['business'].$token.number_format($_POST['amount'],2));
-
+		$pvalue = $_POST['amount'];
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
+		//eShop own check for extra security
+		$eshopemailbus=$eshopoptions['business'];
+		if(isset( $eshopoptions['eshop_business_sec'] ) && $eshopoptions['eshop_business_sec'] !=''){
+			$eshopemailbus=$eshopoptions['business_sec'];
+			$_POST['business']=$eshopemailbus;
+		}
+		$checkid=md5($eshopemailbus.$token.number_format($pvalue,2));
 		//affiliates
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
@@ -123,7 +130,7 @@ switch ($eshopaction) {
 		}
 		$p->add_field('notify_url', $ilink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -253,7 +260,7 @@ switch ($eshopaction) {
 		*/
 			$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
-
+			
 			if($eshopoptions['status']=='live'){
 				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');
@@ -311,7 +318,7 @@ switch ($eshopaction) {
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 if(isset($array['dbid']))
-			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 
 			 //debug
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$chkamt."\n";
@@ -320,7 +327,11 @@ switch ($eshopaction) {
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 
 			$headers=eshop_from_address();
-			$to = apply_filters('eshop_gateway_details_email', array($eshopoptions['business']));
+			$eshopemailbus=$eshopoptions['business'];
+			if(isset( $eshopoptions['business_sec'] ) && $eshopoptions['business_sec'] !=''){
+				$eshopemailbus=$eshopoptions['business_sec'];
+			}
+			$to = apply_filters('eshop_gateway_details_email', array($eshopemailbus));
 			wp_mail($to, $subject, $body, $headers);
 
 			if($ok=='yes'){
@@ -368,7 +379,11 @@ switch ($eshopaction) {
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__("Regards, Your friendly automated response.",'eshop')."\n\n";
 			 $headers=eshop_from_address();
-			 $to = apply_filters('eshop_gateway_details_email', array($eshopoptions['business']));
+			 $eshopemailbus=$eshopoptions['business'];
+			 if(isset( $eshopoptions['business_sec'] ) && $eshopoptions['business_sec'] !=''){
+			 	$eshopemailbus=$eshopoptions['business_sec'];
+			 }
+			 $to = apply_filters('eshop_gateway_details_email', array($eshopemailbus));
 			 wp_mail($to, $subject, $body, $headers);
 		}
       	break;

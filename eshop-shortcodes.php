@@ -21,6 +21,7 @@ add_shortcode('eshop_cart_items','eshop_cart_items');
 add_shortcode('eshop_addtocart','eshop_addtocart');
 add_shortcode('eshop_welcome','eshop_welcome');
 add_shortcode('eshop_details','eshop_details');
+add_shortcode('eshop_tax_rates','eshop_tax_rates');
 
 function eshop_cart_items($atts){
 	global $blog_id,$eshopoptions;
@@ -743,7 +744,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 		//this line stops the addtocart form appearing.
 		remove_filter('the_content', 'eshop_boing');
-		$echo .= apply_filters('the_excerpt', get_the_excerpt());
+		$echo .= apply_filters('eshop_list_excerpt',apply_filters('the_excerpt', get_the_excerpt()));
 
 		if($price!='no'){
 			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
@@ -1080,8 +1081,10 @@ if (!function_exists('eshop_show_zones')) {
     /**
      * returns a table of the ones, state or country depending on what is chosen.
      */
-    function eshop_show_zones($array) { 
+    function eshop_show_zones($array, $legend = '' ) { 
 		global $wpdb,$eshopoptions;
+		if($legend == '')
+			$legend = __('Check your shipping zone','eshop');
 		eshop_cache();
 		$echo='';
 		if(in_array('country', $array)){
@@ -1097,9 +1100,9 @@ if (!function_exists('eshop_show_zones')) {
 				$country=$_POST['country'];
 			}
 			$echo .='<form action="#customzone" method="post" class="eshop eshopzones eshopcountryz"><fieldset>
-			<legend>'.__('Check your shipping zone','eshop').'</legend>
+			<legend>'.$legend.'</legend>
 			 <label for="country">'.__('Country','eshop').' <select class="med" name="country" id="country">';
-			$echo .='<option value="">'.__('Select your Country','eshop').'</option>';
+			$echo .='<option value="">'.__('Please Select','eshop').'</option>';
 			foreach($countryList as $code => $label)	{
 				if (isset($country) && $country == $code){
 					$echo.= "<option value=\"$code\" selected=\"selected\">$label</option>\n";
@@ -1132,9 +1135,9 @@ if (!function_exists('eshop_show_zones')) {
 				$state=$_POST['state'];
 			}
 			$echo .='<form action="#customzone" method="post" class="eshop eshopzones eshopstatez"><fieldset>
-			<legend>'.__('Check your shipping zone','eshop').'</legend>
-			<label for="state">'.__('State','eshop').'<select class="med" name="state" id="state">';
-			$echo .='<option value="">'.__('Select your State','eshop').'</option>';
+			<legend>'.$legend.'</legend>
+			<label for="state">'.__('State, County or Province','eshop').'<select class="med" name="state" id="state">';
+			$echo .='<option value="">'.__('Please select','eshop').'</option>';
 
 			foreach($stateList as $code => $value){
 				if(isset($value['list'])) $li=$value['list'];
@@ -1329,7 +1332,7 @@ function eshop_show_success(){
 function eshop_details($atts){
 	global $wpdb, $post,$wp_query,$eshopoptions;
 	eshop_cache();
-	extract(shortcode_atts(array('class'=>'eshopdetails','show'=>'','options_hide'=>''), $atts));
+	extract(shortcode_atts(array('class'=>'eshopdetails','show'=>'','options_hide'=>'','etax_page'=>''), $atts));
 	$echo='';
 	$allowedtoshow=array('sku','description','options','optionset','shipping');
 	$willshow=array();
@@ -1342,7 +1345,7 @@ function eshop_details($atts){
 		$willshow=$allowedtoshow;
 	}
 	
-	$allowedtohide=array('price','download','weight','stockqty','filesize');
+	$allowedtohide=array('price','tax','download','weight','stockqty','filesize');
 	$willhide=array();
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
@@ -1398,6 +1401,9 @@ function eshop_details($atts){
    				
 	    				$listed.='<th id="'.$eshopletter.'eshopprice"'.$thclass.'>'.$thprice.'</th>';
 	    			}
+	    			if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
+	    				$listed.='<th id="'.$eshopletter.'eshoptax">'.__('Sales Tax','eshop').'</th>';
+	    			}
     				if($eshopdlavail>0 && !in_array('download',$willhide)){ 
     					$listed.='<th id="'.$eshopletter.'eshopdownload">'.__('Download','eshop').'</th>';
     				}
@@ -1434,10 +1440,14 @@ function eshop_details($atts){
 								$stklvl=$stkarr[$i];
 							else
 								$stklvl='0';
-						
+							if(isset($eshop_product['products'][$i]['tax'])) 
+								$eshoptaxband=$eshop_product['products'][$i]['tax'];
+							else
+								$eshoptaxband='0';
 						}else{
 							$opt=$price=$downl='';
 							$stklvl=$weight=$price='0';
+							$eshoptaxband='';
 						}
 						if($opt=='') break;
 						$alt = ($i % 2) ? '' : ' class="alt"';
@@ -1447,6 +1457,21 @@ function eshop_details($atts){
 							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
 						if(!in_array('price',$willhide))
 							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</td>';
+						//tax
+						if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
+							if($eshoptaxband!=''){
+								$tzone=sprintf(__('Band %1$d','eshop'),$eshoptaxband);
+								$disptzone=apply_filters('eshop_rename_tax_zone',array());
+								if(isset($disptzone[$eshoptaxband]))
+									$tzone=$disptzone[$eshoptaxband];
+							}else{
+								$tzone='';
+							}
+							$listed.='<td headers="'.$eshopletter.'eshoptax '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'. $tzone.'</td>';
+						}
+						
+						
+						
 						
 						if($eshopdlavail>0 && !in_array('download',$willhide)){
     						$myrowres=$wpdb->get_results("Select * From $producttable");
@@ -1492,6 +1517,9 @@ function eshop_details($atts){
 					 }
 					 $eshopletter++;
 					$listed.='</tbody></table>'."\n";
+					
+					if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1' && $etax_page!='')
+						$listed .= '<p><a href="'.get_permalink($etax_page).'#eshoptaxtable">'.__('Sales tax rates','eshop').'</a></p>';
 					$listed.="</dd>\n";
 				}
 				break;
@@ -1690,5 +1718,89 @@ function eshop_show_checkout($atts, $content = ''){
 function eshop_show_downloads(){
 	include_once 'purchase-downloads.php';
 	return eshop_downloads($_POST);
+}
+function eshop_tax_rates($atts){
+	global $wpdb, $eshopoptions;
+	extract(shortcode_atts(array('zonechecker'=>''), $atts));
+	$string='';
+	if(!isset($eshopoptions['etax'])) $eshopoptions['etax']=array();
+	$etax = $eshopoptions['etax'];
+	if(!isset($etax['bands'])) $etax['bands']='0';
+	$dtable=$wpdb->prefix.'eshop_rates';
+	if($etax['bands']!='0' && $eshopoptions['tax']=='1'){
+		$eshopletter = "A";
+		for($i=1;$i<=2;$i++){
+			if($i==1){
+				$area='state';
+				$string.= '<h4>'.__('Local Tax rates.','eshop').'</h4>';
+			}else{
+				$area='country';
+				$string.='<h4>'.__('Tax rates for Other Countries.','eshop').'</h4>';
+			}
+			$query=$wpdb->get_results("SELECT * from $dtable where rate_type='tax' && area='$area' ORDER BY class ASC");
+			$k=0;
+			$string.='
+			<table class="eshop" id="eshoptaxtable">
+				<thead>
+				<tr>
+					<th id="'.$eshopletter.'tax">'. __('Tax Band','eshop').'</th>';
+				if($etax['zonal']=='1'){
+					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+						$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+						$dispzone=apply_filters('eshop_rename_ship_zone',array());
+						if(isset($dispzone[$z]))
+							$echozone=$dispzone[$z];
+						$string.='<th id="'.$eshopletter.'zone'. $z.'" class="zone'.$z.'">'.$echozone.'</th>';
+					}
+				}else{
+					$z=1;
+					$string.='<th id="'.$eshopletter.'zone'. $z.'" class="zone'.$z.'">'.__('All Zones','eshop').'</th>';
+
+				}
+				$string.='
+				</tr>
+				</thead>
+				<tbody>';
+				$x=1;
+				foreach ($query as $row){
+					$alt = ($x % 2) ? '' : ' class="alt"';
+					$string.= '<tr'.$alt.'>';
+					$tzone=sprintf(__('Band %1$d','eshop'),$x);
+					$disptzone=apply_filters('eshop_rename_tax_zone',array());
+					if(isset($disptzone[$x]))
+						$tzone=$disptzone[$x];
+					$string.= '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'tax">'.$tzone.'</td>'."\n";
+					if($etax['zonal']=='1'){
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$y='zone'.$z;
+							$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+							$dispzone=apply_filters('eshop_rename_ship_zone',array());
+							if(isset($dispzone[$z]))
+								$echozone=$dispzone[$z];
+							$string.= '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'">'.$row->$y.'</td>'."\n";
+						}
+					}else{
+						$z=1;
+						$y='zone'.$z;
+						$string.= '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'">'.$row->$y.'</td>'."\n";
+
+					}
+					$string.= '</tr>';
+					if($x >= $etax['bands']) 
+						break;
+					$x++;
+				}
+				$eshopletter++;
+				$string.='
+				</tbody>
+				</table>';
+		}
+		if($zonechecker!=''){
+			$array=array('state', 'country');
+			$legend=__('Check your tax zone','eshop');
+			$string.=eshop_show_zones($array,$legend);
+		}
+	}
+	return $string;
 }
 ?>

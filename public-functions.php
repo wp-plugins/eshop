@@ -278,7 +278,7 @@ class eshop_search {
 
 function eshopgbase(){
 	if(isset($_GET['eshopbasefeed'])){
-		include WP_PLUGIN_DIR.'/eshop/eshop_base_feed.php';
+		include WP_PLUGIN_DIR.'/eshop/eshop-base-feed.php';
 	}
 }
 function eshop_ie_fix(){

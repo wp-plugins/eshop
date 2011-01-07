@@ -46,8 +46,7 @@ function eshop_inner_custom_box($post) {
 			}
 		}
     }
-    //$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$post->ID");
-   // if(isset($stktableqty) && is_numeric($stktableqty)) $eshop_product['qty']=$stktableqty;
+
     ?>
     <h4><?php _e('Product','eshop'); ?></h4>
 
@@ -64,7 +63,10 @@ function eshop_inner_custom_box($post) {
     <div class="eshopwidetable">
     <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">
     <caption><?php _e('Product Options','eshop'); ?></caption>
-    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
+    <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th>
+    <th id="eshopprice"><?php _e('Price','eshop'); ?></th>
+    <?php if($eshopoptions['etax']['bands']>'0'){?><th id="eshoptax"><?php _e('Tax','eshop'); ?></th><?php } ?>
+    <?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['stock_control']=='yes'){?><th id="eshopstkqty"><?php _e('Stock','eshop'); ?></th><?php } ?>
     </tr></thead>
@@ -85,8 +87,13 @@ function eshop_inner_custom_box($post) {
 					$stkqty=$eshop_product['products'][$i]['stkqty'];
 				else
 					$stkqty='';
+				if(isset($eshop_product['products'][$i]['tax'])) 
+					$eshoptax=$eshop_product['products'][$i]['tax'];
+				else
+					$eshoptax='0';
 			}else{
 				$stkqty=$weight=$opt=$price=$downl='';
+				$eshoptax='0';
 			}
 			$alt = ($i % 2) ? '' : ' class="alternate"';
 			?>
@@ -94,6 +101,25 @@ function eshop_inner_custom_box($post) {
 			<th id="eshopnumrow<?php echo $i; ?>" headers="eshopnum"><?php echo $i; ?></th>
 			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option_<?php echo $i; ?>" value="<?php echo $opt; ?>" type="text" size="20" /></td>
 			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price_<?php echo $i; ?>" value="<?php echo $price; ?>" type="text" size="6" /></td>
+			<?php 
+			//tax
+			if(isset($eshopoptions['etax']['bands']) && $eshopoptions['etax']['bands']>'0'){	?>
+				<td headers="eshoptax eshopnumrow<?php echo $i; ?>">
+					<label for="eshop_tax_<?php echo $i; ?>"><?php _e('Tax','eshop'); ?> <?php echo $i; ?></label>
+					<select name="eshop_tax_<?php echo $i; ?>" id="eshop_tax_<?php echo $i; ?>">
+						<option value=""><?php _e('No','eshop'); ?></option>
+						<?php
+						for($it=1;$it<=$eshopoptions['etax']['bands'];$it++){
+							$tzone=sprintf(__('Band %1$d','eshop'),$it);
+							$disptzone=apply_filters('eshop_rename_tax_zone',array());
+							if(isset($disptzone[$it]))
+								$tzone=$disptzone[$it];
+							echo '<option value="'.$it.'"'.selected($it,$eshoptax).'>'.$tzone.'</option>'."\n";
+						}
+						?>
+					</select>
+				</td>
+			<?php }	?>
 			<?php if($eshopdlavail>0){ ?>
 			<td headers="eshopdownload eshopnumrow<?php echo $i; ?>"><label for="eshop_download_<?php echo $i; ?>"><?php _e('Download','eshop'); ?> <?php echo $i; ?></label><select name="eshop_download_<?php echo $i; ?>" id="eshop_download_<?php echo $i; ?>">
 			   <option value=""><?php _e('No (or select)','eshop'); ?></option>
@@ -241,6 +267,9 @@ function eshop_save_postdata( $post_id ) {
 		}
 		if(isset($_POST['eshop_download_'.$i])){
 			$eshop_product['products'][$i]['download']=$thisdl=$_POST['eshop_download_'.$i];
+		}
+		if(isset($_POST['eshop_tax_'.$i])){
+			$eshop_product['products'][$i]['tax']=$_POST['eshop_tax_'.$i];
 		}
 		if(isset($_POST['eshop_weight_'.$i])){
 			$eshop_product['products'][$i]['weight']=$_POST['eshop_weight_'.$i];

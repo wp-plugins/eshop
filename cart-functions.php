@@ -43,8 +43,16 @@ if (!function_exists('display_cart')) {
 			<thead>
 			<tr class="thead">';
 			$echo .='<th id="cartItem'.$iswidget.'" class="nb">'.__('Item Description','eshop').'</th>
-			<th id="cartQty'.$iswidget.'" class="bt">'.__('<abbr title="Quantity">Qty</abbr>','eshop').'</th>
-			<th id="cartTotal'.$iswidget.'" class="btbr">'.__('Total','eshop').'</th>';
+			<th id="cartQty'.$iswidget.'" class="bt">'.__('<abbr title="Quantity">Qty</abbr>','eshop').'</th>';
+			
+			$totalstring = __('Sub-Total','eshop');
+			
+			$echo .= '<th id="cartTotal'.$iswidget.'" class="btbr">'.$totalstring.'</th>';
+			
+			if($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+				$echo .= '<th id="carttax" class="bt">'.__('Tax %','eshop').'</th>
+				<th id="carttaxamt" class="btbr">'.__('Tax Amt','eshop').'</th>';
+			}
 			if($iswidget=='' && $change == 'true'){
 				$eshopdeleteheaderimage=apply_filters('eshop_delete_header_image',WP_PLUGIN_URL.'/eshop/no.png');
 				$echo.= '<th id="cartDelete" class="btbr"><img src="'.$eshopdeleteheaderimage.'" alt="'.__('Delete','eshop').'" title="'.__('Delete','eshop').'" /></th>';
@@ -54,6 +62,7 @@ if (!function_exists('display_cart')) {
 			$calt=0;
 			$shipping=0;
 			$totalweight=0;
+			$taxtotal=0;
 			$currsymbol=$eshopoptions['currency_symbol'];
 			$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
 			foreach ($eshopcartarray as $productid => $opt){
@@ -128,8 +137,26 @@ if (!function_exists('display_cart')) {
 						$discount=is_discountable(calculate_total())/100;
 						$disc_line= round($opt["price"]-($opt["price"] * $discount), 2);
 					}
-					$line_total=$opt["price"]*$opt["qty"];
-					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($line_total,__('2','eshop')))."</td>\n";
+					$eline = $line_total = $opt["price"] * $opt["qty"];
+					if(isset($disc_line))
+						$eline = $disc_line*$opt["qty"];
+					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eline,__('2','eshop')))."</td>\n";
+					
+					//TAX
+					if($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+						$taxrate=eshop_get_tax_rate($eshop_product['products'][$opt['option']]['tax'], $pzone);
+						$ttotax=$line_total;
+						if(isset($disc_line))
+							$ttotax=$disc_line * $opt["qty"];
+						$taxamt=round(($ttotax * $taxrate)/100, 2);
+						$echo.= '<td>'.$taxrate.'</td><td>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop'))).'</td>';
+						$taxtotal += $taxamt;
+						$_SESSION['eshopcart'.$blog_id][$productid]['tax_rate']=$taxrate;
+						$_SESSION['eshopcart'.$blog_id][$productid]['tax_amt']=$taxamt;
+						
+					}
+					//
+					
 					if($iswidget=='' && $change == 'true'){
 						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
 						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="deleteitem['.$productid.']" value="'.$key.'" title="'.__('Delete this item','eshop').'"/></td>';
@@ -154,7 +181,14 @@ if (!function_exists('display_cart')) {
 				$emptycell='<td headers="cartDelete" class="eshopempty"></td>';
 			else
 				$emptycell='';
+				
+			if($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+				$emptycell='<td headers="subtotal carttaxamt" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxtotal,__('2','eshop'))).'</td>';
+			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,__('2','eshop')))."</td>$emptycell</tr>\n";
+
+			
+			
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
@@ -236,12 +270,36 @@ if (!function_exists('display_cart')) {
 				}
 	
 				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,__('2','eshop'))).'</td>
-				</tr>';
-				$_SESSION['shipping'.$blog_id]=$shipping;
+				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,__('2','eshop'))).'</td>';
+				if($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$taxrate=eshop_get_tax_rate($eshopoptions['etax']['shipping'], $pzone);
+					$ttotax=$shipping;
+					$taxamt=round(($ttotax * $taxrate)/100, 2);
+					$taxtext = '';
+					if($taxamt > '0.00')
+						$taxtext = sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop')));
+					$echo.= '<td>'.$taxrate.'</td><td>'.$taxtext.'</td>';
+					$shiptax=$taxamt;
+					$_SESSION['shipping'.$blog_id]['tax']=$shiptax;
+					$_SESSION['shipping'.$blog_id]['taxrate']=$taxrate;
+
+				}
+				$echo .= '</tr>';
+				$_SESSION['shipping'.$blog_id]['cost']=$shipping;
 				$final_price=$sub_total+$shipping;
 				$_SESSION['final_price'.$blog_id]=$final_price;
-				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($final_price, __('2','eshop')))."</strong></td></tr>";
+				
+				$excltax = '';
+				if(isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$excltax = __('(excl.tax)','eshop');
+				}
+				
+				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($final_price, __('2','eshop')),$excltax)."</strong></td>";
+				if(isset($shiptax) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$withtax = $final_price + $shiptax + $taxtotal;
+					$echo.= '<td headers="taxtotal" class="taxttotal amts lb" colspan="2"><strong>'.sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($withtax,__('2','eshop')), __('(incl.tax)','eshop')).'</strong></td>';
+				}
+				$echo .= "</tr>";
 			}
 
 			$echo.= "</tbody></table>\n";
@@ -441,7 +499,7 @@ if (!function_exists('valid_eshop_discount_code')) {
 	function valid_eshop_discount_code($code){
 		global $wpdb;
 		$now=date('Y-m-d');
-		$code=$wpdb->escape($code);
+		$code=$wpdb->escape(strtolower($code));
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && binary disccode='$code'");
 
@@ -473,6 +531,22 @@ if (!function_exists('valid_eshop_discount_code')) {
 		return false;
 	}
 }
+
+if (!function_exists('eshop_get_tax_rate')) {
+	function eshop_get_tax_rate($band, $pzone){
+		global $wpdb, $blog_id, $eshopoptions;
+		$area='country';
+		if($_SESSION['shiptocountry'.$blog_id] == $eshopoptions['location'])
+			$area='state';
+		$ratetable = $wpdb->prefix.'eshop_rates';
+		$band=$wpdb->escape($band);
+		$zone='zone'.$wpdb->escape($pzone);
+		$taxrate = $wpdb->get_var("SELECT $zone FROM $ratetable WHERE id > 0 && class='$band' && area='$area' && rate_type='tax' ");
+		return $taxrate;
+	}
+}
+
+
 
 if (!function_exists('checkAlpha')) {
 	//check string is alpha only.
@@ -506,6 +580,126 @@ if (!function_exists('checkPhone')) {
 	//check phone number - needs work!
 	function checkPhone($text){
 		return preg_match ("/[A-z0-9\(\)]/", $text);
+	}
+}
+
+if (!function_exists('eshopCartFields')) {
+	function eshopCartFields(){
+		global $wpdb, $blog_id;
+		$echo='';
+		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+		$x=0;
+		foreach ($eshopcartarray as $productid => $opt){
+			$x++;
+			$productidident=$productid;
+			//$toreplace=array(" ","-","$","\r","\r\n","\n","\\","&","#",";");
+			//$productidident=md5($productidident);//str_replace($toreplace, "", $productidident);
+			$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
+			$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productidident."\" />";
+			$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
+			$echo.= "\n  <input type=\"hidden\" name=\"weight_".$x."\" value=\"".$opt['weight']."\" />";
+			/* options */
+			$addoprice=0;
+			if(isset($opt['optset'])){
+				if(isset($qb)) unset($qb);
+				$oset=array();
+				$optings=unserialize($opt['optset']);
+				foreach($optings as $foo=>$opst){
+					if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')) 
+						$qb[]="id=$opst[id]";
+				}
+
+				if(isset($qb)){
+					$qbs = implode(" OR ", $qb);
+					$otable=$wpdb->prefix.'eshop_option_sets';
+					$orowres=$wpdb->get_results("select price, id from $otable where $qbs ORDER BY id ASC");
+					foreach($orowres as $orow){
+						$addoprice+=$orow->price;
+					}
+				}
+
+			}
+
+			$amt=number_format(round(($opt["price"]+$addoprice), 2),2,'.','');
+			$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".$amt."\" />";
+			$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
+			$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
+		}
+		$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
+
+		return $echo;
+	}
+}
+if (!function_exists('eshopTaxCartFields')) {
+	function eshopTaxCartFields($name, $value, $combine = 0){
+		global $blog_id, $eshopoptions;
+		if(!isset($eshopoptions['tax']) || $eshopoptions['tax']=='0')
+			return "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+		
+		$echo='';
+		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+		$x=0;
+		$taxamt=0;
+		switch ($combine){
+			case '0': //no just return 1 line for total tax
+				if($name == 'amount'){				
+					foreach ($eshopcartarray as $productid => $opt){
+						if(isset($opt['tax_amt']))
+							$taxamt += $opt['tax_amt'];
+					}
+					$echo .= "<input type=\"hidden\" name=\"tax\" value=\"".$taxamt."\" />\n";
+				}
+				
+				$echo .= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+				break;
+			case '1': //add tax to amount
+				foreach ($eshopcartarray as $productid => $opt){
+					$x++;
+					if(isset($opt['tax_amt'])){
+						$taxamt += $opt['tax_amt'];
+						if($name == 'amount_'.$x){
+							$value += $opt['tax_amt'];
+							$echo .= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+						}
+					}
+				}
+				if($name == 'amount'){
+					$value +=$taxamt;
+					$echo .= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+				}
+				break;
+		}
+		if($name == 'amount')
+			$echo .= eshopasstaxlinestoall();
+		return $echo;
+	}
+}
+if (!function_exists('eshopasstaxlinestoall')) {
+	function eshopasstaxlinestoall(){
+		global $blog_id;
+		$echo='';
+		$x=0;
+		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
+		foreach ($eshopcartarray as $productid => $opt){
+			$x++;
+			if(isset($opt['tax_amt'])){
+				$echo .= "<input type=\"hidden\" name=\"tax_".$x."\" value=\"".$opt['tax_amt']."\" />\n";
+				$echo .= "<input type=\"hidden\" name=\"tax_rate_".$x."\" value=\"".$opt['tax_rate']."\" />\n";
+			}
+		}
+		return $echo;
+	}
+}
+
+if (!function_exists('eshopShipTaxAmt')) {
+	function eshopShipTaxAmt($combine = 0){
+		global $blog_id, $eshopoptions;
+		if(!isset($eshopoptions['tax']) || $eshopoptions['tax']=='0')
+			return number_format($_SESSION['shipping'.$blog_id]['cost'],2);
+			
+		$shipping=$_SESSION['shipping'.$blog_id]['cost']+$_SESSION['shipping'.$blog_id]['tax'];
+		return number_format($shipping,2);
+
 	}
 }
 if (!function_exists('orderhandle')) {
@@ -726,6 +920,16 @@ if (!function_exists('orderhandle')) {
 				$chk_opt='item_name_'.$i;
 				$chk_postid='postid_'.$i;
 				$chk_weight='weight_'.$i;
+				//tax
+				$tax_amt = $tax_rate = '';
+				if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$chk_tax='tax_'.$i;
+					$chk_tax_rate='tax_rate_'.$i;
+					if(isset($_POST[$chk_tax])){				
+						$tax_amt=$wpdb->escape($_POST[$chk_tax]);
+						$tax_rate=$wpdb->escape($_POST[$chk_tax_rate]);
+					}
+				}
 				$item_id=$wpdb->escape($_POST[$chk_id]);
 				$item_qty=$wpdb->escape($_POST[$chk_qty]);
 				$item_amt=$wpdb->escape(str_replace(',', "", $_POST[$chk_amt]));;
@@ -760,8 +964,9 @@ if (!function_exists('orderhandle')) {
 				if($dlchk!=''){
 					//there are downloads.
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
-					(checkid, item_id,item_qty,item_amt,optname,post_id,option_id,down_id,optsets,weight)values(
-					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$option_id',
+					(checkid, item_id,item_qty,item_amt,tax_rate,tax_amt,optname,post_id,option_id,down_id,optsets,weight)values(
+					'$checkid','$item_id','$item_qty','$item_amt', '$tax_rate', '$tax_amt', 
+					'$optname','$post_id','$option_id',
 					'$dlchk','$optset','$weight');");
 
 					$wpdb->query("UPDATE $detailstable set downloads='yes' where checkid='$checkid'");
@@ -784,13 +989,20 @@ if (!function_exists('orderhandle')) {
 
 				}else{
 					$queryitem=$wpdb->query("INSERT INTO $itemstable
-					(checkid, item_id,item_qty,item_amt,optname,post_id,option_id,optsets,weight)values(
-					'$checkid','$item_id','$item_qty','$item_amt','$optname','$post_id','$option_id','$optset','$weight');");
+					(checkid, item_id,item_qty,item_amt,tax_rate,tax_amt,optname,post_id,option_id,optsets,weight)values(
+					'$checkid','$item_id','$item_qty','$item_amt','$tax_rate', '$tax_amt', 
+					'$optname','$post_id','$option_id','$optset','$weight');");
 				}
 				$i++;
 
 			}
 			$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
+			$shiptaxamt=$shiptaxrate='';
+			if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+				$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
+				$shiptaxamt=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['tax']));
+				$shiptaxrate=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
+			}
 			$postage_name='';
 			if(isset($_SESSION['eshopshiptype'.$blog_id])  && !eshop_only_downloads()){
 				$st=$_SESSION['eshopshiptype'.$blog_id]-1;
@@ -799,11 +1011,13 @@ if (!function_exists('orderhandle')) {
 			}
 			$postage_name.=__('Shipping','eshop');
 			$querypostage=$wpdb->query("INSERT INTO  $itemstable 
-					(checkid, item_id,item_qty,item_amt,optsets)values(
+					(checkid, item_id,item_qty,item_amt,tax_rate,tax_amt,optsets)values(
 					'$checkid',
 					'$postage_name',
 					'1',
 					'$postage',
+					'$shiptaxrate',
+					'$shiptaxamt',
 					'');");
 			//update the discount codes used, and remove from remaining
 			$disctable=$wpdb->prefix.'eshop_discount_codes';
@@ -919,30 +1133,48 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$contact=$cart=$address=$extras= '';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
 		$total=0;
+		$taxtotal=0;
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$cart.=__('Transaction id:','eshop').' '.$transid."\n";
 		$containsdownloads=0;
 		foreach($result as $myrow){
+			//default
 			$value=$myrow->item_qty * $myrow->item_amt;
-			$total=$total+$value;
 			$shipping_charge=0;
-
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
 			// add in a check if postage here as well as a link to the product
 			if(trim($itemid)=='postage' || trim($itemid)==__('Shipping','eshop')){
-				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."\n\n";
+				$cart.= __('Shipping Charge:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')));
+				if(isset($myrow->tax_amt) && $myrow->tax_amt!=''){
+					$taxvalue = $myrow->tax_amt;
+					$value += $taxvalue;
+					$cart.= "\n".__('Sales Tax:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxvalue, __('2','eshop')));
+				}
 				$shipping_charge=number_format_i18n($value, __('2','eshop'));
+				$cart .= "\n\n";
 			}else{
-				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."\n\n";
+				$cart.= $myrow->optname." ".strip_tags($itemid)."\n\n".__('Quantity:','eshop')." ".$myrow->item_qty."\n".__('Price:','eshop')." ".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')));
+				if(isset($myrow->tax_amt) && $myrow->tax_amt!=''){
+					$taxvalue = $myrow->tax_amt;
+					$value += $taxvalue;
+					$cart.= "\n".__('Sales Tax:','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxvalue, __('2','eshop')));
+				}
+				$cart .= "\n\n";
 			}
-		
+			$taxtotal += $taxvalue;
+			$total += $value;
 			//check if downloadable product
 			if($myrow->down_id!='0'){
 				$containsdownloads++;
 			}
 		}
-		$arrtotal=number_format($total, 2);
+		$arrtotal=number_format_i18n($total, __('2','eshop'));
+		$arrtaxtotal=number_format_i18n($taxtotal, __('2','eshop'));
+
 		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."\n";
+		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1')
+			$cart.= __('Total Sale Tax','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxtotal, __('2','eshop')))."\n";
+ 
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);
 		$cday=substr($custom, 6, 2);
@@ -1012,7 +1244,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$firstname=html_entity_decode($firstname);
 		$ename=html_entity_decode($ename);
 		$address=html_entity_decode($address);
-		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,"transid"=>$transid,"total"=>$arrtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge);
+		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,
+		"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,
+		"transid"=>$transid,"total"=>$arrtotal,"taxtotal"=>$arrtaxtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge);
 		$secarray=apply_filters('eshoprtndetails',$dquery);
 		$retarray=array_merge($array,$secarray);
 		return $retarray;
@@ -1916,7 +2150,7 @@ if (!function_exists('eshop_admin_bar_menu')) {
 			$title=__('eShop is Live','eshop');
 		
 		/* Add the Blog Info menu */
-		$wp_admin_bar->add_menu( array( 'id' => 'eshopadminbar', 'title' => $title, 'href' => get_option( 'siteurl' ).'/wp-admin/options-general.php?page=eshop_settings.php' ) );
+		$wp_admin_bar->add_menu( array( 'id' => 'eshopadminbar', 'title' => $title, 'href' => get_option( 'siteurl' ).'/wp-admin/options-general.php?page=eshop-settings.php' ) );
 	}
 }
 

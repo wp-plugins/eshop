@@ -68,7 +68,7 @@ class eshop_metabox_class {
 			$action_status = esc_attr($_GET['mstatus']);
 		else
 			$_GET['mstatus']=$action_status = 'General';
-		$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'),'Base'=>__('eShop Base','eshop'));
+		$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Tax' => __('Sales Tax','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'),'Base'=>__('eShop Base','eshop'));
 		foreach ( $stati as $status => $label ) {
 			$class = '';
 			if ( $status == $action_status )

@@ -1,5 +1,5 @@
 <?php
-if ('eshop_base.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-base.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -99,7 +99,7 @@ if(!isset($_GET['change'])){
 	}
 	
 	if($max>0){
-		$apge=get_admin_url().'admin.php?page=eshop_base.php';
+		$apge=get_admin_url().'admin.php?page=eshop-base.php';
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
@@ -184,7 +184,7 @@ if(!isset($_GET['change'])){
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+							$pdown.='<a href="admin.php?page=eshop-downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
 							$pdownloads='yes';
 						}else{
 							$pdown.='<br />';
@@ -198,7 +198,7 @@ if(!isset($_GET['change'])){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alt"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop_base.php&amp;change='.$grabit['id'].'" title="'.__('Change details','eshop').'">'.$eshop_product['sku'].'</a></td>';
+				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop-base.php&amp;change='.$grabit['id'].'" title="'.__('Change details','eshop').'">'.$eshop_product['sku'].'</a></td>';
 				echo '<td headers="page sku'.$calt.'"><a href="post.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
 				echo '<td headers="desc sku'.$calt.'">'.stripslashes(esc_attr($eshop_product['description'])).'</td>';
 				echo '<td headers="down sku'.$calt.'">'.$pdown.'</td>';
@@ -404,7 +404,7 @@ if(!isset($_GET['change'])){
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$grabit['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-							$pdown.='<a href="admin.php?page=eshop_downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
+							$pdown.='<a href="admin.php?page=eshop-downloads.php&amp;edit='.$fileid.'">'.$filetitle.'</a>';
 							$pdownloads='yes';
 						}else{
 							$pdown.='<br />';

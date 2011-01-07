@@ -194,7 +194,7 @@ if(isset($eshopoptions['version'])){
 		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 		$path= esc_attr(get_option('upload_path'));
 		if($path=='') $path='wp-content/uploads';
-		wp_die(sprintf(__('ERROR! eShop requires that the %1$s directory is writable before the plugin can be activated.','eshop'),$path)); 
+		wp_die(sprintf(__('ERROR! eShop requires that the %1$s and %2$s directopries are writable before the plugin can be activated.','eshop'),$path, WP_CONTENT_DIR)); 
 	}
 	/** create capability */
 	eshop_caps();
@@ -372,24 +372,25 @@ if(isset($eshopoptions['version'])){
 		('Kinr','Kinross-shire', 1,'GB')
 		;");
 	}
-	$table = $wpdb->prefix . "eshop_shipping_rates";
+	$table = $wpdb->prefix . "eshop_rates";
 	if ($wpdb->get_var("show tables like '$table'") != $table) {
 	   $sql = "CREATE TABLE ".$table." (
-		id INT NOT NULL AUTO_INCREMENT,
-		class char(1) NOT NULL default '',
-		items SMALLINT( 2 ) NOT NULL default '0',
-		zone1 float(16,2) NOT NULL default '0.00',
-		zone2 float(16,2) NOT NULL default '0.00',
-		zone3 float(16,2) NOT NULL default '0.00',
-		zone4 float(16,2) NOT NULL default '0.00',
-		zone5 float(16,2) NOT NULL default '0.00',
-		zone6 float(16,2) NOT NULL default '0.00',
-		zone7 float(16,2) NOT NULL default '0.00',
-		zone8 float(16,2) NOT NULL default '0.00',
-		zone9 float(16,2) NOT NULL default '0.00',
-		weight float(16,2) NOT NULL default '0.00', 
-		ship_type int(11) NOT NULL default '0',
-		  PRIMARY KEY  (id)
+		 id int(11) NOT NULL AUTO_INCREMENT,
+		 class varchar(3) CHARACTER SET utf8 NOT NULL DEFAULT '',
+		 items smallint(2) NOT NULL DEFAULT '0',
+		 zone1 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone2 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone3 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone4 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone5 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone6 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone7 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone8 float(16,2) NOT NULL DEFAULT '0.00',
+		 zone9 float(16,2) NOT NULL DEFAULT '0.00',
+		 weight float(16,2) NOT NULL DEFAULT '0.00',
+		 area varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '',
+		 rate_type varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT 'shipping',
+		   PRIMARY KEY  (id)
 		) $charset_collate;";
 
 		dbDelta($sql);
@@ -407,21 +408,6 @@ if(isset($eshopoptions['version'])){
 		('E',2, 25.00, 30.00, 60.00, 40.00, 30.00);");
 	}
 
-	/*$table = $wpdb->prefix . "eshop_tax";
-	if ($wpdb->get_var("show tables like '$table'") != $table) {
-		$sql = "CREATE TABLE ".$table." (
-		id int(11) NOT NULL auto_increment,
-		tax_symbol varchar(255) NOT NULL default '',
-		tax1 varchar(255) NOT NULL default '0',
-		tax2 varchar(255) NOT NULL default '0',
-		tax3 varchar(255) NOT NULL default '0',
-	    	  PRIMARY KEY  (id),
-		KEY custom_field (id)
-		) $charset_collate;";
-
-		dbDelta($sql);
-	}*/
-	
 	$table = $wpdb->prefix . "eshop_order_items";
 	if ($wpdb->get_var("show tables like '$table'") != $table) {
 		$sql = "CREATE TABLE ".$table." (
@@ -430,6 +416,8 @@ if(isset($eshopoptions['version'])){
 		item_id varchar(255) NOT NULL default '0',
 		item_qty int(11) NOT NULL default '0',
 		item_amt float(16,2) NOT NULL default '0.00',
+		tax_rate VARCHAR( 255 ) NOT NULL DEFAULT '',
+		tax_amt VARCHAR( 255 ) NOT NULL DEFAULT '',
 		optname varchar(255) NOT NULL default '',
 		optsets text NOT NULL,
 		post_id int(11) NOT NULL default '0',

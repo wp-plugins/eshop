@@ -25,7 +25,7 @@ function eshop_template_email(){
 if(isset($_GET['eshoptemplate'])) $eshoptemplate=$_GET['eshoptemplate'];
 else $eshoptemplate='1';
 $thisemail=$wpdb->get_results("Select * From $table");
-$phpself=get_admin_url().'admin.php?page=eshop_templates.php'; 
+$phpself=get_admin_url().'admin.php?page=eshop-templates.php'; 
 $x=1;
 foreach($thisemail as $this_email){
 	$active='';

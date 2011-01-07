@@ -58,7 +58,12 @@ class payson_class {
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
-         $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+		$pos = strpos($name, 'amount');
+		if ($pos === false) {
+		   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+		}else{
+			$echo .= eshopTaxCartFields($name,$value);
+		}
       }
       $refid=uniqid(rand());
       $echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
@@ -72,7 +77,7 @@ class payson_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to payson.
-      global $eshopoptions;
+      global $eshopoptions, $blog_id;
       $payson = $eshopoptions['payson'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
@@ -82,11 +87,17 @@ class payson_class {
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$payson = $eshopoptions['payson']; 
 			$Key=$payson['key'];
-			$Cost=str_replace(',','',$_POST['amount'])-str_replace(',','',$_POST['shipping_1']);
+			$theamount=$_POST['amount'];
+			if(isset($_POST['tax']))
+				$theamount += $_POST['tax'];
+			if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];
+			
+			$Cost=str_replace(',','',$theamount)-str_replace(',','',$_POST['shipping_1']);
 			$ExtraCost=$_POST['shipping_1'];
+
 			$desc = str_replace($replace, " ", $payson['description']);
-			if($_POST['amount']<$payson['minimum']){
-				$adjust=str_replace(',','',$payson['minimum'])-str_replace(',','',$_POST['amount']);
+			if($theamount<$payson['minimum']){
+				$adjust=str_replace(',','',$payson['minimum'])-str_replace(',','',$theamount);
 				$Cost=$Cost+$adjust;
 				$desc .= ' '.sprintf(__('Payson minimum of %s SEK applied.','eshop'),$payson['minimum']);
 			}
@@ -97,13 +108,18 @@ class payson_class {
 			$MD5string = $payson['email'] . ":" . $Cost . ":" . $ExtraCost . ":" . $OkUrl . ":" . $GuaranteeOffered . $Key;
 			$MD5Hash = md5($MD5string);
 			$refid=$_POST['RefNr'];
+			
+			$clink='';
+			if($eshopoptions['cart_cancel']!=''){
+				$clink=add_query_arg('eshopaction','cancel',get_permalink($eshopoptions['cart_cancel']));
+			}
 			$echortn.='
 			<input type="hidden" name="AgentId" value="'.$payson['id'].'" />
 			<input type="hidden" name="SellerEmail" value="'.$payson['email'].'" />
 			<input type="hidden" name="Description" value="'.$desc.'" />
 			<input type="hidden" name="GuaranteeOffered" value="1" />
 			<input type="hidden" name="OkUrl" value="'.$OkUrl.'" />
-			<input type="hidden" name="CancelUrl" value="'.$_POST['cancel_return'].'" />
+			<input type="hidden" name="CancelUrl" value="'.$clink.'" />
 			<input type="hidden" name="MD5" value="'.$MD5Hash.'" />
 			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
 			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
