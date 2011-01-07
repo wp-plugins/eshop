@@ -48,7 +48,17 @@ switch ($eshopaction) {
 		$description=$ogone['COM'];
 		// a sequence number is randomly generated
 		$refid=uniqid(rand());
-		$amount=($_POST['amount']+$_POST['shipping_1'])*100;
+		
+		$theamount = $_POST['amount'];
+		if(isset($_POST['tax']))
+			$theamount += $_POST['tax'];
+					
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];		
+		
+		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1')
+			$amount=($theamount)*100;
+		else
+			$amount=($theamount+$_POST['shipping_1'])*100;
 		//change to sha
 		if($eshopoptions['cart_success']!=''){
 			$slink=add_query_arg('eshopaction','success',get_permalink($eshopoptions['cart_success']));
@@ -98,27 +108,6 @@ switch ($eshopaction) {
 		}
 		$SHASign=strtoupper(sha1($sha));
 		$p->add_field('SHASign',$SHASign);
-		/*
-		$p->add_field('amount',$amount);
-		$p->add_field('CN',$_POST['first_name'].' '.$_POST['last_name']);
-		$p->add_field('COM',$description);
-		$p->add_field('currency',$eshopoptions['currency']);
-		$p->add_field('email',$_POST['email']);
-		$p->add_field('language',$eshopoptions['location']);
-		$p->add_field('orderID',$refid);
-		$p->add_field('ownerzip',$_POST['zip']);
-		$p->add_field('owneraddress',$_POST['address1']);
-		$p->add_field('ownercty',$_POST['country']);
-		$p->add_field('ownertelno',$_POST['phone']);
-		$p->add_field('ownertown',$_POST['city']);
-		$p->add_field('PSPID',$Pspid);
-		$p->add_field('SHASign',$SHASign);
-		$p->add_field('operation','SAL');
-		$p->add_field('accepturl',$slink);
-		$p->add_field('declineurl',$clink);
-		$p->add_field('exceptionurl',$clink);
-		$p->add_field('cancelurl',$clink);
-		*/
 		$echoit.=$p->eshop_submit_ogone_post($_POST);
 		
 		break;
@@ -146,7 +135,7 @@ switch ($eshopaction) {
 		//goes direct to this script as nothing needs showing on screen.
 
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -279,7 +268,7 @@ switch ($eshopaction) {
 			 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 if(isset($array['dbid']))
-			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 
 			 foreach ($ps->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
@@ -293,30 +282,6 @@ switch ($eshopaction) {
 				//lets make sure this is here and available
 				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 				eshop_send_customer_email($checked, '10');
-			/*
-				//this is an email sent to the customer:
-				//first extract the order details
-				$array=eshop_rtn_order_details($checked);
-
-				$etable=$wpdb->prefix.'eshop_emails';
-				//grab the template
-				$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='10' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-				$this_email = stripslashes($thisemail->emailContent);
-				// START SUBST
-				$csubject=stripslashes($thisemail->emailSubject);
-				$this_email = eshop_email_parse($this_email,$array);
-
-				//try and decode various bits - may need tweaking Mike, we may have to write 
-				//a function to handle this depending on what you are using - but for now...
-				$this_email=html_entity_decode($this_email,ENT_QUOTES);
-				$headers=eshop_from_address();
-				wp_mail($array['eemail'], $csubject, $this_email,$headers);
-				//affiliate
-				if($array['affiliate']!=''){
-					do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-				}
-			*/
 				do_shortcode('[eshop_show_success]');
 			}
 

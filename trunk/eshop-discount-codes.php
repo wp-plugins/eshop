@@ -1,5 +1,5 @@
 <?php
-if ('eshop_discount_codes.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-discount-codes.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 
 
@@ -19,7 +19,7 @@ function eshop_discounts_manager() {
 	$legtext=__('Add a discount code','eshop'); 
 	$subtext=__('Submit','eshop');
 	$edit=false;
-	$phpself='admin.php?page=eshop_discount_codes.php';
+	$phpself='admin.php?page=eshop-discount-codes.php';
 	$disctable=$wpdb->prefix.'eshop_discount_codes';
 	//blank - will change as we check things
 	$eshop_code=$eshop_percent=$eshop_remain=$eshop_used=$eshop_live=$eshop_free_ship=$eshop_code_date=$eshop_code_type='';
@@ -99,6 +99,13 @@ function eshop_discounts_manager() {
 			
 		if($eshop_code=='')
 			$error[]=__('You must specify a code','eshop');
+		
+		if($eshop_code!=''){
+			$ecode=$wpdb->escape(trim(strtolower($eshop_code)));
+			$ecount=$wpdb->get_var("SELECT COUNT(id) FROM $disctable WHERE LOWER(disccode)='$ecode'");
+			if($ecount!=0)
+				$error[]=__('That code already exists','eshop');
+		}
 		
 		if(isset($_POST['eshop_remain']))
 			$eshop_remain=$_POST['eshop_remain'];

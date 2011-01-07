@@ -88,8 +88,13 @@ class ideallite_class {
 		$echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
 		foreach ($this->fields as $name => $value) {
-			$echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
-		}
+			$pos = strpos($name, 'amount');
+			if ($pos === false) {
+			   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			}else{
+				$echo .= eshopTaxCartFields($name,$value);
+      	    }
+      	}
 		$refid=uniqid();
 		$echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
 		$echo.='<label for="ppsubmit" class="finalize"><small>'.__('<strong>Note:</strong> Submit to finalize order at iDeal.','eshop').'</small><br />

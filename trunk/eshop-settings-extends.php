@@ -45,7 +45,7 @@ class eshop_setting_base_class extends eshop_metabox_class {
 	}
 	function base_box_2($eshopoptions) {
 		?>
-		<p><?php _e('This resets all product data entered on the <a href="admin.php?page=eshop_base.php">eShop Base Products</a> page.','eshop'); ?></p>
+		<p><?php _e('This resets all product data entered on the <a href="admin.php?page=eshop-base.php">eShop Base Products</a> page.','eshop'); ?></p>
 		<input class="button" type="submit" name="eshopbasereset" value="<?php _e('Reset Now','eshop'); ?>" />
 	<?php
 
@@ -527,10 +527,14 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				$eshopoptions['details']['class']='';
 				$eshopoptions['details']['hide']='';
 				$eshopoptions['details']['display']='';
+				$eshopoptions['details']['tax']='';
 			}
-			
+			//additions 
+			if(!isset($eshopoptions['details']['tax']))
+				$eshopoptions['details']['tax']='';
+
 			?>
-			<p><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></p>
+			<p><strong><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></strong></p>
 			<label for="eshop_details_display"><?php _e('Add product details section to every page with details to display. <small>(adding the shortcode will override settings here)</small>','eshop'); ?></label>
 			<select name="eshop_details_display" id="eshop_details_display">
 			<?php
@@ -545,9 +549,12 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			</select><br />
 			<label for="eshop_details_class"><?php _e('Class','eshop'); ?> <small><?php _e('(changes the standard class)','eshop'); ?></small></label><input id="eshop_details_class" name="eshop_details_class" type="text" value="<?php echo $eshopoptions['details']['class']; ?>" size="30" /><br />
 			<label for="eshop_details_show"><?php _e('Show','eshop'); ?> <small><?php _e('(which details, separated by commas, to show and in which order - acceptable values and the default order: sku, description, options, optionset, shipping)','eshop'); ?></small></label><input id="eshop_details_show" name="eshop_details_show" type="text" value="<?php echo $eshopoptions['details']['show']; ?>" size="60" /><br />
-			<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: price, download, weight, filesize, stockqty)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
+			<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: price, tax, download, weight, filesize, stockqty)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
 			<label for="eshop_cart_nostock"><?php _e('Out of Stock message','eshop'); ?></label><input id="eshop_cart_nostock" name="eshop_cart_nostock" type="text" value="<?php echo $eshopoptions['cart_nostock']; ?>" size="30" /><br />
-			<p><?php _e('General product settings:','eshop'); ?><br />
+			<label for="eshop_details_tax"><?php _e('Tax Page ID','eshop'); ?> <small><?php _e('(page with tax rates shortcode)','eshop'); ?></small></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
+
+			
+			<p><strong><?php _e('General product settings.','eshop'); ?></strong></p>
 			<label for="eshop_currency_symbol"><?php _e('Symbol','eshop'); ?></label><input id="eshop_currency_symbol" name="eshop_currency_symbol" type="text" value="<?php echo $eshopoptions['currency_symbol']; ?>" size="10" /><br />
 			<label for="eshop_addtocart_image"><?php _e('Use an add to cart image or button?','eshop'); ?></label>
 			<select name="eshop_addtocart_image" id="eshop_addtocart_image">
@@ -560,7 +567,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				echo '<option value="" selected="selected">'.__('Button','eshop').'</option>';
 			}
 			?>
-			</select></p>
+			</select>
 			<p><label for="eshop_ajax_cart"><?php _e('Add to cart, without going to cart page. This may not be suitable for all themes. Works best when displaying the full cart from the eShop Cart Widget.','eshop'); ?></label>
 				<select name="eshop_ajax_cart" id="eshop_ajax_cart">
 				<?php
@@ -573,6 +580,19 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				}
 			?>
 			</select></p>
+			<?php
+			if(!isset($eshopoptions['cart_text'])) $eshopoptions['cart_text'] =''
+			?>
+			<p><strong><?php _e('Add text before or after addtocart form (will not appear in listings)','eshop'); ?></strong></p>
+			<label for="eshop_cart_text"><?php _e('Text to add','eshop'); ?></label><input id="eshop_cart_text" name="eshop_cart_text" type="text" value="<?php echo stripslashes(esc_attr($eshopoptions['cart_text'])); ?>" size="60" /><br />
+			<label for="eshop_cart_text_where"><?php _e('Placement','eshop'); ?></label>
+			<select name="eshop_cart_text_where" id="eshop_cart_text_where">
+			<?php
+			if(!isset($eshopoptions['cart_text_where'])) $eshopoptions['cart_text_where'] =''
+			?>
+				<option value="1" <?php selected($eshopoptions['cart_text_where'],'1'); ?>><?php _e('Before','eshop'); ?></option>
+				<option value="2" <?php selected($eshopoptions['cart_text_where'],'2'); ?>><?php _e('After','eshop'); ?></option>
+			</select>
 		</fieldset>
 		<?php
 	}
@@ -811,7 +831,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				$action_status = esc_attr($_GET['mstatus']);
 			else
 				$_GET['mstatus']=$action_status = 'General';
-			$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'),'Base'=>__('eShop Base','eshop'));
+			$stati=array('General'=>__('General','eshop'),'Merchant' => __('Merchant Gateways','eshop'),'Tax' => __('Sales Tax','eshop'),'Discounts' => __('Discounts','eshop'),'Downloads' => __('Downloads','eshop'),'Pages' => __('Special Pages','eshop'),'Base'=>__('eShop Base','eshop'));
 			foreach ( $stati as $status => $label ) {
 				$class = '';
 				if ( $status == $action_status )
@@ -931,6 +951,9 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$eshopoptions['tandc_use']=$wpdb->escape($_POST['eshop_tandc_use']);
 		$eshopoptions['tandc_id']=$wpdb->escape($_POST['eshop_tandc_id']);
 		$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
+		$eshopoptions['cart_text']=$_POST['eshop_cart_text'];
+		$eshopoptions['cart_text_where']=$wpdb->escape($_POST['eshop_cart_text_where']);
+
 		if (eshop_wp_version('3')){
 			$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
 			$eshopoptions['users_text']=$wpdb->escape($_POST['eshop_users_text']);
@@ -941,6 +964,12 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$eshopoptions['details']['show']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_show']));
 		$eshopoptions['details']['class']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_class']));
 		$eshopoptions['details']['hide']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_hide']));
+		if(is_numeric($_POST['eshop_details_tax'])){
+			$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
+		}else{
+			$eshopoptions['details']['tax']='';
+			$err='10';
+		}
 		$eshopoptions['details']['display']=$wpdb->escape($_POST['eshop_details_display']);
 		//minimal form
 		$eshopoptions['downloads_only']=$wpdb->escape($_POST['eshop_downloads_only']);
@@ -970,6 +999,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			$err='4';
 			$eshopoptions['currency_symbol']='$';
 		}
+		
 		if($_POST['eshop_status']=='live'){
 			if(!is_array($eshopoptions['method']))
 				$err='5';
@@ -995,6 +1025,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		'4'=>__('Currency Symbol was missing, the default $ has been applied.','eshop'),
 		'5'=>__('You must have a Merchant Gateway selected before you can go live!','eshop'),
 		'6'=>__('You must have set an eShop from email address before you can go live!','eshop'),
+		'10'=>__('Tax rates page ID was not numeric.','eshop'),
 		'100'=>__('eShop general settings updated.','eshop')
 		);
 		return $messages;
@@ -1038,7 +1069,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			}
 			?>
 			</select><br />
-			<p><?php printf(__('Don\'t forget to set the<br /><a href="%s">State/County/Province</a><br />on the shipping pages.','eshop'),'admin.php?page=eshop_shipping.php&amp;action=states'); ?></p>
+			<p><?php printf(__('Don\'t forget to set the<br /><a href="%s">State/County/Province</a><br />on the shipping pages.','eshop'),'admin.php?page=eshop-shipping.php&amp;action=states'); ?></p>
 			<label for="eshop_currency"><?php _e('Currency Code','eshop'); ?></label>
 			<select name="eshop_currency" id="eshop_currency">
 			<?php
@@ -1090,9 +1121,12 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		<fieldset>
 			<?php 		
 			$this->show_img('paypal');
+			if(!isset($eshopoptions['business_sec'])) $eshopoptions['business_sec']='';
 			?>
 			<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_method" class="eshopmethod"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
-			<label for="eshop_business"><?php _e('Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo $eshopoptions['business']; ?>" size="30" /><br />
+			<label for="eshop_business"><?php _e('Main account Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo $eshopoptions['business']; ?>" size="30" /><br />
+			<label for="eshop_business"><?php _e('Secondary Email address','eshop'); ?></label><input id="eshop_business_sec" name="eshop_business_sec" type="text" value="<?php echo $eshopoptions['business_sec']; ?>" size="30" /><br />
+
 			<label for="eshop_paypal_noemail"><?php _e('Send buyers email address to paypal?','eshop'); ?> <small>(<?php _e('This affects the form that Paypal shows to the customer.','eshop'); ?>)</small></label>
 			<select name="eshop_paypal_noemail" id="eshop_paypal_noemail">
 			<?php
@@ -1232,9 +1266,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		<fieldset>
 			<?php 		
 			$this->show_img('webtopay');
-			?>
-			<p><?php _e('<strong>Note:</strong> payment by other means, usually used for offline payments.','eshop'); ?></p>
-			<?php 
+
 			if(isset($eshopoptions['webtopay']))
 				$eshopwebtopay = $eshopoptions['webtopay']; 
 			else
@@ -1355,6 +1387,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		$eshopoptions['currency']=$wpdb->escape($_POST['eshop_currency']);
 		$eshopoptions['location']=$wpdb->escape($_POST['eshop_location']);
 		$eshopoptions['business']=$wpdb->escape(trim($_POST['eshop_business']));
+		$eshopoptions['business_sec']=$wpdb->escape(trim($_POST['eshop_business_sec']));
 		$eshopoptions['paypal_noemail']=$wpdb->escape($_POST['eshop_paypal_noemail']);
 
 		//payson
@@ -1440,6 +1473,266 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		'100'=>__('eShop Merchant Gateways updated.','eshop')
 		);
 		$messages=apply_filters('eshop_setting_merchant_messages',$messages);
+		return $messages;
+	}
+}
+class eshop_setting_tax extends eshop_metabox_class {
+	function on_load_page() {
+		add_meta_box('eshop-tax-action', __('Enable Tax','eshop'), array(&$this, 'taxenable_box'), $this->pagehook, 'side', 'core');
+		add_meta_box('eshop-tax-setup', __('eShop Tax Settings','eshop'), array(&$this, 'tax_box'), $this->pagehook, 'normal', 'core');
+		add_meta_box('eshop-downloads-only', __('eShop Tax Rates','eshop'), array(&$this, 'tax_box_2'), $this->pagehook, 'normal', 'core');
+		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+	}
+	function taxenable_box($eshopoptions) {
+		if(!isset($eshopoptions['tax'])) $eshopoptions['tax']='0';
+		$etax = $eshopoptions['tax'];
+		?>
+		<fieldset>
+		<label for="eshop_tax"><?php _e('Enable Tax','eshop'); ?></label>
+		<select name="eshop_tax" id="eshop_tax">
+			<option value="1" <?php selected($etax,'1'); ?>><?php _e('Yes','eshop'); ?></option>
+			<option value="0" <?php selected($etax,'0'); ?>><?php _e('No','eshop'); ?></option>
+		</select>
+		</fieldset>
+		<?php
+	}
+	function tax_box($eshopoptions) {
+		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
+		$etax = $eshopoptions['etax'];
+		if(!isset($etax['bands'])) $etax['bands']='0';
+		if(!isset($etax['zonal'])) $etax['zonal']='0';
+		if(!isset($etax['shipping'])) $etax['shipping']='';
+		?>
+		<fieldset>
+			<label for="eshop_tax_zonal"><?php _e('Tax by (Shipping) Zones','eshop'); ?></label>
+			<select name="eshop_tax_zonal" id="eshop_tax_zonal">
+				<option value="1" <?php selected($etax['zonal'],'1'); ?>><?php _e('Yes','eshop'); ?></option>
+				<option value="0" <?php selected($etax['zonal'],'0'); ?>><?php _e('No','eshop'); ?></option>
+			</select><br />
+			<label for="eshop_tax_bands"><?php _e('Number of Tax bands','eshop'); ?></label><input type="text" id="eshop_tax_bands" name="eshop_tax_bands" value="<?php echo $etax['bands']; ?>" size="4" />
+			<?php if( $etax['bands'] > 0 ) : ?>
+			<label for="eshop_tax_shipping"><?php _e('Tax shipping?','eshop'); ?></label>
+			<select name="eshop_tax_shipping" id="eshop_tax_shipping">
+				<option value="" <?php selected($etax['shipping'],''); ?>><?php _e('No, or select tax band','eshop'); ?></option>
+				<?php
+				for($x=1;$x <= $etax['bands']; $x++){
+					$tzone=sprintf(__('Band %1$d','eshop'),$x);
+					$disptzone=apply_filters('eshop_rename_tax_zone',array());
+					if(isset($disptzone[$x]))
+						$tzone=$disptzone[$x];
+				?>
+				<option value="<?php echo $x; ?>" <?php selected($etax['shipping'],$x); ?>><?php echo $tzone; ?></option>
+				<?php
+				}
+				?>
+			</select><br />
+			<?php endif; ?>
+
+		</fieldset>
+	<?php
+	}
+	function tax_box_2($eshopoptions) {
+		global $wpdb;
+		if(!isset($eshopoptions['etax'])) $eshopoptions['etax']=array();
+		$etax = $eshopoptions['etax'];
+		if(!isset($etax['bands']) || $etax['bands']=='' ) $etax['bands']='0';
+		$dtable=$wpdb->prefix.'eshop_rates';
+		if($etax['bands']!='0'){
+			?>
+			<fieldset>
+			<?php
+			$eshopletter = "A";
+			for($i=1;$i<=2;$i++){
+				if($i==1){
+					$area='state';
+					echo '<h4>'.__('Local Tax rates (for your Country).','eshop').'</h4>';
+				}else{
+					$area='country';
+					echo '<h4>'.__('Tax rates for Other Countries.','eshop').'</h4>';
+				}
+				$query=$wpdb->get_results("SELECT * from $dtable where rate_type='tax' && area='$area' ORDER BY class ASC");
+				$k=0;
+				?>
+				<table class="hidealllabels widefat">
+					<thead>
+					<tr>
+						<th id="<?php echo $eshopletter; ?>tax"><?php _e('Tax Band','eshop'); ?></th>
+					<?php
+					if($etax['zonal']=='1'){
+						for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+							$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+							$dispzone=apply_filters('eshop_rename_ship_zone',array());
+							if(isset($dispzone[$z]))
+								$echozone=$dispzone[$z];
+						?>
+							<th id="<?php echo $eshopletter.'zone'. $z; ?>" class="zone<?php echo $z; ?>"><?php echo $echozone; ?></th>
+						<?php
+						}
+					}else{
+						$z=1;
+					?>
+						<th id="<?php echo $eshopletter.'zone'. $z; ?>" class="zone<?php echo $z; ?>"><?php _e('All Zones','eshop'); ?></th>
+
+					<?php
+					}
+					?>
+					</tr>
+					</thead>
+					<tbody>
+					<?php
+					$x=1;
+					foreach ($query as $row){
+						$alt = ($x % 2) ? '' : ' class="alt"';
+						echo '<tr'.$alt.'>';
+						$tzone=sprintf(__('Band %1$d','eshop'),$x);
+						$disptzone=apply_filters('eshop_rename_tax_zone',array());
+						if(isset($disptzone[$x]))
+							$tzone=$disptzone[$x];
+						echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'tax">'.$tzone.'</td>'."\n";
+						if($etax['zonal']=='1'){
+							for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+								$y='zone'.$z;
+								$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+								$dispzone=apply_filters('eshop_rename_ship_zone',array());
+								if(isset($dispzone[$z]))
+									$echozone=$dispzone[$z];
+								echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.$echozone.'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']['.$y.']" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+							}
+						}else{
+							$z=1;
+							$y='zone'.$z;
+							echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.__('All Zones','eshop').'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+
+						}
+						echo '</tr>';
+						if($x >= $etax['bands']) 
+							break;
+						$x++;
+					}
+					
+					//add on spare zones
+					if($x != $etax['bands']) {
+						$z=1;
+						while ($x < $etax['bands']+1){
+							$alt = ($x % 2) ? '' : ' class="alt"';
+							echo '<tr'.$alt.'>';
+							$tzone=sprintf(__('Band %1$d','eshop'),$x);
+							$disptzone=apply_filters('eshop_rename_tax_zone',array());
+							if(isset($disptzone[$x]))
+								$tzone=$disptzone[$x];
+							echo '<td id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'tax">'.$tzone.'</td>'."\n";
+							if($etax['zonal']=='1'){
+								for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+									$y='zone'.$z;
+									$echozone=sprintf(__('Zone %1$d','eshop'),$z);
+									$dispzone=apply_filters('eshop_rename_ship_zone',array());
+									if(isset($dispzone[$z]))
+										$echozone=$dispzone[$z];
+									if(isset($row->$y)) 
+										$val=$row->$y;
+									else 
+										$val='0.00';
+									echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.$echozone.'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']['.$y.']" type="text" value="'.$val.'" size="6" maxlength="16" /></td>'."\n";
+								}
+							}else{
+								$y='zone'.$z;
+								echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.__('All Zones','eshop').'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+								$z++;
+							}
+							echo '</tr>';
+							$x++;
+						}
+					}
+					
+					$eshopletter++;
+					
+					?>
+					</tbody>
+					</table>
+				<?php
+			}
+			?>
+			<input type="hidden" value="1" name="eshoptaxables" />
+			</fieldset>
+		<?php
+		}else{
+			echo '<p>'.__('Will appear here once number of bands has been set.','eshop').'</p>';
+		}
+	}
+	
+	function on_save_changes() {
+		global $wpdb;
+		$dtable=$wpdb->prefix.'eshop_rates';
+		$err='100';
+		//user permission check
+		if ( !current_user_can('eShop_admin') )
+			wp_die( __('Cheatin&#8217; uh?') );			
+		//cross check the given referer
+		check_admin_referer('eshop-metaboxes-general');
+		$eshopoptions = get_option('eshop_plugin_settings');
+		//process here your on $_POST validation and / or option saving
+		if(is_numeric($_POST['eshop_tax_bands']) || $_POST['eshop_tax_bands']==''){
+			$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
+		}else{
+			$err=1;
+			$_POST['eshop_tax_bands']=$eshopoptions['etax']['bands']='';
+		}
+		$eshopiszonal=$eshopoptions['etax']['zonal'];
+		$eshopisbands=$eshopoptions['etax']['bands'];
+		$eshopoptions['tax']=$wpdb->escape($_POST['eshop_tax']);
+		$eshopoptions['etax']['zonal']=$wpdb->escape($_POST['eshop_tax_zonal']);
+		$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
+		
+		if( isset($_POST['eshop_tax_shipping']))
+			$eshopoptions['etax']['shipping']=$wpdb->escape($_POST['eshop_tax_shipping']);
+	
+		update_option('eshop_plugin_settings',$eshopoptions);
+		$etax=$eshopoptions['etax'];
+		//update the tax rates - unless we are changing settings
+		if($eshopisbands=='0'){
+			unset($_POST['eshoptaxables']);
+			$wpdb->query("DELETE from $dtable where rate_type='tax'");
+		}
+		if(isset($_POST['eshoptaxables']) && $eshopiszonal==$eshopoptions['etax']['zonal']){
+			$darray=array('state','country');
+			$barray=array();
+			if($etax['zonal']=='1'){
+				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
+					$barray[]='zone'.$z;
+				}
+			}else{
+				$barray[]='zone1';
+			}
+			$build="INSERT INTO $dtable (`".implode("`, `",$barray)."`,`class`,`rate_type`, `area`) VALUES";
+			foreach($darray as $area){
+				
+				foreach($_POST[$area] as $k=>$v){
+					if($etax['zonal']=='1'){
+						$bvarray=array();
+						foreach($v as $f=>$value){
+							$bvarray[]=$value;
+						}
+						$build.="('".implode("', '",$bvarray)."','".$k."','tax','$area'),";
+					}else{
+						$build.="('".$v."','".$k."','tax','$area'),";
+					}
+				}
+
+			}
+			$queri=trim($build,',');
+			$wpdb->query("DELETE from $dtable where rate_type='tax'");
+			$wpdb->query($queri);
+		}
+		
+		//lets redirect the post request into get request
+		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
+		wp_redirect($_POST['_wp_http_referer']);		
+	}
+	function eclass_errors($messages){
+		$messages=array(
+		'1'=>__('Number of tax bands should be numeric.','eshop'),
+		'100'=>__('eShop Sales Tax settings updated.','eshop')
+		);
 		return $messages;
 	}
 }

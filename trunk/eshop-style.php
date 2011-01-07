@@ -53,7 +53,7 @@ echo '</p>';
 }else{
 ?>
 <p><?php _e('Default style is used by default. You can edit this via the editor below, or choose not to use it.','eshop'); ?></p>
-<form action="themes.php?page=eshop_style.php" method="post" id="style_form" name="style">
+<form action="themes.php?page=eshop-style.php" method="post" id="style_form" name="style">
  <fieldset>
   <legend><?php _e('Use Default Style','eshop'); ?></legend>
   <?php
@@ -88,7 +88,7 @@ $right_string = file_get_contents($eshop_goto, true);
 <div class="wrap">
 <h2><?php _e('Style Editor','eshop'); ?></h2>
  <p><?php _e('Use this simple <abbr><span class="abbr" title="Cascading Style Sheet">CSS</span></abbr> file editor to modify the default style sheet file.','eshop'); ?></p>
- <form method="post" action="themes.php?page=eshop_style.php" id="edit_box">
+ <form method="post" action="themes.php?page=eshop-style.php" id="edit_box">
   <fieldset>
    <legend><?php _e('Style File Editor.','eshop'); ?></legend>
    <label for="stylebox"><?php _e('Edit Style','eshop'); ?></label><br />
@@ -119,7 +119,7 @@ $right_string = file_get_contents($eshop_goto, true);
 		echo '</div>';
 	}elseif(trim($left_string)!=trim($right_string)){
 		echo '<div class="wrap">';
-		echo '<p>'.__('There may have been updates to the style.','eshop').' <a href="themes.php?page=eshop_style.php&amp;diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
+		echo '<p>'.__('There may have been updates to the style.','eshop').' <a href="themes.php?page=eshop-style.php&amp;diff#diff">'.__('Compare Current Style with latest installed version of eShop.','eshop').'</a></p>';
 		echo '</div>';
 	}else{
 		echo '<div class="wrap">';

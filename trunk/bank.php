@@ -74,29 +74,6 @@ switch ($eshopaction) {
 			$ok='yes';
 			eshop_mg_process_product($txn_id,$checkid,'Waiting');
 			eshop_send_customer_email($checkid, '11');
-		/*
-			//only need to send out for the successes!
-			//lets make sure this is here and available
-			include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-			//this is an email sent to the customer:
-			//first extract the order details
-			$array=eshop_rtn_order_details($checkid);
-
-			$etable=$wpdb->prefix.'eshop_emails';
-			//grab the template
-			$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='11' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-			$this_email = stripslashes($thisemail->emailContent);
-			// START SUBST
-			$csubject=stripslashes($thisemail->emailSubject);
-			$this_email = eshop_email_parse($this_email,$array,'no');
-
-			//try and decode various bits - may need tweaking Mike, we may have to write 
-			//a function to handle this depending on what you are using - but for now...
-			$this_email=html_entity_decode($this_email,ENT_QUOTES);
-			$headers=eshop_from_address();
-			wp_mail($array['eemail'], $csubject, $this_email,$headers);
-		*/
-			
 		}
 
 		$subject .=__(" Ref:",'eshop').$ebank->ipn_data['RefNr'];
@@ -108,7 +85,7 @@ switch ($eshopaction) {
 		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
 		 $body .= __('Details','eshop').":\n";
 		 if(isset($array['dbid']))
-		 	$body .= get_bloginfo( 'wpurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+		 	$body .= get_bloginfo( 'wpurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 		 foreach ($ebank->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 		 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 		$headers=eshop_from_address();
@@ -135,7 +112,7 @@ switch ($eshopaction) {
       
 		//goes direct to this script as nothing needs showing on screen.
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){

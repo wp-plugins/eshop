@@ -129,7 +129,7 @@ if (!function_exists('eshopShowform')) {
 				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
 				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 				foreach($value as $code =>$stateName){
-					$stateName=htmlspecialchars($stateName);
+					//$stateName=htmlspecialchars($stateName);
 					if (isset($state) && $state == $code){
 						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
 					}else{
@@ -209,7 +209,7 @@ if (!function_exists('eshopShowform')) {
 
 					$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 					foreach($value as $code =>$stateName){
-						$stateName=htmlspecialchars($stateName);
+						//$stateName=htmlspecialchars($stateName);
 						if (isset($ship_state) && $ship_state == $code){
 							$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
 						}else{
@@ -246,55 +246,7 @@ if (!function_exists('eshopShowform')) {
 	}
 	$final_price=number_format($_SESSION['final_price'.$blog_id], 2,'.','');
 	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
-	$x=0;
 	$discounttotal=0;
-	$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
-	foreach ($eshopcartarray as $productid => $opt){
-		$x++;
-		$productidident=$productid;
-		//$toreplace=array(" ","-","$","\r","\r\n","\n","\\","&","#",";");
-		//$productidident=md5($productidident);//str_replace($toreplace, "", $productidident);
-		$echo.= "\n  <input type=\"hidden\" name=\"item_name_".$x."\" value=\"".$opt['pname']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"eshopident_".$x."\" value=\"".$productidident."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"quantity_".$x."\" value=\"".$opt['qty']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"weight_".$x."\" value=\"".$opt['weight']."\" />";
-		/* options */
-		$addoprice=0;
-		if(isset($opt['optset'])){
-			if(isset($qb)) unset($qb);
-			$oset=array();
-			$optings=unserialize($opt['optset']);
-			foreach($optings as $foo=>$opst){
-				if(!isset($opst['type']) || (isset($opst['text']) && $opst['text']!='')) 
-					$qb[]="id=$opst[id]";
-			}
-			
-			if(isset($qb)){
-				$qbs = implode(" OR ", $qb);
-				$otable=$wpdb->prefix.'eshop_option_sets';
-				$orowres=$wpdb->get_results("select price, id from $otable where $qbs ORDER BY id ASC");
-				foreach($orowres as $orow){
-					$addoprice+=$orow->price;
-				}
-			}
-			
-		}
-		
-		//$amt=round(($opt["price"]+$addoprice), 2);
-		$amt=number_format(round(($opt["price"]+$addoprice), 2),2,'.','');
-		/*
-		if(is_discountable(calculate_total())!=0){
-			$discount=is_discountable(calculate_total())/100;
-			$amt = number_format(round($amt-($amt * $discount), 2),2);
-		}
-		*/
-		$echo.= "\n  <input type=\"hidden\" name=\"amount_".$x."\" value=\"".$amt."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"item_number_".$x."\" value=\"".$opt['pid']." : ".$opt['item']."\" />";
-		$echo.= "\n  <input type=\"hidden\" name=\"postid_".$x."\" value=\"".$opt['postid']."\" />";
-	}
-	$echo.= "\n  <input type=\"hidden\" name=\"numberofproducts\" value=\"".$x."\" />";
-	
-	
 	if(eshop_discount_codes_check()){
 		if(!isset($eshop_discount)) $eshop_discount='';
 		$echo .='<fieldset class="eshop fld5"><legend><label for="eshop_discount">'.__('Discount Code (case sensitive)','eshop').'</label></legend>
@@ -303,7 +255,9 @@ if (!function_exists('eshopShowform')) {
 	if(is_array($eshopoptions['method'])){
 		$i=1;
 		$eshopfiles=eshop_files_directory();
-		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via', 'eshop').eshop_checkreqd($reqdarray,'pay').'</legend>'."\n<ul>\n";
+		$echo .='<fieldset class="eshop fld6 eshoppayvia"><legend>'.__('Pay Via', 'eshop').eshop_checkreqd($reqdarray,'pay').'</legend>'."\n";
+		$echo = apply_filters('eshopaddtocheckoutpayvia',$echo);
+		$echo .= "<ul>\n";
 		if(sizeof((array)$eshopoptions['method'])!=1){
 			foreach($eshopoptions['method'] as $k=>$eshoppayment){
 				$replace = array(".");
@@ -353,7 +307,9 @@ if (!function_exists('eshopShowform')) {
 				$i++;
 			}
 		}
-		$echo .="</ul>\n</fieldset>\n";
+		$echo .="</ul>\n";
+		$echo .= eshopCartFields();	
+		$echo .="</fieldset>\n";
 	}
 	if('yes' == $eshopoptions['tandc_use']){
 		if($eshopoptions['tandc_id']!='')
@@ -512,7 +468,12 @@ if (!function_exists('eshop_checkout')) {
 				}
 			}
 			
-			
+			$_SESSION['shiptocountry'.$blog_id] = $eshopoptions['location'];
+			if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
+				$_SESSION['shiptocountry'.$blog_id] = $_POST['ship_country'];
+			}elseif(isset($_POST['country']) && $_POST['country']!=''){
+				$_SESSION['shiptocountry'.$blog_id] = $_POST['country'];
+			}
 		}else{
 			$pzoneid='';
 			$tablecountries=$wpdb->prefix.'eshop_countries';
@@ -547,6 +508,7 @@ if (!function_exists('eshop_checkout')) {
 				
 				
 			}
+			
 		}
 		//
 		$shiparray=array();
@@ -614,7 +576,7 @@ if (!function_exists('eshop_checkout')) {
 		$reqdarray=apply_filters('eshopCheckoutReqd', $reqdvalues );
 		foreach($_POST as $key=>$value) {
 			$key = $value;
-			}
+		}
 		if($eshopoptions['shipping']=='4' && 'no' == $eshopoptions['downloads_only'] && !isset($_POST['eshop_shiptype']) && !eshop_only_downloads()){
 			$error.= '<li>'.__('<strong>Shipping</strong> - not selected.','eshop').'</li>';
 		}
@@ -782,7 +744,7 @@ if (!function_exists('eshop_checkout')) {
 				$_POST['numberofproducts']=sizeof($_SESSION['eshopcart'.$blog_id]);
 
 				//shipping
-				if(isset($_SESSION['shipping'.$blog_id]))$shipping=$_SESSION['shipping'.$blog_id];
+				if(isset($_SESSION['shipping'.$blog_id]))$shipping=eshopShipTaxAmt();
 				//discount shipping
 				if(is_shipfree(calculate_total())) $shipping=0;
 				//shipping
@@ -924,7 +886,7 @@ if (!function_exists('eshop_checkout')) {
 			else
 				$_SESSION['addy'.$blog_id]['comments']='';
 			
-			if(!isset($_SESSION['shipping'.$blog_id]))$_SESSION['shipping'.$blog_id]=$shipping;
+			if(!isset($_SESSION['shipping'.$blog_id]))$_SESSION['shipping'.$blog_id]['cost']=$shipping;
 
 			//grab all the POST variables and store in cookie
 			$array=$_POST;

@@ -2,12 +2,12 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.0.2');
+	define('ESHOP_VERSION', '6.1.0');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 6.0.2
+Version: 6.1.0
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -60,7 +60,7 @@ if (!function_exists('eshop_cron')) {
 			if($max>0){
 				$to = $eshopoptions['cron_email'];    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin",'eshop');
-				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop_orders.php&action=Dispatch'."\n";
+				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop-orders.php&action=Dispatch'."\n";
 				$headers=eshop_from_address();
 				$subject=get_bloginfo('name').__(": outstanding orders");
 				wp_mail($to, $subject, $body, $headers);
@@ -83,14 +83,14 @@ if (!function_exists('eshop_update_routine')) {
 }
 include_once 'cart-functions.php';
 /* the widget */
-include_once 'eshop_widget.php';
+include_once 'eshop-widget.php';
 //make sure theme thumbnail support is on, even for those themes that don't use it.
 add_theme_support('post-thumbnails');
 
 if(is_admin()){
 	/* eShop ADMIN SPECIFIC HERE */
-	include_once 'admin_functions.php';
-	include_once 'eshop_settings.php';
+	include_once 'eshop-admin-functions.php';
+	include_once 'eshop-settings.php';
 	include_once( 'eshop-product-entry.php' );
 
 	/* activations */
@@ -105,7 +105,7 @@ if(is_admin()){
 
 }else{
 	/* eShop Public facing only */
-	include_once 'public_functions.php';
+	include_once 'public-functions.php';
 	include_once( 'eshop-shortcodes.php' );
 	include_once( 'eshop-add-cart.php' );
 	
@@ -131,7 +131,7 @@ if(is_admin()){
 }
 /* ajax the cart - won't allow me to put this in the above*/
 if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
-	include_once 'public_functions.php';
+	include_once 'public-functions.php';
 	add_action('wp_head', 'eshop_action_javascript');
 	add_action('wp_print_scripts', 'eshop_ajax_inc');
 	add_action('wp_ajax_eshop_special_action', 'eshop_special_action_callback');
@@ -143,6 +143,5 @@ if(isset($eshopoptions['ajax_cart']) && 'yes' == $eshopoptions['ajax_cart']){
  	
 }
 //test/live mode
-
 add_action ('init','eshop_test_or_live');
 ?>

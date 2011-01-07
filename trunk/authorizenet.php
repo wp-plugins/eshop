@@ -57,24 +57,27 @@ switch ($eshopaction) {
 		$sequence	= rand(1, 1000);
 		// a timestamp is generated
 		$timestamp	= time ();
-		$amount=str_replace(',','',$_POST['amount']);
+		$pvalue=str_replace(',','',$_POST['amount']);
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
+		if(isset($_POST['tax'])) $pvalue += str_replace(',','',$_POST['tax']);
+		$pvalue = number_format($pvalue,2);
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
 		
 		if( phpversion() >= '5.1.2' ){
-			$fingerprint = hash_hmac("md5", $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key); 
+			$fingerprint = hash_hmac("md5", $LID . "^" . $sequence . "^" . $timestamp . "^" . $pvalue . "^", $Key); 
 		}else{ 
-			$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $amount . "^", $Key)); 
+			$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $pvalue . "^", $Key)); 
 		}
 
-		$md5hash=$secret.$LID.$invoice.$amount;
+		$md5hash=$secret.$LID.$invoice.$pvalue;
 		$checkid=md5($md5hash);
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		$p = new authorizenet_class; 
 		$p->add_field('x_login',$LID);
-		$p->add_field('x_amount',$amount);
+		$p->add_field('x_amount',$pvalue);
 		$p->add_field('x_description',$description);
 		$p->add_field('x_invoice_num',$invoice);
 		$p->add_field('x_fp_sequence',$sequence);
@@ -123,7 +126,7 @@ switch ($eshopaction) {
 		}
 		$p->add_field('x_relay_url', $ilink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -243,7 +246,7 @@ switch ($eshopaction) {
 			 $body .= "\n".__("from ",'eshop').$ps->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 if(isset($array['dbid']))
-			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop_orders.php&view='.$array['dbid']."\n";
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
 
 			 foreach ($ps->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";

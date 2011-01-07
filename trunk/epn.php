@@ -82,7 +82,7 @@ switch ($eshopaction) {
 		$p->add_field('ReturnApprovedURL', $ilink);
 		$p->add_field('ReturnDeclinedURL', $idlink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1',eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){

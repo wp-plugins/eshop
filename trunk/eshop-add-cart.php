@@ -15,15 +15,18 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 	//was (!strpos($pee, '[eshop_addtocart'))
 	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		$details='';
-		if($eshopoptions['details']['show']!='')
-			$details.=" show='".esc_attr($eshopoptions['details']['show'])."'";
-		if($eshopoptions['details']['class']!='')
-			$details.=" class='".esc_attr($eshopoptions['details']['class'])."'";
-		if($eshopoptions['details']['hide']!='')
-			$details.=" options_hide='".esc_attr($eshopoptions['details']['hide'])."'";
-			
-		if($isshortcode=='n')
-			$pee.= do_shortcode('[eshop_details'.$details.']');
+		if(isset($eshop_product['products'])){
+			if($eshopoptions['details']['show']!='')
+				$details.=" show='".esc_attr($eshopoptions['details']['show'])."'";
+			if($eshopoptions['details']['class']!='')
+				$details.=" class='".esc_attr($eshopoptions['details']['class'])."'";
+			if($eshopoptions['details']['hide']!='')
+				$details.=" options_hide='".esc_attr($eshopoptions['details']['hide'])."'";
+			if($eshopoptions['details']['tax']!='')
+				$details.=" etax_page='".esc_attr($eshopoptions['details']['tax'])."'";
+			if($isshortcode=='n')
+				$pee.= do_shortcode('[eshop_details'.$details.']');
+		}
 	}
 	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
 		//need to precheck stock
@@ -53,6 +56,10 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 		$stkav=apply_filters('eshop_show_addtocart',$stkav,$postid, $post);
 		if($stkav=='1'){
 			$currsymbol=$eshopoptions['currency_symbol'];
+			if(isset($eshopoptions['cart_text']) && $eshopoptions['cart_text']!='' && $short=='no'){
+				if($eshopoptions['cart_text_where']=='1') 
+					$replace .= '<p class="eshop-cart-text-above">'.stripslashes(esc_attr($eshopoptions['cart_text'])).'</p>';
+			}
 			$replace .= '
 			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart'.$saleclass.'" id="eshopprod'.$postid.$uniq.'">
 			<fieldset><legend><span class="offset">'.__('Order','eshop').' '.stripslashes(esc_attr($eshop_product['description'])).'</span></legend>';
@@ -256,9 +263,12 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 			}
 			$replace .='<div class="eshopajax"></div></fieldset>
 			</form>';
+			if(isset($eshopoptions['cart_text']) && $eshopoptions['cart_text']!=''  && $short=='no'){
+				if($eshopoptions['cart_text_where']=='2') 
+					$replace .= '<p class="eshop-cart-text-below">'.stripslashes(esc_attr($eshopoptions['cart_text'])).'</p>';
+			}
 			$pee = $pee.$replace; 
 		}elseif(isset($currst) && $currst<=0 && is_array($eshop_product)){
-			//eshop_get_custom('Stock Available')=='No' && eshop_get_custom('Price 1')!=''){
 				$replace = '<p class="eshopnostock"><span>'.$eshopoptions['cart_nostock'].'</span></p>';
 				$pee = $pee.$replace;
 		}

@@ -16,7 +16,7 @@
   background-color : #F5FAFF;
   border:2px solid #B9DFFF;
   color : #333;
-  margin : 0;
+  margin : 0 0 5px 0;
   padding : 3px 2em 0 5px;
 }
 
@@ -448,6 +448,7 @@ p.delete small {
 div.paginate {
   margin : 5px 2px;
   border : 1px solid #bbb;
+  padding: 3px;
 }
 
 /* pagination */

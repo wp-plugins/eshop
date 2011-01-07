@@ -9,8 +9,8 @@ xmlns:c="http://base.google.com/cns/1.0">
 <pubDate>'.date("r").'</pubDate>
 <title>'.get_bloginfo_rss('name').'</title>
 <link>'.get_bloginfo_rss('url').$eshopref.'</link>
-<description>Product feed for '.get_bloginfo_rss('name').'</description>
-<generator>eShop: Accessible e-commerce plugin for Wordpress</generator>'."\n";
+<description>'.sprintf(__('Product feed for %1$s', 'eshop'),get_bloginfo_rss('name')).'</description>
+<generator>'.__('eShop: Accessible e-commerce plugin for Wordpress','eshop').'</generator>'."\n";
 
 global $wpdb,$eshopoptions;
 $metatable=$wpdb->prefix.'postmeta';

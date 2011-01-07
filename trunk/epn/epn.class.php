@@ -54,11 +54,15 @@ class epn_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to epn.
-
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
-         $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			$pos = strpos($name, 'amount');
+			if ($pos === false) {
+			   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			}else{
+				$echo .= eshopTaxCartFields($name,$value);
+      	    }
       }
       $refid=uniqid(rand());
       $echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
@@ -72,7 +76,7 @@ class epn_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to epn.
-      global $eshopoptions;
+      global $eshopoptions, $blog_id;
       $epn = $eshopoptions['epn'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
@@ -82,6 +86,10 @@ class epn_class {
 		$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 		$epn = $eshopoptions['epn']; 
 		$Cost=$_POST['amount'];
+		if(isset($_POST['tax']))
+			$Cost += $_POST['tax'];
+		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $Cost += $_SESSION['shipping'.$blog_id]['tax'];
+		
 		$desc = str_replace($replace, " ", $epn['description']);
 		$address=$_POST['address1'].' '. $_POST['address2'];
 		$ReturnApprovedURL=$_POST['ReturnApprovedURL'];

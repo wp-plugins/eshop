@@ -337,7 +337,7 @@ function eshop_downloads_manager() {
 	<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
 		<?php
-		$apge=get_admin_url().'admin.php?page=eshop_downloads.php';
+		$apge=get_admin_url().'admin.php?page=eshop-downloads.php';
 		echo '<ul id="eshopsubmenu">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ia"'.$cia.'>'.__('ID Number','eshop').'</a></li>';
@@ -379,7 +379,7 @@ function eshop_downloads_manager() {
 		   $alt = ($calt % 2) ? '' : ' class="alt"';
 		   echo "<tr".$alt.">\n";
 		   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
-		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop_downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
+		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
 		   echo '<td headers="edsize redid'.$row->id.'">'.eshop_read_filesize($size)."</td>\n";
 		   echo '<td headers="edstatus redid'.$row->id.'">'.eshop_check_brokenlink($filepath)."</td>\n";
 		   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";

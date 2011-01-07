@@ -75,7 +75,12 @@ class webtopay_class {
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
-         $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			$pos = strpos($name, 'amount');
+			if ($pos === false) {
+			   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+			}else{
+				$echo .= eshopTaxCartFields($name,$value);
+      	    }
       }
       $refid=uniqid(rand());
       $echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
@@ -89,7 +94,7 @@ class webtopay_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to webtopay.
-      global $eshopoptions;
+      global $eshopoptions, $blog_id;
       $webtopay = $eshopoptions['webtopay'];
 		$echortn='<div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
@@ -100,7 +105,13 @@ class webtopay_class {
           	
 			$webtopay = $eshopoptions['webtopay']; 
 			
-			$Cost = $_POST['amount']-$_POST['shipping_1'];
+			$theamount=str_replace(',','',$_POST['amount']);
+			if(isset($_POST['tax']))
+				$theamount += str_replace(',','',$_POST['tax']);
+			
+			if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];
+			
+			$Cost = $theamount-$_POST['shipping_1'];
 			
 			$ExtraCost = $_POST['shipping_1'];
 			

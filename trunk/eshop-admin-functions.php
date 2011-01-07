@@ -1,5 +1,5 @@
 <?php
-if ('admin-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-admin-functions.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 if (!function_exists('eshopdata')) {
@@ -12,7 +12,7 @@ if (!function_exists('eshopdata')) {
 				include 'eshop-all-data.php';
 			}
 			if(isset($_GET['eshopbasedl'])){
-				include 'eshop_base_feed.php';
+				include 'eshop-base-feed.php';
 			}
 		}
 		
@@ -38,22 +38,21 @@ if (!function_exists('eshop_admin')) {
     function eshop_admin() {    
 		global $wp_version;
 		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
-		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop_admin_orders_stats');
-		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop_orders.php'),'eshop_admin_orders');
-		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop_shipping.php'),'eshop_admin_shipping');
-		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop_products.php'), 'eshop_admin_products');
-		$page[]=add_submenu_page('eshop.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop_options.php'), 'eshop_admin_options');
-		$page[]=add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop_downloads.php'), 'eshop_admin_downloads');
-		$page[]=add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop_discount_codes.php'), 'eshop_discount_codes');
-		$page[]=add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop_base.php'), 'eshop_admin_base');
-		$page[]=add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop_templates.php'),'eshop_admin_templates');
-		$page[]=add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop_about.php'), 'eshop_admin_about');
+		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop-admin-orders-stats');
+		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
+		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
+		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop-products.php'), 'eshop_admin_products');
+		$page[]=add_submenu_page('eshop.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop-options.php'), 'eshop_admin_options');
+		$page[]=add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop-downloads.php'), 'eshop_admin_downloads');
+		$page[]=add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop-discount-codes.php'), 'eshop_discount_codes');
+		$page[]=add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop-base.php'), 'eshop_admin_base');
+		$page[]=add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop-templates.php'),'eshop_admin_templates');
+		$page[]=add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
 		if (eshop_wp_version('3'))
-			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my_orders.php'),'eshop_user_orders');
+			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my-orders.php'),'eshop_user_orders');
 
-		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_style.php'),'eshop_admin_style');
-		//$page[]=add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop_settings.php'),'eshop_admin_settings');
-		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop_uninstall.php'),'eshop_admin_uninstall');
+		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop-style.php'),'eshop_admin_style');
+		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop-uninstall.php'),'eshop_admin_uninstall');
 		$help='
 		<p><strong>' . __('eShop help:') . '</strong></p>
 		<ul>
@@ -98,7 +97,7 @@ if (!function_exists('eshop_admin_uninstall')) {
 	 * display the uninstall page.
 	 */
 	 function eshop_admin_uninstall() {
-		 include 'eshop_uninstall.php';
+		 include 'eshop-uninstall.php';
 	 }
 }
 //
@@ -107,7 +106,7 @@ if (!function_exists('eshop_admin_help')) {
      * display the help page.
      */
      function eshop_admin_help() {
-         include 'eshop_help.php';
+         include 'eshop-help.php';
      }
 }
 if (!function_exists('eshop_admin_about')) {
@@ -115,7 +114,7 @@ if (!function_exists('eshop_admin_about')) {
      * display the about page.
      */
      function eshop_admin_about() {
-         include 'eshop_about.php';
+         include 'eshop-about.php';
      }
 }
 
@@ -128,9 +127,9 @@ if (!function_exists('eshop_admin_orders_stats')) {
      	//redirect to install instructions on first visit only
 		 if('no'==$eshopoptions['first_time']){
 			$_GET['action']='Stats';
-			include 'eshop_orders.php';
+			include 'eshop-orders.php';
 		 }else{
-			include 'eshop_about.php';
+			include 'eshop-about.php';
 		 }
 	}
 }
@@ -140,7 +139,7 @@ if (!function_exists('eshop_user_orders')) {
      * display the pending orders.
      */
      function eshop_user_orders() {
-		include 'eshop_user_orders.php';
+		include 'eshop-user-orders.php';
      }
 }
 if (!function_exists('eshop_admin_orders')) {
@@ -148,7 +147,7 @@ if (!function_exists('eshop_admin_orders')) {
      * display the pending orders.
      */
      function eshop_admin_orders() {
-		include 'eshop_orders.php';
+		include 'eshop-orders.php';
      }
 }
 if (!function_exists('eshop_admin_options')) {
@@ -156,7 +155,7 @@ if (!function_exists('eshop_admin_options')) {
      * display the pending orders.
      */
      function eshop_admin_options() {
-		include 'eshop_options.php';
+		include 'eshop-options.php';
      }
 }
 if (!function_exists('eshop_admin_shipping')) {
@@ -164,7 +163,7 @@ if (!function_exists('eshop_admin_shipping')) {
      * display the shipping.
      */
      function eshop_admin_shipping() {
-         include 'eshop_shipping.php';
+         include 'eshop-shipping.php';
      }
 }
 
@@ -173,7 +172,7 @@ if (!function_exists('eshop_admin_states')) {
      * display the states.
      */
      function eshop_admin_states() {
-         include 'eshop_states.php';
+         include 'eshop-states.php';
      }
 }
 if (!function_exists('eshop_admin_countries')) {
@@ -181,7 +180,7 @@ if (!function_exists('eshop_admin_countries')) {
      * display the countries.
      */
      function eshop_admin_countries() {
-         include 'eshop_countries.php';
+         include 'eshop-countries.php';
      }
 }
 if (!function_exists('eshop_admin_style')) {
@@ -189,7 +188,7 @@ if (!function_exists('eshop_admin_style')) {
      * display the CSS.
      */
      function eshop_admin_style() {
-         include 'eshop_style.php';
+         include 'eshop-style.php';
          eshop_form_admin_style();
      }
 }
@@ -198,7 +197,7 @@ if (!function_exists('eshop_admin_templates')) {
      * display the email templates.
      */
      function eshop_admin_templates() {
-         include 'eshop_templates.php';
+         include 'eshop-templates.php';
          eshop_template_email();
      }
 }
@@ -207,7 +206,7 @@ if (!function_exists('eshop_admin_downloads')) {
      * display upload/downloads.
      */
      function eshop_admin_downloads() {
-         include 'eshop_downloads.php';
+         include 'eshop-downloads.php';
          eshop_downloads_manager();
      }
 }
@@ -216,7 +215,7 @@ if (!function_exists('eshop_admin_products')) {
      * display products.
      */
      function eshop_admin_products() {
-         include 'eshop_products.php';
+         include 'eshop-products.php';
          eshop_products_manager();
      }
 }
@@ -225,7 +224,7 @@ if (!function_exists('eshop_discount_codes')) {
      * discount codes.
      */
      function eshop_discount_codes() {
-         include 'eshop_discount_codes.php';
+         include 'eshop-discount-codes.php';
          eshop_discounts_manager();
      }
 }
@@ -234,7 +233,7 @@ if (!function_exists('eshop_admin_base')) {
      * display products.
      */
      function eshop_admin_base() {
-         include 'eshop_base.php';
+         include 'eshop-base.php';
          eshop_base_manager();
      }
 }
@@ -244,7 +243,7 @@ if (!function_exists('eshop_admin_base_settings')) {
      * display products.
      */
      function eshop_admin_base_settings() {
-         include 'eshop_base_settings.php';
+         include 'eshop-base-settings.php';
      }
 }
 if (!function_exists('eshop_admin_base_create_feed')) {
@@ -264,7 +263,7 @@ if (!function_exists('eshop_install')) {
     function eshop_install() {
         global $wpdb, $user_level, $wp_rewrite, $wp_version;
         include_once ('cart-functions.php');
-        include 'eshop_install.php';
+        include 'eshop-install.php';
     }
 }
 

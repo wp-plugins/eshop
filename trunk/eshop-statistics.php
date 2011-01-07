@@ -1,5 +1,5 @@
 <?php
-if ('eshop_statistics.php' == basename($_SERVER['SCRIPT_FILENAME']))
+if ('eshop-statistics.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
      
 /*
@@ -27,13 +27,13 @@ function eshop_small_stats($stock,$limit=5){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
-				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop_downloads.php&amp;edit='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
+				echo '<td id="redid'.$row->id.'" headers="edtitle'.$rand.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="edit details for '.$row->title.'">'.$row->title."</a></td>\n";
 				echo '<td headers="eddown'.$rand.' redid'.$row->id.'">'.$row->downloads."</td>\n";
 				echo '<td headers="edpurch'.$rand.' redid'.$row->id.'">'.$row->purchases."</td>\n";
 				echo '</tr>'."\n";
 			}
-			echo '</tbody></table>';
-		break;
+			echo '</tbody></table>'."\n";
+			break;
 		case 'stock':
 		default:
 			$mypages=$wpdb->get_results("SELECT $wpdb->posts.ID,$wpdb->posts.post_title, stk.purchases, stk.option_id
@@ -48,10 +48,11 @@ function eshop_small_stats($stock,$limit=5){
 			foreach($mypages as $page){
 				$calt++;
 				$alt = ($calt % 2) ? '' : ' class="alternate"';
-				echo '<tr'.$alt.'><td id="repid'.$page->ID.'" headers="edprod'.$rand.'"><a href="post.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a> '.$page->option_id.'</td><td headers="edpurch'.$rand.' repid'.$page->ID.'">'.$page->purchases.'</td></tr>'."\n";
+				echo '<tr'.$alt.'><td id="repid'.$page->ID.$rand.$calt.'" headers="edprod'.$rand.'"><a href="post.php?action=edit&amp;post='.$page->ID.'">'.$page->post_title.'</a> '.$page->option_id.'</td>
+				<td headers="edpurch'.$rand.' repid'.$page->ID.$rand.$calt.'">'.$page->purchases.'</td></tr>'."\n";
 			}
 			echo '</tbody></table>';
-		break;
+			break;
 	}
 }
 ?>

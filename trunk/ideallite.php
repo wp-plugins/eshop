@@ -117,6 +117,11 @@ switch ($eshopaction) {
 			$p->refid=$_POST['RefNr'];
 			
 			$totalCosts = $_POST['amount'];
+			
+			if(isset($_POST['tax']))
+				$totalCosts += $_POST['tax'];
+			if(isset($_SESSION['shipping'.$blog_id]['tax'])) $totalCosts += $_SESSION['shipping'.$blog_id]['tax'];	
+			
 			$p->totalCosts100 = round($totalCosts * 100);
 			
 			$p->sValidUntil = date('Y-m-d\TG:i:s\Z', strtotime('+1 hour'));
@@ -191,7 +196,7 @@ switch ($eshopaction) {
 		
 		$p->add_field('notify_url', $ilink);
 
-		$p->add_field('shipping_1', number_format($_SESSION['shipping'.$blog_id],2));
+		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){
@@ -331,7 +336,7 @@ switch ($eshopaction) {
 				if($eshopdosend=='yes'){
 					$subject .=" Ref:".$ps->ipn_data['RefNr'];
 					$orderID=$wpdb->get_var("select id from $detailstable where checkid='$checked' limit 1");
-					$viewOrdersURL = get_option( 'siteurl' ) . '/wp-admin/admin.php?page=eshop_orders.php&view=' . $orderID;
+					$viewOrdersURL = get_option( 'siteurl' ) . '/wp-admin/admin.php?page=eshop-orders.php&view=' . $orderID;
 					// email to business a complete copy of the notification from ideallite to keep!!!!!
 					$array=eshop_rtn_order_details($checked);
 					$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
@@ -351,30 +356,6 @@ switch ($eshopaction) {
 					//lets make sure this is here and available
 					include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 					eshop_send_customer_email($checked, '9');
-		/*
-					//this is an email sent to the customer:
-					//first extract the order details
-					$array=eshop_rtn_order_details($checked);
-	
-					$etable=$wpdb->prefix.'eshop_emails';
-					//grab the template
-					$thisemail=$wpdb->get_row("SELECT emailSubject,emailContent FROM ".$etable." WHERE (id='9' AND emailUse='1') OR id='1'  order by id DESC limit 1");
-					$this_email = stripslashes($thisemail->emailContent);
-					// START SUBST
-					$csubject=stripslashes($thisemail->emailSubject);
-					$this_email = eshop_email_parse($this_email,$array);
-	
-					//try and decode various bits - may need tweaking Mike, we may have to write 
-					//a function to handle this depending on what you are using - but for now...
-					$this_email=html_entity_decode($this_email,ENT_QUOTES);
-					$headers=eshop_from_address();
-					wp_mail($array['eemail'], $csubject, $this_email,$headers);
-					//affiliate
-					if($array['affiliate']!=''){
-						do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$array['total'], 
-					"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
-					}
-				*/
 					// Clear the session - Empty the cart
 					$_SESSION = array();
 					session_destroy();

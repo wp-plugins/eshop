@@ -58,8 +58,13 @@ class authorizenet_class {
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
-         $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
-      }
+		   $pos = strpos($name, 'amount');
+		    if ($pos === false) {
+		          $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
+		    }else{
+		       	$echo .= eshopTaxCartFields($name,$value);
+      	    }
+	  }
       $refid=uniqid(rand());
       $echo .= "<input type=\"hidden\" name=\"RefNr\" value=\"$refid\" />\n";
       $echo.='<label for="ppsubmit" class="finalize"><small>'.__('<strong>Note:</strong> Submit to finalize order at Authorize.net.','eshop').'</small><br />
@@ -118,8 +123,12 @@ class authorizenet_class {
 					$_POST['item_name_'.$i] = substr($_POST['item_name_'.$i],0,25).'...';
 				if(strlen($_POST['item_number_'.$i]) > 249)
 					$_POST['item_number_'.$i] = substr($_POST['item_number_'.$i],0,249).'...';
+				
+				$lineamount=str_replace(',','',$_POST['amount_'.$i]);
+				if(isset($_POST['tax_'.$i]))
+					$lineamount += str_replace(',','',$_POST['tax_'.$i]);
 
-				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(',','',$_POST['amount_'.$i]).$sep.'N';
+				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.$lineamount.$sep.'N';
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />';
 			}
 			if($shipping>0){
