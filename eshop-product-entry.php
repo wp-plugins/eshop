@@ -65,6 +65,7 @@ function eshop_inner_custom_box($post) {
     <caption><?php _e('Product Options','eshop'); ?></caption>
     <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th>
     <th id="eshopprice"><?php _e('Price','eshop'); ?></th>
+    <?php if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 ){?><th id="eshopsaleprice"><?php _e('Sale Price','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['etax']['bands']>'0'){?><th id="eshoptax"><?php _e('Tax','eshop'); ?></th><?php } ?>
     <?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?>
@@ -91,8 +92,12 @@ function eshop_inner_custom_box($post) {
 					$eshoptax=$eshop_product['products'][$i]['tax'];
 				else
 					$eshoptax='0';
+				
+				$saleprice = '';
+				if(isset($eshop_product['products'][$i]['saleprice']))
+					$saleprice = $eshop_product['products'][$i]['saleprice'];
 			}else{
-				$stkqty=$weight=$opt=$price=$downl='';
+				$saleprice=$stkqty=$weight=$opt=$price=$downl='';
 				$eshoptax='0';
 			}
 			$alt = ($i % 2) ? '' : ' class="alternate"';
@@ -102,6 +107,12 @@ function eshop_inner_custom_box($post) {
 			<td headers="eshopoption eshopnumrow<?php echo $i; ?>"><label for="eshop_option_<?php echo $i; ?>"><?php _e('Option','eshop'); ?> <?php echo $i; ?></label><input id="eshop_option_<?php echo $i; ?>" name="eshop_option_<?php echo $i; ?>" value="<?php echo $opt; ?>" type="text" size="20" /></td>
 			<td headers="eshopprice eshopnumrow<?php echo $i; ?>"><label for="eshop_price_<?php echo $i; ?>"><?php _e('Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_price_<?php echo $i; ?>" name="eshop_price_<?php echo $i; ?>" value="<?php echo $price; ?>" type="text" size="6" /></td>
 			<?php 
+			//saleprice
+			if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 ){
+			?>
+			<td headers="eshopsaleprice eshopnumrow<?php echo $i; ?>"><label for="eshop_saleprice_<?php echo $i; ?>"><?php _e('Sale Price','eshop'); ?> <?php echo $i; ?></label><input id="eshop_saleprice_<?php echo $i; ?>" name="eshop_saleprice_<?php echo $i; ?>" value="<?php echo $saleprice; ?>" type="text" size="6" /></td>
+			<?php
+			}
 			//tax
 			if(isset($eshopoptions['etax']['bands']) && $eshopoptions['etax']['bands']>'0'){	?>
 				<td headers="eshoptax eshopnumrow<?php echo $i; ?>">
@@ -282,6 +293,13 @@ function eshop_save_postdata( $post_id ) {
 			if(!is_numeric($_POST['eshop_stkqty_'.$i]) && $_POST['eshop_stkqty_'.$i]!=''){
 				add_filter('redirect_post_location','eshop_stkqty_error');
 			}
+		}
+		if(!isset($_POST['eshop_saleprice_'.$i]) || $_POST['eshop_saleprice_'.$i]==''){
+			$eshop_product['products'][$i]['saleprice'] = '';
+		}elseif(!is_numeric($_POST['eshop_saleprice_'.$i])){
+			add_filter('redirect_post_location','eshop_saleprice_error');
+		}else{
+			$eshop_product['products'][$i]['saleprice'] = $_POST['eshop_saleprice_'.$i];
 		}
 	}
 	$eshop_product['description']=htmlspecialchars($_POST['eshop_product_description']);

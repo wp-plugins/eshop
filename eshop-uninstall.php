@@ -36,15 +36,15 @@ if(isset($_POST['delete'])){
 	$etable[] = $wpdb->prefix . "eshop_rates";
 	$etable[] = $wpdb->prefix . "eshop_order_items";
 	$etable[] = $wpdb->prefix . "eshop_orders";
-	$etable[] = $wpdb->prefix ."eshop_stock";
-	$etable[] = $wpdb->prefix ."eshop_downloads";
-	$etable[] = $wpdb->prefix ."eshop_download_orders";
+	$etable[] = $wpdb->prefix . "eshop_stock";
+	$etable[] = $wpdb->prefix . "eshop_downloads";
+	$etable[] = $wpdb->prefix . "eshop_download_orders";
 	$etable[] = $wpdb->prefix . "eshop_countries";
-	$etable[] = $wpdb->prefix ."eshop_base_products";
-	$etable[] = $wpdb->prefix ."eshop_discount_codes";
-	$etable[] = $wpdb->prefix ."eshop_emails";
-	$etable[] = $wpdb->prefix.'eshop_option_names';
-	$etable[] = $wpdb->prefix.'eshop_option_sets';
+	$etable[] = $wpdb->prefix . "eshop_base_products";
+	$etable[] = $wpdb->prefix . "eshop_discount_codes";
+	$etable[] = $wpdb->prefix . "eshop_emails";
+	$etable[] = $wpdb->prefix . 'eshop_option_names';
+	$etable[] = $wpdb->prefix . 'eshop_option_sets';
 
 	foreach($etable as $table){
 		if ($wpdb->get_var("show tables like '$table'") == $table) {
@@ -78,8 +78,22 @@ if(isset($_POST['delete'])){
 	if ($handle = opendir($dloaddir)) {
 		// This is the correct way to loop over the directory. //
 		while (false !== ($file = readdir($handle))) {
-			if($file!='.' && $file !='..')
-				unlink ($dloaddir.$file);
+			if($file!='.' && $file !='..'){
+				if(is_dir($dloaddir.$file)){
+					$subdloaddir=$dloaddir.$file;
+					echo '<li> sub dir '.$subdloaddir.'</li>';
+					if ($subhandle = opendir($subdloaddir)) {
+						// This is the correct way to loop over the directory. //
+						while (false !== ($subfile = readdir($subhandle))) {
+							if($subfile!='.' && $subfile !='..')
+								unlink ($subdloaddir.$subfile);
+						}
+					}
+					rmdir($subdloaddir);
+				}else{
+					unlink ($dloaddir.$file);
+				}
+			}
 		}
 		closedir($handle);
 		rmdir($dloaddir);
@@ -102,12 +116,21 @@ if(isset($_POST['delete'])){
 	wp_unregister_sidebar_widget('eshop_widget');
 	wp_unregister_sidebar_widget('eshop_pay_widget');
 	wp_unregister_sidebar_widget('eshop_products_widget');
+	wp_unregister_sidebar_widget('eshop_cart_widget');
+	wp_unregister_sidebar_widget('eshop_search_widget');
+	
 	unregister_widget('eshop_widget');
 	unregister_widget('eshop_pay_widget');
 	unregister_widget('eshop_products_widget');
+	unregister_widget('eshop_cart_widget');
+	unregister_widget('eshop_search_widget');
+
 	delete_option('widget_eshop_widget');
 	delete_option('widget_eshop_pay_widget');
 	delete_option('widget_eshop_products_widget');
+	delete_option('widget_eshop_cart_widget');
+	delete_option('widget_eshop_search_widget');
+	
 	echo '<li>'.__('Widgets - deleted','eshop').'</li>';
 
 	//clear the cron

@@ -144,15 +144,19 @@ if (!function_exists('display_cart')) {
 					
 					//TAX
 					if($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
-						$taxrate=eshop_get_tax_rate($eshop_product['products'][$opt['option']]['tax'], $pzone);
-						$ttotax=$line_total;
-						if(isset($disc_line))
-							$ttotax=$disc_line * $opt["qty"];
-						$taxamt=round(($ttotax * $taxrate)/100, 2);
-						$echo.= '<td>'.$taxrate.'</td><td>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop'))).'</td>';
-						$taxtotal += $taxamt;
-						$_SESSION['eshopcart'.$blog_id][$productid]['tax_rate']=$taxrate;
-						$_SESSION['eshopcart'.$blog_id][$productid]['tax_amt']=$taxamt;
+						if(isset($eshop_product['products'][$opt['option']]['tax']) && $eshop_product['products'][$opt['option']]['tax']!='' && $eshop_product['products'][$opt['option']]['tax']!='0'){
+							$taxrate=eshop_get_tax_rate($eshop_product['products'][$opt['option']]['tax'], $pzone);
+							$ttotax=$line_total;
+							if(isset($disc_line))
+								$ttotax=$disc_line * $opt["qty"];
+							$taxamt=round(($ttotax * $taxrate)/100, 2);
+							$echo.= '<td>'.$taxrate.'</td><td>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop'))).'</td>';
+							$taxtotal += $taxamt;
+							$_SESSION['eshopcart'.$blog_id][$productid]['tax_rate']=$taxrate;
+							$_SESSION['eshopcart'.$blog_id][$productid]['tax_amt']=$taxamt;
+						}else{
+							$echo.= '<td></td><td></td>';
+						}
 						
 					}
 					//
@@ -1354,65 +1358,94 @@ if (!function_exists('eshop_download_the_product')) {
 						$dload=$dir_upload.$item;
 						$dlfilter=apply_filters('eshop_download_filter',$dload,$item);
 						if( !has_filter( 'eshop_download_filter') ) {
-							header("Pragma: public"); // required
-							header("Expires: 0");
-							header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-							header("Cache-Control: private",false); // required for certain browsers 
-							header("Content-Type: application/force-download");
-							// it even allows spaces in filenames
-							header('Content-Disposition: attachment; filename="'.$item.'"');
-							header("Content-Transfer-Encoding: binary");
-							header("Content-Length: ".filesize($dload));
-							//ob_clean();
-							//flush();
-							readfile("$dload");
-							//alternatives download methods comment above, and uncomment below
-							//eshop_readfile($dload);
-							//eshop_readfile_temp($dload,$item);
-							exit();
+							list($title, $ext) = explode('.', $item);
+							if(!is_dir($dir_upload.$title)){
+								header("Pragma: public"); // required
+								header("Expires: 0");
+								header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+								header("Cache-Control: private",false); // required for certain browsers 
+								header("Content-Type: application/force-download");
+								// it even allows spaces in filenames
+								header('Content-Disposition: attachment; filename="'.$item.'"');
+								header("Content-Transfer-Encoding: binary");
+								header("Content-Length: ".filesize($dload));
+								//ob_clean();
+								//flush();
+								readfile("$dload");
+								//alternatives download methods comment above, and uncomment below
+								//eshop_readfile($dload);
+								//eshop_readfile_temp($dload,$item);
+								exit();
+							}else{
+								eshop_multi_download($email,$code,false);
+							}
 						}
 					}
 				}
 			}else{
-				//multiple files - need to be zipped.
-				include_once("archive-class.php");
-
-				$date=date("Y-m-d");
-				$backupfilename=get_bloginfo('name').'-'.$date.'.zip';
-				$test = new zip_file($backupfilename);
-
-				// Create archive in memory
-				// Do not recurse through subdirectories
-				// Do not store file paths in archive
-				// Add lib/archive.php to archive
-				//$test->add_files("src/archive.php");
-				// Add all jpegs and gifs in the images directory to archive
-
-
-				$test->set_options(array('inmemory' => 1, 'recurse' => 0, 'storepaths' => 0,'prepend' => 'downloads'));
-				$chkcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
-				$chkresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
-				if($chkcount>0){
-					foreach($chkresult as $drow){
-						$item=$drow->files;
-						$dload=$dir_upload.$drow->files;
-						$test->add_files(array($dload));
-						$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$drow->id'");
-						//update product with number of downloads made
-						$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$drow->title' && files='$item' limit 1");
-					}
-				}	
-				// make sure output buffering is disabled
-				ob_end_clean();
-				// Create archive in memory
-				$test->create_archive();
-				// Send archive to user for download
-				$test->download_file();
+			
+				eshop_multi_download($email,$code,true);
+		
 			}
 		}
 		return;
 	}
 }
+
+
+if (!function_exists('eshop_multi_download')){
+  function eshop_multi_download($email, $code,$update=true) {
+		//multiple files - need to be zipped.
+		include_once("archive-class.php");
+		global $wpdb,$eshopoptions;
+		$table = $wpdb->prefix ."eshop_downloads";
+		$ordertable = $wpdb->prefix ."eshop_download_orders";
+		$dir_upload = eshop_download_directory();
+		
+		$date=date("Y-m-d");
+		$backupfilename=get_bloginfo('name').'-'.$date.'.zip';
+		$test = new zip_file($backupfilename);
+
+		// Create archive in memory
+		// Do not recurse through subdirectories
+		// Do not store file paths in archive
+		// Add lib/archive.php to archive
+		//$test->add_files("src/archive.php");
+		// Add all jpegs and gifs in the images directory to archive
+
+		$addfiles=array();
+		$test->set_options(array('inmemory' => 1, 'recurse' => 1, 'storepaths' => 0,'prepend' => 'downloads'));
+		$chkcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
+		$chkresult = $wpdb->get_results("Select * from $ordertable where email='$email' && code='$code' && downloads!='0'");
+		if($chkcount>0){
+			foreach($chkresult as $drow){
+				$item=$drow->files;
+				$dload=$dir_upload.$drow->files;
+				list($title, $ext) = explode('.', $drow->files);
+				if(is_dir($dir_upload.$title)){
+					$addfiles[]=$dir_upload.$title;
+				}else{
+					$addfiles[]=$dload;
+				}
+				if($update === true){
+					$wpdb->query("UPDATE $ordertable SET downloads=downloads-1 where email='$email' && code='$code' && id='$drow->id'");
+					//update product with number of downloads made
+					$wpdb->query("UPDATE $table SET downloads=downloads+1 where title='$drow->title' && files='$item' limit 1");
+				}
+			}
+		}
+		$test->add_files($addfiles);
+		// make sure output buffering is disabled
+		ob_start();
+		ob_end_clean();
+		// Create archive in memory
+		$test->create_archive();
+		// Send archive to user for download
+		$test->download_file();
+		exit;
+	}
+}
+
 if (!function_exists('eshop_readfile')){
   // Read a file and display its content chunk by chunk
   function eshop_readfile($filename, $retbytes = TRUE) {
@@ -1553,9 +1586,9 @@ if (!function_exists('eshop_from_address')) {
 	function eshop_from_address(){
 		global $eshopoptions;
 		if($eshopoptions['from_email']!=''){
-			$headers='From: '.get_bloginfo('name').' <'.$eshopoptions['from_email'].">\n";
+			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name'), ENT_QUOTES) ).' <'.$eshopoptions['from_email'].">\n";
 		}elseif($eshopoptions['business']!=''){
-			$headers='From: '.get_bloginfo('name').' <'.$eshopoptions['business'].">\n";
+			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name'), ENT_QUOTES) ).' <'.$eshopoptions['business'].">\n";
 		}else{
 			$headers='';
 		}
@@ -1666,6 +1699,11 @@ if (!function_exists('eshop_stkqty_error')) {
  		return add_query_arg( 'eshop_message', 4, $loc );
 	}
 }
+if (!function_exists('eshop_saleprice_error')) {
+	function eshop_saleprice_error($loc) {
+ 		return add_query_arg( 'eshop_message', 5, $loc );
+	}
+}
 if (!function_exists('eshop_error_message')) {
 	function eshop_error_message($num){ 
 		$messages=array(
@@ -1673,6 +1711,7 @@ if (!function_exists('eshop_error_message')) {
 		'2'=> __('Price incorrect, please only enter a numeric value.','eshop'),
 		'3'=> __('Weight incorrect, please only enter a numeric value.','eshop'),
 		'4'=> __('Stock Quantity is incorrect, please only enter a numeric value.','eshop'),
+		'5'=> __('Sale Price incorrect, please only enter a numeric value.','eshop'),
 		'100'=>__('eShop settings updated.','eshop')
 		);
 		$messages=apply_filters('eshop_error_messages',$messages);
@@ -1780,6 +1819,14 @@ if (!function_exists('eshop_cart_process')) {
 					$dlchk=$eshop_product['products'][$option]['download'];
 				if($dlchk!='')	$pclas='F';
 				$iprice= $eshop_product['products'][$option]['price'];
+				if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+				&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']  
+				&& isset($eshop_product['products'][$option]['saleprice']) && $eshop_product['products'][$option]['saleprice']!=''
+				&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+					$iprice=$eshop_product['products'][$option]['saleprice'];
+				}
+				
+				
 				if($iprice==''){
 					$error='<p><strong class="error">'.__('Error: That product is currently not available.','eshop').'</strong></p>';
 					$option=$_POST['option']='';
@@ -2338,6 +2385,21 @@ if (!function_exists('eshop_parse_optsets')){
 		$data['optset']=$optset;
 		$data['addoprice']=$addoprice;
 		return $data;
+	}
+}
+if (!function_exists('eshop_filesize')){
+	function eshop_filesize($file){
+		$size = 0;
+		$eshopdldir = eshop_download_directory();
+		list($title, $ext) = explode('.', $file);
+		if(is_dir($eshopdldir.$title)){
+			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($eshopdldir.$title)) as $filed){
+			  $size+=$filed->getSize();
+			}
+		}else{
+			$size = @filesize($eshopdldir.$file);
+		}
+		return $size;
 	}
 }
 ?>
