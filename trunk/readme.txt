@@ -47,12 +47,15 @@ Version next
 * *WARNING* 	__Back up your database before upgrading__
 * *NEW* 	__Sales Tax__ can now be added. (settable per product option after 'tax bands' has been entered).
 * *NEW* 	Extra Stats.
+* *NEW* 	Downloads can now have 'collections'.
+* *NEW* 	Sale Prices for main options, shortcodes adapted to take price = yes, sale or both.
 * *FIXED/Added* Secondary address box for Paypal, finally allowing non main account email addresses to be used!
-* *Warning* 	Please backup your database before upgrading.
 * *fixed* 	small bug with listing on the downloads page.
 * *fixed* 	slashes issue with option sets
 * *fixed* 	eshop_welcome shortcode now picks up loged in users display name if set.
 * *fixed* 	slashes appearing in emails.(hopefully)
+* *fixed* 	eshop_details shortcode now functions correctly.
+* *fixed* 	checkout losing chosen State/County/Province, props VK.
 * *added* 	generic eshop-widget class to eShop widgets
 * *added* 	filter for the eshop_files_directory
 * *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
@@ -61,9 +64,13 @@ Version next
 * *added* 	action eshop_sold_product which is sent the post id of the product that was sold.
 * *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode.
 * *added* 	missing strings for translations
-* *changed* 	removed _ from filenames and replaced with -, easier for developers.
+* *added* 	classes for styling in various places
 * *changed* 	Discount Codes are no longer case sensitive
-* *Note* 	after upgrading you may need tp refresh the page due to the change above.
+* *changed* 	removed _ from filenames and replaced with -, easier for developers.
+* *Note* 	after upgrading you may need to refresh the page due to the change above.
+
+__Note__ This version has been tested with Paypal, Cash, Bank, Webtopay and Authorize.net merchant gateways, and all seemed to work OK in test mode. The other gateways have not had a full test, but should work without issue.
+
 
 Version 6.0.2
 

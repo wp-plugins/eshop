@@ -23,17 +23,25 @@ function checkfordownloads($id){
 	return array($ret,$inthese);
 }
 function eshop_check_brokenlink($file){
-	$file_exists = @fopen($file, "r");
+	$eshopdldir = eshop_download_directory();
+
+	list($title, $ext) = explode('.', $file);
+	if(!is_dir($eshopdldir.$title)){
+		$file_exists = @fopen($eshopdldir.$file, "r");
+		fclose($file_exists);
+	}else{
+		$file_exists=true;
+	}
 
 	if (!$file_exists){ 
 		 return '<span class="missing">'.__('Missing','eshop').'</span>';
 	}else{ 
 		 return '<span class="available">'.__('Available','eshop').'</span>';
-		 fclose($file_exists);
 	 }
-	fclose($file_exists);
+	 
 	return false;
 }
+
 function eshop_contains_files(){
 	global $wpdb;
 	$contains='';
@@ -43,10 +51,23 @@ function eshop_contains_files(){
 	foreach($rows as $row){
 		$indir[]=$row->files;
 	}
-	if ($handle = opendir(eshop_download_directory())) {
+	$eshopdldir = eshop_download_directory();
+	if ($handle = opendir($eshopdldir)) {
 		while (false !== ($file = readdir($handle))) {
 			if ($file != "." && $file != ".." && $file != ".htaccess" && $file != ".htpasswd" && $file != "index.htm"  && !in_array($file,$indir)) {
-				$contains[]=$file;
+				if(is_dir($eshopdldir.$file)){
+					$newname=$file.__('.Collection','eShop');
+					if(!in_array($newname,$indir))
+						$contains[]=$newname;
+					if ($subhandle = opendir($eshopdldir.$file)) {
+						while (false !== ($subfile = readdir($subhandle))) {
+							if ($subfile != "." && $subfile != ".." && !in_array($file.'/'.$subfile,$indir))
+								$contains[]=$file.'/'.$subfile;
+						}
+					}
+				}else{
+					$contains[]=$file;
+				}
 			}
 		}
 		closedir($handle);
@@ -160,8 +181,8 @@ function eshop_downloads_manager() {
 		if(is_array(eshop_contains_files())){
 			foreach(eshop_contains_files() as $filename){
 				$file=$wpdb->escape($filename);
-				list($title, $ext) = split('[.]', $filename);
-				$title=$wpdb->escape($filename);
+				list($title, $ext) = explode('.', $filename);
+				$title=$wpdb->escape($title);
 				$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$title',NOW(),'$file')");
 			}
 		}
@@ -195,8 +216,7 @@ function eshop_downloads_manager() {
 			 </thead>
 			 <tbody>
 			 <?php
-				$filepath=eshop_download_directory().$row->files;
-			   $size = @filesize($filepath);
+			   $size = eshop_filesize($row->files);
 			   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
 			   echo "<tr>\n";
 			   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
@@ -372,8 +392,7 @@ function eshop_downloads_manager() {
 		 <?php
 		 $calt=0;
 		foreach($myrowres as $row){    
-			$filepath=$dir_upload.$row->files;
-		   $size = @filesize($filepath);
+		   $size = eshop_filesize($row->files);
 		   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
 		   $calt++;
 		   $alt = ($calt % 2) ? '' : ' class="alt"';
@@ -381,7 +400,7 @@ function eshop_downloads_manager() {
 		   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
 		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
 		   echo '<td headers="edsize redid'.$row->id.'">'.eshop_read_filesize($size)."</td>\n";
-		   echo '<td headers="edstatus redid'.$row->id.'">'.eshop_check_brokenlink($filepath)."</td>\n";
+		   echo '<td headers="edstatus redid'.$row->id.'">'.eshop_check_brokenlink($row->files)."</td>\n";
 		   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";
 		   echo '<td headers="eddown redid'.$row->id.'">'.$row->downloads."</td>\n";
 		   echo '<td headers="edpurch redid'.$row->id.'">'.$row->purchases."</td>\n";

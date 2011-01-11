@@ -747,13 +747,27 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		$echo .= apply_filters('eshop_list_excerpt',apply_filters('the_excerpt', get_the_excerpt()));
 
 		if($price!='no'){
-			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
+			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
+		}
+		if($price=='yes'){
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
 			}
 		}
-
+		if($price=='sale'){
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['saleprice']) && $eshop_product['products']['1']['saleprice']!='' && isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+				$echo.='<span class="ep_price saleprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['saleprice'],__('2','eshop'))).'</span>';
+			}
+		}
+		if($price=='both'){
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
+				$echo.='<span class="ep_price onsale">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
+			}
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['saleprice']) && $eshop_product['products']['1']['saleprice']!='' && isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+				$echo.='<span class="ep_price saleprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['saleprice'],__('2','eshop'))).'</span>';
+			}
+		}
 		if($form=='yes' || $form=='yesqty'){
 			if($form=='yesqty') $short='no';
 			else $short=$form;
@@ -809,10 +823,25 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span>'."\n";
 		
 		if($price!='no'){
-			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
 			$currsymbol=$eshopoptions['currency_symbol'];
+			$eshop_product=maybe_unserialize(get_post_meta( $post->ID, '_eshop_product',true ));
+		}
+		if($price=='yes'){
 			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
 				$echo.='<span class="ep_price">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
+			}
+		}
+		if($price=='sale'){
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['saleprice']) && $eshop_product['products']['1']['saleprice']!='' && isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+				$echo.='<span class="ep_price saleprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['saleprice'],__('2','eshop'))).'</span>';
+			}
+		}
+		if($price=='both'){
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['price'])){
+				$echo.='<span class="ep_price onsale">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['price'],__('2','eshop'))).'</span>';
+			}
+			if(is_array($eshop_product) && isset($eshop_product['products']['1']['saleprice']) && $eshop_product['products']['1']['saleprice']!='' && isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+				$echo.='<span class="ep_price saleprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eshop_product['products']['1']['saleprice'],__('2','eshop'))).'</span>';
 			}
 		}
 		if($form=='yes' || $form=='yesqty'){
@@ -1339,17 +1368,19 @@ function eshop_details($atts){
 	if($show!=''){
 		$wanttoshow=explode(",", $show);
 		foreach($wanttoshow as $showit){
+			$showit=trim($showit);
 			if(in_array($showit,$allowedtoshow)) $willshow[]=$showit;
 		}
 	}else{
 		$willshow=$allowedtoshow;
 	}
 	
-	$allowedtohide=array('price','tax','download','weight','stockqty','filesize');
+	$allowedtohide=array('price','saleprice','tax','download','weight','stockqty','filesize');
 	$willhide=array();
 	if($options_hide!=''){
 		$wanttohide=explode(",", $options_hide);
 		foreach($wanttohide as $hideit){
+			$hideit=trim($hideit);
 			if(in_array($hideit,$allowedtohide)) $willhide[]=$hideit;
 		}
 	}else{
@@ -1394,12 +1425,15 @@ function eshop_details($atts){
     					$listed.='<th id="'.$eshopletter.'eshopnum">#</th><th id="'.$eshopletter.'eshopoption">'. __('Option','eshop').'</th>';
     				if(!in_array('price',$willhide)){
     					$thprice=__('Price','eshop');
+	    				$listed.='<th id="'.$eshopletter.'eshopprice"'.$thclass.'>'.$thprice.'</th>';
+	    			}
+	    			if(!in_array('saleprice',$willhide) && isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+	    			&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']){
+					   	$thprice=__('Sale Price','eshop');
 						if(isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
 							$thprice=__('Sale Price','eshop');
-							$thclass=' class="sale"';
 						}
-   				
-	    				$listed.='<th id="'.$eshopletter.'eshopprice"'.$thclass.'>'.$thprice.'</th>';
+					   	$listed.='<th id="'.$eshopletter.'eshopsaleprice" class="sale">'.$thprice.'</th>';
 	    			}
 	    			if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
 	    				$listed.='<th id="'.$eshopletter.'eshoptax">'.__('Sales Tax','eshop').'</th>';
@@ -1455,11 +1489,29 @@ function eshop_details($atts){
 						$listed.='<th id="'.$eshopletter.'eshopnumrow'.$i.'" headers="'.$eshopletter.'eshopnum">'.$i.'</th>';
 						if(!in_array('option',$willhide))
 							$listed.='<td headers="'.$eshopletter.'eshopoption '.$eshopletter.'eshopnumrow'.$i.'">'.stripslashes(esc_attr($opt)).'</td>';
-						if(!in_array('price',$willhide))
+						if(!in_array('price',$willhide)){
+							if(isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+							&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+								$thclass=' class="onsale"';
+							}
 							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</td>';
+						}
+						if(!in_array('saleprice',$willhide) && isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+						&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']){
+							$thprice=__('Sale Price','eshop');
+							$sprice='';
+							if(isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+							&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+								$sprice=$eshop_product['products'][$i]['saleprice'];
+								$sprice=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sprice,__('2','eshop')));
+							}
+							$listed.='<td headers="'.$eshopletter.'eshopsaleprice '.$eshopletter.'eshopnumrow'.$i.'" class="saleprice">'.$sprice.'</td>';
+	    				}
+						
+						
 						//tax
 						if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
-							if($eshoptaxband!=''){
+							if($eshoptaxband!='' && $eshoptaxband!='0'){
 								$tzone=sprintf(__('Band %1$d','eshop'),$eshoptaxband);
 								$disptzone=apply_filters('eshop_rename_tax_zone',array());
 								if(isset($disptzone[$eshoptaxband]))
@@ -1479,9 +1531,6 @@ function eshop_details($atts){
 							foreach($myrowres as $prow){
 								if( trim( $prow->id ) == trim( $downl ) ){
 									$listed.=stripslashes(esc_attr($prow->title))."\n";
-									$filepath=eshop_download_directory().$prow->files;
-									$size = @filesize($filepath);
-									$downlsize=eshop_read_filesize($size);
 								}
 							}
 							$listed .="</td>";
@@ -1493,7 +1542,7 @@ function eshop_details($atts){
 							foreach($myrowres as $prow){
 								if( trim( $prow->id ) == trim( $downl ) ){
 									$filepath=eshop_download_directory().$prow->files;
-									$size = @filesize($filepath);
+									$size = eshop_filesize($prow->files);
 									$downlsize=eshop_read_filesize($size);
 								}
 							}

@@ -28,7 +28,7 @@ if (!function_exists('eshop_downloads')) {
 				foreach($dlresult as $dlrow){
 					//download single items.
 					$filepath=$dir_upload.$dlrow->files;
-			   		$dlfilesize = @filesize($filepath);
+			   		$dlfilesize = eshop_filesize($dlrow->files);
 			   		$tsize=$tsize+$dlfilesize;
 			   		if($dlrow->downloads==1){
 			   			$dlword=__('download','eshop');

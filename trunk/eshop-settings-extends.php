@@ -497,23 +497,22 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		<label for="eshop_options_num"><?php _e('Options per product','eshop'); ?></label><input id="eshop_options_num" name="eshop_options_num" type="text" value="<?php echo $eshopoptions['options_num']; ?>" size="5" /><br />
 		<label for="eshop_stock_control"><?php _e('Stock Control','eshop')._e(' <small>(Warning: setting this will make all products have zero stock, each one will have to be set manually.</small>)','eshop'); ?></label>
 			<select name="eshop_stock_control" id="eshop_stock_control">
-			<?php
-			if('yes' == $eshopoptions['stock_control']){
-				echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
-				echo '<option value="no">'.__('No','eshop').'</option>';
-			}else{
-				echo '<option value="yes">'.__('Yes','eshop').'</option>';
-				echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
-			}
-			?>
+				<option value="yes" <?php selected($eshopoptions['stock_control'],'yes'); ?>><?php _e('Yes','eshop'); ?></option>
+				<option value="no" <?php selected($eshopoptions['stock_control'],'no'); ?>><?php _e('No','eshop'); ?></option>
 			</select><br />
 			<strong><?php _e('Min/Max Quantities','eshop'); ?></strong>
-				<?php 
+			<?php 
 				if(!isset($eshopoptions['min_qty'])) $eshopoptions['min_qty']='';
 				if(!isset($eshopoptions['max_qty'])) $eshopoptions['max_qty']='';
-				?>
-				<label for="eshop_min_qty"><?php _e('Minimum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_min_qty" name="eshop_min_qty" type="text" value="<?php echo $eshopoptions['min_qty']; ?>" size="5" /><br />
-				<label for="eshop_max_qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
+			?>
+			<label for="eshop_min_qty"><?php _e('Minimum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_min_qty" name="eshop_min_qty" type="text" value="<?php echo $eshopoptions['min_qty']; ?>" size="5" /><br />
+			<label for="eshop_max_qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
+			<?php if(!isset($eshopoptions['sale_prices'])) $eshopoptions['sale_prices']=0; ?>
+			<label for="eshop_sale_prices"><?php _e('Use Sale prices','eshop'); ?></label>
+			<select name="eshop_sale_prices" id="eshop_stock_control">
+				<option value="1" <?php selected($eshopoptions['sale_prices'],'1'); ?>><?php _e('Yes','eshop'); ?></option>
+				<option value="0" <?php selected($eshopoptions['sale_prices'],'0'); ?>><?php _e('No','eshop'); ?></option>
+			</select><br />
 		</fieldset>
 	
 		<?php
@@ -537,19 +536,12 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			<p><strong><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></strong></p>
 			<label for="eshop_details_display"><?php _e('Add product details section to every page with details to display. <small>(adding the shortcode will override settings here)</small>','eshop'); ?></label>
 			<select name="eshop_details_display" id="eshop_details_display">
-			<?php
-			if('yes' == $eshopoptions['details']['display']){
-				echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
-				echo '<option value="no">'.__('No','eshop').'</option>';
-			}else{
-				echo '<option value="yes">'.__('Yes','eshop').'</option>';
-				echo '<option value="no" selected="selected">'.__('No','eshop').'</option>';
-			}
-			?>
+			<option value="yes" <?php selected($eshopoptions['details']['display'],'yes'); ?>><?php _e('Yes','eshop'); ?></option>
+			<option value="no" <?php selected($eshopoptions['details']['display'],'no'); ?>><?php _e('No','eshop'); ?></option>
 			</select><br />
 			<label for="eshop_details_class"><?php _e('Class','eshop'); ?> <small><?php _e('(changes the standard class)','eshop'); ?></small></label><input id="eshop_details_class" name="eshop_details_class" type="text" value="<?php echo $eshopoptions['details']['class']; ?>" size="30" /><br />
 			<label for="eshop_details_show"><?php _e('Show','eshop'); ?> <small><?php _e('(which details, separated by commas, to show and in which order - acceptable values and the default order: sku, description, options, optionset, shipping)','eshop'); ?></small></label><input id="eshop_details_show" name="eshop_details_show" type="text" value="<?php echo $eshopoptions['details']['show']; ?>" size="60" /><br />
-			<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: price, tax, download, weight, filesize, stockqty)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
+			<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: price, saleprice, tax, download, weight, filesize, stockqty)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
 			<label for="eshop_cart_nostock"><?php _e('Out of Stock message','eshop'); ?></label><input id="eshop_cart_nostock" name="eshop_cart_nostock" type="text" value="<?php echo $eshopoptions['cart_nostock']; ?>" size="30" /><br />
 			<label for="eshop_details_tax"><?php _e('Tax Page ID','eshop'); ?> <small><?php _e('(page with tax rates shortcode)','eshop'); ?></small></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
 
@@ -953,6 +945,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
 		$eshopoptions['cart_text']=$_POST['eshop_cart_text'];
 		$eshopoptions['cart_text_where']=$wpdb->escape($_POST['eshop_cart_text_where']);
+		$eshopoptions['sale_prices']=$wpdb->escape($_POST['eshop_sale_prices']);
 
 		if (eshop_wp_version('3')){
 			$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);

@@ -162,6 +162,14 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 					for($i=1;$i<=$opt;$i++){
 						$option=$eshop_product['products'][$i]['option'];
 						$price=$eshop_product['products'][$i]['price'];
+
+						if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+						&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']  && 
+						isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+						&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+							$price=$eshop_product['products'][$i]['saleprice'];
+						}
+						
 						if($i=='1') $esel=' checked="checked"';
 						else $esel='';
 						$currst=1;
@@ -191,6 +199,12 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 						if(isset($eshop_product['products'][$i])){
 							$option=$eshop_product['products'][$i]['option'];
 							$price=$eshop_product['products'][$i]['price'];
+							if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+							&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']  
+							&& isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+							&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+								$price=$eshop_product['products'][$i]['saleprice'];
+							}
 							$currst=1;
 							if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 								if(isset($stkarr[$i]) && $stkarr[$i]>0) $currst=$stkarr[$i];
@@ -209,6 +223,12 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 			}else{
 				$option=$eshop_product['products']['1']['option'];
 				$price=$eshop_product['products']['1']['price'];
+				if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+				&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale'] 
+				&& isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+				&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
+					$price=$eshop_product['products'][$i]['saleprice'];
+				}
 				$currst=1;
 				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){
 					if(isset($stkarr[1]) && $stkarr[1]>0) $currst=$stkarr[1];
