@@ -1586,9 +1586,9 @@ if (!function_exists('eshop_from_address')) {
 	function eshop_from_address(){
 		global $eshopoptions;
 		if($eshopoptions['from_email']!=''){
-			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name'), ENT_QUOTES) ).' <'.$eshopoptions['from_email'].">\n";
+			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name')), ENT_QUOTES).' <'.$eshopoptions['from_email'].">\n";
 		}elseif($eshopoptions['business']!=''){
-			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name'), ENT_QUOTES) ).' <'.$eshopoptions['business'].">\n";
+			$headers='From: '.html_entity_decode( stripslashes(get_bloginfo('name')), ENT_QUOTES).' <'.$eshopoptions['business'].">\n";
 		}else{
 			$headers='';
 		}
