@@ -66,7 +66,7 @@ function eshop_inner_custom_box($post) {
     <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th>
     <th id="eshopprice"><?php _e('Price','eshop'); ?></th>
     <?php if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 ){?><th id="eshopsaleprice"><?php _e('Sale Price','eshop'); ?></th><?php } ?>
-    <?php if($eshopoptions['etax']['bands']>'0'){?><th id="eshoptax"><?php _e('Tax','eshop'); ?></th><?php } ?>
+    <?php if(isset($eshopoptions['etax']) && $eshopoptions['etax']['bands']>'0'){?><th id="eshoptax"><?php _e('Tax','eshop'); ?></th><?php } ?>
     <?php if($eshopdlavail>0){ ?><th id="eshopdownload"><?php _e('Download','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?>
     <?php if($eshopoptions['stock_control']=='yes'){?><th id="eshopstkqty"><?php _e('Stock','eshop'); ?></th><?php } ?>

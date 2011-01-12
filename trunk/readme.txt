@@ -12,8 +12,8 @@ An accessible Shopping Cart plugin.
 
 eShop is an accessible shopping cart plugin for WordPress, packed with various features. Including:
 
-* Utilises WordPress pages or posts, and custom post types, to create products
-* enhanced for WP3.0 users - customers can sign up to your site (settable option)
+* Utilises WordPress pages or posts, and compatible with custom post types, to create products
+* Customers can sign up to your site (settable option)
 * Various methods available for listing products
 * Products can have multiple options
 * Upload downloadable products
@@ -34,6 +34,8 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * able to be used as a product catalogue with no sales.
 * and much much more
 
+* *NEW* for this version - Sales tax!
+
 Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 
 == Screenshots ==
@@ -42,7 +44,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version next
+Version 6.1.0
 
 * *WARNING* 	__Back up your database before upgrading__
 * *NEW* 	__Sales Tax__ can now be added. (settable per product option after 'tax bands' has been entered).
@@ -56,6 +58,7 @@ Version next
 * *fixed* 	slashes appearing in emails.(hopefully)
 * *fixed* 	eshop_details shortcode now functions correctly.
 * *fixed* 	checkout losing chosen State/County/Province, props VK.
+* *fixed* 	many small bugs.
 * *added* 	generic eshop-widget class to eShop widgets
 * *added* 	filter for the eshop_files_directory
 * *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]

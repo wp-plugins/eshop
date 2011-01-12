@@ -38,7 +38,7 @@ if (!function_exists('eshop_admin')) {
     function eshop_admin() {    
 		global $wp_version;
 		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
-		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop-admin-orders-stats');
+		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop_admin_orders_stats');
 		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
 		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
 		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop-products.php'), 'eshop_admin_products');
