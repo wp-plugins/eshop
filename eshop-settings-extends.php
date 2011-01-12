@@ -724,7 +724,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		<label for="eshop_users"><?php _e('Allow users to sign up to your site.','eshop'); ?></label>
 			<select name="eshop_users" id="eshop_users">
 				<?php
-				if('yes' == $eshopoptions['users']){
+				if(isset($eshopoptions['users']) && 'yes' == $eshopoptions['users']){
 					echo '<option value="yes" selected="selected">'.__('Yes','eshop').'</option>';
 					echo '<option value="">'.__('No','eshop').'</option>';
 				}else{
@@ -1070,6 +1070,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			'GBP'=>__('Pounds Sterling','eshop'),
 			'USD'=>__('U.S. Dollars','eshop'),
 			'EUR'=>__('Euros','eshop'),
+			'ARS'=>__('Argentinean Pesos','eshop'),
 			'AUD'=>__('Australian Dollars','eshop'),
 			'BRL'=>__('Brazilian Real','eshop'),
 			'BGN'=>__('Bulgarian Lev'),

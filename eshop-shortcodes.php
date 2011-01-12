@@ -1435,7 +1435,7 @@ function eshop_details($atts){
 						}
 					   	$listed.='<th id="'.$eshopletter.'eshopsaleprice" class="sale">'.$thprice.'</th>';
 	    			}
-	    			if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
+	    			if(!in_array('tax',$willhide) && isset($eshopoptions['tax']) &&  $eshopoptions['tax']=='1'){
 	    				$listed.='<th id="'.$eshopletter.'eshoptax">'.__('Sales Tax','eshop').'</th>';
 	    			}
     				if($eshopdlavail>0 && !in_array('download',$willhide)){ 
@@ -1510,7 +1510,7 @@ function eshop_details($atts){
 						
 						
 						//tax
-						if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1'){
+						if(!in_array('tax',$willhide) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 							if($eshoptaxband!='' && $eshoptaxband!='0'){
 								$tzone=sprintf(__('Band %1$d','eshop'),$eshoptaxband);
 								$disptzone=apply_filters('eshop_rename_tax_zone',array());
@@ -1567,7 +1567,7 @@ function eshop_details($atts){
 					 $eshopletter++;
 					$listed.='</tbody></table>'."\n";
 					
-					if(!in_array('tax',$willhide) && $eshopoptions['tax']=='1' && $etax_page!='')
+					if(!in_array('tax',$willhide) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1' && $etax_page!='')
 						$listed .= '<p><a href="'.get_permalink($etax_page).'#eshoptaxtable">'.__('Sales tax rates','eshop').'</a></p>';
 					$listed.="</dd>\n";
 				}
