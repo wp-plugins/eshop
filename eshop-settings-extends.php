@@ -105,12 +105,16 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 	<?php
 	}
 	function sp_pages_box_2($eshopoptions) {
+		if(!isset($eshopoptions['details']['tax']))
+			$eshopoptions['details']['tax']='';
 		?>
 		<fieldset>
 			<p><?php _e('These links automatically appear on the checkout page.','eshop'); ?></p>
 			<label for="eshop_cart_shipping"><?php _e('Shipping rates - page id number','eshop'); ?></label><input id="eshop_cart_shipping" name="eshop_cart_shipping" type="text" value="<?php echo $eshopoptions['cart_shipping']; ?>" size="5" /><br />
 			<label for="eshop_xtra_privacy"><?php _e('Privacy Policy - page id number','eshop'); ?></label><input id="eshop_xtra_privacy" name="eshop_xtra_privacy" type="text" value="<?php echo $eshopoptions['xtra_privacy']; ?>" size="5" /><br />
 			<label for="eshop_xtra_help"><?php _e('Help - page id number','eshop'); ?></label><input id="eshop_xtra_help" name="eshop_xtra_help" type="text" value="<?php echo $eshopoptions['xtra_help']; ?>" size="5" /><br />
+			<label for="eshop_details_tax"><?php _e('Tax Page ID','eshop'); ?> <small><?php _e('(page with tax rates shortcode)','eshop'); ?></small></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
+
 		</fieldset>
 	<?php
 	}
@@ -244,7 +248,20 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		}else{
 			$err=9;		
 		}
-
+		if($_POST['eshop_details_tax']!=''){
+			if(is_numeric($_POST['eshop_details_tax'])){
+				$ptitle=get_post($_POST['eshop_details_tax']);
+				if($ptitle->post_title!=''){
+					$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
+				}else{
+					$err=10;		
+				}	
+			}else{
+				$err=10;		
+			}
+		}else{
+			$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
+		}
 		//lets redirect the post request into get request
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
 		update_option('eshop_plugin_settings',$eshopoptions);
@@ -261,6 +278,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		'7'=>__('The Checkout page needs to be a valid page id number.','eshop'),
 		'8'=>__('The Successful payment page needs to be a page id number.','eshop'),
 		'9'=>__('The Downloads page needs to be a page id number.','eshop'),
+		'10'=>__('Tax rates page ID was not a valid page id number.','eshop'),
 		'100'=>__('eShop Page settings updated.','eshop')
 		);
 		return $messages;
@@ -526,12 +544,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				$eshopoptions['details']['class']='';
 				$eshopoptions['details']['hide']='';
 				$eshopoptions['details']['display']='';
-				$eshopoptions['details']['tax']='';
 			}
-			//additions 
-			if(!isset($eshopoptions['details']['tax']))
-				$eshopoptions['details']['tax']='';
-
 			?>
 			<p><strong><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></strong></p>
 			<label for="eshop_details_display"><?php _e('Add product details section to every page with details to display. <small>(adding the shortcode will override settings here)</small>','eshop'); ?></label>
@@ -543,7 +556,6 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			<label for="eshop_details_show"><?php _e('Show','eshop'); ?> <small><?php _e('(which details, separated by commas, to show and in which order - acceptable values and the default order: sku, description, options, optionset, shipping)','eshop'); ?></small></label><input id="eshop_details_show" name="eshop_details_show" type="text" value="<?php echo $eshopoptions['details']['show']; ?>" size="60" /><br />
 			<label for="eshop_details_hide"><?php _e('Option Hide','eshop'); ?> <small><?php _e('(which details, separated by commas, to hide from the options and options sets and in which order - acceptable values: price, saleprice, tax, download, weight, filesize, stockqty)','eshop'); ?></small></label><input id="eshop_details_hide" name="eshop_details_hide" type="text" value="<?php echo $eshopoptions['details']['hide']; ?>" size="60" /><br />
 			<label for="eshop_cart_nostock"><?php _e('Out of Stock message','eshop'); ?></label><input id="eshop_cart_nostock" name="eshop_cart_nostock" type="text" value="<?php echo $eshopoptions['cart_nostock']; ?>" size="30" /><br />
-			<label for="eshop_details_tax"><?php _e('Tax Page ID','eshop'); ?> <small><?php _e('(page with tax rates shortcode)','eshop'); ?></small></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
 
 			
 			<p><strong><?php _e('General product settings.','eshop'); ?></strong></p>
@@ -957,12 +969,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$eshopoptions['details']['show']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_show']));
 		$eshopoptions['details']['class']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_class']));
 		$eshopoptions['details']['hide']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_hide']));
-		if(is_numeric($_POST['eshop_details_tax'])){
-			$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
-		}else{
-			$eshopoptions['details']['tax']='';
-			$err='10';
-		}
+		
 		$eshopoptions['details']['display']=$wpdb->escape($_POST['eshop_details_display']);
 		//minimal form
 		$eshopoptions['downloads_only']=$wpdb->escape($_POST['eshop_downloads_only']);
@@ -1018,7 +1025,6 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		'4'=>__('Currency Symbol was missing, the default $ has been applied.','eshop'),
 		'5'=>__('You must have a Merchant Gateway selected before you can go live!','eshop'),
 		'6'=>__('You must have set an eShop from email address before you can go live!','eshop'),
-		'10'=>__('Tax rates page ID was not numeric.','eshop'),
 		'100'=>__('eShop general settings updated.','eshop')
 		);
 		return $messages;
