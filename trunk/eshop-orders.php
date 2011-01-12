@@ -456,6 +456,16 @@ if (!function_exists('displaystats')) {
 				foreach($paytype as $gatetype){
 					$gatetype=str_replace(".","",$gatetype);//mainly for authorize.net
 					$mcount=$wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE paidvia='$gatetype'");
+					if(strtolower($gatetype)==__('cash','eshop')){
+						$eshopcash = $eshopoptions['cash'];
+						if($eshopcash['rename']!='')
+							$gatetype=$eshopcash['rename'];
+					}
+					if(strtolower($gatetype)==__('bank','eshop')){
+						$eshopbank = $eshopoptions['bank'];
+						if($eshopbank['rename']!='')
+							$gatetype=$eshopbank['rename'];
+					}
 					?>
 					<li><strong><?php echo $mcount; ?></strong> <?php echo ucwords($gatetype).' '.eshop_plural($mcount,__('order','eshop'),__('orders','eshop')); ?></li>
 					<?php
@@ -702,6 +712,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$paidvia=$drow->paidvia;
 		$eshopaff=$drow->affiliate;
 	}
+	
 	if($status=='Completed'){$status=__('Active','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
 	if($status=='Sent'){$status=__('Shipped','eshop');}

@@ -792,7 +792,16 @@ if (!function_exists('orderhandle')) {
 		if(isset($_POST['country']))
 			$country=$wpdb->escape($_POST['country']);
 		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
-
+		if(strtolower($paidvia)==__('cash','eshop')){
+			$eshopcash = $eshopoptions['cash'];
+			if($eshopcash['rename']!='')
+				$paidvia=$eshopcash['rename'];
+		}
+		if(strtolower($paidvia)==__('bank','eshop')){
+			$eshopbank = $eshopoptions['bank'];
+			if($eshopbank['rename']!='')
+				$paidvia=$eshopbank['rename'];
+		}
 		if(isset($_POST['state']) && $_POST['state']=='' && isset($_POST['altstate']) && $_POST['altstate']!='')
 			$state=$wpdb->escape($_POST['altstate']);
 
@@ -1165,7 +1174,8 @@ if (!function_exists('eshop_rtn_order_details')) {
 				}
 				$cart .= "\n\n";
 			}
-			$taxtotal += $taxvalue;
+			if(isset($taxvalue))
+				$taxtotal += $taxvalue;
 			$total += $value;
 			//check if downloadable product
 			if($myrow->down_id!='0'){
