@@ -77,7 +77,8 @@ class eshop_setting_base_class extends eshop_metabox_class {
 		//lets redirect the post request into get request
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
 
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(
@@ -113,7 +114,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 			<label for="eshop_cart_shipping"><?php _e('Shipping rates - page id number','eshop'); ?></label><input id="eshop_cart_shipping" name="eshop_cart_shipping" type="text" value="<?php echo $eshopoptions['cart_shipping']; ?>" size="5" /><br />
 			<label for="eshop_xtra_privacy"><?php _e('Privacy Policy - page id number','eshop'); ?></label><input id="eshop_xtra_privacy" name="eshop_xtra_privacy" type="text" value="<?php echo $eshopoptions['xtra_privacy']; ?>" size="5" /><br />
 			<label for="eshop_xtra_help"><?php _e('Help - page id number','eshop'); ?></label><input id="eshop_xtra_help" name="eshop_xtra_help" type="text" value="<?php echo $eshopoptions['xtra_help']; ?>" size="5" /><br />
-			<label for="eshop_details_tax"><?php _e('Tax Page ID','eshop'); ?> <small><?php _e('(page with tax rates shortcode)','eshop'); ?></small></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
+			<label for="eshop_details_tax"><?php _e('Tax rates - page id number','eshop'); ?></label><input id="eshop_details_tax" name="eshop_details_tax" type="text" value="<?php echo $eshopoptions['details']['tax']; ?>" size="4" /><br />
 
 		</fieldset>
 	<?php
@@ -265,7 +266,8 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		//lets redirect the post request into get request
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
 		update_option('eshop_plugin_settings',$eshopoptions);
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);	
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(
@@ -377,7 +379,8 @@ class eshop_setting_downloads_class extends eshop_metabox_class {
 		
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
 		
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);	
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(
@@ -464,7 +467,8 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 		}
 		update_option('eshop_plugin_settings',$eshopoptions);
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(
@@ -1465,7 +1469,8 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		update_option('eshop_plugin_settings',$eshopoptions);
 		//lets redirect the post request into get request (you may add additional params at the url, if you need to show save results
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);	
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(
@@ -1726,7 +1731,8 @@ class eshop_setting_tax extends eshop_metabox_class {
 		
 		//lets redirect the post request into get request
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);
+		exit;
 	}
 	function eclass_errors($messages){
 		$messages=array(

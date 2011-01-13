@@ -103,7 +103,7 @@ if (!function_exists('display_cart')) {
 						$data['optset']=$opt['optset'];
 						$data['addoprice']=$addoprice;
 						$data=eshop_parse_optsets($data);
-						$optset=$data['optset'];
+						$optset='<span class="eshopoptsets">'.$data['optset'].'</span>';
 						$addoprice=$data['addoprice'];
 					}else{
 						$optset='';
@@ -1385,7 +1385,7 @@ if (!function_exists('eshop_download_the_product')) {
 								//alternatives download methods comment above, and uncomment below
 								//eshop_readfile($dload);
 								//eshop_readfile_temp($dload,$item);
-								exit();
+								exit;
 							}else{
 								eshop_multi_download($email,$code,false);
 							}
@@ -1519,6 +1519,7 @@ if (!function_exists('eshop_readfile_temp')){
 			wp_redirect($uploads['baseurl'].'/'.$filename, '302');
             unlink($temp_file_name);
             //delete on success.
+            exit;
           }
         }
       } while ($download_attempt < 5 && $info['timed_out']);
