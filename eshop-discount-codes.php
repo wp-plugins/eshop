@@ -28,7 +28,7 @@ function eshop_discounts_manager() {
 	if(isset($_GET['delcode']) && is_numeric($_GET['delcode'])){
 		$id=$_GET['delcode'];
 		$wpdb->query("DELETE FROM $disctable WHERE id='$id' limit 1");
-		echo '<p class="updated fade">'.__('Discount code deleted.','eshop').'</p>';
+		echo '<div class="updated fade"><p>'.__('Discount code deleted.','eshop').'</p></div>';
 	}
 	
 	//edit
@@ -51,7 +51,7 @@ function eshop_discounts_manager() {
 	//new or edit
 	
 	if(isset($_POST['editid'])){
-		
+		$eshop_id=$wpdb->escape(trim($_POST['editid']));
 		if(isset($_POST['eshop_live']))
 			$eshop_live='yes';
 		else
@@ -102,7 +102,7 @@ function eshop_discounts_manager() {
 		
 		if($eshop_code!=''){
 			$ecode=$wpdb->escape(trim(strtolower($eshop_code)));
-			$ecount=$wpdb->get_var("SELECT COUNT(id) FROM $disctable WHERE LOWER(disccode)='$ecode'");
+			$ecount=$wpdb->get_var("SELECT COUNT(id) FROM $disctable WHERE LOWER(disccode)='$ecode' && id!='$eshop_id'");
 			if($ecount!=0)
 				$error[]=__('That code already exists','eshop');
 		}
