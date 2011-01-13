@@ -171,7 +171,8 @@ class eshop_metabox_class {
 		//process here your on $_POST validation and / or option saving
 		
 		//lets redirect the post request into get request (you may add additional params at the url, if you need to show save results
-		wp_redirect($_POST['_wp_http_referer']);		
+		wp_redirect($_POST['_wp_http_referer']);
+		exit;
 	}
 
 	//below you will find for each registered metabox the callback method, that produces the content inside the boxes
