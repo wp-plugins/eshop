@@ -117,24 +117,33 @@ class authorizenet_class {
       		}
 			//convert items to one liners - oh joy is me
 			$numberofproducts=$_POST['numberofproducts'];
+			$taxamount=0;
 			$sep='<|>';
 			for($i=1;$i<=$numberofproducts;$i++){
+				$taxable='N';
 				if(strlen($_POST['item_name_'.$i]) > 25)
 					$_POST['item_name_'.$i] = substr($_POST['item_name_'.$i],0,25).'...';
 				if(strlen($_POST['item_number_'.$i]) > 249)
 					$_POST['item_number_'.$i] = substr($_POST['item_number_'.$i],0,249).'...';
 				
 				$lineamount=str_replace(',','',$_POST['amount_'.$i]);
-				if(isset($_POST['tax_'.$i]))
-					$lineamount += str_replace(',','',$_POST['tax_'.$i]);
+				if(isset($_POST['tax_'.$i])){
+					$linetax=$_POST['tax_'.$i] / $_POST['quantity_'.$i];
+					$lineamount += str_replace(',','',$linetax);
+					$taxamount+=$_POST['tax_'.$i];
+					$taxable='Y';
+				}
 
-				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.$lineamount.$sep.'N';
-				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />';
+				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.$lineamount.$sep.$taxable;
+				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
 			if($shipping>0){
 				$value='item_s'.$sep.'Shipping'.$sep.''.$sep.'1'.$sep.$shipping.$sep.'N';
-				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />';
+				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
+			if($taxamount>0)
+				$echortn.='<input type="hidden" name="x_tax" value="'.$taxamount.'" />'."\n";
+
 			$echortn.='
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to authorize.net &raquo;','eshop').'" /></p>
 	     </form>

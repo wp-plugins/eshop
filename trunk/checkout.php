@@ -37,6 +37,7 @@ if (!function_exists('eshopShowform')) {
 		$currsymbol=$eshopoptions['currency_symbol'];
 		/* '1- text 2 - weight 3-weight symbol' */
 		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
+	
 		foreach ($typearr as $k=>$type){
 			$k++;
 			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  class='$k' && rate_type='ship_weight' order by weight DESC limit 1");
@@ -73,7 +74,10 @@ if (!function_exists('eshopShowform')) {
 			$eshopletter++;
 			$eshopshiptable.='</tbody></table>'."\n";
 		}
-		$echo .=$eshopshiptable;
+		if($eshopshiptable != '')
+			$echo .= $eshopshiptable;
+		else
+			$echo .= '<input type="hidden" name="eshop_shiptype" value="0" id="eshop_shiptype0" />';
 		$echo .='</fieldset>';
 	}
 	
@@ -444,7 +448,7 @@ if (!function_exists('eshop_checkout')) {
 			$tablecountries=$wpdb->prefix.'eshop_countries';
 			$tablestates=$wpdb->prefix.'eshop_states';
 			$shippingzone=$eshopoptions['shipping_zone'];
-			if(isset($_POST['eshop_shiptype'])){
+			if(isset($_POST['eshop_shiptype']) && $_POST['eshop_shiptype'] != '0'){
 				$sztype=$_POST['eshop_shiptype'];
 				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
 			}

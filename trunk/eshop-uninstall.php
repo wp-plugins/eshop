@@ -47,10 +47,8 @@ if(isset($_POST['delete'])){
 	$etable[] = $wpdb->prefix . 'eshop_option_sets';
 
 	foreach($etable as $table){
-		if ($wpdb->get_var("show tables like '$table'") == $table) {
-			//delete it
-			$wpdb->query("DROP TABLE IF EXISTS $table");
-		}
+		//delete it
+		$wpdb->query("DROP TABLE IF EXISTS $table");
 	}
 	echo '<li>'.__('MySQL Tables - deleted','eshop').'</li>';
 
