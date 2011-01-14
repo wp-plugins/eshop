@@ -1585,8 +1585,9 @@ class eshop_setting_tax extends eshop_metabox_class {
 					</thead>
 					<tbody>
 					<?php
-					$x=1;
+					$x=0;
 					foreach ($query as $row){
+						$x++;
 						$alt = ($x % 2) ? '' : ' class="alt"';
 						echo '<tr'.$alt.'>';
 						$tzone=sprintf(__('Band %1$d','eshop'),$x);
@@ -1612,12 +1613,12 @@ class eshop_setting_tax extends eshop_metabox_class {
 						echo '</tr>';
 						if($x >= $etax['bands']) 
 							break;
-						$x++;
 					}
 					
 					//add on spare zones
 					if($x != $etax['bands']) {
 						$z=1;
+						$x++;
 						while ($x < $etax['bands']+1){
 							$alt = ($x % 2) ? '' : ' class="alt"';
 							echo '<tr'.$alt.'>';
@@ -1641,7 +1642,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 								}
 							}else{
 								$y='zone'.$z;
-								echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.__('All Zones','eshop').'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']" type="text" value="'.$row->$y.'" size="6" maxlength="16" /></td>'."\n";
+								echo '<td headers="'.$eshopletter.'zone'.$z.' '.$eshopletter.'cname'.$x.'" class="zone'.$z.'"><label for="'.$eshopletter.'zone'.$z.$x.'">'.__('All Zones','eshop').'</label><input id="'.$eshopletter.'zone'.$z.$x.'" name="'.$area.'['.$x.']" type="text" value="" size="6" maxlength="16" /></td>'."\n";
 								$z++;
 							}
 							echo '</tr>';
