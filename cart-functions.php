@@ -262,7 +262,8 @@ if (!function_exists('display_cart')) {
 				if(is_shipfree(calculate_total())  || eshop_only_downloads()) $shipping=0;
 				
 				$echo.= '<tr class="alt"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
-				if($eshopoptions['shipping']=='4' && !eshop_only_downloads()){
+				if($eshopoptions['shipping']=='4' && !eshop_only_downloads() && $shiparray!='0'){
+					$eshopoptions['ship_types']=trim($eshopoptions['ship_types']);
 					$typearr=explode("\n", $eshopoptions['ship_types']);
 					//darn, had to add in unique to be able to go back a page
 					$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a> ';
@@ -1017,7 +1018,7 @@ if (!function_exists('orderhandle')) {
 				$shiptaxrate=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
 			}
 			$postage_name='';
-			if(isset($_SESSION['eshopshiptype'.$blog_id])  && !eshop_only_downloads()){
+			if(isset($_SESSION['eshopshiptype'.$blog_id])  && !eshop_only_downloads() && $_SESSION['eshopshiptype'.$blog_id]!='0'){
 				$st=$_SESSION['eshopshiptype'.$blog_id]-1;
 				$typearr=explode("\n", $eshopoptions['ship_types']);
 				$postage_name=stripslashes(esc_attr($typearr[$st])).' ';
@@ -2380,11 +2381,11 @@ if (!function_exists('eshop_parse_optsets')){
 			foreach($orowres as $orow){
 				if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
 					if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
-						$oset[]='<span class="eshopoptname">'.stripslashes($orow->name).":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span>';
+						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->name).":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span></span>';
 					}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
 						$xxxx='';
 					else
-						$oset[]='<span class="eshopoptname">'.stripslashes($orow->oname).":</span>\n".'<span class="eshoptext">'.stripslashes($orow->name).'</span>';
+						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->oname).":</span>\n".'<span class="eshoptext">'.stripslashes($orow->name).'</span></span>';
 					$addoprice=$addoprice+$orow->price;
 					$x++;
 				}

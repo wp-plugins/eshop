@@ -531,7 +531,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			<label for="eshop_max_qty"><?php _e('Maximum purchase quantity per product (leave blank for no limit)','eshop'); ?></label><input id="eshop_max_qty" name="eshop_max_qty" type="text" value="<?php echo $eshopoptions['max_qty']; ?>" size="5" /><br />
 			<?php if(!isset($eshopoptions['sale_prices'])) $eshopoptions['sale_prices']=0; ?>
 			<label for="eshop_sale_prices"><?php _e('Use Sale prices','eshop'); ?></label>
-			<select name="eshop_sale_prices" id="eshop_stock_control">
+			<select name="eshop_sale_prices" id="eshop_sale_prices">
 				<option value="1" <?php selected($eshopoptions['sale_prices'],'1'); ?>><?php _e('Yes','eshop'); ?></option>
 				<option value="0" <?php selected($eshopoptions['sale_prices'],'0'); ?>><?php _e('No','eshop'); ?></option>
 			</select><br />
@@ -1683,7 +1683,10 @@ class eshop_setting_tax extends eshop_metabox_class {
 			$err=1;
 			$_POST['eshop_tax_bands']=$eshopoptions['etax']['bands']='';
 		}
-		$eshopiszonal=$eshopoptions['etax']['zonal'];
+		if(isset($eshopoptions['etax']['zonal']))
+			$eshopiszonal=$eshopoptions['etax']['zonal'];
+		else
+			$eshopiszonal='0';
 		$eshopisbands=$eshopoptions['etax']['bands'];
 		$eshopoptions['tax']=$wpdb->escape($_POST['eshop_tax']);
 		$eshopoptions['etax']['zonal']=$wpdb->escape($_POST['eshop_tax_zonal']);
