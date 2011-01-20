@@ -267,8 +267,9 @@ if (!function_exists('display_cart')) {
 					$typearr=explode("\n", $eshopoptions['ship_types']);
 					//darn, had to add in unique to be able to go back a page
 					$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a> ';
+				}else{
+					$echo .=__('Shipping','eshop');
 				}
-				$echo .=__('Shipping','eshop');
 				if($eshopoptions['cart_shipping']!=''){
 					$ptitle=get_post($eshopoptions['cart_shipping']);
 					$echo.=' <small>(<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
@@ -335,8 +336,8 @@ if (!function_exists('display_cart')) {
 			
 			
 		if($iswidget=='w'){
-			$echo.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
-			$echo .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+			$echo.= '<br /><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('Edit Cart','eshop').'</a>';
+			$echo .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 		}
 
 		return $echo;
@@ -541,7 +542,7 @@ if (!function_exists('eshop_get_tax_rate')) {
 	function eshop_get_tax_rate($band, $pzone){
 		global $wpdb, $blog_id, $eshopoptions;
 		$area='country';
-		if($_SESSION['shiptocountry'.$blog_id] == $eshopoptions['location'])
+		if(isset($_SESSION['shiptocountry'.$blog_id]) && $_SESSION['shiptocountry'.$blog_id] == $eshopoptions['location'])
 			$area='state';
 		$ratetable = $wpdb->prefix.'eshop_rates';
 		$band=$wpdb->escape($band);
@@ -701,8 +702,10 @@ if (!function_exists('eshopShipTaxAmt')) {
 		global $blog_id, $eshopoptions;
 		if(!isset($eshopoptions['tax']) || $eshopoptions['tax']=='0')
 			return number_format($_SESSION['shipping'.$blog_id]['cost'],2);
-			
-		$shipping=$_SESSION['shipping'.$blog_id]['cost']+$_SESSION['shipping'.$blog_id]['tax'];
+		$shipping=$_SESSION['shipping'.$blog_id]['cost'];
+		
+		if(isset($_SESSION['shipping'.$blog_id]['tax']))
+			$shipping += $_SESSION['shipping'.$blog_id]['tax'];
 		return number_format($shipping,2);
 
 	}
@@ -1013,9 +1016,12 @@ if (!function_exists('orderhandle')) {
 			$postage=$wpdb->escape(str_replace(',', "", $_POST['shipping_1']));
 			$shiptaxamt=$shiptaxrate='';
 			if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
-				$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
-				$shiptaxamt=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['tax']));
-				$shiptaxrate=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
+				if(isset($_SESSION['shipping'.$blog_id]['cost']))
+					$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
+				if(isset($_SESSION['shipping'.$blog_id]['tax']))
+					$shiptaxamt=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['tax']));
+				if(isset($_SESSION['shipping'.$blog_id]['taxrate']))
+					$shiptaxrate=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
 			}
 			$postage_name='';
 			if(isset($_SESSION['eshopshiptype'.$blog_id])  && !eshop_only_downloads() && $_SESSION['eshopshiptype'.$blog_id]!='0'){

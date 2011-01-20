@@ -47,8 +47,8 @@ class eshop_widget extends WP_Widget {
 						if($showwhat=='both') $eecho.= '<br />';
 						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopqty,'eshop'),$eshopqty);
 					}
-					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+					$eecho.= '<br /><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+					$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 					$eecho .='</p>';
 				}			
 
@@ -58,8 +58,8 @@ class eshop_widget extends WP_Widget {
 				echo $after_widget;
 			}			
 		}elseif($show!='no'){
-			$eecho= '<div class="ajaxcart">'.$text.'</div><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-			$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p>';
+			$eecho= '<div class="ajaxcart">'.$text.'</div><p><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+			$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p>';
 			echo $before_widget;
 			echo $before_title.$title.$after_title;
 			echo $eecho;
@@ -173,8 +173,8 @@ class eshop_cart_widget extends WP_Widget {
 						if($any>0) $eecho.= '<br />';
 						$eecho .=sprintf(__('<span>%s</span> cart total.','eshop'),$eshoptotal);
 					}
-					$eecho.= '<br /><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-					$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+					$eecho.= '<br /><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+					$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
 					$eecho .='</p>';
 				}			
 
@@ -187,8 +187,8 @@ class eshop_cart_widget extends WP_Widget {
 			$eecho='';
 			if($showwhat=='full')
 				$eecho .= '<div class="ajaxcart">';
-			$eecho .= '<div class="eshopcartwidget"><p>'.$text.'</p><p><a href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-			$eecho .='<br /><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p></div>';
+			$eecho .= '<div class="eshopcartwidget"><p>'.$text.'</p><p><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+			$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p></div>';
 			if($showwhat=='full')
 				$eecho .= '</div>';
 			echo $before_widget;

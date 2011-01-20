@@ -652,14 +652,14 @@ if(isset($_POST['mark']) && !isset($_POST['change'])){
 }
 
 if(isset($_POST['change'])){
-	if($_POST['move'][0]!=''){
+	if(isset($_POST['move']) && $_POST['move'][0]!=''){
 		foreach($_POST['move'] as $v=>$ch){
 			$mark=$_POST['mark'];
 			$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$ch'");
 		}
-		echo '<div class="updated fade">'.__('Order status changed successfully.','eshop').'</div>';
+		echo '<div class="updated fade"><p>'.__('Order status changed successfully.','eshop').'</p></div>';
 	}else{
-		echo '<p class="error">'.__('No orders were selected.','eshop').'</p>';
+		echo '<div class="error fade"><p>'.__('No orders were selected.','eshop').'</p></div>';
 	}
 }
 
