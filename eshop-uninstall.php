@@ -1,7 +1,9 @@
 <?php
 if ('eshop-uninstall.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
-     
+    
+ if(!defined(WP_UNINSTALL_PLUGIN))
+ 	wp_die('Unable to uninstall eShop');;
 //See eshop.php for information and license terms
 
 if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
