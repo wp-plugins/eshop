@@ -1,5 +1,5 @@
 <?php
-//class that reperesent the complete plugin
+//class that reperesent the complete plugin - only in use for settings page.
 class eshop_metabox_class {
 	//constructor of class, PHP4 compatible construction for backward compatibility
 	function eshop_metabox_class() {
@@ -48,7 +48,7 @@ class eshop_metabox_class {
 		//add several metaboxes now, all metaboxes registered during load page can be switched off/on at "Screen Options" automatically, nothing special to do therefore
 	//	add_meta_box('howto-metaboxes-sidebox-1', 'Sidebox 1 Title', array(&$this, 'on_sidebox_1_content'), $this->pagehook, 'side', 'core');
 		add_meta_box('howto-metaboxes-sidebox-2', 'Sidebox 2 Title', array(&$this, 'on_sidebox_2_content'), $this->pagehook, 'side', 'core');
-		add_meta_box('eshop-admin', __('eShop Admin test','eshop'), array(&$this, 'on_contentbox_1_content'), $this->pagehook, 'normal', 'core');
+		add_meta_box('eshop-admin', __('eShop Admin','eshop'), array(&$this, 'on_contentbox_1_content'), $this->pagehook, 'normal', 'core');
 	//	add_meta_box('howto-metaboxes-contentbox-2', 'Contentbox 2 Title', array(&$this, 'on_contentbox_2_content'), $this->pagehook, 'normal', 'core');
 	//	add_meta_box('howto-metaboxes-contentbox-additional-1', 'Contentbox Additional 1 Title', array(&$this, 'on_contentbox_additional_1_content'), $this->pagehook, 'additional', 'core');
 	//	add_meta_box('howto-metaboxes-contentbox-additional-2', 'Contentbox Additional 2 Title', array(&$this, 'on_contentbox_additional_2_content'), $this->pagehook, 'additional', 'core');
@@ -90,17 +90,8 @@ class eshop_metabox_class {
 		echo '<div id="eshopicon" class="icon32"></div><h2>'.__('eShop Settings','eshop').'</h2>'."\n";
 		//info:
 		eshop_check_error();
-		echo '<p class="eshopwarn">';
-		if('live' == $eshopoptions['status'])
-			_e('eShop is currently <span class="live">Live</span>.','eshop');
-		else
-			_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
-		
-		if(is_array($eshopoptions['method']))
-		    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$eshopoptions['method'])).'</span>';
-		else
-		    _e(' No Merchant Gateway selected.','eshop');
-		echo '</p>';
+	
+		eshop_admin_mode();
 		//the submenu 
 		echo '<ul class="subsubsub">';
 		echo implode(' | </li>', $status_links) . '</li>';
@@ -132,10 +123,6 @@ class eshop_metabox_class {
 				<div id="post-body" class="has-sidebar">
 					<div id="post-body-content" class="has-sidebar-content">
 						<?php do_meta_boxes($this->pagehook, 'normal', $data); ?>
-						<?php 
-						//don't intend to use this at this time
-						//do_meta_boxes($this->pagehook, 'additional', $data); 
-						?>
 						<p class="submit">
 							<input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes','eshop') ?>" />
 						</p>
@@ -175,8 +162,7 @@ class eshop_metabox_class {
 		exit;
 	}
 
-	//below you will find for each registered metabox the callback method, that produces the content inside the boxes
-	//i did not describe each callback dedicated, what they do can be easily inspected and compare with the admin page displayed
+	//none of these are actually used, just here as examples
 	
 	function on_sidebox_1_content($data) {
 		?>
@@ -190,25 +176,24 @@ class eshop_metabox_class {
 		<p>You can also use static text or any markup to be shown inside the boxes.</p>
 		<?php
 	}
-function on_contentbox_1_content($eshopoptions) {
-	?>
-	<fieldset>
-	<label for="eshop_status"><?php _e('eShop status','eshop'); ?></label>
-		<select name="eshop_status" id="eshop_status">
-		<?php
-		if('live' == $eshopoptions['status']){
-			echo '<option value="live" selected="selected">'.__('Live','eshop').'</option>';
-			echo '<option value="testing">'.__('Testing','eshop').'</option>';
-		}else{
-			echo '<option value="live">'.__('Live','eshop').'</option>';
-			echo '<option value="testing" selected="selected">'.__('Testing','eshop').'</option>';
-		}
+	function on_contentbox_1_content($eshopoptions) {
 		?>
-		</select><br />
-	<label for="eshop_records"><?php _e('Orders per page','eshop'); ?></label><input id="eshop_records" name="eshop_records" type="text" value="<?php echo $eshopoptions['records']; ?>" size="5" /><br />
-</fieldset>
-<?php
-}
-
+		<fieldset>assdsdddd
+		<label for="eshop_status"><?php _e('eShop status','eshop'); ?></label>
+			<select name="eshop_status" id="eshop_status">
+			<?php
+			if('live' == $eshopoptions['status']){
+				echo '<option value="live" selected="selected">'.__('Live','eshop').'</option>';
+				echo '<option value="testing">'.__('Testing','eshop').'</option>';
+			}else{
+				echo '<option value="live">'.__('Live','eshop').'</option>';
+				echo '<option value="testing" selected="selected">'.__('Testing','eshop').'</option>';
+			}
+			?>
+			</select><br />
+		<label for="eshop_records"><?php _e('Orders per page','eshop'); ?></label><input id="eshop_records" name="eshop_records" type="text" value="<?php echo $eshopoptions['records']; ?>" size="5" /><br />
+	</fieldset>
+	<?php
+	}
 }
 ?>

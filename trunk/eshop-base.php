@@ -20,6 +20,7 @@ if(!isset($_GET['change'])){
 	?>
 	<div class="wrap">
 	<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Base Products','eshop'); ?></h2>
+	<?php eshop_admin_mode(); ?>
 	<ul>
 	<?php
 	$dlpage='?page='.$_GET['page'].'&amp;eshopbasedl=yes';
@@ -150,7 +151,7 @@ if(!isset($_GET['change'])){
 		$B->sort();
 		$grab=$B->aData;
 	?>	
-		<table id="listing" summary="<?php _e('product listing','eshop'); ?>">
+		<table class="widefat" summary="<?php _e('product listing','eshop'); ?>">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -196,7 +197,7 @@ if(!isset($_GET['change'])){
 				else
 					$posttitle=$ptitle->post_title;
 				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku"><a href="admin.php?page=eshop-base.php&amp;change='.$grabit['id'].'" title="'.__('Change details','eshop').'">'.$eshop_product['sku'].'</a></td>';
 				echo '<td headers="page sku'.$calt.'"><a href="post.php?action=edit&amp;post='.$grabit['id'].'">'.$posttitle.'</a></td>';
@@ -338,6 +339,8 @@ if(!isset($_GET['change'])){
 	?>
 		<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Base Product','eshop'); ?></h2>
+		<?php eshop_admin_mode(); ?>
+
 		<?php
 		//sort by switch statement
 		$sortby='id';
@@ -372,7 +375,7 @@ if(!isset($_GET['change'])){
 			}
 		}
 		?>	
-		<table id="listing" summary="<?php _e('product listing','eshop'); ?>">
+		<table class="widefat" summary="<?php _e('product listing','eshop'); ?>">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -400,7 +403,7 @@ if(!isset($_GET['change'])){
 				//check if downloadable product
 				for($i=1;$i<=$eshopoptions['options_num'];$i++){
 					if(isset($grabit['products'][$i]['option']) && $grabit['products'][$i]['option']!=''){
-						if($grabit['products'][$i]['download']!=''){
+						if(isset($grabit['products'][$i]['download']) && $grabit['products'][$i]['download']!=''){
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$grabit['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
@@ -412,7 +415,7 @@ if(!isset($_GET['change'])){
 					}
 				}
 				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				echo '<tr'.$alt.'>';
 				echo '<td id="sku'.$calt.'" headers="sku">'.$grabit['sku'].'</td>';
 				echo '<td headers="page sku'.$calt.'"><a href="page.php?action=edit&amp;post='.$grabit['id'].'">'.$ptitle->post_title.'</a></td>';

@@ -14,10 +14,11 @@
 
 #eshopsubmenu {
   background-color : #F5FAFF;
-  border:2px solid #B9DFFF;
+  border:1px solid #B9DFFF;
+  padding : 3px 8px;
   color : #333;
-  margin : 0 0 5px 0;
-  padding : 3px 2em 0 5px;
+  font-size : 1.1em;
+  margin: 8px 0;
 }
 
 #eshopsubmenu a, #eshopsubmenu span {
@@ -120,23 +121,23 @@ p.notice span, h3.status span {
   font-size : 90%;
 }
 
-p.eshopwarn {
+p.eshopinfo {
   background-color : #F5FAFF;
-  border:1px solid #B9DFFF;
-  padding : 1px 8px;
+  border:2px solid #B9DFFF;
+  padding : 3px 8px;
   color : #333;
   font-size : 1.1em;
-  margin:0;
+  margin:0 0 8px 0;
 }
-p.eshopwarn span.live{
+p.eshopinfo span.live{
 	color:#090;
 	font-weight : bold;
 }
-p.eshopwarn span.test{
+p.eshopinfo span.test{
 	color:#900;
 	font-weight : bold;
 }
-p.eshopwarn span.eshopgate{
+p.eshopinfo span.eshopgate{
 	color:#009;
 	font-weight : bold;
 }
@@ -169,54 +170,7 @@ ul.eshop-stats li strong {
 	margin:0 auto;
 }
 
-table#listing {
-  text-align : left;
-  width : 100%;
-  margin : 12px 0;
-  clear : both;
-}
-table#listing caption{
-	margin-top:12px;
-}
-table#listing tr {
-  background-color : #f8f8f8;
-}
 
-table#listing tr.alt {
-  background-color : #eee;
-}
-
-table#listing th {
-  background-color : #f0f8ff;
-  border : 1px solid #999;
-  padding : 6px;
-}
-
-table#listing td {
-  padding : 4px 6px;
-  border-bottom : 1px solid #bbb;
-}
-
-table#listing a {
-  display : block;
-  width : 98%;
-  border : 0; 
-  border : 1px solid #aaa;
-  padding : 1px 3px;
-  margin : -1px -3px;
-}
-
-table#listing a:hover, table#listing a:focus, table#listing a:active {
-  border : 1px solid #666;
-  background-color : #fefefe;
-  color : #222;
-}
-
-table#listing tr.alt a:hover, table#listing tr.alt a:focus, table#listing tr.alt a:active {
-  border : 1px solid #333;
-  background-color : #f6f6f6;
-  color : #000;
-}
 
 td.totalr, td.total {
   background-color : #eee;
@@ -240,29 +194,6 @@ td.total, td.right {
 
 /* shipping pages*/
 
-form#zoneform table th {
-  background-color : #f0f8ff;
-  text-align : left;
-}
-form#shipform table th {
-  background-color : #f0f8ff;
-  text-align : left;
-}
-form#shipform table th, form#shipform table th{
-	margin:5px;
-	padding:2px;
-}
-form#shipform table tr,
-form#shipform table th#cname1, 
-form#shipform table th#cname3, 
-form#shipform table th#cname5,
-form#shipform table th#cname7,
-form#shipform table th#cname9{
-	background:#B9DFFF;
-}
-form#shipform table tr.alt,form#shipform table tr.alt th{
-	background:#F5FAFF;
-}
 
 
 #eshopformfloat, #ordersdelete, #eshopformleft {
@@ -446,16 +377,16 @@ p.delete small {
 
 /* pagination */
 div.paginate {
-  margin : 5px 2px;
-  border : 1px solid #bbb;
-  padding: 3px;
+ background-color : #F5FAFF;
+  border:1px solid #B9DFFF;
+  padding : 5px 8px;
+  color : #333;
+  font-size : 0.9em;
+  margin: 8px 0;
 }
 
 /* pagination */
-.paginate {
-	margin:5px 2px;
-	font-size:90%;
-}
+
 .paginate p { 
 	padding:0; 
 	line-height:2em;
@@ -477,16 +408,20 @@ div.paginate {
 }
 div.paginate a, a.return {
   background-color : #eee;
-  border : 1px solid #999;
+  border-color :  #999;
   padding : 0 8px; 
   color : #666;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-style: solid;
+  border-width: 1px;
+  text-decoration:none;
 }
 
 div.paginate a:hover, div.paginate a:focus, div.paginate a:active,
 a.return:hover, a.return:focus, a.return:active {
-  background-color : #ccc;
-  border : 1px solid #111;
+  border : 1px solid #d54321;
   color : #000;
+  text-decoration:underline;
 }
 
 div.paginate a.pag-view {
@@ -554,7 +489,7 @@ div.paginate p.checkers a {
 /* upload downloadables*/
 #eshopup,#downloadedit{
 	width:60%;
-	margin:0 auto;
+	margin:8px auto;
 }
 
 #eshopup label.lab,#downloadedit label{

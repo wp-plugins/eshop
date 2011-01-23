@@ -196,8 +196,9 @@ function eshop_downloads_manager() {
 			$row=$wpdb->get_row("SELECT * FROM $table WHERE id =$id");
 			?>
 			<div class="wrap">
-			<h2><?php _e('Edit File details','eshop'); ?></h2>
-			<table id="listing" summary="<?php _e('downloadable file details','eshop'); ?>">
+			<div id="eshopicon" class="icon32"></div><h2><?php _e('Edit File details','eshop'); ?></h2>
+			<?php eshop_admin_mode(); ?>
+			<table class="widefat" summary="<?php _e('downloadable file details','eshop'); ?>">
 			<caption><?php _e('File details','eshop'); ?></caption>
 			<thead>
 			 <tr>
@@ -356,6 +357,7 @@ function eshop_downloads_manager() {
 	?>
 	<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
+		<?php eshop_admin_mode(); ?>
 		<?php
 		$apge=get_admin_url().'admin.php?page=eshop-downloads.php';
 		echo '<ul id="eshopsubmenu">';
@@ -371,7 +373,7 @@ function eshop_downloads_manager() {
 		<p><strong><?php _e('Total Downloads:','eshop'); ?> </strong><?php echo $total; ?><br />
 		<strong><?php _e('Total Purchases:','eshop'); ?> </strong><? echo $purchased; ?><br />
 		</p>  
-		<table id="listing" summary="<?php _e('download listing','eshop'); ?>">
+		<table class="widefat" summary="<?php _e('download listing','eshop'); ?>">
 		<caption><?php _e('Available downloads','eshop'); ?></caption>
 		<thead>
 		 <tr>
@@ -395,7 +397,7 @@ function eshop_downloads_manager() {
 		   $size = eshop_filesize($row->files);
 		   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
 		   $calt++;
-		   $alt = ($calt % 2) ? '' : ' class="alt"';
+		   $alt = ($calt % 2) ? '' : ' class="alternate"';
 		   echo "<tr".$alt.">\n";
 		   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
 		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
@@ -433,6 +435,7 @@ function eshop_downloads_manager() {
 	?>
 		<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
+		<?php eshop_admin_mode(); ?>
 		<p><?php _e('You currently have no downloadable products','eshop'); ?>.</p>
 		
 	<?php

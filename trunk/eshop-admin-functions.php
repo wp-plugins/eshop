@@ -37,8 +37,7 @@ if (!function_exists('eshop_admin')) {
      */
     function eshop_admin() {    
 		global $wp_version;
-		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders_stats',WP_PLUGIN_URL.'/eshop/eshop.png');
-		$page[]=add_submenu_page('eshop.php',__('eShop Stats','eshop'), __('Stats','eshop'),'eShop', 'eshop.php','eshop_admin_orders_stats');
+		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders',WP_PLUGIN_URL.'/eshop/eshop.png');
 		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
 		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
 		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop-products.php'), 'eshop_admin_products');
@@ -118,22 +117,6 @@ if (!function_exists('eshop_admin_about')) {
      }
 }
 
-if (!function_exists('eshop_admin_orders_stats')) {
-    /**
-     * display the order stats.
-     */
-     function eshop_admin_orders_stats() {
-     	global $eshopoptions;
-     	//redirect to install instructions on first visit only
-		 if('no'==$eshopoptions['first_time']){
-			$_GET['action']='Stats';
-			include 'eshop-orders.php';
-		 }else{
-			include 'eshop-about.php';
-		 }
-	}
-}
-
 if (!function_exists('eshop_user_orders')) {
     /**
      * display the pending orders.
@@ -147,7 +130,12 @@ if (!function_exists('eshop_admin_orders')) {
      * display the pending orders.
      */
      function eshop_admin_orders() {
-		include 'eshop-orders.php';
+     	global $eshopoptions;
+	    //redirect to install instructions on first visit only
+	 	if('no'==$eshopoptions['first_time'])
+ 			include 'eshop-orders.php';
+	 	else
+	 		include 'eshop-about.php';
      }
 }
 if (!function_exists('eshop_admin_options')) {
@@ -295,6 +283,22 @@ if (!function_exists('eShopPluginUpdateMessage')) {
 		}else{
 			printf(__('<br /><strong style="color:#800;">Note:</strong> Please review the <a class="thickbox" href="%1$s">changelog</a> before upgrading.','eshop'),'plugin-install.php?tab=plugin-information&amp;plugin=eshop&amp;TB_iframe=true&amp;width=640&amp;height=594');
 		}
+	}
+}
+if (!function_exists('eshop_admin_mode')) {
+	function eshop_admin_mode()  {
+	global $eshopoptions;
+		echo '<p class="eshopinfo">';
+			if('live' == $eshopoptions['status'])
+				_e('eShop is currently <span class="live">Live</span>.','eshop');
+			else
+				_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
+			
+			if(is_array($eshopoptions['method']))
+			    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$eshopoptions['method'])).'</span>';
+			else
+			    _e(' No Merchant Gateway selected.','eshop');
+		echo '</p>'."\n";
 	}
 }
 ?>
