@@ -17,6 +17,7 @@ function eshop_template_email(){
 ?>
 <div class="wrap">
 <div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Email Templates','eshop'); ?></h2>
+<?php eshop_admin_mode(); ?>
  <p><?php _e('Use this page to modify your default email templates','eshop'); ?>.</p> 
 <table class="eshop widefat" summary="available email templates">
 <thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="blank"><?php _e('Template?', 'eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>

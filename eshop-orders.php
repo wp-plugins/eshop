@@ -280,247 +280,6 @@ if (!function_exists('displayorders')) {
 		}
 	}
 }
-if (!function_exists('displaystats')) {
-	function displaystats(){
-		global $wpdb,$eshopoptions;
-		include 'eshop-statistics.php';
-		//these should be global, but it wasn't working *sigh*
-		$phpself=esc_url($_SERVER['REQUEST_URI']);
-		$dtable=$wpdb->prefix.'eshop_orders';
-		$itable=$wpdb->prefix.'eshop_order_items';
-		$metatable=$wpdb->prefix.'postmeta';
-		$poststable=$wpdb->prefix.'posts';
-		$count = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, $poststable as posts where meta.meta_key='_eshop_product' AND meta.meta_value!='' AND posts.ID = meta.post_id	AND posts.post_status != 'trash' AND posts.post_status != 'revision'");
-		$stocked = $wpdb->get_results("
-		SELECT DISTINCT meta.post_id
-		FROM $metatable as meta, $poststable as posts
-		WHERE meta.meta_key = '_eshop_product'
-		AND meta.meta_value != ''
-		AND posts.ID = meta.post_id
-		AND posts.post_status != 'trash' AND posts.post_status != 'revision'		
-		ORDER BY meta.post_id");
-
-		$countprod=$countfeat=0;
-		foreach($stocked as $stock){
-		    $eshop_product=maybe_unserialize(get_post_meta( $stock->post_id, '_eshop_product',true ));
-		    if($eshop_product['featured']=='Yes')
-				$countfeat++;
-			$stkav=get_post_meta( $stock->post_id, '_eshop_stock',true );
-			if($stkav=='1'){
-				$countprod++;
-			}
-		}
-		$stktable = $wpdb->prefix ."eshop_stock";
-		$stkpurc=0;
-		$stkpurc=$wpdb->get_var("Select SUM(purchases) From $stktable");
-		if($stkpurc<1){
-			$stkpurc=0;
-		}
-
-		?>
-		<div class="eshop-stats-box odd"><h3><?php _e('Product stats','eshop'); ?></h3>
-		<ul class="eshop-stats">
-		<li><strong><?php echo $count; ?></strong> <?php _e('Products.','eshop'); ?></li>
-		<li><strong><?php echo $countprod; ?></strong> <?php _e('Products in stock.','eshop'); ?></li>
-		<li><strong><?php echo $countfeat; ?></strong> <?php _e('Featured products.','eshop'); ?></li>
-		<li><strong><?php echo $stkpurc; ?></strong> <?php _e('Purchases','eshop'); ?>.</li>
-		</ul>
-		<?php eshop_small_stats('stock'); ?>
-		</div>
-		<?php
-		//work out totals for quick stats
-		$dltable = $wpdb->prefix ."eshop_downloads";
-		$total=$purchased=0;
-		$total=$wpdb->get_var("Select SUM(downloads) From $dltable");
-		$purchased=$wpdb->get_var("Select SUM(purchases) From $dltable");
-		if($total<1){
-			$total=0;
-		}
-		if($purchased<1){
-			$purchased=0;
-		}
-		?>
-		<div class="eshop-stats-box">
-		<h3><?php _e('Product Download Stats','eshop'); ?></h3>
-		<ul class="eshop-stats">
-		<li><strong><?php echo $total; ?></strong> <?php _e('Total Downloads','eshop'); ?></li>
-		<li><strong><?php echo $purchased; ?></strong> <?php _e('Total Purchases','eshop'); ?></li>
-		</ul>
-		<?php eshop_small_stats('dloads'); ?>
-		</div>
-		
-		<hr class="eshopclear" />
-		<?php
-		$array=array('Pending','Waiting','Completed','Sent','Failed','Deleted');
-		echo '<div class="eshop-stats-box odd"><h3>'.__('Order Stats','eshop').'</h3><ul class="eshop-stats">';
-		foreach($array as $k=>$type){
-			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE id > 0 AND status='$type'");
-			switch($type){
-				case 'Pending':
-					$type=__('Pending','eshop');
-					break;
-				case 'Failed':
-					$type=__('Failed','eshop');
-					break;
-				case 'Deleted':
-					$type=__('Deleted','eshop');
-					break;
-				case 'Completed':
-					$type=__('Active','eshop');
-					break;
-				case 'Sent':
-					$type=__('Shipped','eshop');
-					break;
-				case 'Waiting':
-					$type=__('Awaiting Payment','eshop');
-					break;
-			}			
-			echo '<li><strong>'.$max.'</strong> '.$type.' '.eshop_plural($max,__('order','eshop'),__('orders','eshop')).'</li>';
-		}
-		echo '</ul></div>';
-		?>
-		<div class="eshop-stats-box">
-		<h3><?php _e('Total Stats','eshop'); ?></h3>
-		<table class="widefat">
-		<thead>
-		<tr>
-			<th id="eshopot"><?php _e('Order Type','eshop'); ?></th>
-			<th id="eshoptotal"><?php _e('Sub Total','eshop'); ?></th>
-			<th id="eshoptaxtotal"><?php _e('Sales Tax','eshop'); ?></th>
-			<th id="eshopototal"><?php _e('Total','eshop'); ?></th>
-		</tr>
-		</thead>
-		<tbody>
-		<?php
-		$calt=0;
-		//Sales
-		$currsymbol=$eshopoptions['currency_symbol'];
-		$sarray=array('Pending','Waiting','Completed','Sent','Failed','Deleted');
-		$atotal=$btotal=$ctotal=0;
-		foreach($sarray as $k=>$type){
-			$itotal = $wpdb->get_row("SELECT SUM(item_amt * item_qty) as total, SUM(tax_amt) as taxtotal FROM $itable as i, $dtable as ch WHERE  i.checkid=ch.checkid AND ch.status='$type'");
-			switch($type){
-				case 'Pending':
-					$type=__('Pending','eshop');
-					break;
-				case 'Failed':
-					$type=__('Failed','eshop');
-					break;
-				case 'Deleted':
-					$type=__('Deleted','eshop');
-					break;
-				case 'Completed':
-					$type=__('Active','eshop');
-					break;
-				case 'Sent':
-					$type=__('Shipped','eshop');
-					break;
-				case 'Waiting':
-					$type=__('Awaiting Payment','eshop');
-					break;
-			}
-			$calt++;
-			$alt = ($calt % 2) ? '' : ' class="alternate"';
-			$etotal=$itotal->total + $itotal->taxtotal;
-			echo '<tr'.$alt.'>';
-			echo '<th id="eshoptype'.$calt.'" headers="eshopot">'.$type.'</th>
-			<td class="right" headers="eshoptype'.$calt.' eshoptotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($itotal->total, __('2','eshop'))).'</td>
-			<td class="right" headers="eshoptype'.$calt.' eshoptaxtotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($itotal->taxtotal, __('2','eshop'))).'</td>
-			<td class="right" headers="eshoptype'.$calt.' eshopototal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($etotal, __('2','eshop'))).'</td>';
-			echo "</tr>\n";
-			$atotal += $itotal->total;
-			$btotal += $itotal->taxtotal;
-			$ctotal += $etotal;
-		}
-		$calt++;
-		$alt = ($calt % 2) ? '' : ' class="alternate"';
-		echo '<tr'.$alt.'>';
-		echo '<th id="eshoptot'.$calt.'" style="text-align:center">'.__('Totals', 'eshop').'</th>
-		<td class="right" headers="eshoptot'.$calt.' eshoptotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($atotal, __('2','eshop'))).'</td>
-		<td class="right" headers="eshoptot'.$calt.' eshoptaxtotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($btotal, __('2','eshop'))).'</td>
-		<td class="right" headers="eshoptot'.$calt.' eshopototal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($ctotal, __('2','eshop'))).'</td>';
-		echo "</tr>\n";
-
-		echo '</tbody></table></div>';
-		
-		echo '<hr class="eshopclear" />';
-		
-		if(is_array($eshopoptions['method'])){
-			$paytype=$eshopoptions['method'];
-			?>
-			<div class="eshop-stats-box odd">
-			<h3><?php _e('Merchant Gateways Usage','eshop'); ?></h3>
-			<p><?php _e('Includes all orders.','eshop'); ?></p>
-				<ul class="eshop-stats">
-				<?php
-				foreach($paytype as $gatetype){
-					$gatetype=str_replace(".","",$gatetype);//mainly for authorize.net
-					$mcount=$wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE paidvia='$gatetype'");
-					if(strtolower($gatetype)==__('cash','eshop')){
-						$eshopcash = $eshopoptions['cash'];
-						if($eshopcash['rename']!='')
-							$gatetype=$eshopcash['rename'];
-					}
-					if(strtolower($gatetype)==__('bank','eshop')){
-						$eshopbank = $eshopoptions['bank'];
-						if($eshopbank['rename']!='')
-							$gatetype=$eshopbank['rename'];
-					}
-					?>
-					<li><strong><?php echo $mcount; ?></strong> <?php echo ucwords($gatetype).' '.eshop_plural($mcount,__('order','eshop'),__('orders','eshop')); ?></li>
-					<?php
-				}
-				?>
-			</ul>
-			</div>
-		<?php
-		}
-		$disctable=$wpdb->prefix.'eshop_discount_codes';
-		$row=$wpdb->get_row("SELECT COUNT(id) as ids, SUM(IF(live='yes',1,0)) as live, SUM(USED) as total FROM $disctable WHERE id>0");
-		if($row->ids>0){
-		?>
-		<div class="eshop-stats-box">
-			<h3><?php _e('Discount Codes','eshop'); ?></h3>
-			<ul class="eshop-stats">
-			<li><strong><?php echo $row->ids; ?></strong> <?php _e('Total Available','eshop'); ?></li>
-			<li><strong><?php echo $row->live; ?></strong> <?php _e('Active','eshop'); ?></li>
-			<li><strong><?php echo $row->total; ?></strong> <?php _e('Total codes used','eshop'); ?></li>
-			</ul>
-		</div>
-		<?php
-		}
-		if(current_user_can('eShop_admin')){
-			?>
-			<div class="eshop-stats-box odd">
-			<h3><?php _e('Download Data','eshop'); ?></h3>
-			<ul>
-			<?php
-			if(!isset($_GET['eshopdl']))
-				$dlpage=$phpself.'&amp;eshopdl=yes';
-			else
-				$dlpage=$phpself;
-			?>
-			<li><a href="<?php echo $dlpage; ?>"><?php _e('Download all transactions','eshop'); ?></a></li>
-			<li><a href="<?php echo $dlpage; ?>&amp;os=mac"><?php _e('Mac users Download all transactions','eshop'); ?></a></li>
-			</ul>
-			</div>
-			<div class="eshop-stats-box">
-			<h3><?php _e('Delete all Data','eshop'); ?></h3>
-			<ul>
-			<?php
-			if(!isset($_GET['eshopddata']))
-				$dlpage=$phpself.'&amp;eshopddata=yes';
-			else
-				$dlpage=$phpself;
-			?>
-			<li><a href="<?php echo $dlpage; ?>"><?php _e('Delete all orders and reset all stats','eshop'); ?></a></li>
-			</ul>
-			</div>
-			<hr class="eshopclear" />
-			<?php
-		}
-	}
-}
 if (!function_exists('deleteorder')) {
 	function deleteorder($delid){
 		global $wpdb;
@@ -607,9 +366,6 @@ if(isset($_GET['view'])){
 		case 'Deleted':
 			$state=__('Deleted Orders','eshop');
 			break;
-		case 'Stats':
-			$state=__('eShop Order Stats','eshop');
-			break;
 		default:
 			break;
 	}
@@ -618,7 +374,7 @@ if(isset($_GET['view'])){
 }
 
 echo '<div id="eshopicon" class="icon32"></div><h2>'.$state."</h2>\n";
-
+eshop_admin_mode();
 if(isset($_GET['delid']) && !isset($_GET['view'])){
 	deleteorder($_GET['delid']);
 	unset($_GET['view']);
@@ -666,9 +422,9 @@ if(isset($_POST['change'])){
 
 echo '<ul class="subsubsub">';
 if(current_user_can('eShop_admin'))
-	$stati=array('Stats'=>__('Stats','eshop'),'Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Completed'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
+	$stati=array('Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Completed'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
 else
-	$stati=array('Stats'=>__('Stats','eshop'));
+	$stati=array();
 
 
 $dtable=$wpdb->prefix.'eshop_orders';
@@ -684,7 +440,6 @@ foreach ( $stati as $status => $label ) {
 	$cnt='(0)';
 	if(isset($counted[$status]))
 		$cnt='('.$counted[$status].')';
-	if($status=='Stats') $cnt='';
 	$status_links[] = "<li><a href=\"?page=eshop-orders.php&amp;action=$status\"$class>" . $label . '</a>'.$cnt;
 }
 echo implode(' | </li>', $status_links) . '</li>';
@@ -967,9 +722,6 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		case 'Completed':
 			displayorders('Completed','da');
 			break;
-		case 'Pending':
-			displayorders('Pending','da');
-			break;
 		case 'Failed':
 			displayorders('Failed','dd');
 			break;
@@ -982,9 +734,9 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		case 'Deleted':
 			displayorders('Deleted','dd');
 			break;
-		case 'stats':
+		case 'Pending':
 		default:
-			displaystats('Stats');
+			displayorders('Pending','da');
 			break;
 	}
 }

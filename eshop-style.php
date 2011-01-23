@@ -41,6 +41,7 @@ function eshop_form_admin_style(){
 ?>
 <div class="wrap">
 <div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Styles','eshop'); ?></h2>
+<?php eshop_admin_mode(); ?>
  <p><?php _e('Use this page to modify your default styling','eshop'); ?>.</p> 
 </div>
 <div class="wrap">

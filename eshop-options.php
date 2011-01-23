@@ -18,6 +18,7 @@ $optsettable=$wpdb->prefix.'eshop_option_sets';
 ?>
 <div class="wrap">
 <div id="eshopicon" class="icon32"></div><h2><?php _e('Option Sets','eshop'); ?></h2>
+<?php eshop_admin_mode(); ?>
 <?php
 if(isset($_GET['optid']) && !isset($_POST['delete']) && !isset($_POST['eaddopt'])){
 ?>
@@ -187,7 +188,7 @@ function createform($opttable){
 		$calt=0;
 		foreach($myrowres as $row){
 			$calt++;
-			$alt = ($calt % 2) ? '' : ' class="alt"';
+			$alt = ($calt % 2) ? '' : ' class="alternate"';
 			echo '<tr'.$alt.'>';
 			echo '<td id="row'.$calt.'" headers="aname"><a href="admin.php?page=eshop-options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->admin_name))."</a></td>\n";
 			echo '<td headers="pname row'.$calt.'"><a href="admin.php?page=eshop-options.php&amp;optid='.$row->optid.'">'.stripslashes(esc_attr($row->name))."</a></td>\n";

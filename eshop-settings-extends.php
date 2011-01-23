@@ -863,19 +863,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			echo '<div id="eshopicon" class="icon32"></div><h2>'.__('eShop Settings','eshop').'</h2>'."\n";
 			//info:
 			eshop_check_error();
-			echo '<p class="eshopwarn">';
-			if('live' == $eshopoptions['status'])
-				_e('eShop is currently <span class="live">Live</span>.','eshop');
-			else
-				_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
-			if(isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale'])
-				_e(' <strong>Sale time!</strong>','eshop');
-			
-			if(is_array($eshopoptions['method']))
-			    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$eshopoptions['method'])).'</span>';
-			else
-			    _e(' No Merchant Gateway selected.','eshop');
-			echo '</p>';
+			eshop_admin_mode();
 			//the submenu 
 			echo '<ul class="subsubsub">';
 			echo implode(' | </li>', $status_links) . '</li>';

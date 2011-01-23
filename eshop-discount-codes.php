@@ -179,6 +179,7 @@ function eshop_discounts_manager() {
 	?>
 	<div class="wrap">
 	<div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Discount Codes','eshop'); ?></h2>
+	<?php eshop_admin_mode(); ?>
 	<div id="eshopdisccodesform">
 	<?php echo $eshop_suggest; ?>
 	<form id="eshopdisccodes" action="<?php echo esc_url($_SERVER['REQUEST_URI']);?>" method="post">
@@ -288,7 +289,7 @@ function eshop_discounts_manager() {
 		$calt=0;
 		foreach($row as $myrow){
 			$calt++;
-			$alt = ($calt % 2) ? '' : ' class="alt"';
+			$alt = ($calt % 2) ? '' : ' class="alternate"';
 			$delete='';
 			$remain=$myrow->remain;
 			if($myrow->remain=='')

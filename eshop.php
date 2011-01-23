@@ -91,8 +91,8 @@ if(is_admin()){
 	/* eShop ADMIN SPECIFIC HERE */
 	include_once 'eshop-admin-functions.php';
 	include_once 'eshop-settings.php';
-	include_once( 'eshop-product-entry.php' );
-
+	include_once 'eshop-product-entry.php';
+	include_once 'eshop-dashboard.php';
 	/* activations */
 	register_activation_hook(__FILE__,'eshop_install');
 	/*deactivation*/
@@ -102,6 +102,7 @@ if(is_admin()){
 	add_action('admin_menu', 'eshop_admin');
 	add_filter( 'admin_footer_text', 'eshop_admin_footer_text' );
 	add_action( 'in_plugin_update_message-eshop/eshop.php', 'eShopPluginUpdateMessage' );
+	add_action('wp_dashboard_setup', 'eshop_add_dashboard_widgets' );
 
 }else{
 	/* eShop Public facing only */

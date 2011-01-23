@@ -24,6 +24,7 @@ function eshop_products_manager() {
 		?>
 		<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Products','eshop'); ?></h2>
+		<?php eshop_admin_mode(); ?>
 		<h3><?php _e('Authors','eshop'); ?></h3>
 		<?php if(isset($msg)) echo '<div class="updated fade"><p>'.$msg.'</p></div>'; ?>
 		<form action="" method="post" class="eshop filtering">

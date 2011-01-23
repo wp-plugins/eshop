@@ -23,6 +23,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
 <div id="eshoppage">
 <div class="wrap">
  <div id="eshopicon" class="icon32"></div><h2 id="donate">eShop Donations</h2>
+ <?php eshop_admin_mode(); ?>
  <p style="text-align:center">Feeling generous? then please dig deep and donate as much as you can afford!</p>
  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
  <input type="hidden" name="cmd" value="_xclick" />

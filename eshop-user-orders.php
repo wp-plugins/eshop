@@ -66,7 +66,7 @@ if (!function_exists('displaymyorders')) {
 			$calt=0;
 
 			echo '<div class="orderlist tablecontainer">';
-			echo '<table id="listing" class="hidealllabels" summary="order listing">
+			echo '<table class="hidealllabels widefat" summary="order listing">
 			<caption class="offset">'.__('eshop Order Listing','eshop').'</caption>
 			<thead>
 			<tr>
@@ -108,7 +108,7 @@ if (!function_exists('displaymyorders')) {
 					$cminutes=substr($custom, 10, 2);
 					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at','eshop').' '.$chours.':'.$cminutes;
 					$calt++;
-					$alt = ($calt % 2) ? '' : ' class="alt"';
+					$alt = ($calt % 2) ? '' : ' class="alternate"';
 					if($myrow->company!=''){
 						$company=__(' of ','eshop').$myrow->company;
 					}else{
@@ -181,7 +181,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		if($status=='Failed'){$status=__('Failed','eshop');}
 		echo '<h3 class="status">'.__('Order Details','eshop').' - <span>'.$status.'</span> <small>('.$view.')</small></h3>';
 		$result=$wpdb->get_results("Select * From $itable where checkid='$checkid' ORDER BY id ASC");
-		$total=0;
+		$totaltax=$total=0;
 		$calt=0;
 		$currsymbol=$eshopoptions['currency_symbol'];
 		?>
@@ -194,53 +194,89 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		}
 		?>
 
-		<table id="listing" summary="<?php _e('Table for order details','eshop'); ?>">
-		<caption><?php _e('Order Details','eshop'); ?></caption>
-		<thead>
-		<tr>
-		<th id="opname"><?php _e('Product Name','eshop'); ?></th>
-		<th id="oitem"><?php _e('Item or Unit Data','eshop'); ?></th>
-		<th id="odown"><?php _e('Download?','eshop'); ?></th>
-		<th id="oqty"><?php _e('Quantity','eshop'); ?></th>
-		<th id="oprice"><?php _e('Price','eshop'); ?></th></tr>
-		</thead>
-		<tbody>
-		<?php
-		foreach($result as $myrow){
-			$value=$myrow->item_qty * $myrow->item_amt;
-			$total=$total+$value;
-			$itemid=$myrow->item_id;
-			if($myrow->optsets!='')
-				$itemid.='<span class="eshopoptsets">'.nl2br($myrow->optsets).'</span>';
-			//check if downloadable product
-			$dordtable=$wpdb->prefix.'eshop_download_orders';
-			$downstable=$wpdb->prefix.'eshop_downloads';
-			if($myrow->down_id!='0'){
-				//item is a download
-				$dltable=$wpdb->prefix.'eshop_downloads';
-				$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
-				$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
-				$downloadable .=' '.$dlinfo->downloads.'</span>';
-			}else{
+		<table class="widefat" summary="<?php _e('Table for order details','eshop'); ?>">
+			<caption><?php _e('Order Details','eshop'); ?></caption>
+			<thead>
+			<tr>
+			<th id="opname"><?php _e('Product Name','eshop'); ?></th>
+			<th id="oitem"><?php _e('Item or Unit Data','eshop'); ?></th>
+			<th id="odown"><?php _e('Download?','eshop'); ?></th>
+			<th id="oqty"><?php _e('Quantity','eshop'); ?></th>
+			<th id="oprice"><?php _e('Price','eshop'); ?></th>
+			<?php if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') : ?>
+			<th id="otax"><?php _e('Tax Rate','eshop'); ?></th>
+			<th id="otaxamt"><?php _e('Tax amt','eshop'); ?></th>
+			<?php endif; ?>
+			</tr>
+			</thead>
+			<tbody>
+			<?php
+			foreach($result as $myrow){
+				$value=$myrow->item_qty * $myrow->item_amt;
+				if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') {
+					$linetax='';
+					if($myrow->tax_amt!=='' && is_numeric($myrow->tax_amt)) {
+						$linetax=$myrow->tax_amt;
+						$totaltax=$totaltax+$linetax;
+					}
+				}else{
+					if($myrow->tax_amt!=='' && is_numeric($myrow->tax_amt)) {
+						$value = $value + $myrow->tax_amt;
+					}
+				}
+				$total=$total+$value;
+				$itemid=$myrow->item_id;
+				if($myrow->optsets!='')
+					$itemid.='<span class="eshopoptsets">'.nl2br($myrow->optsets).'</span>';
+				//check if downloadable product
+				$dordtable=$wpdb->prefix.'eshop_download_orders';
+				$downstable=$wpdb->prefix.'eshop_downloads';
 				$downloadable='';
+				if($myrow->down_id!='0'){
+					//item is a download
+					$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
+					if(isset($dlinfo->downloads)){
+						$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
+						$downloadable .=' '.$dlinfo->downloads.'</span>';			
+					}else{
+						$downloadable = __('Download Item Missing','eshop');
+					}
+				}
+			
+				// add in a check if postage here as well as a link to the product
+				$showit=$myrow->optname;
+				$calt++;
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
+				echo '<tr'.$alt.'>
+				<td id="onum'.$calt.'" headers="opname">'.$showit.'</td>
+				<td headers="oitem onum'.$calt.'">'.$itemid.'</td>
+				<td headers="odown onum'.$calt.'">'.$downloadable.'</td>
+				<td headers="oqty onum'.$calt.'">'.$myrow->item_qty.'</td>
+				<td headers="oprice onum'.$calt.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."</td>\n";
+				if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') {
+					echo '<td headers="otax onum'.$calt.'" class="right">'.$myrow->tax_rate.'</td>';
+					$ectax='';
+					if( $linetax !='' )
+						$ectax=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($linetax, __('2','eshop')));
+					
+					echo '<td headers="otaxamt onum'.$calt.'" class="right">'.$ectax."</td>\n";
+				}
+				echo "</tr>\n";
+		
 			}
-
-			// add in a check if postage here as well as a link to the product
-			$showit=$myrow->optname;
-			$calt++;
-			$alt = ($calt % 2) ? '' : ' class="alt"';
-			echo '<tr'.$alt.'>
-			<td id="onum'.$calt.'" headers="opname">'.$showit.'</td>
-			<td headers="opname onum'.$calt.'">'.$itemid.'</td>
-			<td headers="opname onum'.$calt.'">'.$downloadable.'</td>
-			<td headers="opname onum'.$calt.'">'.$myrow->item_qty.'</td>
-			<td headers="opname onum'.$calt.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($value, __('2','eshop')))."</td></tr>\n";
-		}
-		if($transid==__('Processing&#8230;','eshop'))
-			echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td></tr>\n";
-		else
-			echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td></tr>\n";
-		echo "</tbody></table>\n";
+			if($transid==__('Processing&#8230;','eshop'))
+				echo "<tr><td colspan=\"4\" class=\"totalr\">".__('Total &raquo;','eshop')." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td>";
+			else
+				echo "<tr><td colspan=\"4\" class=\"totalr\">".sprintf(__('Total paid via %1$s &raquo;','eshop'),ucfirst($paidvia))." </td><td class=\"total\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."</td>\n";
+			
+			if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') {
+				echo '<td class="totalr">'.__('Total Tax &raquo;','eshop').'</td>';
+				echo '<td class="total">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($totaltax, __('2','eshop')))."</td>\n";
+				$totalwithtax=$total + $totaltax;
+				echo '</tr>
+				<tr><td colspan="6" class="totalr">'.__('Total with tax &raquo;','eshop').'</td><td class="total">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($totalwithtax, __('2','eshop')))."</td>\n";
+			}
+		echo "</tr></tbody></table>\n";
 
 		$cyear=substr($custom, 0, 4);
 		$cmonth=substr($custom, 4, 2);

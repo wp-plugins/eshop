@@ -112,6 +112,7 @@ case ('countries'):
 	?>
 	<div class="wrap">
 	<div id="eshopicon" class="icon32"></div><h2><?php _e('Country Shipping Zones','eshop'); ?></h2>
+	<?php eshop_admin_mode(); ?>
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 2 letter state abbreviation, followed by &#8220;Country Name,&#8221; then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('&#8220;List&#8221; promotes that country to appear at the top of the list.','eshop'); ?></p>
@@ -121,7 +122,8 @@ case ('countries'):
 	<fieldset><legend><?php _e('Filter','eshop'); ?></legend>
 	<label for="filter"><?php _e('Zone','eshop'); ?></label><select id="filter" name="filter">
 	<?php
-	for($x=0;$x<=5;$x++){
+	$eshopavailzones=apply_filters('eshop_available_zones','9');
+	for($x=0;$x<=$eshopavailzones;$x++){
 		if(!isset($_POST['filter'])){
 			$_POST['filter']=0;
 		}
@@ -143,7 +145,7 @@ case ('countries'):
 
 	<form id="zoneform" action="" method="post">
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
-	<table class="hidealllabels" summary="<?php _e('Countries, with their 2 letter code, and applicable zone','eshop'); ?>">
+	<table class="hidealllabels widefat" summary="<?php _e('Countries, with their 2 letter code, and applicable zone','eshop'); ?>">
 	<caption><?php _e('Countries','eshop'); ?></caption>
 
 	<thead>
@@ -258,6 +260,7 @@ case ('states'):
 	?>
 	<div class="wrap">
 	<div id="eshopicon" class="icon32"></div><h2><?php echo $eshopoptions['shipping_state'].' '.__('State/County/Province Shipping Zones','eshop'); ?></h2>
+	<?php eshop_admin_mode(); ?>
 	<?php echo $echosub; ?>
 	<p><?php _e('&#8220;Code&#8221; is the 4 letter(maximum usual is 2) abbreviation and must be unique, followed by &#8220;Name&#8221;, then the shipping &#8220;Zone&#8221; (use 1-5).','eshop'); ?></p>
 	<p><?php _e('Example: AZ, Arizona,4','eshop'); ?></p>
@@ -290,7 +293,7 @@ case ('states'):
 	<form id="zoneform" action="" method="post">
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
 
-	<table class="hidealllabels" summary="<?php _e('States, with their 2 letter code, and applicable zone','eshop'); ?>">
+	<table class="hidealllabels widefat" summary="<?php _e('States, with their 2 letter code, and applicable zone','eshop'); ?>">
 	<caption><?php _e('State/County/Province','eshop'); ?></caption>
 	<thead>
 	<tr>
@@ -395,6 +398,7 @@ default:
 	}
 	echo '<div class="wrap">';
 	echo '<div id="eshopicon" class="icon32"></div><h2>'.__('Shipping Rates','eshop').'</h2>'."\n";
+	eshop_admin_mode();
 	?>
 	<?php echo $echosub; ?>
 	<p><?php _e('The following are the shipping rates by class and zone.','eshop'); ?></p>
@@ -473,8 +477,9 @@ default:
 <?php if($eshopoptions['shipping']!=4){ ?>
 	<form id="shipform" action="" method="post">
 	<fieldset><legend><span><?php _e('Shipping Classes and Zones','eshop'); ?></span></legend>
-	<table class="hidealllabels" summary="Shipping rates">
+	<table class="hidealllabels widefat" summary="Shipping rates">
 	<caption><?php _e('Shipping rates by class and zone','eshop'); ?></caption>
+	<thead>
 	<tr>
 	<th id="class"><?php _e('Class','eshop'); ?></th>
 	<?php
@@ -489,6 +494,7 @@ default:
 	}
 	?>
 	</tr>
+	</thead>
 	<?php
 	/* although this could be condensed, I'll split each method up for ease and future expansion */
 	switch ($eshopoptions['shipping']){
@@ -499,7 +505,7 @@ default:
 
 			foreach ($query as $row){
 				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr'.$alt.'>';
 				if($row->items==1){
@@ -525,7 +531,7 @@ default:
 			$query=$wpdb->get_results("SELECT * from $dtable where items='1' && rate_type='shipping' ORDER BY 'class'  ASC");
 			foreach ($query as $row){
 				$calt++;
-				$alt = ($calt % 2) ? '' : ' class="alt"';
+				$alt = ($calt % 2) ? '' : ' class="alternate"';
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
 				echo '<tr'.$alt.'>';
 				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.'</th>'."\n";
@@ -546,7 +552,7 @@ default:
 			$query=$wpdb->get_results("SELECT * from $dtable where items='1' and rate_type='shipping' and class='".__('A','eshop')."' ORDER BY 'class'  ASC");
 			foreach ($query as $row){
 				$row->eclass=apply_filters('eshop_shipping_rate_class',$row->class);
-				echo '<tr class="alt">';
+				echo '<tr class="alternate">';
 				echo '<th id="cname'.$x.'" headers="class">'.$row->eclass.' <small>'.__('(Overall charge)','eshop').'</small></th>'."\n";
 				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 					$y='zone'.$z;
@@ -578,7 +584,9 @@ default:
 	foreach ($typearr as $k=>$type){
 		$k++;
 		$query=$wpdb->get_results("SELECT * from $dtable where rate_type='ship_weight' and class='$k' ORDER BY weight ASC");
-		$eshoparea=$query[0]->area;
+		$eshoparea='country';
+		if(isset($query[0]->area))
+			$eshoparea=$query[0]->area;
 		?>
 		<fieldset>
 		<legend><?php echo stripslashes(esc_attr($type)); ?></legend>
@@ -589,7 +597,7 @@ default:
 		echo '<option value="state"'.selected($eshoparea,'state',false).'>'.__('State/County/Province','eshop').'</option>';
 		?>
 		</select>
-		<table class="hidealllabels" summary="Shipping rates per mode">
+		<table class="hidealllabels widefat" summary="Shipping rates per mode">
 		<thead>
 		<tr>
 		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>
