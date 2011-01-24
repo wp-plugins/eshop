@@ -415,7 +415,7 @@ function eshop_downloads_manager() {
 		</table>
 	<?php
 	//paginate
-		echo '<div class="paginate">';;
+		echo '<div class="paginate tablenav-pages">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}

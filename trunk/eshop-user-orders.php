@@ -128,7 +128,7 @@ if (!function_exists('displaymyorders')) {
 			}
 			echo "</tbody></table></div>\n";
 			//paginate
-				echo '<div class="paginate">';
+				echo '<div class="paginate tablenav-pages">';
 				if($records!=$max){
 					$eecho = $page_links;
 				}
