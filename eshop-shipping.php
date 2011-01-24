@@ -371,25 +371,32 @@ default:
 		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 			$barray[]='zone'.$z;
 		}
-		$build="INSERT INTO $dtable (`".implode("`, `",$barray)."`,`weight`,`class`,`rate_type`, `area`) VALUES";
+		$buildit="INSERT INTO $dtable (`".implode("`, `",$barray)."`, `weight`, `class`, `rate_type`, `area`, `maxweight`) VALUES ";
 		$shipwletter = "a";
-		
+		$build='';
 		foreach($_POST['row'] as $k=>$v){
-		$eshoparea=$_POST['eshop_shipping_area'][$k];
+			$eshoparea=$_POST['eshop_shipping_area'][$k];
+			$eshopmaxweight=$_POST['eshop_max_weight'][$k];
+			if(!is_numeric($eshopmaxweight) && $eshopmaxweight!='')
+				$eshopmaxweight='';
+				
 			foreach($v as $f=>$value){
 				if($value['weight']!=''){
 					$bvarray=array();
 					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 						$bvarray[]=$value['zone'.$z];
 					}
-					$build.="('".implode("', '",$bvarray)."','".$value['weight']."','".$k."','ship_weight','$eshoparea'),";
+					$build.="('".implode("', '",$bvarray)."','".$value['weight']."','".$k."','ship_weight','$eshoparea','$eshopmaxweight'),";
 					$shipwletter++;
 				}
 			}
 		}
 		$queri=trim($build,',');
-		$wpdb->query("DELETE from $dtable where rate_type='ship_weight'");
-		$wpdb->query($queri);
+		if($queri!=''){
+			$queri=$buildit.$queri;
+			$wpdb->query("DELETE from $dtable where rate_type='ship_weight'");
+			$wpdb->query($queri);
+		}
 	}
 	if($error!=''){
 		echo'<div id="message" class="error fade"><p>'.__('<strong>Error</strong> the following were not valid amounts:','eshop').'</p><ul>'.$error.'</ul></div>'."\n";
@@ -585,8 +592,11 @@ default:
 		$k++;
 		$query=$wpdb->get_results("SELECT * from $dtable where rate_type='ship_weight' and class='$k' ORDER BY weight ASC");
 		$eshoparea='country';
+		$maxweight='';
 		if(isset($query[0]->area))
 			$eshoparea=$query[0]->area;
+		if(isset($query[0]->maxweight))
+			$maxweight=$query[0]->maxweight;
 		?>
 		<fieldset>
 		<legend><?php echo stripslashes(esc_attr($type)); ?></legend>
@@ -597,6 +607,7 @@ default:
 		echo '<option value="state"'.selected($eshoparea,'state',false).'>'.__('State/County/Province','eshop').'</option>';
 		?>
 		</select>
+		<label for="eshop_max_weight<?php echo $eshopletter; ?>"><?php _e('Max weight allowed','eshop'); ?></label><input id="eshop_max_weight<?php echo $eshopletter; ?>" name="eshop_max_weight[<?php echo $k; ?>]" type="text" value="<?php echo $maxweight; ?>" size="4" />
 		<table class="hidealllabels widefat" summary="Shipping rates per mode">
 		<thead>
 		<tr>

@@ -44,6 +44,9 @@ if (!function_exists('eshopShowform')) {
 			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  class='$k' && rate_type='ship_weight' order by weight DESC limit 1");
 			if(count($query)==0) 
 				break;
+			if($query['0']->maxweight!='' && $cartweight > $query['0']->maxweight)
+				break;
+
 			$eshopshiptable.='
 			<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'" /> <label for="eshop_shiptype'.$k.'">'.stripslashes(esc_attr($type)).'</label></span>
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">

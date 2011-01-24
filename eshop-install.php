@@ -382,6 +382,7 @@ if(isset($eshopoptions['version'])){
 		 zone8 float(16,2) NOT NULL DEFAULT '0.00',
 		 zone9 float(16,2) NOT NULL DEFAULT '0.00',
 		 weight float(16,2) NOT NULL DEFAULT '0.00',
+		 maxweight varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT '',
 		 area varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT '',
 		 rate_type varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT 'shipping',
 		   PRIMARY KEY  (id)
