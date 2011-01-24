@@ -449,7 +449,7 @@ function eshop_products_manager() {
 		</form>
 		<?php
 		//paginate
-		echo '<div class="paginate">';;
+		echo '<div class="paginate tablenav-pages">';
 			if($records!=$max){
 				$eecho = $page_links;
 			}

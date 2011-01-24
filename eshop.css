@@ -386,13 +386,9 @@ div.paginate {
 }
 
 /* pagination */
-
-.paginate p { 
-	padding:0; 
-	line-height:2em;
-}
-.paginate p span {
-	font-weight:bold;
+.paginate span{
+	float:left;
+	font-style:italic;
 }
 .paginate ul {
 	margin:0;
@@ -401,10 +397,18 @@ div.paginate {
 .paginate ul li {
 	float:left;
 	padding:0 4px;
-	margin-right:5px;
 }
 .paginate ul li a {
 	display:block;
+}
+div.paginate .page-numbers.current{
+  border-color :  #999;
+  padding : 0 8px; 
+  color : #666;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-style: solid;
+  border-width: 1px;
+  text-decoration:none;
 }
 div.paginate a, a.return {
   background-color : #eee;
@@ -426,16 +430,6 @@ a.return:hover, a.return:focus, a.return:active {
 
 div.paginate a.pag-view {
   padding : 0 30px;
-}
-
-div.paginate p.checkers {
-  text-align:right;
-  padding : 0;
-  margin-top : 8px;
-}
-
-div.paginate p.checkers a {
-  margin-right : 6px;
 }
 
 /* email forms */

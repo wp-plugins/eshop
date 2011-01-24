@@ -210,7 +210,7 @@ if (!function_exists('displayorders')) {
 			}
 			echo "</tbody></table></div>\n";
 			//paginate
-				echo '<div class="paginate">';
+				echo '<div class="paginate tablenav-pages">';
 				if($records!=$max){
 					$eecho = $page_links;
 				}
@@ -223,7 +223,6 @@ if (!function_exists('displayorders')) {
 					$thispage=esc_url(add_query_arg('eshopall', 'yes', $_SERVER['REQUEST_URI']));
 					echo "<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
 				}
-				//echo '<p class="checkers">'.__('Bulk:','eshop').'<a href="javascript:checkedAll(\'orderstatus\', true)" title="'.__('Select all of the checkboxes above','eshop').'">'.__('Check','eshop').'</a><span class="offset"> | </span><a href="javascript:checkedAll(\'orderstatus\', false)" title="'.__('Deselect all of the checkboxes above','eshop').'">'.__('Uncheck','eshop').'</a></p>';
 				echo '<br /></div>';
 			//end
 			
