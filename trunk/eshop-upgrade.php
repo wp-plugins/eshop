@@ -654,6 +654,7 @@ if(version_compare($eshopoptions['version'], '6.1.0' ,'<')){
 	$table = $wpdb->prefix ."eshop_shipping_rates";
 	$newtable=$wpdb->prefix ."eshop_rates";
 	$wpdb->query("RENAME TABLE $table TO $newtable");
+	$wpdb->query("ALTER TABLE $newtable ADD `maxweight` varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT ''");
 	$wpdb->query("ALTER TABLE $newtable ADD `area` varchar(50) CHARACTER SET utf8 NOT NULL DEFAULT ''");
  	$wpdb->query("ALTER TABLE $newtable ADD `rate_type` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT 'shipping'");
  	$wpdb->query("ALTER TABLE $newtable CHANGE `class` `class` VARCHAR( 3 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT ''");

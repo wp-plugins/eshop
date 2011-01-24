@@ -2390,11 +2390,11 @@ if (!function_exists('eshop_parse_optsets')){
 			foreach($orowres as $orow){
 				if(isset($newoptings[$x]['id']) && $orow->id==$newoptings[$x]['id']){
 					if((isset($newoptings[$x]['type']) && isset($newoptings[$x]['text']) && trim($newoptings[$x]['text'])!='' && ($newoptings[$x]['type']=='2' || $newoptings[$x]['type']=='3'))){
-						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->name).":</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span></span>';
+						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->name)."</span>\n".'<span class="eshoptext">'.stripslashes($newoptings[$x]['text']).'</span></span>';
 					}elseif(($orow->type=='2' || $orow->type=='3') && !isset($newoptings[$x]['text']))
 						$xxxx='';
 					else
-						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->oname).":</span>\n".'<span class="eshoptext">'.stripslashes($orow->name).'</span></span>';
+						$oset[]='<span class="eshopoptset"><span class="eshopoptname">'.stripslashes($orow->oname)."</span>\n".'<span class="eshoptext">'.stripslashes($orow->name).'</span></span>';
 					$addoprice=$addoprice+$orow->price;
 					$x++;
 				}

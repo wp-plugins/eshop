@@ -68,6 +68,7 @@ Version 6.1.0
 * *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode.
 * *added* 	missing strings for translations
 * *added* 	classes for styling in various places
+* *added* 	ability to set max weight for Shipping Method 4: Shipping Modes, by weight and zone
 * *changed* 	Discount Codes are no longer case sensitive
 * *changed* 	removed _ from filenames and replaced with -, easier for developers.
 * *changed* 	eShop stats are now on the Dashboard, only available for eShop admins.
