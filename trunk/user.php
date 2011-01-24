@@ -8,8 +8,8 @@ if (isset($eshopoptions['users']) && $eshopoptions['users']=='yes'){
 	add_action( 'edit_user_profile_update', 'save_eshop_user_profile_fields' );
 }
 function eshop_user_profile_fields( $user ) { 
-$eshopuser=stripslashes_deep(get_the_author_meta( 'eshop', $user->ID )) ;
-global $wpdb,$eshopoptions;
+	$eshopuser=stripslashes_deep(get_the_author_meta( 'eshop', $user->ID )) ;
+	global $wpdb,$eshopoptions;
 		$table=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];
 		if($eshopoptions['show_allstates'] != '1'){

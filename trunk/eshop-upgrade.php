@@ -344,6 +344,18 @@ if(version_compare($eshopoptions['version'], '5.0.0' ,'<')){
 		$sql="ALTER TABLE `".$table."` CHANGE `description` `description` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL";
 		$wpdb->query($sql);
 	}
+	
+	
+	$dirs=wp_upload_dir();
+	$upload_dir=$dirs['basedir'];
+	$plugin_dir=WP_PLUGIN_DIR;
+	//new_files
+	$eshop_goto=$upload_dir.'/eshop_files';
+	$eshop_from=$plugin_dir.'/eshop/files';
+	copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
+	chmod($eshop_goto.'/noimage.png',0666);
+	copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
+	chmod($eshop_goto.'/eshop-onload.js',0666);
 }
 if(version_compare($eshopoptions['version'], '5.2.0' ,'<')){
 	eshop_option_upgrade();

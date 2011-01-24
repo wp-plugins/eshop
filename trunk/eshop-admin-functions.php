@@ -37,23 +37,24 @@ if (!function_exists('eshop_admin')) {
      */
     function eshop_admin() {    
 		global $wp_version;
-		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop.php', 'eshop_admin_orders',WP_PLUGIN_URL.'/eshop/eshop.png');
-		$page[]=add_submenu_page('eshop.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
-		$page[]=add_submenu_page('eshop.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
-		$page[]=add_submenu_page('eshop.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop-products.php'), 'eshop_admin_products');
-		$page[]=add_submenu_page('eshop.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop-options.php'), 'eshop_admin_options');
-		$page[]=add_submenu_page('eshop.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop-downloads.php'), 'eshop_admin_downloads');
-		$page[]=add_submenu_page('eshop.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop-discount-codes.php'), 'eshop_discount_codes');
-		$page[]=add_submenu_page('eshop.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop-base.php'), 'eshop_admin_base');
-		$page[]=add_submenu_page('eshop.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop-templates.php'),'eshop_admin_templates');
-		$page[]=add_submenu_page('eshop.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
+		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop-orders.php', 'eshop_admin_orders',WP_PLUGIN_URL.'/eshop/eshop.png');
+
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Products','eshop'),__('Products','eshop'), 'eShop', basename('eshop-products.php'), 'eshop_admin_products');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Options','eshop'),__('Option Sets','eshop'), 'eShop', basename('eshop-options.php'), 'eshop_admin_options');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Downloads','eshop'),__('Downloads','eshop'), 'eShop_admin', basename('eshop-downloads.php'), 'eshop_admin_downloads');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop-discount-codes.php'), 'eshop_discount_codes');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop-base.php'), 'eshop_admin_base');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop-templates.php'),'eshop_admin_templates');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
 		if (eshop_wp_version('3'))
 			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my-orders.php'),'eshop_user_orders');
 
 		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop-style.php'),'eshop_admin_style');
 		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop-uninstall.php'),'eshop_admin_uninstall');
 		$help='
-		<p><strong>' . __('eShop help:') . '</strong></p>
+		<p><strong>' . __('eShop Help','eshop') . '</strong></p>
 		<ul>
 		<li>'.__('<a href="http://quirm.net/wiki/eshop/">eShop Wiki</a>','eshop').'</li>
 		<li>'.__('<a href="http://wordpress.org/tags/eshop">Wordpress forums</a>','eshop').'</li>

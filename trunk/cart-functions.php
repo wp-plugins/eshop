@@ -1908,6 +1908,7 @@ if (!function_exists('eshop_cart_process')) {
 					$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
 				}
 				$_SESSION['lastproduct'.$blog_id]=$postid;
+				do_action('eshop_product_updated_cart',$_SESSION['eshopcart'.$blog_id][$identifier]);
 			}elseif($identifier!=''){
 				$weight=0;
 				if(isset($_POST['save']) && $_POST['save']=='true'){
@@ -1977,6 +1978,8 @@ if (!function_exists('eshop_cart_process')) {
 				if(isset($error)){
 					unset($_SESSION['eshopcart'.$blog_id][$identifier]);
 				}
+				do_action('eshop_product_added_to_cart',$_SESSION['eshopcart'.$blog_id][$identifier]);
+
 			}
 		}
 		if(!isset($error)){

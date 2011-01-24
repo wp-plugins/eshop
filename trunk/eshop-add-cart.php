@@ -22,7 +22,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 				$details.=" class='".esc_attr($eshopoptions['details']['class'])."'";
 			if($eshopoptions['details']['hide']!='')
 				$details.=" options_hide='".esc_attr($eshopoptions['details']['hide'])."'";
-			if($eshopoptions['details']['tax']!='')
+			if(isset($eshopoptions['details']['tax']) && $eshopoptions['details']['tax']!='')
 				$details.=" etax_page='".esc_attr($eshopoptions['details']['tax'])."'";
 			if($isshortcode=='n')
 				$pee.= do_shortcode('[eshop_details'.$details.']');

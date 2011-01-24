@@ -130,12 +130,6 @@ if (!function_exists('eshop_create_dirs')) {
 					return false;
 				}
 			}
-			if($eshopoptions['version']<='5.0.0'){
-				copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
-				chmod($eshop_goto.'/noimage.png',0666);
-				copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
-				chmod($eshop_goto.'/eshop-onload.js',0666);
-			}
 			//downloads
 			$eshop_goto=$upload_dir.'/../eshop_downloads';
 			$eshop_from=$plugin_dir.'/eshop/downloads';
