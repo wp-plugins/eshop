@@ -290,15 +290,31 @@ if (!function_exists('eshop_admin_mode')) {
 	function eshop_admin_mode()  {
 	global $eshopoptions;
 		echo '<p class="eshopinfo">';
-			if('live' == $eshopoptions['status'])
-				_e('eShop is currently <span class="live">Live</span>.','eshop');
-			else
-				_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
-			
-			if(is_array($eshopoptions['method']))
-			    echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$eshopoptions['method'])).'</span>';
-			else
-			    _e(' No Merchant Gateway selected.','eshop');
+		if('live' == $eshopoptions['status'])
+			_e('eShop is currently <span class="live">Live</span>.','eshop');
+		else
+			_e('eShop is currently in <span class="test">Test Mode</span>.','eshop');
+
+		if(is_array($eshopoptions['method'])){
+			foreach($eshopoptions['method'] as $methods){
+				if(strtolower($methods)=='cash'){
+					$eshopcash = $eshopoptions['cash'];
+					if($eshopcash['rename']!='')
+						$methods=$eshopcash['rename'];
+				}
+				if(strtolower($methods)=='bank'){
+					$eshopbank = $eshopoptions['bank'];
+					if($eshopbank['rename']!='')
+						$methods=$eshopbank['rename'];
+				}
+				$displaymethods[]=$methods;
+			}
+		}
+
+		if(isset($displaymethods))
+			echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$displaymethods)).'</span>';
+		else
+			_e(' No Merchant Gateway selected.','eshop');
 		echo '</p>'."\n";
 	}
 }
