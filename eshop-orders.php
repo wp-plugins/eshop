@@ -419,12 +419,11 @@ if(isset($_POST['change'])){
 }
 
 
-echo '<ul class="subsubsub">';
+echo '<ul class="nav-tab-wrapper">';
 if(current_user_can('eShop_admin'))
 	$stati=array('Pending' => __('Pending','eshop'),'Waiting'=>__('Awaiting Payment','eshop'),'Completed'=>__('Active','eshop'),'Sent'=>__('Shipped','eshop'),'Failed'=>__('Failed','eshop'),'Deleted'=>__('Deleted','eshop'));
 else
 	$stati=array();
-
 
 $dtable=$wpdb->prefix.'eshop_orders';
 $myres=$wpdb->get_results("SELECT COUNT( id ) as amt, status FROM $dtable WHERE id >0 GROUP BY status");
@@ -435,13 +434,13 @@ foreach ($myres as $row ){
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
-		$class = ' class="current"';
+		$class = ' nav-tab-active';
 	$cnt='(0)';
 	if(isset($counted[$status]))
 		$cnt='('.$counted[$status].')';
-	$status_links[] = "<li><a href=\"?page=eshop-orders.php&amp;action=$status\"$class>" . $label . '</a>'.$cnt;
+	$status_links[] = '<li><a href="?page=eshop-orders.php&amp;action='.$status.'" class="nav-tab'.$class.'">' . $label . ' <span class="count">'.$cnt.'</span></a>';
 }
-echo implode(' | </li>', $status_links) . '</li>';
+echo implode('</li>', $status_links) . '</li>';
 echo '</ul><br class="clear" />';
 
 

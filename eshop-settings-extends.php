@@ -843,11 +843,11 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			foreach ( $stati as $status => $label ) {
 				$class = '';
 				if ( $status == $action_status )
-					$class = ' class="current"';
+					$class = ' nav-tab-active';
 				$dalink=add_query_arg('page',ESHOP_SETTINGS_PAGE_NAME,'options-general.php');
 				$dalink=add_query_arg('mstatus',$status,$dalink);
 				$dalink=esc_url($dalink);
-				$status_links[] = "<li><a href=\"$dalink\"$class>" . $label . '</a>';
+				$status_links[] = '<li><a href="'.$dalink.'" class="nav-tab'.$class.'">'. $label . '</a>';
 			}
 			//end submenu
 		
@@ -865,8 +865,8 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			eshop_check_error();
 			eshop_admin_mode();
 			//the submenu 
-			echo '<ul class="subsubsub">';
-			echo implode(' | </li>', $status_links) . '</li>';
+			echo '<ul class="nav-tab-wrapper">';
+			echo implode('</li>', $status_links) . '</li>';
 			echo '</ul><br class="clear" />';
 			?>
 			<form method="post" action="admin-post.php" id="eshop-settings">

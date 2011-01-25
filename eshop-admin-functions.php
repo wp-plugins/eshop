@@ -73,7 +73,7 @@ if (!function_exists('eshop_admin')) {
 if (!function_exists('eshop_admin_init')) {
 	function eshop_admin_init(){
 		/* Register our stylesheet. */
-		wp_register_style('eShopAdminStyles', WP_PLUGIN_URL . '/eshop/eshop.css');
+		wp_register_style('eShopAdminStyles', WP_PLUGIN_URL . '/eshop/eshop-admin.css');
 		wp_register_style('eShopAdminPrint', WP_PLUGIN_URL . '/eshop/eshop-print.css','','','print');
 		wp_register_script('eShopCheckAll', WP_PLUGIN_URL . '/eshop/eshopcheckall.js', array('jquery'));
 		wp_enqueue_style('eShopAdminStyles');
