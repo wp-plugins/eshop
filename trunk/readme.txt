@@ -52,6 +52,15 @@ Version 6.1.0
 * *NEW* 	Downloads can now have 'collections'.
 * *NEW* 	Sale Prices for main options, shortcodes adapted to take price = yes, sale or both.
 * *FIXED/Added* Secondary address box for Paypal, finally allowing non main account email addresses to be used!
+* *added* 	generic eshop-widget class to eShop widgets
+* *added* 	filter for the eshop_files_directory
+* *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
+* *added* 	number of decimals is now translatable.
+* *added* 	extra CSS hooks to checkout confirmation page.
+* *added* 	action eshop_sold_product which is sent the post id of the product that was sold.
+* *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode, and add in a max weight for each.
+* *added* 	missing strings for translations
+* *added* 	classes for styling in various places
 * *fixed* 	small bug with listing on the downloads page.
 * *fixed* 	slashes issue with option sets
 * *fixed* 	eshop_welcome shortcode now picks up loged in users display name if set.
@@ -59,16 +68,7 @@ Version 6.1.0
 * *fixed* 	eshop_details shortcode now functions correctly.
 * *fixed* 	checkout losing chosen State/County/Province, props VK.
 * *fixed* 	many small bugs.
-* *added* 	generic eshop-widget class to eShop widgets
-* *added* 	filter for the eshop_files_directory
-* *added* 	check on checkout page, if memebersonly is set as an attribute, then you can use this format to display a message: [eshop_show_checkout membersonly='yes']please show me[/eshop_show_checkout]
-* *added* 	number of decimals is now translatable.
-* *added* 	extra CSS hooks to checkout confirmation page.
-* *added* 	action eshop_sold_product which is sent the post id of the product that was sold.
-* *added* 	Shipping by weight now allows you to choose between states/counties/province and countries per mode.
-* *added* 	missing strings for translations
-* *added* 	classes for styling in various places
-* *added* 	ability to set max weight for Shipping Method 4: Shipping Modes, by weight and zone
+* *changed*	renaming of eshop.css to eshop-admin.css to avoid confusion, and many styles tweaked.
 * *changed* 	Discount Codes are no longer case sensitive
 * *changed* 	removed _ from filenames and replaced with -, easier for developers.
 * *changed* 	eShop stats are now on the main WP Dashboard, only available for eShop admins.

@@ -173,7 +173,7 @@ jQuery(document).ready(function($){
 			$(".eshopajax").empty();
 		}
 		function cleareshopCart(){
-			$(".ajaxcart").insert();
+			$(".ajaxcart").insertAfter();
 		}
 		return false;
 	});

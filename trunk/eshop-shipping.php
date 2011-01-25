@@ -39,16 +39,16 @@ if(isset($_POST['submitstate'])){
 
 }
 
-$echosub= '<ul class="subsubsub">';
+$echosub= '<ul class="nav-tab-wrapper">';
 $stati=array('shipping'=>__('Shipping Rates','eshop'),'countries' => __('Countries','eshop'),'states'=>$eshopoptions['shipping_state'].' '.__('State/County/Province','eshop'));
 foreach ( $stati as $status => $label ) {
 	$class = '';
 	if ( $status == $action_status )
-		$class = ' class="current"';
+		$class = ' nav-tab-active';
 
-	$status_links[] = "<li><a href=\"?page=eshop-shipping.php&amp;eshopaction=$status\"$class>" . $label . '</a>';
+	$status_links[] = '<li><a href="?page=eshop-shipping.php&amp;eshopaction='.$status.'" class="nav-tab'.$class.'">' . $label . '</a>';
 }
-$echosub.= implode(' | </li>', $status_links) . '</li>';
+$echosub.= implode('</li>', $status_links) . '</li>';
 $echosub.= '</ul><br class="clear" />';
 
 

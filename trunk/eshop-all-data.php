@@ -56,7 +56,7 @@ foreach($dquery as $drow){
 	foreach($result as $myrow){
 		$value=$myrow->item_qty * $myrow->item_amt;
 		$total=$total+$value;
-		$itemid=$myrow->item_id."\n".$myrow->optsets;
+		$itemid=$myrow->item_id."\n".strip_tags($myrow->optsets);
 		//get download file title
 		//check if downloadable product
 		$fileid=$myrow->down_id;

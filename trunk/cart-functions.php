@@ -922,8 +922,7 @@ if (!function_exists('orderhandle')) {
 				'',''
 					);");
 					
-			do_action('eshoporderhandle',$_POST,$checkid);
-					
+			
 			$i=1;
 			//this is here to generate just one code per order
 			$code=eshop_random_code(); 
@@ -1053,6 +1052,9 @@ if (!function_exists('orderhandle')) {
 						$wpdb->query("UPDATE $disctable SET remain=remain-1 where disccode='$discvalid' limit 1");
 				}
 			}
+			
+			do_action('eshoporderhandle',$_POST,$checkid);
+
 			if($eshopoptions['status']!='live'){
 				echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
 			}
