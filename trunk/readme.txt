@@ -71,7 +71,7 @@ Version 6.1.0
 * *added* 	ability to set max weight for Shipping Method 4: Shipping Modes, by weight and zone
 * *changed* 	Discount Codes are no longer case sensitive
 * *changed* 	removed _ from filenames and replaced with -, easier for developers.
-* *changed* 	eShop stats are now on the Dashboard, only available for eShop admins.
+* *changed* 	eShop stats are now on the main WP Dashboard, only available for eShop admins.
 * *Note* 	after upgrading you may need to refresh the page due to the change above.
 
 __Note__ This version has been tested with Paypal, Cash, Bank, Webtopay and Authorize.net merchant gateways, and all seemed to work OK in test mode. The other gateways have not had a full test, but should work without issue.

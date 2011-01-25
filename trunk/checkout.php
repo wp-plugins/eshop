@@ -378,13 +378,13 @@ if (!function_exists('eshop_checkout')) {
 		// if everything went ok do the following, hopefully the rest won't happen!
 		if(isset($_GET['eshopaction'])){
 			if($_GET['eshopaction']=='success'){
-				include($eshopmgincpath);
+				include_once($eshopmgincpath);
 			}
 		}
 		//filter for plugin merchant gateways
 		$eshopmgincidxpath=apply_filters('eshop_mg_inc_idx_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'/index.php',$paymentmethod);
 		if(file_exists($eshopmgincidxpath))
-			include($eshopmgincidxpath);
+			include_once($eshopmgincidxpath);
 
 		if(isset($_SESSION['eshopcart'.$blog_id])){
 			$shopcart=$_SESSION['eshopcart'.$blog_id];
@@ -906,7 +906,7 @@ if (!function_exists('eshop_checkout')) {
 			$biscuits=eshop_build_cookie($array);
 			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
 			$eshopmgincpath=apply_filters('eshop_mg_inc_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php',$paymentmethod);
-			include($eshopmgincpath);
+			include_once($eshopmgincpath);
 			$contineproceed='3';
 		}
 	}else{
