@@ -1244,12 +1244,16 @@ function eshop_welcome($atts, $content = ''){
 function eshop_show_cancel(){
 	global $wp_query;
 	if(isset($wp_query->query_vars['eshopaction'])) {
+		$echo = '';
 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
 		if($eshopaction=='cancel'){
-			$echo ='<h3 class="error">'.__('The order was cancelled.','eshop')."</h3>";
-			$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
-			return $echo;
+			$echo .= '<h3 class="error">'.__('The order was cancelled.','eshop')."</h3>";
+			$echo .= '<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 		}
+		$postit='';
+		if(isset($_POST)) $postit=$_POST;
+		$echo = apply_filters('eshop_show_cancel', $echo, $eshopaction, $postit);
+		return $echo;
 	}
 	return;
 }
@@ -1355,6 +1359,10 @@ function eshop_show_success(){
 			}
 			// End of TEMCEDIT-20091117-a
 		}
+		$postit='';
+		if(isset($_POST)) $postit=$_POST;
+		$echo = apply_filters('eshop_show_success', $echo, $eshopaction, $postit);
+		
 		return $echo;
 	}
 }
