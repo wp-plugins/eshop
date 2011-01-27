@@ -255,11 +255,16 @@ fieldset#changestat {
   border : 1px solid #fefefe;
   background:#F5FAFF;
 }
-
-#eshop-settings legend, #template_form legend, #edit_box legend, #style_form legend, 
-#eshopformleft legend,#orderstatus legend, #emailer legend,#shipformmethod legend,#zoneform legend,
-#filterzones legend,#eshopup legend,#downloadedit legend,#eshop-gbase-alt legend,
-#eshopdisccodes legend, #shipform legend, #eshop_shipping_state_form legend{
+.appearance_page_eshop-style legend,
+.toplevel_page_eshop-orders legend,
+.eshop_page_eshop-shipping legend,
+.eshop_page_eshop-products legend,
+.eshop_page_eshop-options legend,
+.eshop_page_eshop-downloads legend,
+.eshop_page_eshop-discount-codes legend,
+.eshop_page_eshop-base legend,
+.eshop_page_eshop-templates legend,
+.eshop_page_eshop-about legend{
 	font-size:1.2em;
 	color:#666;
 	background:#EDF6FF;

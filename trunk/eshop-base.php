@@ -122,34 +122,19 @@ if(!isset($_GET['change'])){
 		$x=0;
 		//add in post id( doh! )
 		foreach($myrowres as $row){
-			$grabit[$x]=get_post_custom($row->post_id);
-			$grabit[$x]['id']=array($row->post_id);
+			$grabit[$x]=maybe_unserialize(get_post_meta( $row->post_id, '_eshop_product',true ));//get_post_custom($row->post_id);
+			$grabit[$x]['_eshop_stock']=get_post_meta( $row->post_id, '_eshop_stock',true);//get_post_custom($row->post_id);
+			$grabit[$x]['id']=$row->post_id;
+			$grabit[$x]['_featured']='1';
+			$grabit[$x]['_stock']='1';
+
+			if(strtolower($grabit[$x]['featured'])=='yes') $grabit[$x]['_featured']='0';
+			if(strtolower($grabit[$x]['_eshop_stock'])=='1') $grabit[$x]['_stock']='0';
 			$x++;
 		}
-		/*
-		* remove the bottom array to try and flatten
-		* could be rather slow, but easier than trying to create
-		* a different method, at least for now!
-		*/
-		foreach($grabit as $foo=>$k){
-			foreach($k as $bar=>$v){
-				if($bar=='_eshop_product'){
-					$x=unserialize($v[0]);
-					foreach($x as $nowt=>$val){
-						$array[$foo][$nowt]=$val;
-					}
-				}
-				foreach($v as $nowt=>$val){
-					$array[$foo][$bar]=$val;
-				}
-			}
-		}
-		//then sort it how we want.
-		$B = new eshop_multi_sort;
-		$B->aData = $array;
-		$B->aSortkeys = array($sortby);
-		$B->sort();
-		$grab=$B->aData;
+
+		$array=$grabit;
+		$grab=subval_sort($array,$sortby); 
 	?>	
 		<table class="widefat" summary="<?php _e('product listing','eshop'); ?>">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
@@ -169,7 +154,7 @@ if(!isset($_GET['change'])){
 		<tbody>
 		<?php
 		foreach($grab as $foo=>$grabit){
-			$eshop_product=unserialize($grabit['_eshop_product']);
+			$eshop_product=$grabit;
 			if(isset($grabit['_eshop_stock']))
 				$stkav=$grabit['_eshop_stock'];
 			else

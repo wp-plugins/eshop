@@ -349,11 +349,9 @@ function eshop_downloads_manager() {
 		//work out totals for quick stats
 		$total=0;
 		$purchased=0;
-		$mycounts=$wpdb->get_results("Select * From $table");
-		foreach($mycounts as $acount){ 
-			$total+=$acount->downloads;
-			$purchased+=$acount->purchases;
-		}
+		$mycounts=$wpdb->get_row("Select SUM(downloads) as dlcount, SUM(purchases) as pucount From $table");
+		$total=$mycounts->dlcount;
+		$purchased=$mycounts->pucount;
 	?>
 	<div class="wrap">
 		<div id="eshopicon" class="icon32"></div><h2><?php _e('Downloadable Products','eshop'); ?></h2>
@@ -371,7 +369,7 @@ function eshop_downloads_manager() {
 		echo '</ul>';
 		?>
 		<p><strong><?php _e('Total Downloads:','eshop'); ?> </strong><?php echo $total; ?><br />
-		<strong><?php _e('Total Purchases:','eshop'); ?> </strong><? echo $purchased; ?><br />
+		<strong><?php _e('Total Purchases:','eshop'); ?> </strong><?php echo $purchased; ?><br />
 		</p>  
 		<table class="widefat" summary="<?php _e('download listing','eshop'); ?>">
 		<caption><?php _e('Available downloads','eshop'); ?></caption>

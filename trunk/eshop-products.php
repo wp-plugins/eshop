@@ -122,12 +122,12 @@ function eshop_products_manager() {
 				break;
 		*/
 			case'sd'://stock availability 
-				$sortby='_eshop_stock';
+				$sortby='_stock';
 				$csd=' class="current"';
 				break;
 		
 			case'se'://transaction id numerically
-				$sortby='featured';
+				$sortby='_featured';
 				$cse=' class="current"';
 				break;
 			case'sf'://date ascending
@@ -224,44 +224,23 @@ function eshop_products_manager() {
 		$calt=0;
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$x=0;
+
 		//add in post id( doh! )
 		foreach($myrowres as $row){
 			$grabit[$x]=maybe_unserialize(get_post_meta( $row->post_id, '_eshop_product',true ));//get_post_custom($row->post_id);
-			$grabit[$x]['_eshop_stock']=get_post_meta( $row->post_id, '_eshop_stock',true );//get_post_custom($row->post_id);
+			$grabit[$x]['_eshop_stock']=get_post_meta( $row->post_id, '_eshop_stock',true);//get_post_custom($row->post_id);
 			$grabit[$x]['id']=$row->post_id;
-			$x++;
-			
-		}
-		/*
-		* remove the bottom array to try and flatten
-		* could be rather slow, but easier than trying to create
-		* a different method, at least for now!
-		*/
-		/*
-		foreach($grabit as $foo=>$k){
-			foreach($k as $bar=>$v){
-				if($bar=='_eshop_product'){
-					$x=maybe_unserialize($v[0]);
-					foreach($x as $nowt=>$val){
-						$array[$foo][$nowt]=$val;
-					}
-				}
-				foreach($v as $nowt=>$val){
-					$array[$foo][$bar]=$val;
-				}
-			}
-		}
-		*/
-		$array=$grabit;
+			$grabit[$x]['_featured']='1';
+			$grabit[$x]['_stock']='1';
 
-		//then sort it how we want.
-		$B = new eshop_multi_sort;
-		$B->aData = $array;
-		$B->aSortkeys =  array($sortby);
-		//hiding errors, can't figure out they are appearing :(
-		@$B->sort();
-		$grab=$B->aData;
-		
+			if(strtolower($grabit[$x]['featured'])=='yes') $grabit[$x]['_featured']='0';
+			if(strtolower($grabit[$x]['_eshop_stock'])=='1') $grabit[$x]['_stock']='0';
+			$x++;
+		}
+
+		$array=$grabit;
+		$grab=subval_sort($array,$sortby); 
+
 		//grabs some tax data
 		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
 		$etax = $eshopoptions['etax'];
