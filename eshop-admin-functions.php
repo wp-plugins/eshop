@@ -289,7 +289,7 @@ if (!function_exists('eShopPluginUpdateMessage')) {
 if (!function_exists('eshop_admin_mode')) {
 	function eshop_admin_mode()  {
 	global $eshopoptions;
-		echo '<p class="eshopinfo">';
+		echo '<p class="eshopinfo stuffbox">';
 		if('live' == $eshopoptions['status'])
 			_e('eShop is currently <span class="live">Live</span>.','eshop');
 		else

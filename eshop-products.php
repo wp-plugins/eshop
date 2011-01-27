@@ -190,7 +190,7 @@ function eshop_products_manager() {
 	
 	if($max>0){
 		$apge=get_admin_url().'admin.php?page='.$_GET['page'];
-		echo '<ul id="eshopsubmenu">';
+		echo '<ul id="eshopsubmenu" class="stuffbox">';
 		echo '<li><span>'.__('Sort Products by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sf"'.$csf.'>'.__('ID Number','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=sa"'.$csa.'>'.__('Sku','eshop').'</a></li>';
@@ -449,7 +449,7 @@ function eshop_products_manager() {
 		</form>
 		<?php
 		//paginate
-		echo '<div class="paginate tablenav-pages">';
+		echo '<div class="paginate tablenav-pages stuffbox">';
 			if($records!=$max){
 				$eecho = $page_links;
 			}

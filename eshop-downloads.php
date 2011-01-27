@@ -360,7 +360,7 @@ function eshop_downloads_manager() {
 		<?php eshop_admin_mode(); ?>
 		<?php
 		$apge=get_admin_url().'admin.php?page=eshop-downloads.php';
-		echo '<ul id="eshopsubmenu">';
+		echo '<ul id="eshopsubmenu" class="stuffbox">';
 		echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ia"'.$cia.'>'.__('ID Number','eshop').'</a></li>';
 		echo '<li><a href="'.$apge.'&amp;by=ta"'.$cta.'>'.__('Title','eshop').'</a></li>';
@@ -415,7 +415,7 @@ function eshop_downloads_manager() {
 		</table>
 	<?php
 	//paginate
-		echo '<div class="paginate tablenav-pages">';
+		echo '<div class="paginate tablenav-pages stuffbox">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}
