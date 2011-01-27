@@ -1117,7 +1117,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			?>
 			<p class="cbox"><input id="eshop_method" name="eshop_method[]" type="checkbox" value="paypal"<?php if(in_array('paypal',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_method" class="eshopmethod"><?php _e('Accept payment by Paypal','eshop'); ?></label></p>
 			<label for="eshop_business"><?php _e('Main account Email address','eshop'); ?></label><input id="eshop_business" name="eshop_business" type="text" value="<?php echo $eshopoptions['business']; ?>" size="30" /><br />
-			<label for="eshop_business"><?php _e('Secondary Email address','eshop'); ?></label><input id="eshop_business_sec" name="eshop_business_sec" type="text" value="<?php echo $eshopoptions['business_sec']; ?>" size="30" /><br />
+			<label for="eshop_business_sec"><?php _e('Secondary Email address','eshop'); ?></label><input id="eshop_business_sec" name="eshop_business_sec" type="text" value="<?php echo $eshopoptions['business_sec']; ?>" size="30" /><br />
 
 			<label for="eshop_paypal_noemail"><?php _e('Send buyers email address to paypal?','eshop'); ?> <small>(<?php _e('This affects the form that Paypal shows to the customer.','eshop'); ?>)</small></label>
 			<select name="eshop_paypal_noemail" id="eshop_paypal_noemail">
