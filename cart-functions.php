@@ -2337,25 +2337,20 @@ if (!function_exists('get_eshop_product')) {
 		return $eshop_product;
 	}
 }
-if(!class_exists('eshop_multi_sort')){
-	class eshop_multi_sort {
-		var $aData;//the array we want to sort.
-		var $aSortkeys;//the order in which we want the array to be sorted.
-		function sortcmp($a, $b, $i=0) {
-			$r = strnatcmp($a[$this->aSortkeys[$i]],$b[$this->aSortkeys[$i]]);
-			if($r==0) {
-				$i++;
-				if ($this->aSortkeys[$i]) $r = $this->sortcmp($a, $b, $i+1);
-			}
-			return $r;
+
+if (!function_exists('subval_sort')){
+	function subval_sort($a,$subkey) {
+		foreach($a as $k=>$v) {
+			$b[$k] = strtolower($v[$subkey]);
 		}
-		function sort() {
-			if(count($this->aSortkeys)) {
-				usort($this->aData,array($this,"sortcmp"));
-			}
+		asort($b);
+		foreach($b as $key=>$val) {
+			$c[] = $a[$key];
 		}
+		return $c;
 	}
 }
+
 if (!function_exists('eshop_parse_optsets')){
 	function eshop_parse_optsets($data){
 		global $wpdb;
@@ -2364,12 +2359,7 @@ if (!function_exists('eshop_parse_optsets')){
 		$oset=$qb=array();
 		$optings=unserialize($opt['optset']);
 		//then sort it how we want.
-		$B = new eshop_multi_sort;
-		$B->aData = $optings;
-		$B->aSortkeys =  array('id');
-		$B->sort();
-		$optings=$B->aData;
-
+		$optings=subval_sort($optings,'id'); 
 		$c=0;
 		if(isset($newoptings)) unset($newoptings);
 
