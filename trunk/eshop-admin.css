@@ -3,6 +3,15 @@
 	background:url("eshop32.png") no-repeat transparent;
 }
 /* sub menu*/
+
+#eshopsubmenu {
+  border-width:1px;
+  padding : 3px 8px;
+  color : #333;
+  font-size : 1.1em;
+  margin: 8px 0;
+}
+
 #eshopsubmenu li {
   display : inline;
   line-height: 180%;
@@ -10,15 +19,6 @@
   list-style : none;
   text-align : center;
   white-space : nowrap;
-}
-
-#eshopsubmenu {
-  background-color : #F5FAFF;
-  border:1px solid #B9DFFF;
-  padding : 3px 8px;
-  color : #333;
-  font-size : 1.1em;
-  margin: 8px 0;
 }
 
 #eshopsubmenu a, #eshopsubmenu span {
@@ -138,10 +138,9 @@ p.notice span, h3.status span {
 }
 
 p.eshopinfo {
-  background-color : #F5FAFF;
-  border:2px solid #B9DFFF;
-  padding : 3px 8px;
-  color : #333;
+ background-color : #FFFBDD;
+  border-width:1px;
+  padding : 4px 8px;
   font-size : 1.1em;
   margin:0 0 8px 0;
 }
@@ -393,11 +392,10 @@ p.delete small {
 
 /* pagination */
 div.paginate {
- background-color : #F5FAFF;
-  border:1px solid #B9DFFF;
-  padding : 5px 8px;
-  color : #333;
-  font-size : 0.9em;
+  border-width:1px;
+  padding: 10px 8px;
+  color: #333;
+  font-size: 0.9em;
   margin: 8px 0;
 }
 
@@ -405,6 +403,7 @@ div.paginate {
 .paginate span{
 	float:left;
 	font-style:italic;
+	padding-right:10px;
 }
 .paginate ul {
 	margin:0;
@@ -413,12 +412,12 @@ div.paginate {
 .paginate ul li {
 	float:left;
 	padding:0 4px;
+	margin-top: -3px;
 }
 .paginate ul li a {
 	display:block;
 }
 div.paginate .page-numbers.current{
-  border-color :  #999;
   padding : 0 8px; 
   color : #666;
   -moz-border-radius: 4px 4px 4px 4px;

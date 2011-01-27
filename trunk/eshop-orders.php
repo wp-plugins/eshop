@@ -136,7 +136,7 @@ if (!function_exists('displayorders')) {
 			$myrowres=$wpdb->get_results("Select * From $dtable where status='$type' $sortby LIMIT $offset, $records");
 			$calt=0;
 			$apge=get_admin_url().'admin.php?page='.$_GET['page'].'&amp;action='.$_GET['action'];
-			echo '<ul id="eshopsubmenu">';
+			echo '<ul id="eshopsubmenu" class="stuffbox">';
 			echo '<li><span>'.__('Sort Orders by &raquo;','eshop').'</span></li>';
 			echo '<li><a href="'.$apge.'&amp;by=da"'.$cda.'>'.__('Date Ascending','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=dd"'.$cdd.'>'.__('Date Descending','eshop').'</a></li>';
@@ -210,7 +210,7 @@ if (!function_exists('displayorders')) {
 			}
 			echo "</tbody></table></div>\n";
 			//paginate
-				echo '<div class="paginate tablenav-pages">';
+				echo '<div class="paginate tablenav-pages stuffbox">';
 				if($records!=$max){
 					$eecho = $page_links;
 				}
