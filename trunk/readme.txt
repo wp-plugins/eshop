@@ -44,7 +44,7 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
-Version 6.1.0
+Version 6.2.0
 
 * *WARNING* 	__Back up your database before upgrading__
 * *NEW* 	__Sales Tax__ can now be added. (settable per product option after 'tax bands' has been entered).
@@ -76,6 +76,9 @@ Version 6.1.0
 
 __Note__ This version has been tested with Paypal, Cash, Bank, Webtopay and Authorize.net merchant gateways, and all seemed to work OK in test mode. The other gateways have not had a full test, but should work without issue.
 
+Version 6.1.0
+
+* *Development Version only*
 
 Version 6.0.2
 
@@ -396,4 +399,5 @@ Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
+= 6.2.0 =
 Please remember to backup your database before upgrading. 

@@ -22,8 +22,22 @@ update_option('eshop_plugin_settings',$eshopoptions);
 ?>
 <div id="eshoppage">
 <div class="wrap">
- <div id="eshopicon" class="icon32"></div><h2 id="donate">eShop Donations</h2>
- <?php eshop_admin_mode(); ?>
+ <div id="eshopicon" class="icon32"></div><h2>eShop About &amp; Help</h2>
+  <?php eshop_admin_mode(); ?>
+ <h3>About</h3>
+  <p>eShop is simple accessible shopping cart plugin for WordPress.</p>
+  <h4>Sections</h4>
+  <ul>
+  	<li><a href="#setup">eShop Setup Instructions</a></li>
+  	<li><a href="#ehelp">eShop Help</a></li>
+  	<li><a href="#donate">eShop Donations</a></li>
+	<li><a href="#cred">eShop Credits</a></li>
+  </ul>
+</div>
+<div class="wrap">
+
+ <h3 id="donate">eShop Donations</h3>
+ <div class="eshopinfo stuffbox">
  <p style="text-align:center">Feeling generous? then please dig deep and donate as much as you can afford!</p>
  <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin:0 auto; width:120px;">
  <input type="hidden" name="cmd" value="_xclick" />
@@ -44,23 +58,12 @@ update_option('eshop_plugin_settings',$eshopoptions);
 </form>
 
   <p class="thanks">Thank you very much!</p>
+  </div>
 </div>
 <div class="wrap">
- <h2>About eShop</h2>
-  <p>eShop is simple accessible shopping cart plugin for WordPress that provides basic support for online payments through PayPal.</p>
-  <h3>Sections</h3>
-  <ul>
-  	<li><a href="#setup">eShop Setup Instructions</a></li>
-  	<li><a href="#ehelp">eShop Help</a></li>
-  	<li><a href="#donate">eShop Donations</a></li>
-	<li><a href="#cred">eShop Credits</a></li>
-  </ul>
-</div>
-
-<div class="wrap">
- <h2 id="setup">eShop Setup Instructions</h2>
+ <h3 id="setup">eShop Setup Instructions</h3>
   <p>Once the plugin is activated, it will automatically install various tables into the database for use.</p>
-  <h3>Installation</h3>
+  <h4>Installation</h4>
 	<p>Upload to your Wordpress plugin directory and activate.</p>
 
 	<p>The plugin automatically creates 6 pages for you, all of which are editable.</p>
@@ -79,12 +82,11 @@ update_option('eshop_plugin_settings',$eshopoptions);
 	if the customer cancels the order at payapl, and they follow the link from paypal, they will return to this page.
 	</li>
 	<li><strong>Downloads:</strong> this is the page a user will be directed to after they purchase a downloadable product.</li>
-
 	<li><strong>Shipping rates:</strong> 
 	because of the different possible shipping rates the plugin allows, this page automatically shows the table of shipping rates for you.
 	</li>
 	</ul>
-	<h4>Admin Pages</h4>
+	<h5>Admin Pages</h5>
 	<p>eShop create a full section containing the majority of admin pages, along with 3 additional ones located as mentioned below.</p>
 	<ul>
 	<li><strong>Appearance > eShop</strong>:  to allow you to alter the included CSS.</li>
@@ -95,13 +97,15 @@ update_option('eshop_plugin_settings',$eshopoptions);
 	<p>Simply edit a page/post and enter details into the Product Entry section on that page.</p>
 </div>
 <div class="wrap">
-<h2 id="ehelp">Help</h2>
+<h3 id="ehelp">Help</h3>
 	<p>The full help file is now available via: <a href="http://quirm.net/wiki/eshop/">http://quirm.net/wiki/eshop/</a> For easy reference that link is included in the Help tab on eShop pages.</p>
+<h4>Customisation</h4>
+	<p class="eshopinfo stuffbox"><a href="http://blackwidows.co.uk/">Black Widow Web Design Ltd</a> provide full customisation service for eShop from simple style changes to complete theme development and additional plugins. Please use the <a href="http://blackwidows.co.uk/contact/enquiry2.php">Contact Form</a> to ask for a quote.</p>
 </div>
 <div class="wrap">
- <h2 id="cred">eShop Credits</h2>
+ <h3 id="cred">eShop Credits</h3>
   <p>Created by <a href="http://cms.elfden.co.uk/">Rich Pedley</a> based on ideas and requirements from <a href="http://green-beast.com/">Mike Cherim</a>.</p>
-  <h3>Credits</h3>
+  <h4>Credits</h4>
   <p>During the creation of these scripts I have utilised scripts from elsewhere, although many of them were heavily adpated to suit. So my thanks go to:</p>
   <ul>
   <li><a href="http://alexking.org/">Alex King</a> - for removal of some default Wordpress settings.</li>

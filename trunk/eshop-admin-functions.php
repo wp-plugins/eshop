@@ -47,7 +47,7 @@ if (!function_exists('eshop_admin')) {
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop Discount Codes','eshop'),__('Discount Codes','eshop'), 'eShop_admin', basename('eshop-discount-codes.php'), 'eshop_discount_codes');
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop Base','eshop'),__('Base','eshop'), 'eShop_admin', basename('eshop-base.php'), 'eshop_admin_base');
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop Email Templates','eshop'), __('Emails','eshop'),'eShop_admin', basename('eshop-templates.php'),'eshop_admin_templates');
-		$page[]=add_submenu_page('eshop-orders.php',__('eShop About','eshop'),__('About','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
+		$page[]=add_submenu_page('eshop-orders.php',__('eShop About','eshop'),__('About &amp; Help','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
 		if (eshop_wp_version('3'))
 			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my-orders.php'),'eshop_user_orders');
 

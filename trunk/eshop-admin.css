@@ -140,9 +140,10 @@ p.notice span, h3.status span {
 p.eshopinfo {
  background-color : #FFFBDD;
   border-width:1px;
-  padding : 4px 8px;
+  padding : 8px;
   font-size : 1.1em;
   margin:0 0 8px 0;
+  line-height:1.5em;
 }
 p.eshopinfo span.live{
 	color:#090;
@@ -272,6 +273,8 @@ fieldset#changestat {
 	border-right:1px solid #999;
 	padding:0 5px 5px 5px;
 	margin-bottom:5px;
+	margin-top:10px;
+	font-style:italic;
 }
 
 #eshop-settings fieldset,#eshopdisccodes fieldset{
@@ -281,7 +284,9 @@ fieldset#changestat {
 	background: #f5f5f5;
 	padding-right:5px;
 }
-
+#eshop_shipping_state_form fieldset, #filterzones fieldset{
+margin-left:20px;
+}
 
 #eshop-settings fieldset fieldset,#eshopdisccodes fieldset fieldset,
 #eshopup fieldset fieldset,#eshop-gbase-alt fieldset fieldset,#eshopdisccodes fieldset fieldset{
