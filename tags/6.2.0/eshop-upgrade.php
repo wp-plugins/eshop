@@ -665,12 +665,6 @@ if(version_compare($eshopoptions['version'], '6.1.0' ,'<')){
  	$wpdb->query("ALTER TABLE `wp_eshop_order_items` ADD `tax_amt` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `tax_rate`");
 }
 
-if(version_compare($eshopoptions['version'], '6.1.1' ,'<')){
-	//updating database
-	$shippingzone=$eshopoptions['shipping_zone'];
-	$newtable=$wpdb->prefix ."eshop_rates";
-	$wpdb->query("ALTER TABLE $newtable ADD `maxweight` varchar(16) CHARACTER SET utf8 NOT NULL DEFAULT ''");
-}
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);
