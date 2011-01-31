@@ -744,7 +744,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 		//this line stops the addtocart form appearing.
 		remove_filter('the_content', 'eshop_boing');
-		$echo .= apply_filters('eshop_list_excerpt',apply_filters('the_excerpt', get_the_excerpt()));
+		$echo .= apply_filters('eshop_list_excerpt',apply_filters('the_excerpt', get_the_excerpt()), $post->ID);
 
 		if($price!='no'){
 			$currsymbol=$eshopoptions['currency_symbol'];
