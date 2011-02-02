@@ -178,7 +178,7 @@ if (!function_exists('displayorders')) {
 				}
 				//
 				$status=$type;
-				if($x>0){
+				//if($x>0){
 					$custom=$myrow->custom_field;
 					$cyear=substr($custom, 0, 4);
 					$cmonth=substr($custom, 4, 2);
@@ -205,7 +205,7 @@ if (!function_exists('displayorders')) {
 					<td headers="transid numb'.$c.'">'.$myrow->transid.'</td>'.
 					'<td headers="bulk numb'.$c.'"><label for="move'.$c.'">Move #'.$c.'</label><input type="checkbox" value="'.$checkid.'" name="move[]" id="move'.$c.'" />'
 					."</td></tr>\n";
-				}
+				//}
 
 			}
 			echo "</tbody></table></div>\n";

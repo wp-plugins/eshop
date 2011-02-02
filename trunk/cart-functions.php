@@ -6,6 +6,7 @@ if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
 		//The cart display.
 		global $wpdb, $blog_id,$eshopoptions;
+		if(!isset($_SESSION['shipping'.$blog_id])) $_SESSION['shipping'.$blog_id]=array();
 		if($pzone=='widget'){
 			$pzone='';
 			$iswidget='w';
@@ -507,32 +508,33 @@ if (!function_exists('valid_eshop_discount_code')) {
 		$now=date('Y-m-d');
 		$code=$wpdb->escape(strtolower($code));
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
-		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && binary disccode='$code'");
-
-		switch ($row->dtype){
-			case '1':
-				if($row->remain=='' || $row->remain>0) 
-					return true;
-				break;
-			case '2':
-				if($row->enddate>=$now) 
-					return true;
-				break;
-			case '3':
-				if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now))
-					return true;
-				break;
-			case '4':
-				if($row->remain=='' || $row->remain>0) return true;
-				break;
-			case '5':
-				if($row->enddate>=$now) return true;
-				break;
-			case '6':
-				if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now)) return true;
-				break;
-			default:
-				return false;
+		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$code'");
+		if(is_object($row)){
+			switch ($row->dtype){
+				case '1':
+					if($row->remain=='' || $row->remain>0) 
+						return true;
+					break;
+				case '2':
+					if($row->enddate>=$now) 
+						return true;
+					break;
+				case '3':
+					if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now))
+						return true;
+					break;
+				case '4':
+					if($row->remain=='' || $row->remain>0) return true;
+					break;
+				case '5':
+					if($row->enddate>=$now) return true;
+					break;
+				case '6':
+					if(($row->remain=='' || $row->remain>0) && ($row->enddate>=$now)) return true;
+					break;
+				default:
+					return false;
+			}
 		}
 		return false;
 	}
