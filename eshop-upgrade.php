@@ -661,10 +661,26 @@ if(version_compare($eshopoptions['version'], '6.1.0' ,'<')){
  	$wpdb->query("UPDATE $newtable set rate_type='ship_weight', area='$shippingzone', class=ship_type where ship_type>0");
  	$wpdb->query("ALTER TABLE $newtable DROP `ship_type`");
  	// add in drop old table
- 	$wpdb->query("ALTER TABLE `wp_eshop_order_items` ADD `tax_rate` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `item_amt`");
- 	$wpdb->query("ALTER TABLE `wp_eshop_order_items` ADD `tax_amt` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `tax_rate`");
+ 	$table=$wpdb->prefix ."eshop_order_items";
+	$wpdb->query("ALTER TABLE $table ADD `tax_rate` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `item_amt`");
+ 	$wpdb->query("ALTER TABLE $table ADD `tax_amt` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `tax_rate`");
 }
-
+if(version_compare($eshopoptions['version'], '6.2.1' ,'<')){
+	//fixes issue for those that weren't using wp_ as the prefix, adjusted above also.
+ 	$table=$wpdb->prefix ."eshop_order_items";
+ 	$tablefields = $wpdb->get_results("DESCRIBE {$table}");
+	$add_field = TRUE;
+	foreach ($tablefields as $tablefield) {
+		if(strtolower($tablefield->Field)=='tax_rate') {
+			$add_field = FALSE;
+		}
+	}
+	if ($add_field) {
+		$wpdb->query("ALTER TABLE $table ADD `tax_rate` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `item_amt`");
+ 		$wpdb->query("ALTER TABLE $table ADD `tax_amt` VARCHAR( 255 ) NOT NULL DEFAULT '' AFTER `tax_rate`");
+	}
+ 	
+}
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);
