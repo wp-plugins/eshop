@@ -641,7 +641,7 @@ function eshopw_list_cat_tags($atts){
 	$type => $id, 
 	'meta_key'=>'_eshop_product',
 	'orderby'=> $orderby,
-	'LIMIT' => $show,
+	'posts_per_page' => $show
 	); 
 	$pages = query_posts($args);
 	wp_reset_query();
@@ -670,7 +670,7 @@ function eshopw_listpages($subpages,$eshopclass){
 				$xclass='<li class="sale"><strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
 		}
 		$echo .= $xclass;
-		$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a></li>';
+		$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title, $post->ID).'</a></li>';
 	}
 	$echo .= '</ul>';
 	$post=$paged;

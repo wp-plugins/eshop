@@ -35,19 +35,18 @@ function eshop_form_admin_style(){
     $eshopoptions = get_option('eshop_plugin_settings');
 
     if(!is_writeable($styleFile)) {
-  			echo ' <div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The css file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
-	   		</div>'."\n";
+  		echo ' <div id="message" class="error fade"><p>'.__('<strong>Warning!</strong> The css file is not currently editable/writable! File permissions must first be changed.','eshop').'</p>
+	   	</div>'."\n";
  	}
 ?>
 <div class="wrap">
 <div id="eshopicon" class="icon32"></div><h2><?php _e('eShop Styles','eshop'); ?></h2>
 <?php eshop_admin_mode(); ?>
- <p><?php _e('Use this page to modify your default styling','eshop'); ?>.</p> 
 </div>
 <div class="wrap">
 <h2><?php _e('Default Style','eshop'); ?></h2>
 <?php
-if(@file_exists(STYLESHEETPATH.'/eshop.css')) {
+if(@file_exists(get_stylesheet_directory().'/eshop.css')) {
 echo '<p>';
 _e('Your active theme has an eshop style sheet, eshop.css, and will be used in preference to the default style below. Therefore changes made via the style editor below will not show on your site.','eshop');
 echo '</p>';

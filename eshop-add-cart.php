@@ -223,11 +223,11 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 			}else{
 				$option=$eshop_product['products']['1']['option'];
 				$price=$eshop_product['products']['1']['price'];
-				if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
+				if(isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == '1'
 				&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale'] 
-				&& isset($eshop_product['products'][$i]['saleprice']) && $eshop_product['products'][$i]['saleprice']!=''
+				&& isset($eshop_product['products']['1']['saleprice']) && $eshop_product['products']['1']['saleprice']!=''
 				&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
-					$price=$eshop_product['products'][$i]['saleprice'];
+					$price=$eshop_product['products']['1']['saleprice'];
 				}
 				$currst=1;
 				if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){

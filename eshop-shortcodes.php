@@ -712,9 +712,9 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 		}
 		$echo .= $xclass;
 		if($links=='yes')
-			$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title).'</a>';
+			$echo .= '<a class="itemref" href="'.get_permalink($post->ID).'">'.apply_filters("the_title",$post->post_title, $post->ID).'</a>';
 		else
-			$echo .= apply_filters("the_title",$post->post_title);
+			$echo .= apply_filters("the_title",$post->post_title, $post->ID);
 			
 		if(isset($esale) && $esale=='yes')
 			$echo .= '<strong class="onsale"><span>'.__('On Sale','eshop').'</span></strong>';
@@ -818,9 +818,9 @@ function eshop_listpanels($subpages,$eshopclass,$form,$imgsize,$links,$price){
 				$echo .='<img src="'.$eshopnoimage.'" height="'.$h.'" width="'.$w.'" alt="" />'."\n";
 		}
 		if($links=='yes')
-			$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title).'</span></a>'."\n";
+			$echo .= '<a href="'.get_permalink($post->ID).'"><span>'.apply_filters("the_title",$post->post_title, $post->ID).'</span></a>'."\n";
 		else
-			$echo .= '<span>'.apply_filters("the_title",$post->post_title).'</span>'."\n";
+			$echo .= '<span>'.apply_filters("the_title",$post->post_title, $post->ID).'</span>'."\n";
 		
 		if($price!='no'){
 			$currsymbol=$eshopoptions['currency_symbol'];
@@ -1467,6 +1467,7 @@ function eshop_details($atts){
 						}
 					}
 					for($i=1;$i<=$numoptions;$i++){
+						$thclass='';
 						if(isset($eshop_product['products'][$i]) && is_array($eshop_product['products'][$i])){
 							$opt=$eshop_product['products'][$i]['option'];
 							$price=$eshop_product['products'][$i]['price'];
@@ -1673,9 +1674,7 @@ function eshop_details($atts){
 					$dtable=$wpdb->prefix.'eshop_rates';
 					foreach ($typearr as $k=>$type){
 						$k++;
-						$eshopshiptable.='<span>'.
-						stripslashes(esc_attr($type)).'</span>
-						<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
+						$eshopshiptabletop = '<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 						<thead>
 						<tr>
 						<th id="'.$eshopletter.'wt">'. __('Weight','eshop').'</th>';
@@ -1685,29 +1684,42 @@ function eshop_details($atts){
 							$dispzone=apply_filters('eshop_rename_ship_zone',array());
 							if(isset($dispzone[$z]))
 								$echozone=$dispzone[$z];
-							$eshopshiptable.='<th id="'.$eshopletter.$y.'">'. $echozone.'</th>';
+							$eshopshiptabletop .='<th id="'.$eshopletter.$y.'">'. $echozone.'</th>';
 						}
-						$eshopshiptable.='</tr>
+						$eshopshiptabletop .='</tr>
 						</thead>
 						<tbody>';
 						$x=1;
 						
 						$query=$wpdb->get_results("SELECT * from $dtable  where ($cartweight) && class='$k' && rate_type='ship_weight' order by weight ASC");
+									
+						if(count($query)==0) 
+							break;
+						$eshopshiptableinner = '';
 						foreach ($query as $row){
 							$alt = ($x % 2) ? '' : ' class="alt"';
 							/* ,'1- weight 2-weight symbol' */
-							$eshopshiptable.='
+							$cols=$eshopoptions['numb_shipzones']+1;
+
+							$eshopshiptableinner.='
 							<tr'.$alt.'>
 							<th headers="'.$eshopletter.'wt">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</th>';
 							for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 								$y='zone'.$z;
-								$eshopshiptable.='<td headers="'.$eshopletter.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+								$eshopshiptableinner.='<td headers="'.$eshopletter.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
 							}
-							$eshopshiptable.='</tr>';
+							$eshopshiptableinner.='</tr>';
 							$x++;
 						}
 						$eshopletter++;
-						$eshopshiptable.='</tbody></table>'."\n";
+						$eshopshiptablefoot ='</tbody></table>'."\n";
+						if($row->area=='country')
+							$eshopshiptableheader = '<span class="eshopshiphead">'.sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by Country)','eshop'));
+						else
+							$eshopshiptableheader = '<span class="eshopshiphead">'.sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by State/County/Province)','eshop'));
+
+						$eshopshiptable .= $eshopshiptableheader . $eshopshiptabletop . $eshopshiptableinner . $eshopshiptablefoot;
+					
 					}
 					$listed .='<dd>'.$eshopshiptable.'</dd>';
 				}
@@ -1718,9 +1730,9 @@ function eshop_details($atts){
 	}
 	if($listed!='')
 		$addclass='';
-		if($class!='' || $class!='eshopdetails')
+		if($class!='' && $class!='eshopdetails')
 			$addclass=' '.$class;
-		$echo ='<div class="eshopdetails'.$class.'"><dl>'."\n".$listed.'</dl></div>';
+		$echo ='<div class="eshopdetails'.$addclass.'"><dl>'."\n".$listed.'</dl></div>';
 	
 	return $echo;
 	
@@ -1772,9 +1784,12 @@ function eshop_show_checkout($atts, $content = ''){
 	return eshop_checkout($_POST);
 }
 
-function eshop_show_downloads(){
+function eshop_show_downloads($atts, $content = ''){
+	extract(shortcode_atts(array('images'=>''), $atts));
+	if($images!='')
+		$images='add';
 	include_once 'purchase-downloads.php';
-	return eshop_downloads($_POST);
+	return eshop_downloads($_POST, $images, $content);
 }
 function eshop_tax_rates($atts){
 	global $wpdb, $eshopoptions;

@@ -336,7 +336,7 @@ switch ($eshopaction) {
 				if($eshopdosend=='yes'){
 					$subject .=" Ref:".$ps->ipn_data['RefNr'];
 					$orderID=$wpdb->get_var("select id from $detailstable where checkid='$checked' limit 1");
-					$viewOrdersURL = get_option( 'siteurl' ) . '/wp-admin/admin.php?page=eshop-orders.php&view=' . $orderID;
+					$viewOrdersURL = get_option( 'siteurl' ) . '/wp-admin/admin.php?page=eshop-orders.php&view='. $orderID . '&eshop';
 					// email to business a complete copy of the notification from ideallite to keep!!!!!
 					$array=eshop_rtn_order_details($checked);
 					$ps->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';

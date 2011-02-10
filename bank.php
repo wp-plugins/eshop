@@ -85,7 +85,7 @@ switch ($eshopaction) {
 		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
 		 $body .= __('Details','eshop').":\n";
 		 if(isset($array['dbid']))
-		 	$body .= get_bloginfo( 'wpurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
+		 	$body .= get_bloginfo( 'wpurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."&eshop\n";
 		 foreach ($ebank->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 		 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";
 		$headers=eshop_from_address();

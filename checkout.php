@@ -58,9 +58,7 @@ if (!function_exists('eshopShowform')) {
 				break;
 			if($query['0']->maxweight!='' && $cartweight > $query['0']->maxweight)
 				break;
-
-			$eshopshiptable.='
-			<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'"'.checked($stype,'1',false).' /> <label for="eshop_shiptype'.$k.'">'.stripslashes(esc_attr($type)).'</label></span>
+			$eshopshiptableinner ='
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 			<thead>
 			<tr>';
@@ -70,25 +68,35 @@ if (!function_exists('eshopShowform')) {
 				$dispzone=apply_filters('eshop_rename_ship_zone',array());
 				if(isset($dispzone[$z]))
 					$echozone=$dispzone[$z];
-				$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. $echozone .'</th>';
+				$eshopshiptableinner.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. $echozone .'</th>';
 			}
-			$eshopshiptable.='</tr>
+			$eshopshiptableinner.='</tr>
 			</thead>
 			<tbody>';
 			$x=1;
 			foreach ($query as $row){
 				$alt = ($x % 2) ? '' : ' class="alt"';
-				$eshopshiptable.='
+				$eshopshiptableinner.='
 				<tr'.$alt.'>';
 				for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 					$y='zone'.$z;
-					$eshopshiptable.='<td headers="'.$eshopletter.$y.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+					$eshopshiptableinner.='<td headers="'.$eshopletter.$y.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
 				}
-				$eshopshiptable.='</tr>';
+				$eshopshiptableinner.='</tr>';
 				$x++;
 			}
 			$eshopletter++;
-			$eshopshiptable.='</tbody></table>'."\n";
+			$eshopshiptableinner.='</tbody></table>'."\n";
+			
+			if($row->area=='country')
+				$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by Country)','eshop'));
+			else
+				$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by State/County/Province)','eshop'));
+			
+			$eshopshiptablehead='<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'"'.checked($stype,$k,false).' /> <label for="eshop_shiptype'.$k.'">'.$eshopshiptableheadtext.'</label></span>';
+			
+			$eshopshiptable .= $eshopshiptablehead.$eshopshiptableinner;
+
 		}
 		if($eshopshiptable != '')
 			$echo .= $eshopshiptable;
@@ -137,23 +145,24 @@ if (!function_exists('eshopShowform')) {
 		if(sizeof($stateList)>0){
 			$echo .='<span class="state"><label for="state">'.__('State/County/Province','eshop').eshop_checkreqd($reqdarray,'state').'</label>
 			  <select class="med pointer" name="state" id="state">';
-			$echo .='<option value="" selected="selected">'.__('Please Select','eshop').'</option>';
+			$echo .='<option value="">'.__('Please Select','eshop').'</option>';
 			$echo .= apply_filters('eshop_states_na','<option value="">'.__('not applicable','eshop').'</option>');
 			foreach($stateList as $code => $value){
 				if(isset($value['list'])) $li=$value['list'];
 				else $li='1';
-				$eshopstatelist[$li][$value['id']]=$value['stateName'];
+				$eshopstatelist[$li][$value['id']]=array($value['code'],$value['stateName']);
 			}
 			$tablec=$wpdb->prefix.'eshop_countries';
 			foreach($eshopstatelist as $egroup =>$value){
 				$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
 				$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+
 				foreach($value as $code =>$stateName){
-					//$stateName=htmlspecialchars($stateName);
-					if (isset($state) && $state == $code){
-						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+					//$stateName=esc_attr($stateName);
+					if (isset($state) && ($state == $stateName['0'] || $state == $code)){
+						$echo.= '<option value="'.$code.'" selected="selected">'.$stateName['1']."</option>\n";
 					}else{
-						$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+						$echo.='<option value="'.$code.'">'.$stateName['1']."</option>\n";
 					}
 				}
 				$echo .="</optgroup>\n";
@@ -232,10 +241,10 @@ if (!function_exists('eshopShowform')) {
 					$echo .='<optgroup label="'.$eshopcname.'">'."\n";
 					foreach($value as $code =>$stateName){
 						//$stateName=htmlspecialchars($stateName);
-						if (isset($ship_state) && $ship_state == $code){
-							$echo.= '<option value="'.$code.'" selected="selected">'.$stateName."</option>\n";
+						if (isset($ship_state) && ($ship_state == $code ||$ship_state == $stateName['0']) ){
+							$echo.= '<option value="'.$code.'" selected="selected">'.$stateName['1']."</option>\n";
 						}else{
-							$echo.='<option value="'.$code.'">'.$stateName."</option>\n";
+							$echo.='<option value="'.$code.'">'.$stateName['1']."</option>\n";
 						}
 					}
 					$echo .="</optgroup>\n";

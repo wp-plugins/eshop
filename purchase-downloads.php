@@ -1,6 +1,6 @@
 <?php
 if (!function_exists('eshop_downloads')) {
-	function eshop_downloads($_POST){
+	function eshop_downloads($_POST, $images, $content){
 		global $wpdb,$eshopoptions;
 		//cache
 		eshop_cache();
@@ -19,6 +19,7 @@ if (!function_exists('eshop_downloads')) {
 			$email=$wpdb->escape($_POST['email']);
 			$dlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
 			if($dlcount>0){
+				$echo .= $content;
 				$tsize=0;
 				$x=0;
 				if($dlcount>1 && $eshopoptions['downloads_hideall'] != 'yes'){
@@ -35,10 +36,26 @@ if (!function_exists('eshop_downloads')) {
 			   		}else{
 			   			$dlword=__('downloads','eshop');
 			   		}
+			   		$imagetoadd='';
+			   		if($images=='add'){
+						$checkit=wp_check_filetype($filepath);
+						$eshopext=wp_ext2type($checkit['ext']);
+						$eshopfiletypeimgurl=wp_mime_type_icon($eshopext);
+						$eshophead = wp_remote_head( $eshopfiletypeimgurl );
+						$eshophresult = wp_remote_retrieve_response_code( $eshophead );
+						if($eshophresult=='200' || $eshophresult=='302')
+							$dims=getimagesize( $eshopfiletypeimgurl );
+						if(is_array($dims))
+							$dimensions=$dims[3];
+						else
+							$dimensions='';
+						$imagetoadd=apply_filters('eshop_download_imgs','<img class="eshop-download-icon" src="'.$eshopfiletypeimgurl.'" '.$dimensions.' alt="" />',$checkit['ext']);
+			   		}
 			   		$dltitle = (strlen($dlrow->title) >= 20) ? substr($dlrow->title,0,20) . "&#8230;" : $dlrow->title;
 					$echo.='
 					<form method="post" action="" class="eshop dlproduct"><fieldset>
 					<legend>'.$dltitle.' ('.check_filesize($dlfilesize).')</legend>
+					'.$imagetoadd.'
 					<input name="email" type="hidden" value="'.$_POST['email'].'" />
 					<input name="code" type="hidden" value="'.$_POST['code'].'" />
 					<input name="id" type="hidden" value="'.$dlrow->id.'" />
