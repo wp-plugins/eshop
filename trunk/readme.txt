@@ -63,7 +63,7 @@ Version 6.2.2
 * *added*  	Link to user on the orders page (if they signed up/signed in at time of order)
 * *added* 	extras to the downloads shortcode - ability to set content and image type icons(via images='yes') 
 * *added* 	filter to discounts.
-* *added* 	Hide Appearance > erShop page if theme has an eshop.css
+* *added* 	Hide Appearance > eShop page if theme has an eshop.css
 
 Version 6.2.1
 
