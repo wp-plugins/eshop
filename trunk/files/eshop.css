@@ -22,6 +22,11 @@ form.eshop input.buttonimg {
 	height:33px;
 	position:relative;
 	top:10px;
+	margin:0; 
+}
+#content form.eshop  ul.eshopradio,
+#content form.eshop  ul.eshopradio input{
+	margin-bottom:0;
 }
 
 /* COLORS */

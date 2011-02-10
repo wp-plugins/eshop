@@ -16,10 +16,10 @@ function eshop_small_stats($stock,$limit=5){
 	$rand=eshop_random_code('3');
 	$table = $wpdb->prefix ."eshop_downloads";
 	$stktable=$wpdb->prefix.'eshop_stock';
-
 	switch($stock){
 		case 'dloads':
 			$mypages=$wpdb->get_results("Select id,title,purchases,downloads From $table order by purchases DESC LIMIT $limit");
+			if(!count($mypages)>0) return;
 			echo '<table class="widefat"><caption>'.__('Top Download Purchases','eshop').'</caption>';
 			echo '<thead><tr><th id="edtitle'.$rand.'">'.__('Download','eshop').'</th><th id="eddown'.$rand.'">'.__('Downloads','eshop').'</th><th id="edpurch'.$rand.'">'.__('Purchases','eshop').'</th></tr></thead><tbody>';
 			$calt=0;
@@ -42,6 +42,7 @@ function eshop_small_stats($stock,$limit=5){
 			AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status != 'trash' 
 			AND $wpdb->posts.post_status != 'revision' AND stk.post_id=$wpdb->posts.ID
 			order by stk.purchases DESC LIMIT $limit");
+			if(!count($mypages)>0) return;
 			echo '<table class="widefat"><caption>'.__('Top Sellers','eshop').'</caption>';
 			echo '<thead><tr><th id="edprod'.$rand.'">'.__('Product','eshop').'</th><th id="edpurch'.$rand.'">'.__('Purchases','eshop').'</th></tr></thead><tbody>';
 			$calt=0;
@@ -155,9 +156,9 @@ function eshop_dashboard_orders_widget() {
 		//Sales
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$atotal=$btotal=$ctotal=$ordcount=0;
-		foreach($array as $k=>$type){
-			$itotal = $wpdb->get_row("SELECT SUM(item_amt * item_qty) as total, SUM(tax_amt) as taxtotal FROM $itable as i, $dtable as ch WHERE  i.checkid=ch.checkid AND ch.status='$type'");
-			switch($type){
+		foreach($array as $k=>$otype){
+			$itotal = $wpdb->get_row("SELECT SUM(item_amt * item_qty) as total, SUM(tax_amt) as taxtotal FROM $itable as i, $dtable as ch WHERE  i.checkid=ch.checkid AND ch.status='$otype'");
+			switch($otype){
 				case 'Pending':
 					$type=__('Pending','eshop');
 					break;
@@ -181,7 +182,7 @@ function eshop_dashboard_orders_widget() {
 			$alt = ($calt % 2) ? '' : ' class="alternate"';
 			$etotal=$itotal->total + $itotal->taxtotal;
 			echo '<tr'.$alt.'>';
-			echo '<th id="eshoptype'.$calt.'" headers="eshopot">'.$type.'</th>
+			echo '<th id="eshoptype'.$calt.'" headers="eshopot"><a href="admin.php?page=eshop-orders.php&amp;action='.$otype.'">'.$type.'</a></th>
 			<td class="right" headers="eshoptype'.$calt.' eshopcount">'.$secarray[$type].'</td>
 			<td class="right" headers="eshoptype'.$calt.' eshoptotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($itotal->total, __('2','eshop'))).'</td>
 			<td class="right" headers="eshoptype'.$calt.' eshoptaxtotal">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($itotal->taxtotal, __('2','eshop'))).'</td>

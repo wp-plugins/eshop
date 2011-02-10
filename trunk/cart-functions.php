@@ -6,7 +6,7 @@ if (!function_exists('display_cart')) {
 	function display_cart($shopcart, $change, $eshopcheckout,$pzone='',$shiparray=''){
 		//The cart display.
 		global $wpdb, $blog_id,$eshopoptions;
-		if(!isset($_SESSION['shipping'.$blog_id])) $_SESSION['shipping'.$blog_id]=array();
+		if(!isset($_SESSION['shipping'.$blog_id]) || !is_array($_SESSION['shipping'.$blog_id])) $_SESSION['shipping'.$blog_id]=array();
 		if($pzone=='widget'){
 			$pzone='';
 			$iswidget='w';
@@ -401,6 +401,9 @@ if (!function_exists('is_discountable')) {
 	function is_discountable($total){
 		global $blog_id,$eshopoptions;
 		$percent=0;
+		$percent=apply_filters('eshop_is_discountable',$percent);
+		if($percent != 0)
+			return $percent;
 		//check for 
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
@@ -546,6 +549,31 @@ if (!function_exists('eshop_get_tax_rate')) {
 		$area='country';
 		if(isset($_SESSION['shiptocountry'.$blog_id]) && $_SESSION['shiptocountry'.$blog_id] == $eshopoptions['location'])
 			$area='state';
+		//rehash the zone to make sure we're picking up the correct tax rates!
+		$tablecountries=$wpdb->prefix.'eshop_countries';
+		$tablestates=$wpdb->prefix.'eshop_states';
+		if($area=='country'){
+			if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
+				$pzoneid=$_POST['ship_country'];
+			}elseif(isset($_POST['country']) && $_POST['country']!=''){
+				$pzoneid=$_POST['country'];
+			}
+			$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
+		}else{
+			if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
+				$pzoneid=$_POST['ship_state'];
+			}
+			if(isset($_POST['state']) && $_POST['state']!=''){
+				$pzoneid=$_POST['state'];
+			}
+			$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
+			if(isset($_POST['altstate']) && $_POST['altstate']!=''){
+				$pzone=$eshopoptions['unknown_state'];
+			}
+			if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
+				$pzone=$eshopoptions['unknown_state'];
+			}
+		}
 		$ratetable = $wpdb->prefix.'eshop_rates';
 		$band=$wpdb->escape($band);
 		$zone='zone'.$wpdb->escape($pzone);
@@ -2415,6 +2443,20 @@ if (!function_exists('eshop_filesize')){
 			$size = @filesize($eshopdldir.$file);
 		}
 		return $size;
+	}
+}
+if (!function_exists('eshop_real_date')){
+	function eshop_real_date($custom){
+		//custom is the date, but stored with no - or :
+		$cyear=substr($custom, 0, 4);
+		$cmonth=substr($custom, 4, 2);
+		$cday=substr($custom, 6, 2);
+		$chours=substr($custom, 8, 2);
+		$cminutes=substr($custom, 10, 2);
+		//rebuild the date
+		$realdate=$cyear.'-'.$cmonth.'-'.$cday.' '.$chours.':'.$cminutes.':00';
+		$newdate=trim(get_date_from_gmt($realdate),':00');
+		return apply_filters('eshop_real_date',$newdate,$custom);
 	}
 }
 ?>

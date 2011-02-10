@@ -318,7 +318,7 @@ switch ($eshopaction) {
 			 $body .= "\n".__("from ",'eshop').$p->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 			 $body .= __(" at ",'eshop').date('g:i A')."\n\n".__('Details','eshop').":\n";
 			 if(isset($array['dbid']))
-			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."\n";
+			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."&eshop\n";
 
 			 //debug
 			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$chkamt."\n";

@@ -1490,6 +1490,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 		<?php
 	}
 	function tax_box($eshopoptions) {
+		global $wpdb;
 		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
 		$etax = $eshopoptions['etax'];
 		if(!isset($etax['bands'])) $etax['bands']='0';
@@ -1520,7 +1521,6 @@ class eshop_setting_tax extends eshop_metabox_class {
 				?>
 			</select><br />
 			<?php endif; ?>
-
 		</fieldset>
 	<?php
 	}
@@ -1679,7 +1679,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 		$eshopoptions['tax']=$wpdb->escape($_POST['eshop_tax']);
 		$eshopoptions['etax']['zonal']=$wpdb->escape($_POST['eshop_tax_zonal']);
 		$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
-		
+
 		if( isset($_POST['eshop_tax_shipping']))
 			$eshopoptions['etax']['shipping']=$wpdb->escape($_POST['eshop_tax_shipping']);
 	

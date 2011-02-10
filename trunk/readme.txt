@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 6.2.1
+Stable tag: 6.2.2
 
 An accessible Shopping Cart plugin.
 
@@ -44,13 +44,34 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 6.2.2
+
+* *fixed* 	Tax not calculating correctly for shipping methods 1-3 - __if you are using Sales Tax, please upgrade asap__
+* *fixed* 	Shipping method 4, not saving correct shipping on error in checkout
+* *fixed* 	fixed eshop details, class name appeared twice + missing information for shipping by weight
+* *fixed* 	missing information for shipping by weight
+* *fixed* 	apply_filters for the_title 
+* *fixed* 	error in add cart
+* *fixed* 	scalar value as an array error
+* *fixed* 	product widget issue not showing correct amount.
+* *fixed* 	checkout nor picking up saved State/County/Province
+* *fixed* 	minor error with new dashboard stats
+* *fixed* 	dates now hopefully picking up correct timezone.
+* *updated* 	CSS when using the image button for the add to cart.
+* *updated* 	Dashboard widgets.
+* *updated* 	Link to order in admin email
+* *added*  	Link to user on the orders page (if they signed up/signed in at time of order)
+* *added* 	extras to the downloads shortcode - ability to set content and image type icons(via images='yes') 
+* *added* 	filter to discounts.
+* *added* 	Hide Appearance > erShop page if theme has an eshop.css
+
 Version 6.2.1
 
-* *fixed* some orders were not saved to the database correctly, this fixes it, but is not backwards compatible. (only affect those whose table prefix was not the default)
-* *fixed* issue with discount codes on the checkout
-* *fixed* issue with checkout and fields losing their value on error
-* *fixed* checkout required fields for shipping method 4
-* *added* missing spans to checkout fields for styling
+* *fixed* 	some orders were not saved to the database correctly, this fixes it, but is not backwards compatible. (only affect those whose table prefix was not the default)
+* *fixed* 	issue with discount codes on the checkout
+* *fixed* 	issue with checkout and fields losing their value on error
+* *fixed* 	checkout required fields for shipping method 4
+* *added* 	missing spans to checkout fields for styling
 
 Version 6.2.0
 
@@ -210,6 +231,6 @@ Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
-= 6.2.0 =
+= 6.2.2 =
 
-Please remember to backup your database before upgrading. 
+Please remember to backup your database before upgrading - If you are using Sales Tax please upgrade asap.

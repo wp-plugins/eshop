@@ -100,13 +100,7 @@ if (!function_exists('displaymyorders')) {
 				if($status=='Deleted'){$status=__('Deleted','eshop');}
 				if($status=='Failed'){$status=__('Failed','eshop');}
 				if($x>0){
-					$custom=$myrow->custom_field;
-					$cyear=substr($custom, 0, 4);
-					$cmonth=substr($custom, 4, 2);
-					$cday=substr($custom, 6, 2);
-					$chours=substr($custom, 8, 2);
-					$cminutes=substr($custom, 10, 2);
-					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at','eshop').' '.$chours.':'.$cminutes;
+					$thisdate = eshop_real_date($myrow->custom_field);
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alternate"';
 					if($myrow->company!=''){
@@ -278,12 +272,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			}
 		echo "</tr></tbody></table>\n";
 
-		$cyear=substr($custom, 0, 4);
-		$cmonth=substr($custom, 4, 2);
-		$cday=substr($custom, 6, 2);
-		$chours=substr($custom, 8, 2);
-		$cminutes=substr($custom, 10, 2);
-		$thisdate=$cyear."-".$cmonth."-".$cday.__(' at ','eshop').$chours.':'.$cminutes;
+		$thisdate = eshop_real_date($custom);
 		echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.";
 		echo "</p>\n</div>\n";
 		if($drow->reference!=''){

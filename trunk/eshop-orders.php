@@ -20,6 +20,8 @@ if (isset($_GET['action']) )
 else
 	$_GET['action']=$action_status = 'Pending';
 
+if(isset($_GET['eshop'])) $action_status='';
+
 if(isset($_POST['eshopdeletedata'])){
 	$etable[]=$wpdb->prefix.'eshop_orders';
 	$etable[]=$wpdb->prefix.'eshop_download_orders';
@@ -179,13 +181,8 @@ if (!function_exists('displayorders')) {
 				//
 				$status=$type;
 				//if($x>0){
-					$custom=$myrow->custom_field;
-					$cyear=substr($custom, 0, 4);
-					$cmonth=substr($custom, 4, 2);
-					$cday=substr($custom, 6, 2);
-					$chours=substr($custom, 8, 2);
-					$cminutes=substr($custom, 10, 2);
-					$thisdate=$cyear."-".$cmonth."-".$cday.' '.__('at','eshop').' '.$chours.':'.$cminutes;
+					$thisdate = eshop_real_date($myrow->custom_field);
+					
 					$calt++;
 					$alt = ($calt % 2) ? '' : ' class="alternate"';
 					if($myrow->company!=''){
@@ -195,10 +192,13 @@ if (!function_exists('displayorders')) {
 					}
 					$currsymbol=$eshopoptions['currency_symbol'];
 					$ic=$x-1;
+					$userlink='';
+					if(isset($myrow->user_id) && $myrow->user_id!='0')
+						$userlink=' (<a href="user-edit.php?user_id='.$myrow->user_id.'" title="'.esc_attr(sprintf(__('Profile for %1$s','eshop'),$myrow->first_name.' '.$myrow->last_name)).'" class="eshop-userlink">*</a>)';
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$myrow->id.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
-					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a></td>
+					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a>'.$userlink.'</td>
 					<td headers="items numb'.$c.'">'.$ic.'</td>
 					<td headers="price numb'.$c.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop'))).'</td>
 					<td headers="downloads numb'.$c.'" class="right">'.$myrow->downloads.'</td>
@@ -469,6 +469,10 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if($status=='Completed'){$status=__('Active','eshop');}
 	if($status=='Pending'){$status=__('Pending','eshop');}
 	if($status=='Sent'){$status=__('Shipped','eshop');}
+	if($status=='Waiting'){$status=__('Awaiting Payment','eshop');}
+	if($status=='Failed'){$status=__('Failed','eshop');}
+	if($status=='Deleted'){$status=__('Deleted','eshop');}
+
 	//moved order status box
 	echo "<div id=\"eshopformfloat\"><form id=\"orderstatus\" action=\"".$phpself."\" method=\"post\">";
 	?>
@@ -590,12 +594,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	}
 	echo "</tr></tbody></table>\n";
 			
-	$cyear=substr($custom, 0, 4);
-	$cmonth=substr($custom, 4, 2);
-	$cday=substr($custom, 6, 2);
-	$chours=substr($custom, 8, 2);
-	$cminutes=substr($custom, 10, 2);
-	$thisdate=$cyear."-".$cmonth."-".$cday.__(' at ','eshop').$chours.':'.$cminutes;
+	$thisdate = eshop_real_date($custom);
 	echo "<p>".__('Order placed on','eshop')." <strong>".$thisdate."</strong>.";
 	if($eshopaff!='') echo '<br />'.__('Affiliate Reference:','eshop').' <strong>'.$eshopaff.'</strong>';
 	echo "</p>\n</div>\n";
@@ -604,8 +603,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	}
 	echo "<div class=\"orderaddress\"><h4>".__('Invoice','eshop')."</h4>";
 	foreach($dquery as $drow){
+		$userlink='';
+		if(isset($drow->user_id) && $drow->user_id!='0')
+			$userlink=' (<a href="user-edit.php?user_id='.$drow->user_id.'" title="'.esc_attr(sprintf(__('Profile for %1$s','eshop'),$drow->first_name.' '.$drow->last_name)).'" class="eshop-userlink">*</a>)';
 
-		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name."<br />\n";
+		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name.$userlink."<br />\n";
 		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
 		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email.'</a> <small class="noprint">'.__('(sends a form email)','eshop')."</small><br />\n";
 		if('no' == $eshopoptions['downloads_only']){

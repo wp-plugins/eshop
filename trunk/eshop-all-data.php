@@ -81,12 +81,7 @@ foreach($dquery as $drow){
 		$data .=eshopcleanit($showit).$delim.eshopcleanit($itemid).$delim.eshopcleanit($downloadable).$delim.eshopcleanit($myrow->item_qty).$delim.eshopcleanit($value).$delim.eshopcleanit($thetotal).$delim;
 
 		//date
-		$cyear=substr($custom, 0, 4);
-		$cmonth=substr($custom, 4, 2);
-		$cday=substr($custom, 6, 2);
-		$chours=substr($custom, 8, 2);
-		$cminutes=substr($custom, 10, 2);
-		$thisdate=$cyear."-".$cmonth."-".$cday.' at '.$chours.':'.$cminutes;
+		$thisdate = eshop_real_date($custom);
 		$data.=eshopcleanit($thisdate).$delim;
 
 		$data.=eshopcleanit($drow->first_name)." ".eshopcleanit($drow->last_name).$delim.eshopcleanit($drow->company).$delim.eshopcleanit($drow->phone).$delim.eshopcleanit($drow->email).$delim;

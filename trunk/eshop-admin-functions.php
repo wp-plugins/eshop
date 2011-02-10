@@ -50,8 +50,9 @@ if (!function_exists('eshop_admin')) {
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop About','eshop'),__('About &amp; Help','eshop'), 'eShop', basename('eshop-about.php'), 'eshop_admin_about');
 		if (eshop_wp_version('3'))
 			$page[]=add_users_page(__('eShop Orders','eshop'), __('My Orders','eshop'),'read', basename('my-orders.php'),'eshop_user_orders');
-
-		$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop-style.php'),'eshop_admin_style');
+		//only add if you can edit it!
+		if(@!file_exists(get_stylesheet_directory().'/eshop.css'))
+			$page[]=add_theme_page(__('eShop Style','eshop'), __('eShop','eshop'),'eShop_admin', basename('eshop-style.php'),'eshop_admin_style');
 		$page[]=add_submenu_page( 'plugins.php', __('eShop Uninstall','eshop'), __('eShop Uninstall','eshop'),'eShop_admin', basename('eshop-uninstall.php'),'eshop_admin_uninstall');
 		$help='
 		<p><strong>' . __('eShop Help','eshop') . '</strong></p>
