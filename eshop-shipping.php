@@ -63,8 +63,6 @@ case ('countries'):
 		$_POST['country']=sanitise_this($_POST['country']);
 		$_POST['zone']=sanitise_this($_POST['zone']);
 
-		//warning this truncates the table and then recreates it
-		$query=$wpdb->query("TRUNCATE TABLE $dtable");
 		//create the query
 		$build="INSERT INTO $dtable (`code`,`country`,`zone`,`list`) VALUES";
 		$count=count($_POST['code']);
@@ -97,7 +95,10 @@ case ('countries'):
 		$build=trim($build,",");
 		//check to stop someone being dumb enough to try and delete all the countries
 		if($count>1){
+			//warning this truncates the table and then recreates it
+			$query=$wpdb->query("TRUNCATE TABLE $dtable");
 			$query=$wpdb->query($build);
+			//and the errors are because I truncate :(
 		}else{
 			$error='<li>'.__('You cannot delete all the Countries!','eshop').'</li>'."\n";
 		}

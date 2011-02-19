@@ -591,7 +591,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			<?php
 			if(!isset($eshopoptions['cart_text'])) $eshopoptions['cart_text'] =''
 			?>
-			<p><strong><?php _e('Add text before or after addtocart form (will not appear in listings)','eshop'); ?></strong></p>
+			<p><strong><?php _e('Add text before or after addtocart form (will not appear in listings) - will accept HTML','eshop'); ?></strong></p>
 			<label for="eshop_cart_text"><?php _e('Text to add','eshop'); ?></label><input id="eshop_cart_text" name="eshop_cart_text" type="text" value="<?php echo stripslashes(esc_attr($eshopoptions['cart_text'])); ?>" size="60" /><br />
 			<label for="eshop_cart_text_where"><?php _e('Placement','eshop'); ?></label>
 			<select name="eshop_cart_text_where" id="eshop_cart_text_where">

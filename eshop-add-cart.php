@@ -58,7 +58,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 			$currsymbol=$eshopoptions['currency_symbol'];
 			if(isset($eshopoptions['cart_text']) && $eshopoptions['cart_text']!='' && $short=='no'){
 				if($eshopoptions['cart_text_where']=='1') 
-					$replace .= '<p class="eshop-cart-text-above">'.stripslashes(esc_attr($eshopoptions['cart_text'])).'</p>';
+					$replace .= '<p class="eshop-cart-text-above">'.stripslashes($eshopoptions['cart_text']).'</p>';
 			}
 			$replace .= '
 			<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop addtocart'.$saleclass.'" id="eshopprod'.$postid.$uniq.'">
@@ -285,7 +285,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 			</form>';
 			if(isset($eshopoptions['cart_text']) && $eshopoptions['cart_text']!=''  && $short=='no'){
 				if($eshopoptions['cart_text_where']=='2') 
-					$replace .= '<p class="eshop-cart-text-below">'.stripslashes(esc_attr($eshopoptions['cart_text'])).'</p>';
+					$replace .= '<p class="eshop-cart-text-below">'.stripslashes($eshopoptions['cart_text']).'</p>';
 			}
 			$pee = $pee.$replace; 
 		}elseif(isset($currst) && $currst<=0 && is_array($eshop_product)){

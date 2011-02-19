@@ -80,7 +80,8 @@ function eshop_list_alpha($atts){
 		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
 	
 	$usedaz=$wpdb->get_results("SELECT DISTINCT UPPER(LEFT(post_title,1)) as letters FROM $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' ORDER BY letters");
-	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'");
+	$usednum=$wpdb->get_var("SELECT COUNT(DISTINCT UPPER(LEFT(post_title,1)) BETWEEN '0' AND '9') FROM $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish'") - 1;
+		
 	foreach($usedaz as $usethis){
 		$used[]=$usethis->letters;
 	}
@@ -1048,7 +1049,7 @@ function eshop_show_shipping($atts) {
 			$currsymbol=$eshopoptions['currency_symbol'];
 			foreach ($typearr as $k=>$type){
 				$k++;
-				$eshopshiptable.='
+				$eshopshiptableinner ='
 				<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 				<caption>'.stripslashes(esc_attr($type)).'</caption>
 				<thead>
@@ -1060,9 +1061,9 @@ function eshop_show_shipping($atts) {
 					$dispzone=apply_filters('eshop_rename_ship_zone',array());
 					if(isset($dispzone[$z]))
 						$echozone=$dispzone[$z];
-					$eshopshiptable.='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. $echozone.'</th>';
+					$eshopshiptableinner .='<th id="'.$eshopletter.$y.'" class="'.$y.'">'. $echozone.'</th>';
 				}
-				$eshopshiptable.='</tr>
+				$eshopshiptableinner .='</tr>
 				</thead>
 				<tbody>';
 				$x=1;
@@ -1070,18 +1071,31 @@ function eshop_show_shipping($atts) {
 				foreach ($query as $row){
 					$alt = ($x % 2) ? '' : ' class="alt"';
 					/* '1 - weight 2-weight symbol' */
-					$eshopshiptable.='
+					$eshopshiptableinner .='
 					<tr'.$alt.'>
 					<th id="'.$eshopletter.'cname'.$x.'" headers="'.$eshopletter.'weight">'.sprintf( __('%1$s %2$s','eshop'), number_format_i18n($row->weight,__('2','eshop')),$weightsymbol).'</th>';
 					for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
 						$y='zone'.$z;
-						$eshopshiptable.='<td headers="'.$eshopletter.$y.' ' .$eshopletter.'cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
+						$eshopshiptableinner .='<td headers="'.$eshopletter.$y.' ' .$eshopletter.'cname'.$x.'" class="'.$y.'">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, $row->$y).'</td>';
 					}
-					$eshopshiptable.='</tr>';
+					$eshopshiptableinner .='</tr>';
 					$x++;
 				}
 				$eshopletter++;
-				$eshopshiptable.='</tbody></table>'."\n";
+				$eshopshiptableinner .='</tbody></table>'."\n";
+				
+				
+				if($row->area=='country')
+					$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by Country)','eshop'));
+				else
+					$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by State/County/Province)','eshop'));
+				
+				if(isset($row->maxweight) && $row->maxweight!='')
+					$eshopshiptableheadtext .= ' '.sprintf( __('Max. Weight %1$s %2$s','eshop'),$row->maxweight,$eshopoptions['weight_unit']);
+				$eshopshiptablehead='<span>'.$eshopshiptableheadtext.'</span>';
+				$eshopshiptable .= $eshopshiptablehead.$eshopshiptableinner;
+				
+			
 			}
 		}else{
 			$eshopshiptable='';
