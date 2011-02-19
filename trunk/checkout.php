@@ -50,14 +50,13 @@ if (!function_exists('eshopShowform')) {
 		
 		/* '1- text 2 - weight 3-weight symbol' */
 		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
-	
 		foreach ($typearr as $k=>$type){
 			$k++;
 			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  class='$k' && rate_type='ship_weight' order by weight DESC limit 1");
 			if(count($query)==0) 
-				break;
+				continue;
 			if($query['0']->maxweight!='' && $cartweight > $query['0']->maxweight)
-				break;
+				continue;
 			$eshopshiptableinner ='
 			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
 			<thead>
@@ -92,6 +91,9 @@ if (!function_exists('eshopShowform')) {
 				$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by Country)','eshop'));
 			else
 				$eshopshiptableheadtext = sprintf( __('%1$s <small>%2$s</small>','eshop'),stripslashes(esc_attr($type)), __('(Shipping Zones by State/County/Province)','eshop'));
+			
+			if(isset($row->maxweight) && $row->maxweight!='')
+				$eshopshiptableheadtext .= ' '.sprintf( __('Max. Weight %1$s %2$s','eshop'),$row->maxweight,$eshopoptions['weight_unit']);
 			
 			$eshopshiptablehead='<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'"'.checked($stype,$k,false).' /> <label for="eshop_shiptype'.$k.'">'.$eshopshiptableheadtext.'</label></span>';
 			
@@ -480,24 +482,27 @@ if (!function_exists('eshop_checkout')) {
 				$sztype=$_POST['eshop_shiptype'];
 				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
 			}
+			$pzoneid='';//$eshopoptions['unknown_state'];
 			if($shippingzone=='country'){
-				if($_POST['ship_country']!=''){
+				if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
 					$pzoneid=$_POST['ship_country'];
-				}else{
+				}elseif(isset($_POST['country']) && $_POST['country']!=''){
 					$pzoneid=$_POST['country'];
 				}
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
+
 			}else{
-				if($_POST['ship_state']!=''){
+				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
 					$pzoneid=$_POST['ship_state'];
-				}else{
+				}
+				if(isset($_POST['state']) && $_POST['state']!=''){
 					$pzoneid=$_POST['state'];
 				}
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
-				if($_POST['altstate']!=''){
+				if(isset($_POST['altstate']) && $_POST['altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
-				if($_POST['ship_altstate']!=''){
+				if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
 			}
@@ -509,7 +514,7 @@ if (!function_exists('eshop_checkout')) {
 				$_SESSION['shiptocountry'.$blog_id] = $_POST['country'];
 			}
 		}else{
-			$pzoneid='';
+			$pzoneid='';//$eshopoptions['unknown_state'];
 			$tablecountries=$wpdb->prefix.'eshop_countries';
 			$tablestates=$wpdb->prefix.'eshop_states';
 			$shippingzone=$eshopoptions['shipping_zone'];
@@ -539,10 +544,7 @@ if (!function_exists('eshop_checkout')) {
 				if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
 					$pzone=$eshopoptions['unknown_state'];
 				}
-				
-				
 			}
-			
 		}
 		//
 		$shiparray=array();
@@ -603,14 +605,26 @@ if (!function_exists('eshop_checkout')) {
 		foreach($_POST as $key=>$value) {
 			$key = $value;
 		}
-		if($eshopoptions['shipping_zone']=='country'){
-			$creqd='country';
-		}else{
-			$creqd='state';
-		}
+		//setupshipping arrays
+		$reqdvalues=array('shipping','first_name','last_name','email','phone','address','city','zip','pay');
 
-		$reqdvalues=array('shipping','first_name','last_name','email','phone','address','city','zip','pay',$creqd);
+		if($eshopoptions['shipping']!='4'){
+			if($eshopoptions['shipping_zone']=='country'){
+				$reqdvalues[]='country';
+			}else{
+				$reqdvalues[]='state';
+			}
+		}else{
+			$creqd='';
+			$dtable=$wpdb->prefix.'eshop_rates';
+			$query=$wpdb->get_results("SELECT DISTINCT(area) from $dtable where rate_type='ship_weight'");
+			foreach($query as $k)
+				$reqdvalues[]=$k->area;
+		}
+		$linkattr=apply_filters('eShopCheckoutLinksAttr','');
+			
 		$reqdarray=apply_filters('eshopCheckoutReqd', $reqdvalues );
+
 		if($eshopoptions['shipping']=='4' && 'no' == $eshopoptions['downloads_only'] && !isset($_POST['eshop_shiptype']) && !eshop_only_downloads()){
 			$error.= '<li>'.__('<strong>Shipping</strong> - not selected.','eshop').'</li>';
 		}
@@ -650,19 +664,20 @@ if (!function_exists('eshop_checkout')) {
 					$error.= '<li>'.__('<strong>City or town</strong> - missing or incorrect.','eshop').'</li>';
 				}
 		}
-		if($eshopoptions['shipping_zone']=='country'){
-			if(isset($_POST['country'])){
-				$valid=checkAlpha($_POST['country']);
-				if($valid==FALSE && eshop_checkreqd($reqdarray,'country')){
-					$error.= '<li>'.__('<strong>Country</strong> - missing or incorrect.','eshop').'</li>';
-				}
-			}
-		}else{
-			if(isset($_POST['state']) && $_POST['state']=='' &&  $_POST['altstate']=='' && eshop_checkreqd($reqdarray,'state')){
+		
+		if(eshop_checkreqd($reqdarray,'state')){
+			if(isset($_POST['state']) && $_POST['state']=='' &&  $_POST['altstate']==''){
 				$error.= '<li>'.__('<strong>State/County/Province</strong> - missing or incorrect.','eshop').'</li>';
 			}
 		}
-		
+		if(eshop_checkreqd($reqdarray,'country')){
+			if(isset($_POST['country'])){
+				$valid=checkAlpha($_POST['country']);
+				if($valid==FALSE){
+					$error.= '<li>'.__('<strong>Country</strong> - missing or incorrect.','eshop').'</li>';
+				}
+			}
+		}
 		if(isset($_POST['country']) && $_POST['country']=='US' && $_POST['state']=='' && $_POST['altstate']==''){
 			//must pick a state for US deliveries
 				$error.= '<li>'.__('<strong><abbr title="United States">US</abbr> State</strong> - missing or incorrect.','eshop').'</li>';

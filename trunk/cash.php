@@ -111,7 +111,6 @@ switch ($eshopaction) {
       /****** The order has already gone into the database at this point ******/
       
 		//goes direct to this script as nothing needs showing on screen.
-
 		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
 		$getstate=$eshopoptions['shipping_state'];

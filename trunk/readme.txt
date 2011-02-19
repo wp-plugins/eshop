@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 6.2.2
+Stable tag: 6.2.3
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.3
+
+* *fixed* 	issues with shipping method 4 on checkout page.
+* *fixed/added* shipping method 4, extra details for shortcode and checkout page.
+* *fixed* 	date of order in customer email
+* *fixed/added* eshop_rtn_order_details now has an array of post_ids for sold products	
+* *fixed/added* grand total to email if tax is added.
+* *fixed* 	minor issue with alpha shortcode
 
 Version 6.2.2
 

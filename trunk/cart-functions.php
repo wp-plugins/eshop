@@ -732,7 +732,9 @@ if (!function_exists('eshopShipTaxAmt')) {
 		global $blog_id, $eshopoptions;
 		if(!isset($eshopoptions['tax']) || $eshopoptions['tax']=='0')
 			return number_format($_SESSION['shipping'.$blog_id]['cost'],2);
-		$shipping=$_SESSION['shipping'.$blog_id]['cost'];
+		
+		//if(isset($_SESSION['shipping'.$blog_id]['cost']))
+			$shipping=$_SESSION['shipping'.$blog_id]['cost'];
 		
 		if(isset($_SESSION['shipping'.$blog_id]['tax']))
 			$shipping += $_SESSION['shipping'.$blog_id]['tax'];
@@ -1189,8 +1191,11 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$cart.=__('Transaction id:','eshop').' '.$transid."\n";
 		$containsdownloads=0;
+		$prod_ids=array();
 		foreach($result as $myrow){
 			//default
+			if(isset($myrow->post_id) && $myrow->post_id > 0)
+				$prod_ids[]=$myrow->post_id;
 			$value=$myrow->item_qty * $myrow->item_amt;
 			$shipping_charge=0;
 			$itemid=$myrow->item_id.' '.$myrow->optsets;
@@ -1225,13 +1230,14 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$arrtaxtotal=number_format_i18n($taxtotal, __('2','eshop'));
 
 		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."\n";
-		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1')
+		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 			$cart.= __('Total Sale Tax','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxtotal, __('2','eshop')))."\n";
+			$gtotal = $total + $taxtotal;
+			$cart.= __('Grand Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($gtotal, __('2','eshop')))."\n";
+		}
  
-		$cyear=substr($custom, 0, 4);
-		$cmonth=substr($custom, 4, 2);
-		$cday=substr($custom, 6, 2);
-		$thisdate=$cyear."-".$cmonth."-".$cday;
+		$thisdate = eshop_real_date($custom);
+		
 		$cart.= "\n".__('Order placed on','eshop')." ".$thisdate."\n";
 		foreach($dquery as $drow){
 			$address.= "\n".__('Mailing Address:','eshop')."\n".$drow->address1.", ".$drow->address2."\n";
@@ -1299,7 +1305,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$address=html_entity_decode($address);
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,
 		"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,
-		"transid"=>$transid,"total"=>$arrtotal,"taxtotal"=>$arrtaxtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge);
+		"transid"=>$transid,"total"=>$arrtotal,"taxtotal"=>$arrtaxtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge, 'prod_ids'=>$prod_ids);
 		$secarray=apply_filters('eshoprtndetails',$dquery);
 		$retarray=array_merge($array,$secarray);
 		return $retarray;
