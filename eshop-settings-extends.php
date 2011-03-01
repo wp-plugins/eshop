@@ -1370,7 +1370,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		//cross check the given referer
 		check_admin_referer('eshop-metaboxes-general');
 		$err='100';
-
+		if(!isset($_POST['eshop_method'])) $_POST['eshop_method']='';
 		//process here your on $_POST validation and / or option saving
 		$eshopoptions = get_option('eshop_plugin_settings');
 		$eshopoptions['method']=$wpdb->escape($_POST['eshop_method']);

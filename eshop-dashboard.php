@@ -208,6 +208,8 @@ function eshop_dashboard_mg_widget() {
 	global $wpdb,$eshopoptions;
 	$dtable=$wpdb->prefix.'eshop_orders';
 	$paytype=$eshopoptions['method'];
+
+	if(is_array($paytype)){
 	?>
 	<p><?php _e('Includes all orders.','eshop'); ?></p>
 	<ul class="eshop-stats">
@@ -232,6 +234,12 @@ function eshop_dashboard_mg_widget() {
 	?>
 	</ul>
 	<?php
+	}else{
+	?>
+	<p><?php _e('No active gateways..','eshop'); ?></p>
+
+	<?php
+	}
 }
 // Create the function use in the action hook
 function eshop_dashboard_disc_widget(){

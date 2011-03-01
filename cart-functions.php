@@ -262,7 +262,7 @@ if (!function_exists('display_cart')) {
 				//discount shipping?
 				if(is_shipfree(calculate_total())  || eshop_only_downloads()) $shipping=0;
 				
-				$echo.= '<tr class="alt"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
+				$echo.= '<tr class="alt shippingrow"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
 				if($eshopoptions['shipping']=='4' && !eshop_only_downloads() && $shiparray!='0'){
 					$eshopoptions['ship_types']=trim($eshopoptions['ship_types']);
 					$typearr=explode("\n", $eshopoptions['ship_types']);
@@ -558,7 +558,10 @@ if (!function_exists('eshop_get_tax_rate')) {
 			}elseif(isset($_POST['country']) && $_POST['country']!=''){
 				$pzoneid=$_POST['country'];
 			}
-			$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
+			if($eshopoptions['etax']['zonal']== 1)
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
+			else
+				$pzone = 1;
 		}else{
 			if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
 				$pzoneid=$_POST['ship_state'];
@@ -566,13 +569,11 @@ if (!function_exists('eshop_get_tax_rate')) {
 			if(isset($_POST['state']) && $_POST['state']!=''){
 				$pzoneid=$_POST['state'];
 			}
-			$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
-			if(isset($_POST['altstate']) && $_POST['altstate']!=''){
-				$pzone=$eshopoptions['unknown_state'];
-			}
-			if(isset($_POST['ship_altstate']) && $_POST['ship_altstate']!=''){
-				$pzone=$eshopoptions['unknown_state'];
-			}
+			if(isset($pzoneid))
+				$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
+
+			if($eshopoptions['etax']['zonal']== 0)
+				$pzone = 1;
 		}
 		$ratetable = $wpdb->prefix.'eshop_rates';
 		$band=$wpdb->escape($band);
@@ -1180,6 +1181,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$transid=$drow->transid;
 			$edited=$drow->edited;
 			$affiliate=$drow->affiliate;
+			$paidvia=$drow->paidvia;
 			$dbid=$drow->id;
 		}
 		if($status=='Completed'){$status=__('Order Received','eshop');}
@@ -1305,7 +1307,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$address=html_entity_decode($address);
 		$array=array("status"=>$status,"firstname"=>$firstname, "ename"=>$ename,"eemail"=>$eemail,"cart"=>$cart,"downloads"=>$downloads,
 		"address"=>$address,"extras"=>$extras, "contact"=>$contact,"date"=>$edited,"affiliate"=>$affiliate,"user_id"=>$user_id,
-		"transid"=>$transid,"total"=>$arrtotal,"taxtotal"=>$arrtaxtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge, 'prod_ids'=>$prod_ids);
+		"transid"=>$transid,"total"=>$arrtotal,"taxtotal"=>$arrtaxtotal,"dbid"=>$dbid, 'shipping_charge'=>$shipping_charge, 'prod_ids'=>$prod_ids,'paidvia'=>$paidvia);
 		$secarray=apply_filters('eshoprtndetails',$dquery);
 		$retarray=array_merge($array,$secarray);
 		return $retarray;
@@ -2221,8 +2223,9 @@ if (!function_exists('eshop_send_customer_email')) {
 			// to allow for the removal of shipping vlaue from the order. total is sent by default, shipping can be removed.
 			$sale_amt=apply_filters('eShop_aff_order_total',$array['total'],$array['shipping_charge']);
 			//for affiliates.
-			do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$sale_amt, 
-			"txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
+			$affcheck=apply_filters('eShop_aff_order_check', true, $array);
+			if($affcheck == true)
+				do_action('eShop_process_aff_commission', array("id" =>$array['affiliate'],"sale_amt"=>$sale_amt, "txn_id"=>$array['transid'], "buyer_email"=>$array['eemail']));
 		}
 		//this is fired on successful purchase, so might as well have this action here
 		do_action('eshop_on_success',$checked);

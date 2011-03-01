@@ -134,7 +134,7 @@ class authorizenet_class {
 					$taxable='Y';
 				}
 
-				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.$lineamount.$sep.$taxable;
+				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(",","",$lineamount).$sep.$taxable;
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
 			if($shipping>0){
@@ -142,7 +142,7 @@ class authorizenet_class {
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
 			if($taxamount>0)
-				$echortn.='<input type="hidden" name="x_tax" value="'.$taxamount.'" />'."\n";
+				$echortn.='<input type="hidden" name="x_tax" value="'.str_replace(",","",$taxamount).'" />'."\n";
 
 			$echortn.='
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to authorize.net &raquo;','eshop').'" /></p>

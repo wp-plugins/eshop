@@ -22,7 +22,7 @@ class eshop_metabox_class {
 	//extend the admin menu
 	function on_admin_menu() {
 		//add our own option page, you can also add it to different sections or use your own one
-		$this->pagehook = add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'), 'manage_options', ESHOP_SETTINGS_PAGE_NAME, array(&$this, 'on_show_page'));
+		$this->pagehook = add_options_page(__('eShop Settings','eshop'), __('eShop','eshop'), 'eShop_admin', ESHOP_SETTINGS_PAGE_NAME, array(&$this, 'on_show_page'));
 		//register  callback gets call prior your own page gets rendered
 		add_action('load-'.$this->pagehook, array(&$this, 'on_load_page'));
 		add_action('load-'.$this->pagehook, array(&$this, 'on_load_page_scripts'));
@@ -33,7 +33,8 @@ class eshop_metabox_class {
 		<li>'.__('<a href="http://wordpress.org/tags/eshop">Wordpress forums</a>','eshop').'</li>
 		<li>'.__('<a href="http://quirm.net/forum/forum.php?id=14">Quirm.net</a>','eshop').'</li>
 		</ul>';
-		add_contextual_help($this->pagehook,$help); 
+		if($this->pagehook != '')
+			add_contextual_help($this->pagehook,$help); 
 
 	}
 	function on_load_page_scripts() {
