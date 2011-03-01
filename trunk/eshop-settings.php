@@ -11,17 +11,17 @@ if (file_exists(ABSPATH . 'wp-includes/l10n.php')) {
 else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
+
+
+add_filter('query_vars', 'add_settings_query_vars');
+
 require (WP_PLUGIN_DIR."/eshop/eshop-settings-class.php");
 require (WP_PLUGIN_DIR."/eshop/eshop-settings-extends.php");
 include_once (WP_PLUGIN_DIR.'/eshop/cart-functions.php');
 include_once (WP_PLUGIN_DIR.'/eshop/eshop-base-functions.php');
 
 define('ESHOP_SETTINGS_PAGE_NAME', 'eshop-settings.php');
-add_filter('query_vars', 'add_settings_query_vars');
-function add_settings_query_vars($aVars) {
-	$aVars[] = "mstatus";    // represents the name of the product category as shown in the URL
-	return $aVars;
-}
+
 
 if (!class_exists('eshop_metabox_class')) {
 	wp_die('Unable to find the metabox class');
@@ -31,7 +31,7 @@ if(isset($_POST['eshop-action-status']))
 if (isset($_GET['mstatus']) )
 	$action_status = esc_attr($_GET['mstatus']);
 else
-	$_GET['mstatus']=$action_status = 'General';
+	$_GET['mstatus'] = $action_status = 'General';
 
 switch($action_status){
 	case ('General'):
@@ -55,5 +55,11 @@ switch($action_status){
 	case ('Tax'):
 		$eshop_metabox_plugin = new eshop_setting_tax();
 		break;
+}
+
+
+function add_settings_query_vars($aVars) {
+	$aVars[] = "mstatus";    // represents the name of the product category as shown in the URL
+	return $aVars;
 }
 ?>
