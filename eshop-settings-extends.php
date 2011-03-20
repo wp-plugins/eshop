@@ -1494,6 +1494,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
 		$etax = $eshopoptions['etax'];
 		if(!isset($etax['bands'])) $etax['bands']='0';
+		if(!isset($etax['unknown'])) $etax['unknown']='';
 		if(!isset($etax['zonal'])) $etax['zonal']='0';
 		if(!isset($etax['shipping'])) $etax['shipping']='';
 		?>
@@ -1520,6 +1521,8 @@ class eshop_setting_tax extends eshop_metabox_class {
 				}
 				?>
 			</select><br />
+			<label for="eshop_tax_unknown"><?php _e('Default tax % for downloads only stores','eshop'); ?></label><input type="text" id="eshop_tax_unknown" name="eshop_tax_unknown" value="<?php echo $etax['unknown']; ?>" size="4" />
+
 			<?php endif; ?>
 		</fieldset>
 	<?php
@@ -1671,6 +1674,12 @@ class eshop_setting_tax extends eshop_metabox_class {
 			$err=1;
 			$_POST['eshop_tax_bands']=$eshopoptions['etax']['bands']='';
 		}
+		if(is_numeric($_POST['eshop_tax_unknown']) || $_POST['eshop_tax_unknown']==''){
+			$eshopoptions['etax']['unknown']=$wpdb->escape($_POST['eshop_tax_unknown']);
+		}else{
+			$err=2;
+			$_POST['eshop_tax_unknown']=$eshopoptions['etax']['unknown']='';
+		}
 		if(isset($eshopoptions['etax']['zonal']))
 			$eshopiszonal=$eshopoptions['etax']['zonal'];
 		else
@@ -1679,6 +1688,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 		$eshopoptions['tax']=$wpdb->escape($_POST['eshop_tax']);
 		$eshopoptions['etax']['zonal']=$wpdb->escape($_POST['eshop_tax_zonal']);
 		$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
+		$eshopoptions['etax']['unknown']=$wpdb->escape($_POST['eshop_tax_unknown']);
 
 		if( isset($_POST['eshop_tax_shipping']))
 			$eshopoptions['etax']['shipping']=$wpdb->escape($_POST['eshop_tax_shipping']);
@@ -1729,6 +1739,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 	function eclass_errors($messages){
 		$messages=array(
 		'1'=>__('Number of tax bands should be numeric.','eshop'),
+		'2' => __('Unknown tax rate should be numeric','eshop'),
 		'100'=>__('eShop Sales Tax settings updated.','eshop')
 		);
 		return $messages;

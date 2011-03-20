@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 6.2.4
+Stable tag: 6.2.5
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,12 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.5
+
+* *fixed* 	now possible set an overall tax rate if using the download only form (may be extended in the future)
+* *fixed* 	tax notification in emails
+* *fixed* 	missing translation string for single price
 
 Version 6.2.4
 
