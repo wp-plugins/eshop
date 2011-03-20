@@ -237,7 +237,7 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 				if($currst>0){
 					if($price!='0.00'){
 						$mainoptsecho.='
-						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> @ <span class="sglprice">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</span></span>
+						<span class="sgloptiondetails"><span class="sgloption">'.stripslashes(esc_attr($option)).'</span> <span class="sglprice">'.sprintf( __('@ %1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</span></span>
 						';
 					}else{
 						$mainoptsecho.='

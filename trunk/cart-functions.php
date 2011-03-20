@@ -49,8 +49,8 @@ if (!function_exists('display_cart')) {
 			$totalstring = __('Sub-Total','eshop');
 			
 			$echo .= '<th id="cartTotal'.$iswidget.'" class="btbr">'.$totalstring.'</th>';
-			
-			if($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+			$etax = $eshopoptions['etax'];
+			if(($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1')|| ('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!='')){
 				$echo .= '<th id="carttax" class="bt">'.__('Tax %','eshop').'</th>
 				<th id="carttaxamt" class="btbr">'.__('Tax Amt','eshop').'</th>';
 			}
@@ -144,9 +144,13 @@ if (!function_exists('display_cart')) {
 					$echo.= "</td>\n<td headers=\"cartTotal$iswidget prod".$calt.$iswidget."\" class=\"amts\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($eline,__('2','eshop')))."</td>\n";
 					
 					//TAX
-					if($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$etax = $eshopoptions['etax'];
+					if(($pzone!='' && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') || ('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!='')){
 						if(isset($eshop_product['products'][$opt['option']]['tax']) && $eshop_product['products'][$opt['option']]['tax']!='' && $eshop_product['products'][$opt['option']]['tax']!='0'){
-							$taxrate=eshop_get_tax_rate($eshop_product['products'][$opt['option']]['tax'], $pzone);
+							if($pzone!='')
+								$taxrate=eshop_get_tax_rate($eshop_product['products'][$opt['option']]['tax'], $pzone);
+							else
+								$taxrate=$etax['unknown'];
 							$ttotax=$line_total;
 							if(isset($disc_line))
 								$ttotax=$disc_line * $opt["qty"];
@@ -187,7 +191,7 @@ if (!function_exists('display_cart')) {
 			else
 				$emptycell='';
 				
-			if($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+			if(($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1') || ('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!='')){
 				$emptycell='<td headers="subtotal carttaxamt" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxtotal,__('2','eshop'))).'</td>';
 			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,__('2','eshop')))."</td>$emptycell</tr>\n";
@@ -200,102 +204,103 @@ if (!function_exists('display_cart')) {
 			$shipping=0;
 			//$pzone will only be set after the checkout address fields have been filled in
 			// we can only work out shipping after that point
-			if($pzone!=''){
-				//shipping for cart.
-				if($eshopoptions['shipping_zone']=='country'){
-					$table=$wpdb->prefix.'eshop_countries';
-				}else{
-					$table=$wpdb->prefix.'eshop_states';
-				}
-				$table2=$wpdb->prefix.'eshop_rates';
-				switch($eshopoptions['shipping']){
-					case '1'://( per quantity of 1, prices reduced for additional items )
-						foreach ($shiparray as $nowt => $shipclass){
-							//add to temp array for shipping
-							if(!in_array($shipclass, $tempshiparray)) {
-								if($shipclass!='F'){
+			if($pzone!='' || ('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!='')){
+				if($pzone!=''){
+					//shipping for cart.
+					if($eshopoptions['shipping_zone']=='country'){
+						$table=$wpdb->prefix.'eshop_countries';
+					}else{
+						$table=$wpdb->prefix.'eshop_states';
+					}
+					$table2=$wpdb->prefix.'eshop_rates';
+					switch($eshopoptions['shipping']){
+						case '1'://( per quantity of 1, prices reduced for additional items )
+							foreach ($shiparray as $nowt => $shipclass){
+								//add to temp array for shipping
+								if(!in_array($shipclass, $tempshiparray)) {
+									if($shipclass!='F'){
+										array_push($tempshiparray, $shipclass);
+										$shipzone='zone'.$pzone;
+										$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
+										$shipping+=$shipcost;
+									}
+								}else{
+									if($shipclass!='F'){
+										$shipzone='zone'.$pzone;
+										$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' and rate_type='shipping' limit 1");
+										$shipping+=$shipcost;
+									}
+								}
+							}
+							break;
+						case '2'://( once per shipping class no matter what quantity is ordered )
+							foreach ($shiparray as $nowt => $shipclass){
+								if(!in_array($shipclass, $tempshiparray)) {
 									array_push($tempshiparray, $shipclass);
-									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
-									$shipping+=$shipcost;
+									if($shipclass!='F'){
+										$shipzone='zone'.$pzone;
+										$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
+										$shipping+=$shipcost;
+									}
 								}
-							}else{
+							}
+							break;
+						case '3'://( one overall charge no matter how many are ordered )
+							$shiparray=array_unique($shiparray);
+							foreach ($shiparray as $nowt => $shipclass){
 								if($shipclass!='F'){
-									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass'  and items='2' and rate_type='shipping' limit 1");
+									$shipzone='zone'.$pzone;						
+									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' and rate_type='shipping' limit 1");
 									$shipping+=$shipcost;
 								}
 							}
-						}
-						break;
-					case '2'://( once per shipping class no matter what quantity is ordered )
-						foreach ($shiparray as $nowt => $shipclass){
-							if(!in_array($shipclass, $tempshiparray)) {
-								array_push($tempshiparray, $shipclass);
-								if($shipclass!='F'){
-									$shipzone='zone'.$pzone;
-									$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='$shipclass' and items='1' and rate_type='shipping' limit 1");
-									$shipping+=$shipcost;
-								}
-							}
-						}
-						break;
-					case '3'://( one overall charge no matter how many are ordered )
-						$shiparray=array_unique($shiparray);
-						foreach ($shiparray as $nowt => $shipclass){
-							if($shipclass!='F'){
-								$shipzone='zone'.$pzone;						
-								$shipcost = $wpdb->get_var("SELECT $shipzone FROM $table2 WHERE class='A' and items='1' and rate_type='shipping' limit 1");
-								$shipping+=$shipcost;
-							}
-						}
-						break;
-					case '4'://by weight/zone etc
-						//$totalweight
-						$shipzone='zone'.$pzone;
-						$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight <= '$totalweight' && class='$shiparray' and rate_type='ship_weight' order by weight DESC limit 1");
-						$shipping+=$shipcost;
-						$_SESSION['eshopshiptype'.$blog_id]=$shiparray;
-				}
+							break;
+						case '4'://by weight/zone etc
+							//$totalweight
+							$shipzone='zone'.$pzone;
+							$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight <= '$totalweight' && class='$shiparray' and rate_type='ship_weight' order by weight DESC limit 1");
+							$shipping+=$shipcost;
+							$_SESSION['eshopshiptype'.$blog_id]=$shiparray;
+					}
 
-				//display shipping cost
-				//discount shipping?
-				if(is_shipfree(calculate_total())  || eshop_only_downloads()) $shipping=0;
-				
-				$echo.= '<tr class="alt shippingrow"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
-				if($eshopoptions['shipping']=='4' && !eshop_only_downloads() && $shiparray!='0'){
-					$eshopoptions['ship_types']=trim($eshopoptions['ship_types']);
-					$typearr=explode("\n", $eshopoptions['ship_types']);
-					//darn, had to add in unique to be able to go back a page
-					$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a> ';
-				}else{
-					$echo .=__('Shipping','eshop');
-				}
-				if($eshopoptions['cart_shipping']!=''){
-					$ptitle=get_post($eshopoptions['cart_shipping']);
-					$echo.=' <small>(<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
-				}
-	
-				$echo.='</th>
-				<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,__('2','eshop'))).'</td>';
-				if($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
-					$taxrate=eshop_get_tax_rate($eshopoptions['etax']['shipping'], $pzone);
-					$ttotax=$shipping;
-					$taxamt=round(($ttotax * $taxrate)/100, 2);
-					$taxtext = '';
-					if($taxamt > '0.00')
-						$taxtext = sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop')));
-					$echo.= '<td>'.$taxrate.'</td><td>'.$taxtext.'</td>';
-					$shiptax=$taxamt;
-					$_SESSION['shipping'.$blog_id]['tax']=$shiptax;
-					$_SESSION['shipping'.$blog_id]['taxrate']=$taxrate;
+					//display shipping cost
+					//discount shipping?
+					if(is_shipfree(calculate_total())  || eshop_only_downloads()) $shipping=0;
 
+					$echo.= '<tr class="alt shippingrow"><th headers="cartItem'.$iswidget.'" id="scharge" class="leftb">';
+					if($eshopoptions['shipping']=='4' && !eshop_only_downloads() && $shiparray!='0'){
+						$eshopoptions['ship_types']=trim($eshopoptions['ship_types']);
+						$typearr=explode("\n", $eshopoptions['ship_types']);
+						//darn, had to add in unique to be able to go back a page
+						$echo.=' <a href="'.get_permalink($eshopoptions['checkout']).'?eshoprand='.rand(2,100).'#shiplegend" title="'.__('Change Shipping','eshop').'">'.stripslashes(esc_attr($typearr[$shiparray-1])).'</a> ';
+					}else{
+						$echo .=__('Shipping','eshop');
+					}
+					if($eshopoptions['cart_shipping']!=''){
+						$ptitle=get_post($eshopoptions['cart_shipping']);
+						$echo.=' <small>(<a href="'.get_permalink($eshopoptions['cart_shipping']).'">'.__($ptitle->post_title,'eshop').'</a>)</small>';
+					}
+
+					$echo.='</th>
+					<td headers="cartItem scharge" class="amts lb" colspan="2">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($shipping,__('2','eshop'))).'</td>';
+					if($pzone!='' && isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+						$taxrate=eshop_get_tax_rate($eshopoptions['etax']['shipping'], $pzone);
+						$ttotax=$shipping;
+						$taxamt=round(($ttotax * $taxrate)/100, 2);
+						$taxtext = '';
+						if($taxamt > '0.00')
+							$taxtext = sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxamt,__('2','eshop')));
+						$echo.= '<td>'.$taxrate.'</td><td>'.$taxtext.'</td>';
+						$shiptax=$taxamt;
+						$_SESSION['shipping'.$blog_id]['tax']=$shiptax;
+						$_SESSION['shipping'.$blog_id]['taxrate']=$taxrate;
+
+					}
+					$echo .= '</tr>';
+					$_SESSION['shipping'.$blog_id]['cost']=$shipping;
+					$final_price=$sub_total+$shipping;
+					$_SESSION['final_price'.$blog_id]=$final_price;
 				}
-				$echo .= '</tr>';
-				$_SESSION['shipping'.$blog_id]['cost']=$shipping;
-				$final_price=$sub_total+$shipping;
-				$_SESSION['final_price'.$blog_id]=$final_price;
-				
 				$excltax = '';
 				if(isset($taxtotal) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 					$excltax = __('(excl.tax)','eshop');
@@ -304,8 +309,11 @@ if (!function_exists('display_cart')) {
 				$echo.= '<tr class="total"><th id="cTotal'.$iswidget.'" class="leftb">'.__('Total Order Charges','eshop')."</th>\n<td headers=\"cTotal$iswidget cartTotal$iswidget\"  colspan=\"2\" class = \"amts lb\"><strong>".sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($final_price, __('2','eshop')),$excltax)."</strong></td>";
 				if(isset($shiptax) && isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 					$withtax = $final_price + $shiptax + $taxtotal;
-					$echo.= '<td headers="taxtotal" class="taxttotal amts lb" colspan="2"><strong>'.sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($withtax,__('2','eshop')), __('(incl.tax)','eshop')).'</strong></td>';
 				}
+				if('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!=''){
+					$withtax = $final_price + $taxtotal;
+				}
+				$echo.= '<td headers="taxtotal" class="taxttotal amts lb" colspan="2"><strong>'.sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($withtax,__('2','eshop')), __('(incl.tax)','eshop')).'</strong></td>';
 				$echo .= "</tr>";
 			}
 
@@ -579,6 +587,7 @@ if (!function_exists('eshop_get_tax_rate')) {
 		$band=$wpdb->escape($band);
 		$zone='zone'.$wpdb->escape($pzone);
 		$taxrate = $wpdb->get_var("SELECT $zone FROM $ratetable WHERE id > 0 && class='$band' && area='$area' && rate_type='tax' ");
+
 		return $taxrate;
 	}
 }
@@ -731,6 +740,8 @@ if (!function_exists('eshopasstaxlinestoall')) {
 if (!function_exists('eshopShipTaxAmt')) {
 	function eshopShipTaxAmt($combine = 0){
 		global $blog_id, $eshopoptions;
+		if(!isset($_SESSION['shipping'.$blog_id]['cost']))
+			return;
 		if(!isset($eshopoptions['tax']) || $eshopoptions['tax']=='0')
 			return number_format($_SESSION['shipping'.$blog_id]['cost'],2);
 		
@@ -1232,12 +1243,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 		$arrtaxtotal=number_format_i18n($taxtotal, __('2','eshop'));
 
 		$cart.= __('Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop')))."\n";
-		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
-			$cart.= __('Total Sale Tax','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($taxtotal, __('2','eshop')))."\n";
-			$gtotal = $total + $taxtotal;
-			$cart.= __('Grand Total','eshop').' '.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($gtotal, __('2','eshop')))."\n";
-		}
- 
+		
 		$thisdate = eshop_real_date($custom);
 		
 		$cart.= "\n".__('Order placed on','eshop')." ".$thisdate."\n";
