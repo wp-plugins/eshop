@@ -47,7 +47,7 @@ if (!function_exists('eshopShowform')) {
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$stype='';
 		if(isset($_POST['eshop_shiptype'])) $stype=$_POST['eshop_shiptype'];
-		
+		$first=apply_filters('eshop_default_shipping','1');
 		/* '1- text 2 - weight 3-weight symbol' */
 		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
 		foreach ($typearr as $k=>$type){
@@ -72,6 +72,7 @@ if (!function_exists('eshopShowform')) {
 			$eshopshiptableinner.='</tr>
 			</thead>
 			<tbody>';
+			
 			$x=1;
 			foreach ($query as $row){
 				$alt = ($x % 2) ? '' : ' class="alt"';
@@ -94,7 +95,10 @@ if (!function_exists('eshopShowform')) {
 			
 			if(isset($row->maxweight) && $row->maxweight!='')
 				$eshopshiptableheadtext .= ' '.sprintf( __('Max. Weight %1$s %2$s','eshop'),$row->maxweight,$eshopoptions['weight_unit']);
-			
+			if($first=='1' && $stype==''){
+				$stype=$k;
+				$first=0;
+			}
 			$eshopshiptablehead='<span><input class="rad" type="radio" name="eshop_shiptype" value="'.$k.'" id="eshop_shiptype'.$k.'"'.checked($stype,$k,false).' /> <label for="eshop_shiptype'.$k.'">'.$eshopshiptableheadtext.'</label></span>';
 			
 			$eshopshiptable .= $eshopshiptablehead.$eshopshiptableinner;
@@ -942,8 +946,11 @@ if (!function_exists('eshop_checkout')) {
 			//but first make a few extra equal nothing
 			//add others in here if needed
 			$array['comments']=$array['reference']='';
-			$biscuits=eshop_build_cookie($array);
-			setcookie("eshopcart", $biscuits,time()+60*60*24*365);
+			$eshopsetcookie=apply_filters('eshop_use_cookie',true);
+			if($eshopsetcookie==true){
+				$biscuits=eshop_build_cookie($array);
+				setcookie("eshopcart", $biscuits,time()+60*60*24*365);
+			}
 			$eshopmgincpath=apply_filters('eshop_mg_inc_path',WP_PLUGIN_DIR.'/eshop/'.$paymentmethod.'.php',$paymentmethod);
 			include_once($eshopmgincpath);
 			$contineproceed='3';
@@ -1016,9 +1023,9 @@ if (!function_exists('eshop_checkout')) {
 			$state=$altstate=$zip=$ship_name=$ship_company='';
 			$ship_phone=$ship_address=$ship_city=$ship_postcode='';
 			$ship_country=$ship_state=$ship_altstate=$comments='';
-			
-			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0){
-			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
+			$eshopsetcookie=apply_filters('eshop_use_cookie',true);
+			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0 && $eshopsetcookie==true){
+				$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
 					$$k=$v;
 				}

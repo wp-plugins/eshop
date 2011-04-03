@@ -37,7 +37,7 @@ if (!function_exists('display_cart')) {
 			//global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
-				$echo.= '<form action="'.get_permalink($eshopoptions['cart']).'" method="post" class="eshop eshopcart">';
+				$echo.= '<form action="'.get_permalink($eshopoptions['cart']).'" method="post" id="eshopcartform" class="eshop eshopcart">';
 			}
 			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
 			<caption>'.__('Shopping Cart','eshop').'</caption>
@@ -168,7 +168,7 @@ if (!function_exists('display_cart')) {
 					
 					if($iswidget=='' && $change == 'true'){
 						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
-						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="deleteitem['.$productid.']" value="'.$key.'" title="'.__('Delete this item','eshop').'"/></td>';
+						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="eshopdeleteitem['.$productid.']" value="'.$opt["qty"].'" title="'.__('Delete this item','eshop').'"/></td>';
 					}
 					$echo .="</tr>\n";
 					if(isset($disc_line))
@@ -313,7 +313,9 @@ if (!function_exists('display_cart')) {
 				if('yes' == $eshopoptions['downloads_only'] && isset($etax['unknown']) && $etax['unknown']!=''){
 					$withtax = $final_price + $taxtotal;
 				}
-				$echo.= '<td headers="taxtotal" class="taxttotal amts lb" colspan="2"><strong>'.sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($withtax,__('2','eshop')), __('(incl.tax)','eshop')).'</strong></td>';
+				if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
+					$echo.= '<td headers="taxtotal" class="taxttotal amts lb" colspan="2"><strong>'.sprintf( __('%1$s%2$s <span>%3$s</span>','eshop'), $currsymbol, number_format_i18n($withtax,__('2','eshop')), __('(incl.tax)','eshop')).'</strong></td>';
+				}
 				$echo .= "</tr>";
 			}
 
@@ -2041,10 +2043,11 @@ if (!function_exists('eshop_cart_process')) {
 				$_SESSION['final_price'.$blog_id] = calculate_price();
 				$_SESSION['items'.$blog_id] = calculate_items();
 			}
-			if(isset($_POST['deleteitem'])){
-				foreach($_POST['deleteitem'] as $chkey=>$chkval){
+			
+			if(isset($_POST['eshopdeleteitem'])){
+				foreach($_POST['eshopdeleteitem'] as $chkey=>$chkval){
 					$tochkkey=$chkey;
-					$tochkval=$chkval;
+					$tochkqty=$_SESSION['eshopcart'.$blog_id][$chkey]['qty'];
 				}
 			}
 			if(isset($eshopoptions['min_qty']) && $eshopoptions['min_qty']!='') 
@@ -2075,7 +2078,9 @@ if (!function_exists('eshop_cart_process')) {
 					foreach ($_POST as $key => $value){
 						if($key==$sessproductid){
 							foreach ($value as $notused => $qty){
-								if(isset($tochkkey) && $tochkkey==$key) $qty=0;
+								if(isset($tochkkey) && $tochkkey==$key && $tochkqty==$qty){
+								$qty=0;
+								}
 								if($qty=="0"){							
 									unset($_SESSION['eshopcart'.$blog_id][$productid]);
 								}else{
