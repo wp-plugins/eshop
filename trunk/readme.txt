@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 6.2.5
+Stable tag: 6.2.6
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,14 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.6
+
+* *fixed* 	cart issue with deleting an item in error
+* *fixed* 	small fix for authorize.net when using discount codes.
+* *fixed* 	bug on checkout when not using tax.
+* *amended* 	When using Shipping method 4, the first option is now automatically the default. the filer eshop_default_shipping can amend which one is the default.
+* *added* 	a filter eshop_use_cookie which can be set to false if sites are having an issue with the checkout after first purchase
 
 Version 6.2.5
 

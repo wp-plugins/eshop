@@ -119,6 +119,7 @@ class authorizenet_class {
 			$numberofproducts=$_POST['numberofproducts'];
 			$taxamount=0;
 			$sep='<|>';
+			$extracost=0;
 			for($i=1;$i<=$numberofproducts;$i++){
 				$taxable='N';
 				if(strlen($_POST['item_name_'.$i]) > 25)
@@ -133,10 +134,18 @@ class authorizenet_class {
 					$taxamount+=$_POST['tax_'.$i];
 					$taxable='Y';
 				}
-
+				if((str_replace(",","",$lineamount)) != (0.01*floor(str_replace(",","",$lineamount)*100))){
+					$extracost+=$_POST['quantity_'.$i] * (str_replace(",","",$lineamount) - (0.01*floor(str_replace(",","",$lineamount)*100)));
+					$lineamount=0.01*floor(str_replace(",","",$lineamount)*100);
+				}
 				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(",","",$lineamount).$sep.$taxable;
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
+			if($extracost!=0){
+					$value='itemdecpriceamd'.$sep.__('decimal price amendment').$sep.__('amend').$sep.'1'.$sep.str_replace(",","",$extracost).$sep.'Y';
+					$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
+			}
+
 			if($shipping>0){
 				$value='item_s'.$sep.'Shipping'.$sep.''.$sep.'1'.$sep.$shipping.$sep.'N';
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
