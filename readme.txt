@@ -44,6 +44,10 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 6.2.8
+
+* *fixed*  	Activation issue, rogue space :(
+
 Version 6.2.7
 
 * *fixed* 	tax not being applied when shipping fields were hidden
