@@ -53,7 +53,7 @@ if (!function_exists('eshop_option_setup')) {
 			'downloads_hideall'=>'no',
 			'downloads_num'=>'3',
 			'downloads_only'=> 'no',
-			'etax'=>array();
+			'etax'=>array(),
 			'first_time'=> 'yes',
 			'fold_menu'=> 'no',
 			'from_email'=>'',
