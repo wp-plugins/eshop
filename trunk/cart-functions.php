@@ -563,7 +563,7 @@ if (!function_exists('eshop_get_tax_rate')) {
 		$tablecountries=$wpdb->prefix.'eshop_countries';
 		$tablestates=$wpdb->prefix.'eshop_states';
 		if($area=='country'){
-			if(isset($_POST['ship_country']) && $_POST['ship_country']!=''){
+			if(isset($_POST['ship_country']) && $_POST['ship_country']!='' && 'yes' != $eshopoptions['hide_shipping']){
 				$pzoneid=$_POST['ship_country'];
 			}elseif(isset($_POST['country']) && $_POST['country']!=''){
 				$pzoneid=$_POST['country'];
@@ -573,7 +573,7 @@ if (!function_exists('eshop_get_tax_rate')) {
 			else
 				$pzone = 1;
 		}else{
-			if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
+			if(isset($_POST['ship_state']) && $_POST['ship_state']!='' && 'yes' != $eshopoptions['hide_shipping']){
 				$pzoneid=$_POST['ship_state'];
 			}
 			if(isset($_POST['state']) && $_POST['state']!=''){

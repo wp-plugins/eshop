@@ -364,7 +364,7 @@ if (!function_exists('eshopShowform')) {
 				$edisplay=$eshopoptions['users_text'];
 			else
 				$edisplay=__('Sign me up to the site so I can view my orders.','eshop');
-			$echo .='<p class="eshop_users"><input type="checkbox" name="eshop_users" id="eshop_users" value="1" /><label for="eshop_users">'.$edisplay.'</label></p>';
+			$echo .='<p class="eshop_users"><input type="checkbox" name="eshop_users" id="eshop_users" value="1" /><label for="eshop_users">'.$edisplay.eshop_checkreqd($reqdarray,'signup').'</label></p>';
 	}
 	if('no' == $eshopoptions['downloads_only']){
 			$echo .='<label for="submitit"><small id="eshopshowshipcost">'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
@@ -496,11 +496,11 @@ if (!function_exists('eshop_checkout')) {
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
 
 			}else{
-				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
-					$pzoneid=$_POST['ship_state'];
-				}
 				if(isset($_POST['state']) && $_POST['state']!=''){
 					$pzoneid=$_POST['state'];
+				}
+				if(isset($_POST['ship_state']) && $_POST['ship_state']!=''){
+					$pzoneid=$_POST['ship_state'];
 				}
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablestates WHERE id='$pzoneid' LIMIT 1");
 				if(isset($_POST['altstate']) && $_POST['altstate']!=''){
@@ -702,7 +702,12 @@ if (!function_exists('eshop_checkout')) {
 					$error.= '<li>'.__('<strong>Comments</strong> - missing.','eshop').'</li>';
 				}
 		}
-		
+		if(isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && !is_user_logged_in()){
+			if(!isset($_POST['eshop_users']) && eshop_checkreqd($reqdarray,'signup')){
+				$error.= '<li>'.__('<strong>Sign Up</strong> - not checked.','eshop').'</li>';
+			}
+		}
+
 		//add in error checking for any new values here
 		$temperror=apply_filters('eshoperrorcheckout',$_POST);
 		if(!is_array($temperror)) $error .= $temperror;

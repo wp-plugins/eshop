@@ -53,6 +53,7 @@ if (!function_exists('eshop_option_setup')) {
 			'downloads_hideall'=>'no',
 			'downloads_num'=>'3',
 			'downloads_only'=> 'no',
+			'etax'=>array();
 			'first_time'=> 'yes',
 			'fold_menu'=> 'no',
 			'from_email'=>'',
@@ -188,7 +189,7 @@ if(isset($eshopoptions['version'])){
 		deactivate_plugins('eshop/eshop.php'); //Deactivate ourself
 		$path= esc_attr(get_option('upload_path'));
 		if($path=='') $path='wp-content/uploads';
-		wp_die(sprintf(__('ERROR! eShop requires that the %1$s and %2$s directopries are writable before the plugin can be activated.','eshop'),$path, WP_CONTENT_DIR)); 
+		wp_die(sprintf(__('ERROR! eShop requires that the %1$s and %2$s directories are writable before the plugin can be activated.','eshop'),$path, WP_CONTENT_DIR)); 
 	}
 	/** create capability */
 	eshop_caps();

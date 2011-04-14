@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.1
-Stable tag: 6.2.6
+Stable tag: 6.2.7
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,11 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.7
+
+* *fixed* 	tax not being applied when shipping fields were hidden
+* *added* 	signup field can now be a required field - add to the required fields using signup as the value in the filter eshopCheckoutReqd
 
 Version 6.2.6
 
@@ -162,65 +167,6 @@ Version 6.0.0
 * *fixed* 	issue with some shortcodes and widgets showing incorrect number of products.
 * *fixed* 	small fix for cancelled orders and discount codes.
 * *fixed* 	small fix in admin for product tables.
-
-Version 5.9.3
-
-* *FIXED* 	Issue with Paypal and failed orders - at long last! (hopefully...)
-* *fixed* 	changes for multisite users who were unable to use some admin functionality
-* *fixed* 	issue with a-z shortcode
-
-Version 5.9.2
-
-* *amended* 	if you have are _Allowing users to sign up to your site_ via eShop settings, then you need to upgrade - apologies.
-* *amended* 	small change to cart, adding in hooks for styling
-
-Version 5.9.1
-
-* *fixed*  	upgrade routine causing failed upgrades...
-
-Version 5.9.0
-
-* *AMENDED* 	labels and code on checkout page, to reset things as they appeared before, add this to your style: .fld2 label, .fld4 label{display:block;} May affect customised style as well.
-* *amended* 	security fix for Users orders page.
-* *amended* 	eshop_details removed stockqty from _what to show_, and added to _what to hide_. Also removed _option_ from what to hide, as it caused errors.
-* *amended* 	small tweaks to Paypal error notifications.
-* *fixed* 	issue with option sets.
-* *fixed* 	product listing with forms when set to 'yesqty'
-* *fixed* 	number of results returned by cat tags shortcode.
-* *fixed* 	issue with eshop_details shortcode causing details to appear twice.
-* *fixed* 	Webtopay, now works solely for Webtopay verion 1.3 - please check the settings page.
-* *fixed* 	Small bug with shortcodes.
-* *fixed* 	more validation issues.
-* *added* 	filter for amending the option set display order.
-* *added* 	filters and actions required for merchant gateway plugins.
-* *added* 	option set names for all now show in the cart, not just text and textareas.
-* *added* 	classes to shipping table to enable hiding of unused shipping zones
-* *added* 	filter for eShop Shipping Classes (eshop_shipping_rate_class).
-* *added* 	ability to hide reference/po number from checkout via class eshopreference
-* *added* 	to the cart widget - ability to show image, text, or both. Image is also resizeable.
-
-Version 5.8.2
-
-* *fixed*   eShop > Base page error.
-* *changed* handling of products with 0 cost.
-
-Version 5.8.1
-
-* *fixed*    incorrect back link appearing on checkout page
-* *fixed*    option set prices not being correctly identified for some configurations.
-* *fixed*    character set and collation on database tables.
-* *updated*  portion of the paypal validation script that may have affected a small proportion of users.
-* *updated*  shortcodes, when using panels changing form value to 'yesqty' will now also show the qty field.
-* *updated*  add to cart, drop down select/radio buttons now only show if there are more than 1 option.
-* *added*    filter eshop_states_na, to remove the not applicable from the state/county/province drop down box.
-* *added*    class per product to enable targetting of specific products for styling.
-* *added*    filters to the list cat tags shortcode.
-* *added*    improved cart widget, old cart widget remains for now. This also features a total price for the cart.
-* *added*    filter for the ajax timings.
-* *improved* activation routine, only affected a few people.
-* *improved* upgrade routine for those upgrading manually.
-* *amended*  default listing for the admin order pages.
-
 
 == Installation ==
 
