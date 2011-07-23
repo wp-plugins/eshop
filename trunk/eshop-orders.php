@@ -15,7 +15,9 @@ else {
 global $wpdb;
 $eshopoptions = get_option('eshop_plugin_settings');
 
-if (isset($_GET['action']) )
+$eshopactionarray=array('Completed','Pending','Failed','Waiting','Sent','Deleted');
+
+if (isset($_GET['action']) && in_array($_GET['action'],$eshopactionarray) )
 	$action_status = esc_attr($_GET['action']);
 else
 	$_GET['action']=$action_status = 'Pending';
@@ -269,13 +271,15 @@ if (!function_exists('displayorders')) {
 			
 			
 		}else{
-			if($type=='Completed'){$type=__('Active','eshop');}
-			if($type=='Sent'){$type=__('Shipped','eshop');}
-			if($type=='Waiting'){$type=__('Awaiting Payment','eshop');}
-			if($type=='Pending'){$status=__('Pending','eshop');}
-			if($type=='Deleted'){$status=__('Deleted','eshop');}
-			if($type=='Failed'){$status=__('Failed','eshop');}
-			echo "<p class=\"notice\">".__('There are no','eshop')." <span>".$type."</span> ".__('orders','eshop').".</p>";
+			if($type=='Completed'){$disptype=__('Active','eshop');}
+			if($type=='Sent'){$disptype=__('Shipped','eshop');}
+			if($type=='Waiting'){$disptype=__('Awaiting Payment','eshop');}
+			if($type=='Pending'){$disptype=__('Pending','eshop');}
+			if($type=='Deleted'){$disptype=__('Deleted','eshop');}
+			if($type=='Failed'){$disptype=__('Failed','eshop');}
+			echo "<p class=\"notice\">";
+			printf(__('There are no %s orders.','eshop'),"<span>" . __($disptype,'eshop') . "</span>");
+			echo "</p>";
 		}
 	}
 }
@@ -303,7 +307,7 @@ $ctable=$wpdb->prefix.'eshop_countries';
 ##########
 ##########
 */
-if(isset($_GET['viewemail']) || isset($_POST['thisemail'])){
+if((isset($_GET['viewemail']) && is_numeric($_GET['viewemail']) ) || isset($_POST['thisemail'])){
 	include 'eshop-email.php';
 }else{
 

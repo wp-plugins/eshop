@@ -30,14 +30,14 @@ if (!function_exists('eshopShowform')) {
 
 	$echo = '
 	<div class="hr"></div>
-	<div class="custdetails">
+	<div class="eshopcustdetails custdetails">
 	<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
 	'.__($xtralinks,'eshop').'</small></p>
 	<form action="'.esc_url($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopform">';
 	
 	if($eshopoptions['shipping']=='4' && 'no' == $eshopoptions['downloads_only'] && !eshop_only_downloads()){
 		//only for ship by weight
-		$echo.='<fieldset class="eshop fld0"><legend id="shiplegend">'. __('Please Choose shipping','eshop').eshop_checkreqd($reqdarray,'shipping').'</legend>';
+		$echo.='<fieldset class="eshop fld0"><legend id="shiplegend">'. __('Please Choose Shipping','eshop').eshop_checkreqd($reqdarray,'shipping').'</legend>';
 		$typearr=explode("\n", $eshopoptions['ship_types']);
 		$cartweight=$_SESSION['eshop_totalweight'.$blog_id]['totalweight'];
 		$eshopshiptable='';
@@ -282,7 +282,6 @@ if (!function_exists('eshopShowform')) {
 		}
 	}
 	$final_price=number_format($_SESSION['final_price'.$blog_id], 2,'.','');
-	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
 	$discounttotal=0;
 	if(eshop_discount_codes_check()){
 		$eshop_discount='';
@@ -370,7 +369,8 @@ if (!function_exists('eshopShowform')) {
 			$echo .='<label for="submitit"><small id="eshopshowshipcost">'.__('<strong>Note:</strong> Submit to show shipping charges.','eshop').'</small></label><br />';
 	}
 		
-	
+	$echo .= '<input type="hidden" name="amount" value="'.$final_price.'" />';
+
 	$echo .='<span class="buttonwrap"><input type="submit" class="button" id="submitit" name="submit" value="'.__('Proceed to Confirmation &raquo;','eshop').'" /></span>
 	</fieldset>
 	</form>
@@ -738,7 +738,7 @@ if (!function_exists('eshop_checkout')) {
 		}
 
 		if($error!=''){
-				$echoit.= "<p><strong class=\"error\">".__('There were some errors in the details you entered&#8230;','eshop')."</strong></p><ul class=\"errors\">".$error.'</ul>';
+				$echoit.= "<p><strong class=\"eshoperror error\">".__('There were some errors in the details you entered&#8230;','eshop')."</strong></p><ul class=\"eshoperrors errors\">".$error.'</ul>';
 				$first_name=$last_name=$company=$phone=$reference='';
 				$email=$address1=$address2=$city=$country='';
 				$state=$altstate=$zip=$ship_name=$ship_company='';
@@ -1070,7 +1070,7 @@ if (!function_exists('eshop_checkout')) {
 		}
 
 	}else{
-		$echoit.= "<p><strong class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</strong></p>";
+		$echoit.= "<p><strong class=\"eshoperror error\">".__('Your shopping cart is currently empty.','eshop')."</strong></p>";
 	}
 	return $echoit;
  }

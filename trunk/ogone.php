@@ -75,6 +75,7 @@ switch ($eshopaction) {
 		'ACCEPTURL='.$slink.$Secret.'AMOUNT='.$amount.$Secret.'CANCELURL='.$clink.$Secret.'CN='.$_POST['first_name'].' '.$_POST['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'DECLINEURL='.$clink.$Secret.'EMAIL='.$_POST['email'].$Secret.'EXCEPTIONURL='.$clink.$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'OPERATION=SAL'.$Secret.'ORDERID='.$refid.$Secret.'OWNERADDRESS='.$_POST['address1'].$Secret.'OWNERCTY='.$_POST['country'].$Secret.'OWNERTELNO='.$_POST['phone'].$Secret.'OWNERTOWN='.$_POST['city'].$Secret.'OWNERZIP='.$_POST['zip'].$Secret.'PSPID='.$Pspid.$Secret;
 		$SHASign=strtoupper(sha1($sha));
 		*/
+		$ogonelocation=apply_filters('ogone-location',$eshopoptions['location']);
 		$checkid=md5($refid);
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
@@ -90,7 +91,7 @@ switch ($eshopaction) {
 		'declineurl'=>$clink,
 		'email'=>$_POST['email'],
 		'exceptionurl'=>$clink,
-		'language'=>$eshopoptions['location'],
+		'language'=>$ogonelocation,
 		'operation'=>'SAL',
 		'orderID'=>$refid,
 		'owneraddress'=>$_POST['address1'],

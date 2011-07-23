@@ -23,8 +23,11 @@ function eshop_template_email(){
 <thead><tr><th id="num">#</th><th id="type"><?php _e('Type','eshop'); ?></th><th id="blank"><?php _e('Template?', 'eshop'); ?></th><th id="act"><?php _e('Active','eshop'); ?></th><th id="chg"><?php _e('Change','eshop'); ?></th></tr></thead>
 <tbody>
 <?php
-if(isset($_GET['eshoptemplate'])) $eshoptemplate=$_GET['eshoptemplate'];
-else $eshoptemplate='1';
+$eshoptemplate='1';
+if(isset($_GET['eshoptemplate']) && is_numeric($_GET['eshoptemplate']))
+	$eshoptemplate=$_GET['eshoptemplate'];
+
+
 $thisemail=$wpdb->get_results("Select * From $table");
 $phpself=get_admin_url().'admin.php?page=eshop-templates.php'; 
 $x=1;

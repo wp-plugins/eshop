@@ -2,16 +2,16 @@
 if ('eshop.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.2.8');
+	define('ESHOP_VERSION', '6.2.9');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 6.2.8
+Version: 6.2.9
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
-    Copyright 2007-2010  R PEDLEY  (email : rich@quirm.net)
+    Copyright 2007-2011  R PEDLEY  (email : rich@quirm.net)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -549,6 +549,14 @@ class eshop_setting_general_class extends eshop_metabox_class {
 				$eshopoptions['details']['hide']='';
 				$eshopoptions['details']['display']='';
 			}
+			if(!isset($eshopoptions['details']['show']))
+				$eshopoptions['details']['show']='';
+			if(!isset($eshopoptions['details']['class']))
+				$eshopoptions['details']['class']='';
+			if(!isset($eshopoptions['details']['hide']))
+				$eshopoptions['details']['hide']='';
+			if(!isset($eshopoptions['details']['display']))
+				$eshopoptions['details']['display']='';
 			?>
 			<p><strong><?php _e('For site wide display of Product Details, can be amended per product by the addition of the shortcode <code>[eshop_details]</code>','eshop'); ?></strong></p>
 			<label for="eshop_details_display"><?php _e('Add product details section to every page with details to display. <small>(adding the shortcode will override settings here)</small>','eshop'); ?></label>
@@ -1092,7 +1100,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			'ZAR'=>__('South African Rand','eshop'),
 			'SEK'=>__('Swedish Krona','eshop'),
 			'CHF'=>__('Swiss Franc','eshop'),
-			'TL' =>__('Turkish Lira','eshop')
+			'TRY' =>__('Turkish Lira','eshop')
 			);
 			$currencycodes=apply_filters('eshop_currency_codes',$currencycodes);
 			foreach($currencycodes as $code=>$codename){

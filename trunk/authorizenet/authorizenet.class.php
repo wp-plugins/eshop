@@ -142,6 +142,7 @@ class authorizenet_class {
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
 			if($extracost!=0){
+					$extracost = number_format($extracost, 2, '.', '');
 					$value='itemdecpriceamd'.$sep.__('decimal price amendment').$sep.__('amend').$sep.'1'.$sep.str_replace(",","",$extracost).$sep.'Y';
 					$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}

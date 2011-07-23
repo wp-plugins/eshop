@@ -3,8 +3,8 @@ Contributors: elfin
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 6.2.7
+Tested up to: 3.2
+Stable tag: 6.2.9
 
 An accessible Shopping Cart plugin.
 
@@ -30,11 +30,11 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * Various discount options
 * WPMU, Multisite compatible.
 * Merchant gateways:Authorize.net, Paypal, Payson, eProcessingNetwork, Webtopay, iDEAL and Cash/Cheque!
+* Sales tax!
 * Now compatible with WP Affiliate for affiliates - see [wiki](http://quirm.net/wiki/eshop/).
 * able to be used as a product catalogue with no sales.
 * and much much more
 
-* *NEW* for 6.2.0 - Sales tax!
 
 Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 
@@ -43,6 +43,22 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.9
+
+* *NEW* 	CSS file updated and tweaked for new users.
+* *fixed* 	Several minor XSS - as advised by High-Tech Bridge SA Security Research Lab
+* *fixed*  	sort by sku issue on products and base page.
+* *fixed*  	small error with authorize.net 
+* *fixed* 	admin bar showing eShop status for non admins.
+* *fixed* 	minor translation issues.
+* *fixed* 	issue on admin Shipping page that caused the countries to go missing
+* *fixed* 	Option sets prices not being used correctly for discount purposes
+* *added* 	CSS classes
+* *added*	Filter added for Ogone location: ogone-location
+* *changed* 	paypal.class renamed to avoid conflicts
+* *changed* 	Turkish Lira changed from TL to TRY
+
 
 Version 6.2.8
 
@@ -212,6 +228,6 @@ Due to increasing demands we no longer offer free CSS support.
 
 == Upgrade Notice ==
 
-= 6.2.2 =
+= 6.2.9 =
 
-Please remember to backup your database before upgrading - If you are using Sales Tax please upgrade asap.
+Please remember to backup your database before upgrading. Please update asap.

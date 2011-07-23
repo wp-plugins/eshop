@@ -333,7 +333,7 @@ if (!function_exists('display_cart')) {
 			}
 		}else{
 			//if cart is empty - display a message - this is only a double check and should never be hit
-			$echo.= "<p class=\"error\">".__('Your shopping cart is currently empty.','eshop')."</p>\n";
+			$echo.= "<p class=\"eshoperror error\">".__('Your shopping cart is currently empty.','eshop')."</p>\n";
 		}
 		if($eshopoptions['status']!='live'){
 			$echo ="<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected.','eshop')."</strong></p>\n".$echo;
@@ -380,7 +380,14 @@ if (!function_exists('calculate_total')) {
 		$price = 0;
 		if(is_array($thecart)){
 			foreach ($thecart as $productid => $opt){
-				$price=$price+($opt['price']*$opt['qty']);
+				$addtoprice=0;
+				if(isset($opt['optset'])){
+					$data['optset']=$opt['optset'];
+					$data['addoprice']=$addtoprice;
+					$data=eshop_parse_optsets($data);
+					$addtoprice=$data['addoprice'];
+				}			
+				$price=$price+(($opt['price']+$addtoprice)*$opt['qty']);
 			}
 		}
 		return $price;
@@ -1845,7 +1852,7 @@ if (!function_exists('eshop_cart_process')) {
 				$qty=$_POST['qty']=1;
 				$v='999';
 				if(isset($max)) $v=$max;
-				$error='<p><strong class="error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
+				$error='<p><strong class="eshoperror error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
 			}
 
 			if(isset($min) && isset($_POST['qty']) && $_POST['qty'] < $min){
@@ -1853,14 +1860,14 @@ if (!function_exists('eshop_cart_process')) {
 				$v='999';
 				if(isset($max)) $v=$max;
 				$k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($max) && isset($_POST['qty']) && $_POST['qty'] > $max){
 				$qty=$_POST['qty']=$max;
 				$v=$max;
 				$k=1;
 				if(isset($min)) $k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($_POST['postid'])){
 				$stkav=get_post_meta( $_POST['postid'], '_eshop_stock',true );
@@ -1869,7 +1876,7 @@ if (!function_exists('eshop_cart_process')) {
 			if(isset($_POST['option']) && !isset($_POST['save'])){
 				$edown=$getprice=$option=$_POST['option'];
 				if(!isset($_POST['qty'])){
-					$enote='<p><strong class="error">'.__('Warning: you must supply a quantity.','eshop').'</strong></p>';
+					$enote='<p><strong class="eshoperror error">'.__('Warning: you must supply a quantity.','eshop').'</strong></p>';
 				}
 				$qty=$_POST['qty'];
 				$plcas='';
@@ -1894,7 +1901,7 @@ if (!function_exists('eshop_cart_process')) {
 				
 				
 				if($iprice==''){
-					$error='<p><strong class="error">'.__('Error: That product is currently not available.','eshop').'</strong></p>';
+					$error='<p><strong class="eshoperror error">'.__('Error: That product is currently not available.','eshop').'</strong></p>';
 					$option=$_POST['option']='';
 					$qty=$_POST['qty']='';
 					$pclas=$_POST['pclas']='';
@@ -1931,14 +1938,14 @@ if (!function_exists('eshop_cart_process')) {
 					$v='999';
 					if(isset($max)) $v=$max;
 					$k=$min;
-					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+					$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 				}
 				if(isset($max) && $testqty > $max){
 					$qty=0;
 					$v=$max;
 					$k=1;
 					if(isset($min)) $k=$min;
-					$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+					$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 				}
 				if('yes' == $eshopoptions['stock_control']){
 					$stkqty = $eshop_product['products'][$optnum]['stkqty'];
@@ -1946,9 +1953,9 @@ if (!function_exists('eshop_cart_process')) {
 					$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$eshopid && option_id=$optnum");
 					if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 					if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
-						$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+						$error='<p><strong class="eshoperror error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 					}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
-						$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+						$error='<p><strong class="eshoperror error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 					}else{
 						$_SESSION['eshopcart'.$blog_id][$identifier]['qty']+=$qty;
 					}
@@ -1980,9 +1987,9 @@ if (!function_exists('eshop_cart_process')) {
 					$stktableqty=$wpdb->get_var("SELECT available FROM $stocktable where post_id=$postid && option_id=$optid");
 					if(isset($stktableqty) && is_numeric($stktableqty)) $stkqty=$stktableqty;
 					if(!ctype_digit(trim($testqty))|| strlen($testqty)>3){
-						$error='<p><strong class="error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
+						$error='<p><strong class="eshoperror error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 					}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
-						$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+						$error='<p><strong class="eshoperror error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 						//$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
 					}else{
 						$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
@@ -2060,14 +2067,14 @@ if (!function_exists('eshop_cart_process')) {
 				$v='999';
 				if(isset($max)) $v=$max;
 				$k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			if(isset($max) && isset($_POST['qty']) && $_POST['qty'] > $max){
 				$qty=$_POST['qty']=$max;
 				$v=$max;
 				$k=1;
 				if(isset($min)) $k=$min;
-				$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+				$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 			}
 			//update products in the cart
 			if(isset($_POST['save']) && $_POST['save']=='true' && isset($_SESSION['eshopcart'.$blog_id])){
@@ -2096,21 +2103,21 @@ if (!function_exists('eshop_cart_process')) {
 									if(!ctype_digit(trim($qty))|| strlen($qty)>3){
 										$v='999';
 										if(isset($max)) $v=$max;
-										$error='<p><strong class="error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
+										$error='<p><strong class="eshoperror error">'.sprintf(__('Error: The quantity must contain numbers only, with a maximum of %s.','eshop'),$v).'</strong></p>';
 									}elseif('yes' == $eshopoptions['stock_control'] &&  $stkqty<$qty){
-										$error='<p><strong class="error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
+										$error='<p><strong class="eshoperror error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
 									}elseif(isset($min) && isset($qty) && $qty < $min){
 										$qty=$min;
 										$v='999';
 										if(isset($max)) $v=$max;
 										$k=$min;
-										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+										$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 									}elseif(isset($max) && isset($qty) && $qty > $max){
 										$qty=$max;
 										$v=$max;
 										$k=1;
 										if(isset($min)) $k=$min;
-										$enote='<p><strong class="error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
+										$enote='<p><strong class="eshoperror error">'.sprintf(__('Warning: The quantity must equal or be greater than %s, with a maximum of %s.','eshop'),$k,$v).'</strong></p>';
 									}else{
 										$_SESSION['eshopcart'.$blog_id][$productid]['qty'] =$qty;
 									}
@@ -2253,7 +2260,9 @@ if (!function_exists('eshop_test_or_live')) {
 				}
 			}
 		} else {
-			add_action( 'wp_before_admin_bar_render', 'eshop_admin_bar_menu', 150 );
+			if(is_user_logged_in() && current_user_can('eShop_admin')){
+				add_action( 'wp_before_admin_bar_render', 'eshop_admin_bar_menu', 150 );
+			}
 		}
 
 	}

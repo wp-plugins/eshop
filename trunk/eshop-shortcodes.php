@@ -158,7 +158,7 @@ function eshop_list_alpha($atts){
 		$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild order by post_title ASC limit $offset,$records");
 		if($pages) {
 			//paginate
-			$echo = '<div class="paginate">';
+			$echo = '<div class="paginate eshop-paginate">';
 			if($records!=$max){
 				$eecho = $page_links;
 			}
@@ -180,7 +180,7 @@ function eshop_list_alpha($atts){
 			if(isset($eecho)){
 				$thispage=add_query_arg('eshopall','yes',$thisispage);
 				$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-				$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+				$echo .= '<div class="paginate pagfoot eshop-paginate">'.$eeecho.'</div>';
 			}else{
 				$echo .= '<br class="pagfoot" />';
 			}
@@ -277,7 +277,7 @@ function eshop_list_subpages($atts){
 
 	if($pages) {
 		//paginate
-		$echo .= '<div class="paginate">';
+		$echo .= '<div class="paginate eshop-paginate">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}
@@ -298,7 +298,7 @@ function eshop_list_subpages($atts){
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
 			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+			$echo .= '<div class="paginate pagfoot eshop-paginate">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -399,7 +399,7 @@ function eshop_list_cat_tags($atts){
 	wp_reset_query();
 	if($pages) {
 		//paginate
-		$echo .= '<div class="paginate">';
+		$echo .= '<div class="paginate eshop-paginate">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}
@@ -420,7 +420,7 @@ function eshop_list_cat_tags($atts){
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
 			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+			$echo .= '<div class="paginate pagfoot eshop-paginate">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -476,7 +476,7 @@ function eshop_list_new($atts){
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate">';
+		$echo = '<div class="paginate eshop-paginate">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}
@@ -497,7 +497,7 @@ function eshop_list_new($atts){
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
 			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+			$echo .= '<div class="paginate pagfoot eshop-paginate">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -559,7 +559,7 @@ function eshop_best_sellers($atts){
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
-		$echo = '<div class="paginate">';
+		$echo = '<div class="paginate eshop-paginate">';
 		if($records!=$max){
 			$eecho = $page_links;
 		}
@@ -580,7 +580,7 @@ function eshop_best_sellers($atts){
 		if(isset($eecho)){
 			$thispage=add_query_arg('eshopall','yes',$thisispage);
 			$eeecho="<ul class='page-numbers'>\n\t<li>".join("</li>\n\t<li>", $eecho)."</li>\n<li>".'<a href="'.$thispage.'">'.__('View All','eshop').'</a>'."</li>\n</ul>\n";
-			$echo .= '<div class="paginate pagfoot">'.$eeecho.'</div>';
+			$echo .= '<div class="paginate pagfoot eshop-paginate">'.$eeecho.'</div>';
 		}else{
 			$echo .= '<br class="pagfoot" />';
 		}
@@ -1092,7 +1092,7 @@ function eshop_show_shipping($atts) {
 				
 				if(isset($row->maxweight) && $row->maxweight!='')
 					$eshopshiptableheadtext .= ' '.sprintf( __('Max. Weight %1$s %2$s','eshop'),$row->maxweight,$eshopoptions['weight_unit']);
-				$eshopshiptablehead='<span>'.$eshopshiptableheadtext.'</span>';
+				$eshopshiptablehead='<h3 class="eshop-ship4-head">'.$eshopshiptableheadtext.'</h3>';
 				$eshopshiptable .= $eshopshiptablehead.$eshopshiptableinner;
 				
 			
@@ -1262,7 +1262,7 @@ function eshop_show_cancel(){
 		$echo = '';
 		$eshopaction = urldecode($wp_query->query_vars['eshopaction']);
 		if($eshopaction=='cancel'){
-			$echo .= '<h3 class="error">'.__('The order was cancelled.','eshop')."</h3>";
+			$echo .= '<h3 class="eshoperror error">'.__('The order was cancelled.','eshop')."</h3>";
 			$echo .= '<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 		}
 		$postit='';
@@ -1360,16 +1360,16 @@ function eshop_show_success(){
 					$echo.= '<p>'.__('Your iDEAL payment has been succesfully received.','eshop').'<br />';
 					$echo.= __('We will get on it as soon as possible.','eshop').'</p>';
 			}elseif($_GET['ideal']['status'] == md5("ERROR") ) {
-					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo ='<h3 class="eshoperror error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
 					$echo.= '<p>'.__('Your iDEAL payment has not been received yet, and currently has status "ERROR".','eshop').'<br />';
 					$echo.= __('Please try to checkout your order again.','eshop').'</p>';
 					$echo.='<p>'.__('We have not emptied your shopping cart in case you want to make changes.','eshop').'</p>';
 			}elseif($_GET['ideal']['status'] == md5("CANCEL") ) {
-					$echo ='<h3 class="error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
+					$echo ='<h3 class="eshoperror error">'.__('The payment was cancelled at iDEAL.','eshop')."</h3>";
 					$echo.= '<p>'.__('Your iDEAL payment has not been revieced yet, and currently has status "CANCEL".','eshop').'<br />';
 					$echo.= __('Please try to checkout your order again.','eshop').'</p>';
 			}else{
-					$echo ='<h3 class="error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
+					$echo ='<h3 class="eshoperror error">'.__('The payment failed at iDEAL.','eshop')."</h3>";
 					$echo.= '<p>'.__('Please try checkout your order again.','eshop').'</p>';
 			}
 			// End of TEMCEDIT-20091117-a
@@ -1784,7 +1784,7 @@ function eshop_show_cart() {
 		<li class="gotocheckout"><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
 	}else{
 		//can be altered as desired.
-		$echo.= '<p><strong class="error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';
+		$echo.= '<p><strong class="eshoperror error">'.__('Your shopping cart is currently empty.','eshop').'</strong></p>';
 	}
 	return $echo;
 }

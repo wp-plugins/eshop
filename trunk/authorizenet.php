@@ -60,7 +60,8 @@ switch ($eshopaction) {
 		$pvalue=str_replace(',','',$_POST['amount']);
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
 		if(isset($_POST['tax'])) $pvalue += str_replace(',','',$_POST['tax']);
-		$pvalue = number_format($pvalue,2);
+		//$pvalue = number_format($pvalue,2);
+		$pvalue = number_format($pvalue, 2, '.', '');
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
 		

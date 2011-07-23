@@ -3,7 +3,7 @@
 /*  PHP Paypal IPN Integration Class Demonstration File
  *  4.16.2005 - Micah Carrick, email@micahcarrick.com
  *
- *  This file demonstrates the usage of paypal.class.php, a class designed  
+ *  This file demonstrates the usage of eshop-paypal.class.php, a class designed  
  *  to aid in the interfacing between your website, paypal, and the instant
  *  payment notification (IPN) interface.  This single file serves as 4 
  *  virtual pages depending on the "action" varialble passed in the URL. It's
@@ -14,7 +14,7 @@
  *
  *  I tried to comment this file, aswell as the acutall class file, as well as
  *  I possibly could.  Please email me with questions, comments, and suggestions.
- *  See the header of paypal.class.php for additional resources and information.
+ *  See the header of eshop-paypal.class.php for additional resources and information.
 */
 global $wpdb,$wp_query,$wp_rewrite,$blog_id,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
@@ -26,8 +26,8 @@ $_POST=sanitise_array($_POST);
 
 include_once (WP_PLUGIN_DIR.'/eshop/paypal/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/paypal/paypal.class.php');  // include the class file
-$p = new paypal_class;             // initiate an instance of the class
+require_once(WP_PLUGIN_DIR.'/eshop/paypal/eshop-paypal.class.php');  // include the class file
+$p = new eshop-paypal_class;             // initiate an instance of the class
 
 if($eshopoptions['status']=='live'){
 	$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
@@ -74,7 +74,7 @@ switch ($eshopaction) {
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		$_POST['custom']=$token;
-		$p = new paypal_class; 
+		$p = new eshop-paypal_class; 
 		if($eshopoptions['status']=='live'){
 			$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
 		}else{
