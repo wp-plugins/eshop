@@ -229,7 +229,7 @@ if (!function_exists('eshop_special_action_callback')) {
 		}
 		//quick qunatity check
 		if(!isset($data['qty']) || isset($data['qty']) && !ctype_digit($data['qty'])){
-			$msg=apply_filters('eshopCartQtyError','<p><strong class="error">'.__('Warning: you must supply a valid quantity.','eshop').'</strong></p>');
+			$msg=apply_filters('eshopCartQtyError','<p><strong class="eshoperror error">'.__('Warning: you must supply a valid quantity.','eshop').'</strong></p>');
 		}
 		if(!isset($msg)){
 			eshop_cart_process($data);

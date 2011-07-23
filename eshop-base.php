@@ -67,7 +67,6 @@ if(!isset($_GET['change'])){
 	$range=10;
 	$max = $wpdb->get_var("SELECT COUNT(meta.post_id) FROM $metatable as meta, 
 	$poststable as posts where meta.meta_key='_eshop_product' 
-	AND meta.meta_value!='' 
 	AND posts.ID = meta.post_id	
 	AND posts.post_status != 'trash' AND posts.post_status != 'revision'");
 	if($eshopoptions['records']!='' && is_numeric($eshopoptions['records'])){
@@ -113,10 +112,9 @@ if(!isset($_GET['change'])){
 		SELECT DISTINCT meta.post_id
 		FROM $metatable as meta, $poststable as posts
 		WHERE meta.meta_key = '_eshop_product'
-		AND meta.meta_value != ''
 		AND posts.ID = meta.post_id
 		AND posts.post_status != 'trash' AND posts.post_status != 'revision'
-		ORDER BY meta.post_id  LIMIT $offset, $records");		
+		ORDER BY meta.post_id");		
 		$calt=0;
 		$currsymbol=$eshopoptions['currency_symbol'];
 		$x=0;
@@ -153,6 +151,8 @@ if(!isset($_GET['change'])){
 		</thead>
 		<tbody>
 		<?php
+		$start =($epage * $records)-($records);
+		$grab=array_slice($grab,$start,$records);
 		foreach($grab as $foo=>$grabit){
 			$eshop_product=$grabit;
 			if(isset($grabit['_eshop_stock']))

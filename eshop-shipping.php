@@ -62,7 +62,7 @@ case ('countries'):
 		$_POST['code']=sanitise_this($_POST['code']);
 		$_POST['country']=sanitise_this($_POST['country']);
 		$_POST['zone']=sanitise_this($_POST['zone']);
-
+		$eshoptestarray=array();
 		//create the query
 		$build="INSERT INTO $dtable (`code`,`country`,`zone`,`list`) VALUES";
 		$count=count($_POST['code']);
@@ -70,18 +70,21 @@ case ('countries'):
 			//so if none of them are empty
 			if(($_POST['code'][$i]!='' && $_POST['country'][$i]!='' && $_POST['zone'][$i]!='') && !isset($_POST['delete'][$i])){
 			//complicated error checking - cannot check state name so easily
-				if(isset($_POST['list'][$i]))
-					$list[$i]='0';
-				else
-					$list[$i]='1';
+				if(!in_array($_POST['code'][$i],$eshoptestarray)){ //testing for duplicates
+					$eshoptestarray[]=$_POST['code'][$i];
+					if(isset($_POST['list'][$i]))
+						$list[$i]='0';
+					else
+						$list[$i]='1';
 
-				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
-					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['country'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
-				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
-					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['country'][$i]."</li>\n";
-				}else{
-					//all must be ok
-					$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$wpdb->escape($list[$i])."'),";
+					if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
+						$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['country'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
+					}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
+						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['country'][$i]."</li>\n";
+					}else{
+						//all must be ok
+						$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$wpdb->escape($list[$i])."'),";
+					}
 				}
 			}elseif($_POST['code'][$i]=='' && $_POST['country'][$i]=='' && $_POST['zone'][$i]==''){
 				//ie no new state added
@@ -210,41 +213,45 @@ case ('states'):
 		$_POST['code']=sanitise_this($_POST['code']);
 		$_POST['stateName']=sanitise_this($_POST['stateName']);
 		$_POST['zone']=sanitise_this($_POST['zone']);
+		$eshoptestarray=array();
 
 		$build="UPDATE $dtable SET ";
 		$i=0;
 		foreach($_POST['id'] as $id){
+			if(!in_array($_POST['code'][$i],$eshoptestarray)){ //testing for duplicates
+				$eshoptestarray[]=$_POST['code'][$i];
 			//so if none of them are empty
-			if(isset($_POST['delete'][$id])){
-				$wpdb->query("DELETE from $dtable WHERE id='".$_POST['delete'][$id]."' limit 1");
-			}elseif($id=='0' && $_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!=''){
-				if(!preg_match("/[a-zA-Z]/", $_POST['code'][$i])){
-					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
-				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
-					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
-				}else{
-					//all must be ok
-					$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$eshopoptions['shipping_state']."')";
-					$wpdb->query($buildit);
+				if(isset($_POST['delete'][$id])){
+					$wpdb->query("DELETE from $dtable WHERE id='".$_POST['delete'][$id]."' limit 1");
+				}elseif($id=='0' && $_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!=''){
+					if(!preg_match("/[a-zA-Z]/", $_POST['code'][$i])){
+						$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
+					}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
+						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
+					}else{
+						//all must be ok
+						$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$eshopoptions['shipping_state']."')";
+						$wpdb->query($buildit);
+					}
+				}elseif($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='' && !isset($_POST['delete'][$i])){
+				//complicated error checking - cannot check state name so easily
+					if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
+						$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
+					}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
+						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
+					}else{
+						//all must be ok
+						$buildit=$build." code='".$wpdb->escape($_POST['code'][$i])."',stateName='".$wpdb->escape($_POST['stateName'][$i])."',zone='".$wpdb->escape($_POST['zone'][$i])."' where id='$id'";
+						$wpdb->query($buildit);
+					}
+				}elseif($_POST['code'][$i]=='' && $_POST['stateName'][$i]=='' && $_POST['zone'][$i]==''){
+					//ie no new state added
+					//had to put this line here as I don't know where else it should go!
+					//it hides the additional input if it wasn't used.
+				}elseif(!isset($_POST['delete'][$i])){
+					//if not set for deletion then there was an error
+					$error.="<li>".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i].", ".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
 				}
-			}elseif($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='' && !isset($_POST['delete'][$i])){
-			//complicated error checking - cannot check state name so easily
-				if(!preg_match("/[A-Z]/", $_POST['code'][$i])){
-					$error.="<li>".__('Code:','eshop').$_POST['code'][$i]." ".__('is not valid.','eshop')." ".__('State:','eshop').$_POST['stateName'][$i].",".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
-				}elseif(!preg_match("/[0-9]/", $_POST['zone'][$i]) || strlen($_POST['zone'][$i])!='1'){
-					$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
-				}else{
-					//all must be ok
-					$buildit=$build." code='".$wpdb->escape($_POST['code'][$i])."',stateName='".$wpdb->escape($_POST['stateName'][$i])."',zone='".$wpdb->escape($_POST['zone'][$i])."' where id='$id'";
-					$wpdb->query($buildit);
-				}
-			}elseif($_POST['code'][$i]=='' && $_POST['stateName'][$i]=='' && $_POST['zone'][$i]==''){
-				//ie no new state added
-				//had to put this line here as I don't know where else it should go!
-				//it hides the additional input if it wasn't used.
-			}elseif(!isset($_POST['delete'][$i])){
-				//if not set for deletion then there was an error
-				$error.="<li>".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i].", ".__('Zone:','eshop').$_POST['zone'][$i]."</li>\n";
 			}
 			$i++;
 		}

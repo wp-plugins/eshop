@@ -59,6 +59,8 @@ function eshop_inner_custom_box($post) {
     //check for existence of downloads
     $eshopdlavail = $wpdb->get_var("SELECT COUNT(id) FROM $producttable WHERE id > 0");
     $numoptions=$eshopoptions['options_num'];
+    if(isset($eshopoptions['etax']) && !isset($eshopoptions['etax']['bands']))
+    	$eshopoptions['etax']['bands'] = 0;
     ?>
     <div class="eshopwidetable">
     <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">

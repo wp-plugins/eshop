@@ -85,9 +85,9 @@ if (!function_exists('eshop_downloads')) {
 			}else{
 				$prevdlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code'");
 				if($dlcount==$prevdlcount){
-					$error='<p class="error">'.__('Either your email address or code is incorrect, please try again.','eshop').'</p>';
+					$error='<p class="eshoperror error">'.__('Either your email address or code is incorrect, please try again.','eshop').'</p>';
 				}else{
-					$error='<p class="error">'.__('Your email address and code are correct, however you have no downloads remaining.','eshop').'</p>';
+					$error='<p class="eshoperror error">'.__('Your email address and code are correct, however you have no downloads remaining.','eshop').'</p>';
 				}
 				$echo .= eshop_dloadform($email,$code,$error);
 			}
