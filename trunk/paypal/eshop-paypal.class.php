@@ -41,7 +41,7 @@ if ('eshop-paypal.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
  *      
  *      To submit an order to paypal, have your order form POST to a file with:
  *
- *          $p = new eshop-paypal_class;
+ *          $p = new eshop_paypal_class;
  *          $p->add_field('business', 'somebody@domain.com');
  *          $p->add_field('first_name', $_POST['first_name']);
  *          ... (add all your fields in the same manor)
@@ -49,7 +49,7 @@ if ('eshop-paypal.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
  *
  *      To process an IPN, have your IPN processing file contain:
  *
- *          $p = new eshop-paypal_class;
+ *          $p = new eshop_paypal_class;
  *          if ($p->validate_ipn()) {
  *          ... (IPN is verified.  Details are in the ipn_data() array)
  *          }
@@ -75,7 +75,7 @@ if ('eshop-paypal.class.php' == basename($_SERVER['SCRIPT_FILENAME']))
  *******************************************************************************
 */
 
-class eshop-paypal_class {
+class eshop_paypal_class {
     
    var $last_error;                 // holds the last error encountered
    
@@ -87,7 +87,7 @@ class eshop-paypal_class {
    var $fields = array();           // array holds the fields to submit to paypal
 
    
-   function eshop-paypal_class() {
+   function eshop_paypal_class() {
        
       // initialization constructor.  Called when class is created.
       
@@ -285,7 +285,7 @@ class eshop-paypal_class {
       // that are currently defined in the instance of the class using the
       // add_field() function.
       
-      echo "<h3>eshop-paypal_class->dump_fields() Output:</h3>";
+      echo "<h3>eshop_paypal_class->dump_fields() Output:</h3>";
       echo "<table width=\"95%\" border=\"1\" cellpadding=\"2\" cellspacing=\"0\">
             <tr>
                <td bgcolor=\"black\"><b><font color=\"white\">Field Name</font></b></td>

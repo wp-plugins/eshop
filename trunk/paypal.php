@@ -27,7 +27,7 @@ $_POST=sanitise_array($_POST);
 include_once (WP_PLUGIN_DIR.'/eshop/paypal/index.php');
 // Setup class
 require_once(WP_PLUGIN_DIR.'/eshop/paypal/eshop-paypal.class.php');  // include the class file
-$p = new eshop-paypal_class;             // initiate an instance of the class
+$p = new eshop_paypal_class;             // initiate an instance of the class
 
 if($eshopoptions['status']=='live'){
 	$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
@@ -74,7 +74,7 @@ switch ($eshopaction) {
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
 		$_POST['custom']=$token;
-		$p = new eshop-paypal_class; 
+		$p = new eshop_paypal_class; 
 		if($eshopoptions['status']=='live'){
 			$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
 		}else{
