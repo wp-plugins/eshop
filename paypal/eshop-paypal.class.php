@@ -128,13 +128,7 @@ class eshop_paypal_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to paypal.
-/*
-      echo "<html>\n";
-      echo "<head><title>Processing Payment&#8230;</title></head>\n";
-      echo "<body onLoad=\"document.form.submit();\">\n";
-      echo "<h3>Please wait, your order is being processed&#8230;</h3>\n";
-*/
-	// remove echo and hopefully I can echo this later
+
       $echo= "<form method=\"post\" class=\"eshop eshop-confirm\" action=\"".$this->autoredirect."\"><div>\n";
 
       foreach ($this->fields as $name => $value) {
@@ -145,6 +139,7 @@ class eshop_paypal_class {
 			$echo .= eshopTaxCartFields($name,$value);
 		}
       }
+      $echo .= apply_filters('eshoppaypalextra','');
       $echo.='<label for="ppsubmit" class="finalize"><small>'.__('<strong>Note:</strong> Submit to finalize order at PayPal.','eshop').'</small><br />
       <input class="button submit2" type="submit" id="ppsubmit" name="ppsubmit" value="'.__('Proceed to Checkout &raquo;','eshop').'" /></label>';
 	  $echo.="</div></form>\n";
@@ -201,10 +196,11 @@ class eshop_paypal_class {
       }
       $post_string.="cmd=_notify-validate"; // append ipn command
 
-      // open the connection to paypal
-      $fp = fsockopen($url_parsed[host],"80",$err_num,$err_str,30); 
+      	// open the connection to paypal was:
+    	//$fp = fsockopen($url_parsed[host],"80",$err_num,$err_str,30);
+    	//try uncommenting that line if the following doesn't work.
+	   	$fp = fsockopen ('ssl://'.$url_parsed[host], "443", $err_no, $err_str, 30);
       if(!$fp) {
-          
          // could not open the connection.  If loggin is on, the error message
          // will be in the log.
          $this->last_error = "fsockopen error no. $errnum: $errstr";

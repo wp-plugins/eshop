@@ -18,7 +18,6 @@ class eshop_metabox_class {
 		}
 		return $columns;
 	}
-	
 	//extend the admin menu
 	function on_admin_menu() {
 		//add our own option page, you can also add it to different sections or use your own one
@@ -121,8 +120,8 @@ class eshop_metabox_class {
 				</p>
 					<?php do_meta_boxes($this->pagehook, 'side', $data); ?>
 				</div>
-				<div id="post-body" class="has-sidebar">
-					<div id="post-body-content" class="has-sidebar-content">
+				<div id="post-body"<?php echo 2 == $screen_layout_columns ? ' class="has-sidebar"' : ''; ?> >
+					<div id="post-body-content"<?php echo 2 == $screen_layout_columns ? '  class="has-sidebar-content"' : ''; ?>>
 						<?php do_meta_boxes($this->pagehook, 'normal', $data); ?>
 						<p class="submit">
 							<input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes','eshop') ?>" />
@@ -179,7 +178,7 @@ class eshop_metabox_class {
 	}
 	function on_contentbox_1_content($eshopoptions) {
 		?>
-		<fieldset>assdsdddd
+		<fieldset>
 		<label for="eshop_status"><?php _e('eShop status','eshop'); ?></label>
 			<select name="eshop_status" id="eshop_status">
 			<?php
