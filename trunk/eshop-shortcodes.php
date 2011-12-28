@@ -1712,7 +1712,7 @@ function eshop_details($atts){
 							break;
 						$eshopshiptableinner = '';
 						foreach ($query as $row){
-							$alt = ($x % 2) ? '' : ' class="alt"';
+							$alt = ($x % 2) ? ' class="row'.$x.'"' : ' class="alt row'.$x.'"';
 							/* ,'1- weight 2-weight symbol' */
 							$cols=$eshopoptions['numb_shipzones']+1;
 

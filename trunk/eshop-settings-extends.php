@@ -393,11 +393,11 @@ class eshop_setting_downloads_class extends eshop_metabox_class {
 
 class eshop_setting_discount_class extends eshop_metabox_class {
 	function on_load_page() {
-		add_meta_box('eshop-discounts', __('eShop Discounts','eshop'), array(&$this, 'admin_box'), $this->pagehook, 'normal', 'core');
+		add_meta_box('eshop-discounts', __('eShop Discounts','eshop'), array(&$this, 'eadmin_box'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
 	}
   
-	function admin_box($eshopoptions) {
+	function eadmin_box($eshopoptions) {
 		?>
 		<fieldset>
 			<p><?php _e('In all cases deleting the entry will disable the discount.', 'eshop'); ?></p>
@@ -485,6 +485,7 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 class eshop_setting_general_class extends eshop_metabox_class {
 	function on_load_page() {
 		//add_meta_box('howto-metaboxes-sidebox-2', 'Sidebox 2 Title', array(&$this, 'on_sidebox_2_content'), $this->pagehook, 'side', 'core');
+		//add_meta_box('eshop-admin', __('eShop Status','eshop'), array(&$this, 'eadmin_box'), $this->pagehook, 'side', 'high');
 		add_meta_box('orders-display', __('Orders Display','eshop'), array(&$this, 'orders_box'), $this->pagehook, 'side', 'core');
 		add_meta_box('eshop-cron', __('Cron','eshop'), array(&$this, 'cron_box'), $this->pagehook, 'side', 'low');
 		add_meta_box('business-details', __('Business Details','eshop'), array(&$this, 'business_box'), $this->pagehook, 'normal', 'core');
@@ -798,7 +799,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		</fieldset>
 		<?php
 	}
-	function admin_box($eshopoptions) {
+	function eadmin_box($eshopoptions) {
 		?>
 		<fieldset>
 			<label for="eshop_status"><?php _e('Status','eshop'); ?></label>
@@ -861,7 +862,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		
 			//add a 3rd content box now for demonstration purpose, boxes added at start of page rendering can't be switched on/off, 
 			//may be needed to ensure that a special box is always available
-			add_meta_box('eshop-admin', __('eShop Status','eshop'), array(&$this, 'admin_box'), $this->pagehook, 'side', 'high');
+			add_meta_box('eshop-admin', __('eShop Status','eshop'), array(&$this, 'eadmin_box'), $this->pagehook, 'side', 'high');
 
 			//add_meta_box('howto-metaboxes-contentbox-3', 'Contentbox 3 Title (impossible to hide)', array(&$this, 'on_contentbox_3_content'), $this->pagehook, 'normal', 'core');
 			//define some data can be given to each metabox during rendering
@@ -888,9 +889,9 @@ class eshop_setting_general_class extends eshop_metabox_class {
 	
 				<div id="poststuff" class="metabox-holder<?php echo 2 == $screen_layout_columns ? ' has-right-sidebar' : ''; ?>">
 					<div id="side-info-column" class="inner-sidebar">
-					<p class="submit">
-						<input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes','eshop') ?>" />
-					</p>
+						<p class="submit">
+							<input type="submit" name="submit" class="button-primary" value="<?php _e('Save Changes','eshop') ?>" />
+						</p>
 						<?php do_meta_boxes($this->pagehook, 'side', $data); ?>
 					</div>
 					<div id="post-body" class="has-sidebar">

@@ -3,8 +3,8 @@ Contributors: elfin
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
-Tested up to: 3.2
-Stable tag: 6.2.10
+Tested up to: 3.3
+Stable tag: 6.2.11
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,13 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.11
+
+* *fixed* 	Paypal test mode fixed.
+* *added* 	eshoppaypalextra filter to add hdden fields to be sent to paypal
+* *added* 	classes to shipping details table.
+* *amended* 	settings page, small tweaks, 2 columns are preferable, 1 column may not work as intended.
 
 Version 6.2.10
 
