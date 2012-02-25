@@ -315,7 +315,14 @@ if((isset($_GET['viewemail']) && is_numeric($_GET['viewemail']) ) || isset($_POS
 
 //paypal tries upto 4 days after a transaction.
 $delit=4;
-$wpdb->query("UPDATE $dtable set status='Deleted' where status='Pending' && edited < DATE_SUB(NOW(), INTERVAL $delit DAY)");
+//$wpdb->query("UPDATE $dtable set status='Deleted' where status='Pending' && edited < DATE_SUB(NOW(), INTERVAL $delit DAY)");
+$updated_orders = $wpdb->get_results( "SELECT checkid FROM $dtable WHERE status='Pending' && edited < DATE_SUB(NOW(), INTERVAL $delit DAY)");
+if ( count( $updated_orders ) > 0 ) {
+	$wpdb->query("UPDATE $dtable set status='Deleted' where status='Pending' && edited < DATE_SUB(NOW(), INTERVAL $delit DAY)");
+	foreach( $updated_orders as $updated_order ) {
+		do_action( 'eshop_order_status_updated', $updated_order->checkid, 'Deleted' );
+	}
+}
 
 //try and move all orders that only have downloadable products
 $moveit=$wpdb->get_results("Select checkid From $dtable where downloads='yes'");
@@ -333,6 +340,7 @@ foreach($moveit as $mrow){
 	if($pdownload==$numbrows){
 		//in theory this will only activate if the order only contains downloads
 		$wpdb->query("UPDATE $dtable set status='Sent' where status='Completed' && checkid='$mrow->checkid'");
+		do_action( 'eshop_order_status_updated', $mrow->checkid, 'Sent' );
 	}
 }
 
@@ -407,6 +415,7 @@ if(isset($_POST['mark']) && !isset($_POST['change'])){
 	$mark=$_POST['mark'];
 	$checkid=$_POST['checkid'];
 	$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$checkid'");
+	do_action( 'eshop_order_status_updated', $checkid, $mark );
 	echo '<div class="updated fade">'.__('Order status changed successfully.','eshop').'</div>';
 }
 
@@ -415,6 +424,7 @@ if(isset($_POST['change'])){
 		foreach($_POST['move'] as $v=>$ch){
 			$mark=$_POST['mark'];
 			$query2=$wpdb->get_results("UPDATE $dtable set status='$mark' where checkid='$ch'");
+			do_action( 'eshop_order_status_updated', $ch, $mark );
 		}
 		echo '<div class="updated fade"><p>'.__('Order status changed successfully.','eshop').'</p></div>';
 	}else{

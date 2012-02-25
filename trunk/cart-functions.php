@@ -2155,7 +2155,7 @@ if (!function_exists('eshop_mg_process_product')) {
 		$mtable=$wpdb->prefix.'postmeta';
 		$producttable=$wpdb->prefix.'eshop_downloads';
 		$wpdb->query("UPDATE $detailstable set status='$status',transid='$txn_id' where checkid='$checked'");
-		
+		do_action( 'eshop_order_status_updated', $checked, $status );
 		//product stock control updater & stats
 
 		$query=$wpdb->get_results("SELECT item_qty,post_id,option_id,item_id,down_id FROM $itemstable WHERE checkid='$checked' AND post_id!='0'");

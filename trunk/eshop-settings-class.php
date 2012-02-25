@@ -32,9 +32,29 @@ class eshop_metabox_class {
 		<li>'.__('<a href="http://wordpress.org/tags/eshop">Wordpress forums</a>','eshop').'</li>
 		<li>'.__('<a href="http://quirm.net/forum/forum.php?id=14">Quirm.net</a>','eshop').'</li>
 		</ul>';
-		if($this->pagehook != '')
-			add_contextual_help($this->pagehook,$help); 
-
+		if($this->pagehook != ''){
+			eshop_helptab($this->pagehook,$help);
+			//add_contextual_help($this->pagehook,$help); 
+		}
+	}
+	function eshop_helptab($screen, $help) {
+			$my_add_contextual_help_id=0; 
+			if ( is_string( $screen ) ) {
+		  		$screen = convert_to_screen( $screen );
+		  	}
+		  	if (method_exists( $screen, 'add_help_tab' ) ) {
+				// WordPress 3.3
+				$my_add_contextual_help_id++;
+				$screen->add_help_tab( array(
+						'title' => __( 'eShop Help','eshop' ),
+						'id' => 'eshophelptab'.$my_add_contextual_help_id,
+						'content' => $help,
+						)
+				);
+		  } elseif (function_exists( 'add_contextual_help' ) ) {
+				// WordPress 3.2
+				add_contextual_help( $screen, $help );
+		  }
 	}
 	function on_load_page_scripts() {
 		//ensure, that the needed javascripts been loaded to allow drag/drop, expand/collapse and hide/show of boxes

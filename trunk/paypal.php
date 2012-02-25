@@ -360,10 +360,12 @@ switch ($eshopaction) {
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
+				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("INVALID Payment",'eshop');	
 				$extradetails .= __("Paypal has reported an invalid payment.",'eshop');	
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
+				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("Invalid and Failed Payment",'eshop');
 				$extradetails .= __("Paypal has reported an invalid, and failed payment.",'eshop');
 				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))

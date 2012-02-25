@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 6.2.11
+Stable tag: 6.2.12
 
 An accessible Shopping Cart plugin.
 
@@ -43,6 +43,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.12
+
+If you are having trouble switch eShop between Test and Live, please see:
+http://quirm.net/wiki/eshop/troubleshooting/cant-switch-eshop-to-live/
+
+* *fixed* contextual help error, help tab should now be created
+* *fixed* Options Sets page, minor display issue
+* *added* more action hooks added
 
 Version 6.2.11
 
