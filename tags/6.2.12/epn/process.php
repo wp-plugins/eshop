@@ -87,6 +87,7 @@ if(isset($ps->ipn_data['ID'])){
 		$astatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
 		//the magic bit  + creating the subject for our email.
 		$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
+		do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 		$subject .=__("DECLINED Payment",'eshop');	
 		$subject .=" ID Ref:".$ps->ipn_data['ID'];
 		$echo.='<p>'.__('Your payment was not accepted at eProcessingNetwork and your order has been cancelled','eshop').'</p>';
