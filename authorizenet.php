@@ -281,9 +281,11 @@ switch ($eshopaction) {
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending'){
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
+				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("INVALID Payment",'eshop');	
 			}else{
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
+				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("Invalid and Failed Payment",'eshop');
 			}
 			$subject .=__(" Ref:",'eshop').$ps->ipn_data['x_trans_id'];

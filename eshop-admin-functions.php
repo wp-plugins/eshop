@@ -64,7 +64,8 @@ if (!function_exists('eshop_admin')) {
 		foreach ($page as $paged){
 			add_action('admin_print_styles-' . $paged, 'eshop_admin_styles');
 			if($paged!='users_page_my_orders' && $paged!='')
-				add_contextual_help($paged,$help); 
+				eshop_helptab($paged,$help);
+				//add_contextual_help($paged,$help); 
 		}
 		if(is_admin())
 			include WP_PLUGIN_DIR.'/eshop/user.php';
@@ -317,6 +318,27 @@ if (!function_exists('eshop_admin_mode')) {
 		else
 			_e(' No Merchant Gateway selected.','eshop');
 		echo '</p>'."\n";
+	}
+}
+if (!function_exists('eshop_helptab')) {
+	function eshop_helptab($screen, $help) {
+		$my_add_contextual_help_id=0; 
+		if ( is_string( $screen ) ) {
+	  		$screen = convert_to_screen( $screen );
+	  	}
+	  	if (method_exists( $screen, 'add_help_tab' ) ) {
+			// WordPress 3.3
+			$my_add_contextual_help_id++;
+			$screen->add_help_tab( array(
+					'title' => __( 'eShop Help','eshop' ),
+					'id' => 'eshophelptab'.$my_add_contextual_help_id,
+					'content' => $help,
+					)
+			);
+	  } elseif (function_exists( 'add_contextual_help' ) ) {
+			// WordPress 3.2
+			add_contextual_help( $screen, $help );
+	  }
 	}
 }
 ?>

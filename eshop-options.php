@@ -133,8 +133,9 @@ if (isset($_POST['eaddopt'])) {
 	?>
 		<form id="eshopoptionsets" action="" method="post">
 			<fieldset>
-			<input type = "hidden" name="optid" id="optid" value = "<?php echo $optid; ?>" />
-			<label for="name"><?php _e('Display Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/>
+			<input type="hidden" name="optid" id="optid" value = "<?php echo $optid; ?>" />
+			<p class="eshoplabels">
+			<label for="name"><?php _e('Display Name','eshop'); ?></label><input type = "text" name="name" id="name" value = "<?php echo stripslashes(esc_attr($ename)); ?>" size="35"/><br />
 			<label for="type"><?php _e('Set display type','eshop'); ?></label>
 			<select id="type" name="type">
 			<option value="0"<?php if($etype==0) echo ' selected="selected"';?>><?php _e('Dropdown','eshop'); ?></option>
@@ -143,7 +144,8 @@ if (isset($_POST['eaddopt'])) {
 			<option value="3"<?php if($etype==3) echo ' selected="selected"';?>><?php _e('Textarea','eshop'); ?></option>
 			</select><br />
 			<label for="adminname"><?php _e('Short Admin Name','eshop'); ?></label><input type = "text" name="admin_name" id="adminname" value = "<?php echo stripslashes(esc_attr($adminename)); ?>" size="35"/><br />
-			<label for="edesc"><?php _e('Description','eshop'); ?></label>
+			</p>
+			<label for="edesc"><?php _e('Description','eshop'); ?></label><br />
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
 			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
 			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($ename)); ?></caption>

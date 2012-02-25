@@ -185,7 +185,11 @@ ul.eshop-stats li strong {
 	width:60%;
 	margin:0 auto;
 }
-
+#eshopoptionsets .eshoplabels label{
+	width:10em;
+	float:left;
+	font-weight: bold;
+}
 
 
 td.totalr, td.total {
