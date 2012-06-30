@@ -4,6 +4,8 @@ class eshop_setting_base_class extends eshop_metabox_class {
 		add_meta_box('eshop-base-pages', __('eShop Base Options','eshop'), array(&$this, 'base_box'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-base-pages-2', __('Reset eShop Base','eshop'), array(&$this, 'base_box_2'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
+
 	}
   	function base_box($eshopoptions) {
 		?>
@@ -95,6 +97,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		add_meta_box('eshop-special-pages-2', __('Links to extra pages','eshop'), array(&$this, 'sp_pages_box_2'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-special-pages-3', __('Automatically created pages','eshop'), array(&$this, 'sp_pages_box_3'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
 	}
   
 	function sp_pages_box($eshopoptions) {
@@ -293,6 +296,8 @@ class eshop_setting_downloads_class extends eshop_metabox_class {
 		add_meta_box('eshop-downloads-only', __('eShop Downloads Only','eshop'), array(&$this, 'downloads_box_2'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-downloads-emails', __('eShop emails','eshop'), array(&$this, 'downloads_box_3'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
+
 	}
 	function downloads_box($eshopoptions) {
 		?>
@@ -395,6 +400,7 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 	function on_load_page() {
 		add_meta_box('eshop-discounts', __('eShop Discounts','eshop'), array(&$this, 'eadmin_box'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
 	}
   
 	function eadmin_box($eshopoptions) {
@@ -496,6 +502,7 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		add_meta_box('checkout-options', __('Checkout Options','eshop'), array(&$this, 'checkout_box'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-cacheability', __('Cacheability','eshop'), array(&$this, 'cache_box'), $this->pagehook, 'side', 'low');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
 	}
 	function cron_box ($eshopoptions){
 		?>
@@ -1047,6 +1054,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		add_meta_box('eshop-m-ogone', __('ogone','eshop'), array(&$this, 'ogone_box'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
 		do_action('eshop_setting_merchant_load', array(&$this));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
 
 	}
 	function general_box($eshopoptions) {
@@ -1149,6 +1157,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			<?php 		
 			$this->show_img('payson');
 			?>
+			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['payson']))
@@ -1185,6 +1194,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$ideallite['idealdescription']=$ideallite['idealownermail'] = $ideallite['IDEAL_AQUIRER']=$ideallite['IDEAL_HASH_KEY'] = $ideallite['IDEAL_MERCHANT_ID']= $ideallite['IDEAL_SUB_ID']=$ideallite['IDEAL_TEST_MODE']='';
 			?>
+			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="ideallite"<?php if(in_array('ideallite',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodc" class="eshopmethod"><?php _e('Accept payment by iDeal Lite','eshop'); ?></label></p>
 			<label for="eshop_IDEAL_AQUIRER"><?php _e('Aquirer','eshop'); ?></label><input id="eshop_IDEAL_AQUIRER" name="ideallite[IDEAL_AQUIRER]" type="text" value="<?php echo $ideallite['IDEAL_AQUIRER']; ?>" size="40" maxlength="50" /><em><?php _e('Use Rabobank, ING Bank or Simulator','eshop'); ?></em><br />
 			<label for="eshop_IDEAL_HASH_KEY"><?php _e('Hash Key','eshop'); ?></label><input id="eshop_IDEAL_HASH_KEY" name="ideallite[IDEAL_HASH_KEY]" type="text" value="<?php echo $ideallite['IDEAL_HASH_KEY']; ?>" size="20" /><em><?php _e('For Simulator use "Password"','eshop'); ?></em><br />
@@ -1202,6 +1212,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<?php 		
 			$this->show_img('epn');
 			?>
@@ -1265,6 +1276,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<?php 		
 			$this->show_img('webtopay');
 
@@ -1292,6 +1304,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+		<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<?php 
 			$this->show_img('authorizenet');
 
@@ -1314,6 +1327,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
+		<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['ogone']))
 				$ogone = $eshopoptions['ogone'];
@@ -1484,6 +1498,7 @@ class eshop_setting_tax extends eshop_metabox_class {
 		add_meta_box('eshop-tax-setup', __('eShop Tax Settings','eshop'), array(&$this, 'tax_box'), $this->pagehook, 'normal', 'core');
 		add_meta_box('eshop-downloads-only', __('eShop Tax Rates','eshop'), array(&$this, 'tax_box_2'), $this->pagehook, 'normal', 'core');
 		add_filter('eshop_error_messages',array(&$this, 'eclass_errors'));
+		add_screen_option('layout_columns', array('max' => 2, 'default' => 2) );
 	}
 	function taxenable_box($eshopoptions) {
 		if(!isset($eshopoptions['tax'])) $eshopoptions['tax']='0';

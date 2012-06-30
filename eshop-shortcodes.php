@@ -1518,7 +1518,11 @@ function eshop_details($atts){
 							&& isset($eshop_product['sale']) && $eshop_product['sale']=='yes'){
 								$thclass=' class="onsale"';
 							}
-							$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</td>';
+							if($price!='')
+								$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'>'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($price,__('2','eshop'))).'</td>';
+							else
+								$listed.='<td headers="'.$eshopletter.'eshopprice '.$eshopletter.'eshopnumrow'.$i.'"'.$thclass.'> </td>';
+
 						}
 						if(!in_array('saleprice',$willhide) && isset($eshopoptions['sale_prices']) && $eshopoptions['sale_prices'] == 1 
 						&& isset($eshopoptions['sale']) && 'yes' == $eshopoptions['sale']){
@@ -1780,7 +1784,7 @@ function eshop_show_cart() {
 			$return=get_permalink($eshopoptions['cart']);
 		}
 		$echo.= display_cart($_SESSION['eshopcart'.$blog_id],'true', $eshopoptions['checkout']);
-		$echo.='<ul class="continue-proceed"><li class="rtnshopping"><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li>
+		$echo.='<ul class="continue-proceed eshopcp0"><li class="rtnshopping"><a href="'.$return.'">'.__('&laquo; Continue Shopping','eshop').'</a></li>
 		<li class="gotocheckout"><a href="'.get_permalink($eshopoptions['checkout']).'">'.__('Proceed to Checkout &raquo;','eshop').'</a></li></ul>';
 	}else{
 		//can be altered as desired.

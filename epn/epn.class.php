@@ -72,7 +72,7 @@ class epn_class {
       
       return $echo;
    }
-	function eshop_submit_epn_post($_POST) {
+	function eshop_submit_epn_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to epn.
@@ -85,16 +85,16 @@ class epn_class {
           <p>';
 		$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 		$epn = $eshopoptions['epn']; 
-		$Cost=$_POST['amount'];
-		if(isset($_POST['tax']))
-			$Cost += $_POST['tax'];
+		$Cost=$espost['amount'];
+		if(isset($espost['tax']))
+			$Cost += $espost['tax'];
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $Cost += $_SESSION['shipping'.$blog_id]['tax'];
 		
 		$desc = str_replace($replace, " ", $epn['description']);
-		$address=$_POST['address1'].' '. $_POST['address2'];
-		$ReturnApprovedURL=$_POST['ReturnApprovedURL'];
-		$ReturnDeclinedURL=$_POST['ReturnDeclinedURL'];
-		$refid=$_POST['RefNr'];
+		$address=$espost['address1'].' '. $espost['address2'];
+		$ReturnApprovedURL=$espost['ReturnApprovedURL'];
+		$ReturnDeclinedURL=$espost['ReturnDeclinedURL'];
+		$refid=$espost['RefNr'];
 		if($eshopoptions['status']!='live'){
 			$epn['id']='080880';
 		}
@@ -104,15 +104,15 @@ class epn_class {
 			<input type="hidden" name="ReturnApprovedURL" value="'.$ReturnApprovedURL.'" />
 			<input type="hidden" name="ReturnDeclinedURL" value="'.$ReturnDeclinedURL.'" />
 			<input type="hidden" name="Address" value="'.$address.'" />
-			<input type="hidden" name="Company" value="'.$_POST['company'].'" />
-			<input type="hidden" name="City" value="'.$_POST['city'].'" />
-			<input type="hidden" name="State" value="'.$_POST['state'].'" />
-			<input type="hidden" name="Country" value="'.$_POST['country'].'" />
-			<input type="hidden" name="Phone" value="'.$_POST['phone'].'" />
-			<input type="hidden" name="Zip" value="'.$_POST['zip'].'" />
-			<input type="hidden" name="EMail" value="'.$_POST['email'].'" />
-			<input type="hidden" name="FirstName" value="'.$_POST['first_name'].'" />
-			<input type="hidden" name="LastName" value="'.$_POST['last_name'].'" />
+			<input type="hidden" name="Company" value="'.$espost['company'].'" />
+			<input type="hidden" name="City" value="'.$espost['city'].'" />
+			<input type="hidden" name="State" value="'.$espost['state'].'" />
+			<input type="hidden" name="Country" value="'.$espost['country'].'" />
+			<input type="hidden" name="Phone" value="'.$espost['phone'].'" />
+			<input type="hidden" name="Zip" value="'.$espost['zip'].'" />
+			<input type="hidden" name="EMail" value="'.$espost['email'].'" />
+			<input type="hidden" name="FirstName" value="'.$espost['first_name'].'" />
+			<input type="hidden" name="LastName" value="'.$espost['last_name'].'" />
 			<input type="hidden" name="Total" value="'.$Cost.'" />
 			<input type="hidden" name="ID" value="'.$refid.'" />
 

@@ -681,6 +681,18 @@ if(version_compare($eshopoptions['version'], '6.2.1' ,'<')){
 	}
  	
 }
+
+
+if(version_compare($eshopoptions['version'], '6.2.13' ,'<')){
+	$dirs=wp_upload_dir();
+	$upload_dir=$dirs['basedir'];
+	$plugin_dir=WP_PLUGIN_DIR;
+	//new_files
+	$eshop_goto=$upload_dir.'/eshop_files';
+	$eshop_from=$plugin_dir.'/eshop/files';
+	copy($eshop_from.'/eshop-cart.js',$eshop_goto.'/eshop-cart.js');
+	chmod($eshop_goto.'/eshop-cart.js',0666);
+}
 //then do the necessary:
 $eshopoptions['version']=ESHOP_VERSION;
 update_option('eshop_plugin_settings', $eshopoptions);

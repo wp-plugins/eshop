@@ -4,7 +4,7 @@ class eshop_metabox_class {
 	//constructor of class, PHP4 compatible construction for backward compatibility
 	function eshop_metabox_class() {
 		//add filter for WordPress 2.8 changed backend box system !
-		add_filter('screen_layout_columns', array(&$this, 'on_screen_layout_columns'), 10, 2);
+		//add_filter('screen_layout_columns', array(&$this, 'on_screen_layout_columns'), 10, 2);
 		//register callback for admin menu  setup
 		add_action('admin_menu', array(&$this, 'on_admin_menu')); 
 		//register the callback been used if options of page been submitted and needs to be processed
@@ -163,7 +163,6 @@ class eshop_metabox_class {
 		});
 		//]]>
 	</script>
-		
 		<?php
 	}
 

@@ -73,7 +73,7 @@ class cash_class {
       
       return $echo;
    }
-	function eshop_submit_cash_post($_POST) {
+	function eshop_submit_cash_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to cash.
@@ -86,10 +86,10 @@ class cash_class {
           <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$cash = $eshopoptions['cash']; 
-			$refid=$_POST['RefNr'];
-			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
-			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
-			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
+			$refid=$espost['RefNr'];
+			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$espost['email'].'" />
+			<input type="hidden" name="BuyerFirstName" value="'.$espost['first_name'].'" />
+			<input type="hidden" name="BuyerLastName" value="'.$espost['last_name'].'" />
 			<input type="hidden" name="RefNr" value="'.$refid.'" />
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed &raquo;','eshop').'" /></p>
 	     </form>

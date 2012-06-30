@@ -64,7 +64,7 @@ switch ($eshopaction) {
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
 		//eShop own check for extra security
 		$eshopemailbus=$eshopoptions['business'];
-		if(isset( $eshopoptions['eshop_business_sec'] ) && $eshopoptions['eshop_business_sec'] !=''){
+		if(isset( $eshopoptions['business_sec'] ) && $eshopoptions['business_sec'] !=''){
 			$eshopemailbus=$eshopoptions['business_sec'];
 			$_POST['business']=$eshopemailbus;
 		}
@@ -300,6 +300,7 @@ switch ($eshopaction) {
 				$ok='yes';
 				eshop_mg_process_product($txn_id,$checked);
 			}elseif($p->ipn_data['payment_status']==' Refunded'){
+				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("Refunded Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("You have received a refund notification, eShop doesn't know how to handle these, but details of the notification are included below.",'eshop');

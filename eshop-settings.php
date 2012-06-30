@@ -57,7 +57,6 @@ switch($action_status){
 		break;
 }
 
-
 function add_settings_query_vars($aVars) {
 	$aVars[] = "mstatus";    // represents the name of the product category as shown in the URL
 	return $aVars;
