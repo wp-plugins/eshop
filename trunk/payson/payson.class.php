@@ -73,7 +73,7 @@ class payson_class {
       
       return $echo;
    }
-	function eshop_submit_payson_post($_POST) {
+	function eshop_submit_payson_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to payson.
@@ -87,13 +87,13 @@ class payson_class {
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$payson = $eshopoptions['payson']; 
 			$Key=$payson['key'];
-			$theamount=$_POST['amount'];
-			if(isset($_POST['tax']))
-				$theamount += $_POST['tax'];
+			$theamount=$espost['amount'];
+			if(isset($espost['tax']))
+				$theamount += $espost['tax'];
 			if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];
 			
-			$Cost=str_replace(',','',$theamount)-str_replace(',','',$_POST['shipping_1']);
-			$ExtraCost=$_POST['shipping_1'];
+			$Cost=str_replace(',','',$theamount)-str_replace(',','',$espost['shipping_1']);
+			$ExtraCost=$espost['shipping_1'];
 
 			$desc = str_replace($replace, " ", $payson['description']);
 			if($theamount<$payson['minimum']){
@@ -103,11 +103,11 @@ class payson_class {
 			}
 			$Cost=number_format($Cost, 2, ',', '');
 			$ExtraCost=number_format($ExtraCost, 2, ',', '');
-			$OkUrl=$_POST['notify_url'];
+			$OkUrl=$espost['notify_url'];
 			$GuaranteeOffered='1';
 			$MD5string = $payson['email'] . ":" . $Cost . ":" . $ExtraCost . ":" . $OkUrl . ":" . $GuaranteeOffered . $Key;
 			$MD5Hash = md5($MD5string);
-			$refid=$_POST['RefNr'];
+			$refid=$espost['RefNr'];
 			
 			$clink='';
 			if($eshopoptions['cart_cancel']!=''){
@@ -121,9 +121,9 @@ class payson_class {
 			<input type="hidden" name="OkUrl" value="'.$OkUrl.'" />
 			<input type="hidden" name="CancelUrl" value="'.$clink.'" />
 			<input type="hidden" name="MD5" value="'.$MD5Hash.'" />
-			<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
-			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
-			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
+			<input type="hidden" name="BuyerEmail" value="'.$espost['email'].'" />
+			<input type="hidden" name="BuyerFirstName" value="'.$espost['first_name'].'" />
+			<input type="hidden" name="BuyerLastName" value="'.$espost['last_name'].'" />
 			<input type="hidden" name="Cost" value="'.$Cost.'" />
 			<input type="hidden" name="ExtraCost" value="'.$ExtraCost.'" />
 			<input type="hidden" name="RefNr" value="'.$refid.'" />

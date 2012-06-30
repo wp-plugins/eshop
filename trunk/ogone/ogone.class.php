@@ -71,7 +71,7 @@ class ogone_class {
       
       return $echo;
    }
-	function eshop_submit_ogone_post($_POST) {
+	function eshop_submit_ogone_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to authorize.net.

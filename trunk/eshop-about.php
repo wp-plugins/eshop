@@ -127,6 +127,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <li><a href="http://www.conormaxwell.com/">Connor Maxwell</a> - thank you.</li>
   <li><a href="http://www.code-styling.de/">Heiko Rabe</a> - for the initial class behind the new met boxes on settings pages</li>
   <li>WordPress.org user <em>kitchin</em> for the help tab.</li>
+  <li>WordPress.org user <em>trusktr</em> for the help in getting the javascript into the footer.</li>
   </ul>
 </div>
 </div>

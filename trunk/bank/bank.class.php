@@ -73,7 +73,7 @@ class bank_class {
       
       return $echo;
    }
-	function eshop_submit_bank_post($_POST) {
+	function eshop_submit_bank_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected.
@@ -85,10 +85,10 @@ class bank_class {
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->bank_url.'">
           <p>';
           	$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
-			$refid=$_POST['RefNr'];
-			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$_POST['email'].'" />
-			<input type="hidden" name="BuyerFirstName" value="'.$_POST['first_name'].'" />
-			<input type="hidden" name="BuyerLastName" value="'.$_POST['last_name'].'" />
+			$refid=$espost['RefNr'];
+			$echortn .='<input type="hidden" name="BuyerEmail" value="'.$espost['email'].'" />
+			<input type="hidden" name="BuyerFirstName" value="'.$espost['first_name'].'" />
+			<input type="hidden" name="BuyerLastName" value="'.$espost['last_name'].'" />
 			<input type="hidden" name="RefNr" value="'.$refid.'" />
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed &raquo;','eshop').'" /></p>
 	     </form>

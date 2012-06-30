@@ -1,6 +1,6 @@
 <?php
 if (!function_exists('eshop_downloads')) {
-	function eshop_downloads($_POST, $images, $content){
+	function eshop_downloads($espost, $images, $content){
 		global $wpdb,$eshopoptions;
 		//cache
 		eshop_cache();
@@ -11,12 +11,12 @@ if (!function_exists('eshop_downloads')) {
 	//download is handled via cart functions as it needs to
 	//be accessible before anything is printed on the page
 
-		if (isset($_POST['code']) && isset($_POST['email'])){
+		if (isset($espost['code']) && isset($espost['email'])){
 		/*
 		Need to add in check about number of downloads here, including unlimited!
 		*/
-			$code=$wpdb->escape($_POST['code']);
-			$email=$wpdb->escape($_POST['email']);
+			$code=$wpdb->escape($espost['code']);
+			$email=$wpdb->escape($espost['email']);
 			$dlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
 			if($dlcount>0){
 				$echo .= $content;
@@ -56,8 +56,8 @@ if (!function_exists('eshop_downloads')) {
 					<form method="post" action="" class="eshop dlproduct"><fieldset>
 					<legend>'.$dltitle.' ('.check_filesize($dlfilesize).')</legend>
 					'.$imagetoadd.'
-					<input name="email" type="hidden" value="'.$_POST['email'].'" />
-					<input name="code" type="hidden" value="'.$_POST['code'].'" />
+					<input name="email" type="hidden" value="'.$espost['email'].'" />
+					<input name="code" type="hidden" value="'.$espost['code'].'" />
 					<input name="id" type="hidden" value="'.$dlrow->id.'" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
 					<label for="ro'.$x.'">'.__('Number of downloads remaining','eshop').'</label>
@@ -72,8 +72,8 @@ if (!function_exists('eshop_downloads')) {
 					$echo.='
 					<form method="post" action="" id="dlall" class="eshop"><fieldset>
 					<legend>'.__('Download all files','eshop').' ('.check_filesize($tsize).') '.__('in one zip file.','eshop').'</legend>
-					<input name="email" type="hidden" value="'.$_POST['email'].'" />
-					<input name="code" type="hidden" value="'.$_POST['code'].'" />
+					<input name="email" type="hidden" value="'.$espost['email'].'" />
+					<input name="code" type="hidden" value="'.$espost['code'].'" />
 					<input name="id" type="hidden" value="all" />
 					<input name="eshoplongdownloadname" type="hidden" value="yes" />
 					<p><span class="buttonwrap"><input class="button" type="submit" id="submit" name="Submit" value="'.__('Download All Files','eshop').'" /></span></p>

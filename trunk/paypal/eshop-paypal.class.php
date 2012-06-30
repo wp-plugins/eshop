@@ -146,7 +146,7 @@ class eshop_paypal_class {
       
       return $echo;
    }
-	function eshop_submit_paypal_post($_POST) {
+	function eshop_submit_paypal_post($espost) {
  
       // this function actually generates an entire HTML page consisting of
       // a form with hidden elements which is submitted to paypal via the 
@@ -165,7 +165,7 @@ class eshop_paypal_class {
 	     <p>'. __('If you are not automatically redirected to Paypal, please use the <em>Proceed to Paypal</em> button.','eshop').'</p>
          <form method="post" class="eshop" id="eshopgateway" action="'.$this->paypal_url.'">
           <p>';
-		  foreach ($_POST as $name => $value) {
+		  foreach ($espost as $name => $value) {
 			if($name!='submit' && $name!='ppsubmit'){			
 				if($name!='return' && $name!='cancel_return' && $name!='notify_url'){
 					$replace = array("&#039;","'", "\"","&quot;","&amp;","&");

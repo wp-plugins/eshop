@@ -73,7 +73,7 @@ class authorizenet_class {
       
       return $echo;
    }
-	function eshop_submit_authorizenet_post($_POST) {
+	function eshop_submit_authorizenet_post($espost) {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to authorize.net.
@@ -84,9 +84,9 @@ class authorizenet_class {
 	     <p>'. __('If you are not automatically redirected to authorize.net, please use the <em>Proceed to Authorize.net</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->authorizenet_url.'">
           <p>';
-			$relayURL=$_POST['x_relay_url'];
-			$amount=str_replace(',','',$_POST['amount']);
-			$shipping=str_replace(',','',$_POST['shipping_1']);
+			$relayURL=$espost['x_relay_url'];
+			$amount=str_replace(',','',$espost['amount']);
+			$shipping=str_replace(',','',$espost['shipping_1']);
 
 			$echortn.='
 			<input type="hidden" name="x_show_form" value="PAYMENT_FORM" />
@@ -100,7 +100,7 @@ class authorizenet_class {
 			//convert from paypal to authorize.net
 			$invarray=array('first_name','last_name','company','email','phone','city','state','zip','country');
 			$shiparray=array('ship_company','ship_address','ship_city','ship_state','ship_postcode','ship_country');
-			foreach ($_POST as $key=>$value){
+			foreach ($espost as $key=>$value){
 				if(in_array($key,$invarray)){
 					$echortn.='<input type="hidden" name="x_'.$key.'" value="'.$value.'" />'."\n";
 				}
@@ -116,29 +116,29 @@ class authorizenet_class {
 			   $echortn.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
       		}
 			//convert items to one liners - oh joy is me
-			$numberofproducts=$_POST['numberofproducts'];
+			$numberofproducts=$espost['numberofproducts'];
 			$taxamount=0;
 			$sep='<|>';
 			$extracost=0;
 			for($i=1;$i<=$numberofproducts;$i++){
 				$taxable='N';
-				if(strlen($_POST['item_name_'.$i]) > 25)
-					$_POST['item_name_'.$i] = substr($_POST['item_name_'.$i],0,25).'...';
-				if(strlen($_POST['item_number_'.$i]) > 249)
-					$_POST['item_number_'.$i] = substr($_POST['item_number_'.$i],0,249).'...';
+				if(strlen($espost['item_name_'.$i]) > 25)
+					$espost['item_name_'.$i] = substr($espost['item_name_'.$i],0,25).'...';
+				if(strlen($espost['item_number_'.$i]) > 249)
+					$espost['item_number_'.$i] = substr($espost['item_number_'.$i],0,249).'...';
 				
-				$lineamount=str_replace(',','',$_POST['amount_'.$i]);
-				if(isset($_POST['tax_'.$i])){
-					$linetax=$_POST['tax_'.$i] / $_POST['quantity_'.$i];
+				$lineamount=str_replace(',','',$espost['amount_'.$i]);
+				if(isset($espost['tax_'.$i])){
+					$linetax=$espost['tax_'.$i] / $espost['quantity_'.$i];
 					$lineamount += str_replace(',','',$linetax);
-					$taxamount+=$_POST['tax_'.$i];
+					$taxamount+=$espost['tax_'.$i];
 					$taxable='Y';
 				}
 				if((str_replace(",","",$lineamount)) != (0.01*floor(str_replace(",","",$lineamount)*100))){
-					$extracost+=$_POST['quantity_'.$i] * (str_replace(",","",$lineamount) - (0.01*floor(str_replace(",","",$lineamount)*100)));
+					$extracost+=$espost['quantity_'.$i] * (str_replace(",","",$lineamount) - (0.01*floor(str_replace(",","",$lineamount)*100)));
 					$lineamount=0.01*floor(str_replace(",","",$lineamount)*100);
 				}
-				$value='item'.$i.$sep.$_POST['item_name_'.$i].$sep.$_POST['item_number_'.$i].$sep.$_POST['quantity_'.$i].$sep.str_replace(",","",$lineamount).$sep.$taxable;
+				$value='item'.$i.$sep.$espost['item_name_'.$i].$sep.$espost['item_number_'.$i].$sep.$espost['quantity_'.$i].$sep.str_replace(",","",$lineamount).$sep.$taxable;
 				$echortn.='<input type="hidden" name="x_line_item" value="'.$value.'" />'."\n";
 			}
 			if($extracost!=0){
