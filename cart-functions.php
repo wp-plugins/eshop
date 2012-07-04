@@ -871,43 +871,43 @@ if (!function_exists('orderhandle')) {
 		}
 		if(isset($espost['state']) && $espost['state']=='' && isset($espost['altstate']) && $espost['altstate']!='')
 			$state=$wpdb->escape($espost['altstate']);
-
-		if(isset($espost['ship_name'])){
+//test change start here 
+		if(isset($espost['ship_name']) && $espost['ship_name']!=''){
 			$ship_name=$wpdb->escape($espost['ship_name']);
 		}else{
 			$ship_name=$first_name.' '.$last_name;
 		}
-		if(isset($espost['ship_phone'])){
+		if(isset($espost['ship_phone']) && $espost['ship_phone']!=''){
 			$ship_phone=$wpdb->escape($espost['ship_phone']);
 		}else{
 			$ship_phone=$phone;
 		}
-		if(isset($espost['ship_company'])){
+		if(isset($espost['ship_company']) && $espost['ship_company']!=''){
 			$ship_company=$wpdb->escape($espost['ship_company']);
 		}else{
 			$ship_company=$company;
 		}
-		if(isset($espost['ship_address'])){
+		if(isset($espost['ship_address']) && $espost['ship_address']!=''){
 			$ship_address=$wpdb->escape($espost['ship_address']);
 		}else{
 			$ship_address=$address1.' '.$address2;
 		}
-		if(isset($espost['ship_city'])){
+		if(isset($espost['ship_city']) && $espost['ship_city']!=''){
 			$ship_city=$wpdb->escape($espost['ship_city']);
 		}else{
 			$ship_city=$city;
 		}
-		if(isset($espost['ship_postcode'])){
+		if(isset($espost['ship_postcode']) && $espost['ship_postcode']!=''){
 			$ship_postcode=$wpdb->escape($espost['ship_postcode']);
 		}else{
 			$ship_postcode=$zip;
 		}
-		if(isset($espost['ship_country'])){
+		if(isset($espost['ship_country']) && $espost['ship_country']!=''){
 			$ship_country=$wpdb->escape($espost['ship_country']);
 		}else{
 			$ship_country=$country;
 		}
-		if(isset($espost['ship_state'])){
+		if(isset($espost['ship_state']) && $espost['ship_state']!=''){
 			$ship_state=$wpdb->escape($espost['ship_state']);
 		}else{
 			$ship_state=$state;
@@ -915,6 +915,7 @@ if (!function_exists('orderhandle')) {
 		
 		if(empty($espost['ship_state']) && !empty($espost['ship_altstate']))
 			$ship_state=$wpdb->escape($espost['ship_altstate']);
+//end here
 		if(isset($espost['reference'])){
 			$reference=$wpdb->escape($espost['reference']);
 		}else{
