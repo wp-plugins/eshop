@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.4.1
-Version: 6.2.13
+Version: 6.2.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,10 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.14
+
+* *fixed* shipping address not always saving data correctly. 
 
 Version 6.2.13
 
