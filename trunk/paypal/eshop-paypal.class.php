@@ -195,7 +195,7 @@ class eshop_paypal_class {
          $post_string .= $field.'='.urlencode($value).'&'; 
       }
       $post_string.="cmd=_notify-validate"; // append ipn command
-
+/*
       	// open the connection to paypal was:
     	//$fp = fsockopen($url_parsed[host],"80",$err_num,$err_str,30);
     	//try uncommenting that line if the following doesn't work.
@@ -206,23 +206,47 @@ class eshop_paypal_class {
          $this->last_error = "fsockopen error no. $errnum: $errstr";
          $this->log_ipn_results(false);       
          return false;
-         
-      } else { 
+*/
+		$ipnhost= $url_parsed['host'];
+		$ipnport= 80;
+
+		if (function_exists('stream_get_transports')) {
+			$transports= stream_get_transports();
+			if (in_array('ssl', $transports)) {
+				$ipnport= 443;
+			}
+		}
+
+		if ($ipnport == 443) {
+			$ipnhost= "ssl://$ipnhost";
+		}
+
+		$fp = fsockopen($ipnhost, $ipnport, $err_no, $err_str, 30);
+
+		if(!$fp) {
+			// could not open the connection.  If loggin is on, the error message
+			// will be in the log. // TYPO FIXES:
+			$this->last_error = "fsockopen error no. $err_no: $err_str";
+			$this->last_error .= "\n host= $ipnhost, port= $ipnport";
+			$this->log_ipn_results(false);       
+			return false;
+
+	  	} else { 
  
-         // Post the data back to paypal
-         fputs($fp, "POST $url_parsed[path] HTTP/1.1\r\n"); 
-         fputs($fp, "Host: $url_parsed[host]\r\n"); 
-         fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n"); 
-         fputs($fp, "Content-length: ".strlen($post_string)."\r\n"); 
-         fputs($fp, "Connection: close\r\n\r\n"); 
-         fputs($fp, $post_string . "\r\n\r\n"); 
+			 // Post the data back to paypal
+			 fputs($fp, "POST $url_parsed[path] HTTP/1.1\r\n"); 
+			 fputs($fp, "Host: $url_parsed[host]\r\n"); 
+			 fputs($fp, "Content-type: application/x-www-form-urlencoded\r\n"); 
+			 fputs($fp, "Content-length: ".strlen($post_string)."\r\n"); 
+			 fputs($fp, "Connection: close\r\n\r\n"); 
+			 fputs($fp, $post_string . "\r\n\r\n"); 
 
-         // loop through the response from the server and append to variable
-         while(!feof($fp)) { 
-            $this->ipn_response .= fgets($fp, 1024); 
-         } 
+			 // loop through the response from the server and append to variable
+			 while(!feof($fp)) { 
+				$this->ipn_response .= fgets($fp, 1024); 
+			 } 
 
-         fclose($fp); // close connection
+			 fclose($fp); // close connection
 
       }
       

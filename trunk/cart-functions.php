@@ -871,7 +871,7 @@ if (!function_exists('orderhandle')) {
 		}
 		if(isset($espost['state']) && $espost['state']=='' && isset($espost['altstate']) && $espost['altstate']!='')
 			$state=$wpdb->escape($espost['altstate']);
-//test change start here 
+
 		if(isset($espost['ship_name']) && $espost['ship_name']!=''){
 			$ship_name=$wpdb->escape($espost['ship_name']);
 		}else{
@@ -915,7 +915,7 @@ if (!function_exists('orderhandle')) {
 		
 		if(empty($espost['ship_state']) && !empty($espost['ship_altstate']))
 			$ship_state=$wpdb->escape($espost['ship_altstate']);
-//end here
+
 		if(isset($espost['reference'])){
 			$reference=$wpdb->escape($espost['reference']);
 		}else{

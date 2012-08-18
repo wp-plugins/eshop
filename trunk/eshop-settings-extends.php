@@ -1157,7 +1157,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			<?php 		
 			$this->show_img('payson');
 			?>
-			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+			<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<p><?php _e('<strong>Warning:</strong> Payson has a minimum purchase value of 4 SEK (when last checked). All payments to Payson are in SEK, irrespective of settings above.','eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['payson']))
@@ -1194,7 +1194,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			else
 				$ideallite['idealdescription']=$ideallite['idealownermail'] = $ideallite['IDEAL_AQUIRER']=$ideallite['IDEAL_HASH_KEY'] = $ideallite['IDEAL_MERCHANT_ID']= $ideallite['IDEAL_SUB_ID']=$ideallite['IDEAL_TEST_MODE']='';
 			?>
-			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+			<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<p class="cbox"><input id="eshop_methodc" name="eshop_method[]" type="checkbox" value="ideallite"<?php if(in_array('ideallite',(array)$eshopoptions['method'])) echo ' checked="checked"'; ?> /><label for="eshop_methodc" class="eshopmethod"><?php _e('Accept payment by iDeal Lite','eshop'); ?></label></p>
 			<label for="eshop_IDEAL_AQUIRER"><?php _e('Aquirer','eshop'); ?></label><input id="eshop_IDEAL_AQUIRER" name="ideallite[IDEAL_AQUIRER]" type="text" value="<?php echo $ideallite['IDEAL_AQUIRER']; ?>" size="40" maxlength="50" /><em><?php _e('Use Rabobank, ING Bank or Simulator','eshop'); ?></em><br />
 			<label for="eshop_IDEAL_HASH_KEY"><?php _e('Hash Key','eshop'); ?></label><input id="eshop_IDEAL_HASH_KEY" name="ideallite[IDEAL_HASH_KEY]" type="text" value="<?php echo $ideallite['IDEAL_HASH_KEY']; ?>" size="20" /><em><?php _e('For Simulator use "Password"','eshop'); ?></em><br />
@@ -1212,7 +1212,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
-			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+			<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<?php 		
 			$this->show_img('epn');
 			?>
@@ -1276,7 +1276,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
-			<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+			<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<?php 		
 			$this->show_img('webtopay');
 
@@ -1304,7 +1304,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
-		<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+		<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<?php 
 			$this->show_img('authorizenet');
 
@@ -1327,7 +1327,7 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		global $wpdb;
 		?>
 		<fieldset>
-		<p class="ewarn"><?php _e('<strong>Note:</strong> This payment option is no longer supported.','eshop'); ?></p>
+		<p class="ewarn"><?php _e("<strong>Note:</strong> Please note that we can longer offer free support for this gateway on the plugin's forums or via the plugin's documentation.",'eshop'); ?></p>
 			<?php 
 			if(isset($eshopoptions['ogone']))
 				$ogone = $eshopoptions['ogone'];
