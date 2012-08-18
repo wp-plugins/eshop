@@ -11,9 +11,12 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
     $stocktable=$wpdb->prefix ."eshop_stock";
     $uniq=rand();
 
+	if (post_password_required()){
+		return $pee;
+	}
 	//if the search page we don't want the form!
 	//was (!strpos($pee, '[eshop_addtocart'))
-	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display'] && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+	if($short!='yes' && (strpos($pee, '[eshop_details') === false) && ((is_single() || is_page())) && isset($eshopoptions['details']['display']) && 'yes' == $eshopoptions['details']['display']){
 		$details='';
 		if(isset($eshop_product['products'])){
 			if($eshopoptions['details']['show']!='')
@@ -28,7 +31,8 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 				$pee.= do_shortcode('[eshop_details'.$details.']');
 		}
 	}
-	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms']) && (empty($post->post_password) || ( isset($_COOKIE['wp-postpass_'.COOKIEHASH]) && $_COOKIE['wp-postpass_'.COOKIEHASH] == $post->post_password ))){
+
+	if((strpos($pee, '[eshop_addtocart') === false) && ((is_single() || is_page())|| 'yes' == $eshopoptions['show_forms'])){
 		//need to precheck stock
 		if($postid!=''){
 			if(isset($eshopoptions['stock_control']) && 'yes' == $eshopoptions['stock_control']){

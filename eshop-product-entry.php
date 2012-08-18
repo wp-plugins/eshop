@@ -363,11 +363,11 @@ function eshop_save_postdata( $post_id ) {
 		update_post_meta( $id, '_eshop_stock', $stkav);
 
 		
-	if($stkav=='1' && ($eshop_product['sku']=='' || $eshop_product['description']=='' || $eshop_product['products']['1']['option']=='' || $eshop_product['products']['1']['price']=='')){
+	if($stkav=='1' && (trim($eshop_product['sku'])=='' || trim($eshop_product['description'])=='' || trim($eshop_product['products']['1']['option'])=='' || trim($eshop_product['products']['1']['price'])=='')){
 		delete_post_meta( $id, '_eshop_stock');
 		add_filter('redirect_post_location','eshop_error');
 	}
-	if($stkav=='0' && $eshop_product['sku']=='' && $eshop_product['description']=='' && $eshop_product['products']['1']['option']=='' && $eshop_product['products']['1']['price']==''){
+	if($stkav=='0' && trim($eshop_product['sku'])=='' && trim($eshop_product['description'])=='' && trim($eshop_product['products']['1']['option'])=='' && trim($eshop_product['products']['1']['price'])==''){
 	//not a product
 		delete_post_meta( $id, '_eshop_stock');
 		delete_post_meta( $id, '_eshop_product');

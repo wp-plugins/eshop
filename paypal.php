@@ -60,8 +60,9 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		//$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
-		$pvalue = $_POST['amount'];
-		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
+		$pvalue = $_POST['amount'] + $_POST['shipping_1'];
+		//if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
+
 		//eShop own check for extra security
 		$eshopemailbus=$eshopoptions['business'];
 		if(isset( $eshopoptions['business_sec'] ) && $eshopoptions['business_sec'] !=''){
@@ -258,7 +259,9 @@ switch ($eshopaction) {
  		/*
 		updating db.
 		*/
-			$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);
+			//$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);//was this, changed mc_gross to mc_gross_1 and removed tax.
+			$chkamt=number_format($p->ipn_data['mc_gross_1'],2);
+
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			
 			if($eshopoptions['status']=='live'){
@@ -309,6 +312,7 @@ switch ($eshopaction) {
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
+				$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt; //debug
 				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
@@ -321,8 +325,7 @@ switch ($eshopaction) {
 			 if(isset($array['dbid']))
 			 	$body .= get_option( 'siteurl' ).'/wp-admin/admin.php?page=eshop-orders.php&view='.$array['dbid']."&eshop\n";
 
-			 //debug
-			//$body .= 'checked:'.$checked."\n".$p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$chkamt."\n";
+			 
 			if($extradetails!='') $body .= $extradetails."\n\n";
 			 foreach ($p->ipn_data as $key => $value) { $body .= "\n$key: $value"; }
 			 $body .= "\n\n".__('Regards, Your friendly automated response.','eshop')."\n\n";

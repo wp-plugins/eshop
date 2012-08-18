@@ -1,11 +1,11 @@
 <?php
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.2.14');
+	define('ESHOP_VERSION', '6.2.15');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.0 and above.
-Version: 6.2.14
+Version: 6.2.15
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -113,7 +113,6 @@ if(is_admin()){
 	//process cart
 	add_action ('init','eshop_cart_process');
 	add_filter('the_content', 'eshop_boing');
-	
 	//this automatically hides the relevant pages
 	add_filter('wp_list_pages_excludes', 'eshop_add_excludes');
 	//fold the page menu as it is likely to get long...

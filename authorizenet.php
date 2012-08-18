@@ -125,7 +125,9 @@ switch ($eshopaction) {
 		}else{
 			die('<p>'.$derror.'</p>');
 		}
-		$p->add_field('x_relay_url', $ilink);
+		$use_xrelay = apply_filters('eshop_authorizenet_xrelay','');
+		if ( $use_xrelay != '' )
+			$p->add_field('x_relay_url', $ilink);
 
 		$p->add_field('shipping_1', eshopShipTaxAmt());
 		$sttable=$wpdb->prefix.'eshop_states';
