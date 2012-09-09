@@ -58,9 +58,12 @@ switch ($eshopaction) {
 		// a timestamp is generated
 		$timestamp	= time ();
 		$pvalue=str_replace(',','',$_POST['amount']);
+		//next 2 lines added to solve an issue 12/8/22
+		$pship=str_replace(',','',$_POST['shipping_1']);
+		$pvalue+=$pship;
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
+		// above may be able to be changed by using + eshopShipTaxAmt() for the shipping.
 		if(isset($_POST['tax'])) $pvalue += str_replace(',','',$_POST['tax']);
-		//$pvalue = number_format($pvalue,2);
 		$pvalue = number_format($pvalue, 2, '.', '');
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);

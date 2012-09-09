@@ -60,7 +60,9 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		//$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
-		$pvalue = $_POST['amount'] + $_POST['shipping_1'];
+		//was $pvalue = $_POST['amount'] + $_POST['shipping_1'];
+
+		$pvalue = $_POST['amount'] + eshopShipTaxAmt();
 		//if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
 
 		//eShop own check for extra security
@@ -312,7 +314,7 @@ switch ($eshopaction) {
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
-				$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt; //debug
+				//$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt; //debug
 				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}
