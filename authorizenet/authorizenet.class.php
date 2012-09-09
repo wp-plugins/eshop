@@ -84,7 +84,12 @@ class authorizenet_class {
 	     <p>'. __('If you are not automatically redirected to authorize.net, please use the <em>Proceed to Authorize.net</em> button.','eshop').'</p>
          <form method="post" id="eshopgateway" class="eshop" action="'.$this->authorizenet_url.'">
           <p>';
-			$relayURL=$espost['x_relay_url'];
+          //test - x_relay_url was causing an error
+          $use_xrelay = apply_filters('eshop_authorizenet_xrelay','');
+		  	if ( $use_xrelay != '' && isset($espost['x_relay_url']) )
+				$relayURL=$espost['x_relay_url'];
+			else
+				$relayURL='';
 			$amount=str_replace(',','',$espost['amount']);
 			$shipping=str_replace(',','',$espost['shipping_1']);
 

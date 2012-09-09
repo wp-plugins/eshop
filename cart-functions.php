@@ -1662,7 +1662,7 @@ if (!function_exists('eshop_files_directory')) {
 		$urlpath=$url_dir.'eshop_files/';
 		$urlpath=preg_replace('/\/wp-content\/blogs\.dir\/\d+/', '', $urlpath);
 		$rtn=array(0=>$eshop_goto.'/',1=>$urlpath);
-		return apply_filters('eshop_files_directory',$rtn);;
+		return apply_filters('eshop_files_directory',$rtn);
     }
 }
 
@@ -1676,7 +1676,7 @@ if (!function_exists('eshop_from_address')) {
 		}else{
 			$headers='';
 		}
-		return $headers;
+		return apply_filters('eshop_from_address',$headers);
 	}
 }
 

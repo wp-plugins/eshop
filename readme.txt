@@ -3,8 +3,8 @@ Contributors: elfin
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
-Tested up to: 3.4.1
-Version: 6.2.15
+Tested up to: 3.4.2
+Version: 6.2.16
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,13 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
 
+Version 6.2.16
+
+* *fixed* edge case scenario with Paypal orders failing.
+* *fixed* removed unneeded data from email
+* *fixed* issue with authorize.net - users were able to identify the issue which enabled me to fix it.
+* *added* filter for the from address, eshop_from_address
+
 Version 6.2.15
 
 * *FIXED* long standing issue for some setups with eShop returning 'The transaction was not completed successfully. eShop could not validate the order.' and the order remaining in pending. Edge cases may not have been tested, but more orders should now validate.
@@ -53,7 +60,7 @@ Version 6.2.15
 * *fixed* product details can no longer have just a single space.
 * *changed* wording for dropping of support for the other merchant gateways - they are staying in the plugin.
 * *changed* small alteration to paypal authentication
-* *added* Filter eshop_authorizenet_xrelay to stop sending the relay link to authorize.net, just return 'no' and it will no longer be sent.
+* *added* Filter eshop_authorizenet_xrelay to allow sending of the relay link to authorize.net, just return 'yes' so that it will be sent.
 
 
 Version 6.2.14
