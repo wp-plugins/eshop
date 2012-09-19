@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.4.2
-Version: 6.2.16
+Version: 6.2.17
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,7 +34,7 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * Merchant gateways: Paypal and Cash/Cheque!
 * Merchant gateways still included but no longer supported: Authorize.net, Payson, eProcessingNetwork, Webtopay, iDEAL
 * Sales tax!
-* Now compatible with WP Affiliate for affiliates - see [wiki](http://quirm.net/wiki/eshop/).
+* Now compatible with WP Affiliate for affiliates - see [eShop wiki](http://quirm.net/wiki/eshop/).
 * able to be used as a product catalogue with no sales.
 * and much much more
 
@@ -45,6 +45,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.2.17
+
+* *fixed* issue with discounts while using Paypal
+* *fixed* All countries can no longer be deleted
+* *fixed* users that had no countries can now enter them again
+* *amended* amended the text to reflect the correct setting for iDeal Lite test mode.
+* *attempted fix* more changes to Paypal to eradicate orders staying in pending
+
 
 Version 6.2.16
 
