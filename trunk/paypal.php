@@ -59,11 +59,9 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
-		//$checkid=md5($eshopoptions['business'].$token.number_format($_SESSION['final_price'.$blog_id],2));
+		
 		//was $pvalue = $_POST['amount'] + $_POST['shipping_1'];
-
 		$pvalue = $_POST['amount'] + eshopShipTaxAmt();
-		//if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
 
 		//eShop own check for extra security
 		$eshopemailbus=$eshopoptions['business'];
@@ -72,10 +70,13 @@ switch ($eshopaction) {
 			$_POST['business']=$eshopemailbus;
 		}
 		$checkid=md5($eshopemailbus.$token.number_format($pvalue,2));
+		//echo 'business '.$eshopemailbus.' custom '.$token.' amount '.number_format($pvalue,2);//debug
+		
 		//affiliates
 		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($_POST,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		
 		$_POST['custom']=$token;
 		$p = new eshop_paypal_class; 
 		if($eshopoptions['status']=='live'){
@@ -146,8 +147,8 @@ switch ($eshopaction) {
 		}
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
-		
 			if(strstr($name,'amount_')){
+				
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 					$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 					if($chkcode && apply_eshop_discount_code('discount')>0){
@@ -160,14 +161,21 @@ switch ($eshopaction) {
 					$discount=is_discountable(calculate_total())/100;
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
+				//amending for discounts
+				$_POST[$name]=$value;
 			}
-			
 			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
 				if($value!='')
 					$value=$eshopstatelist[$value];
 			}
 			$p->add_field($name, $value);
 		}
+		//required for discounts to work -updating amount.
+		$runningtotal=0;
+		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
+			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		}
+		$p->add_field('amount',$runningtotal);
 
 	//	$p->add_field('return_method','2'); //1=GET 2=POST
 	// was return method now rm - go figure.
@@ -261,9 +269,7 @@ switch ($eshopaction) {
  		/*
 		updating db.
 		*/
-			//$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);//was this, changed mc_gross to mc_gross_1 and removed tax.
-			$chkamt=number_format($p->ipn_data['mc_gross_1'],2);
-
+			$chkamt=number_format((($p->ipn_data['mc_gross'])-($p->ipn_data['tax'])),2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			
 			if($eshopoptions['status']=='live'){
@@ -314,7 +320,7 @@ switch ($eshopaction) {
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
 				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
-				//$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt; //debug
+				//$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt."\n"; //debug
 				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
 			}

@@ -419,13 +419,6 @@ if (!function_exists('eshop_checkout')) {
 		if(isset($_SESSION['eshopcart'.$blog_id])){
 			$shopcart=$_SESSION['eshopcart'.$blog_id];
 			$numberofproducts=sizeof($_SESSION['eshopcart'.$blog_id]);
-			/* unused code?
-			$productsandqty='';
-			while (list ($product, $amount) = each ($_SESSION['eshopcart'.$blog_id])){
-				$productsandqty.=" $product-$amount";
-				$productsandqty=trim($productsandqty);
-			}
-			*/
 			$keys = array_keys($_SESSION['eshopcart'.$blog_id]);
 			$productidkeys=implode(",", $keys);
 			$productidkeys=trim($productidkeys);
@@ -799,6 +792,7 @@ if (!function_exists('eshop_checkout')) {
 				$date=date('YmdHis');
 				$_SESSION['date'.$blog_id]=$date;
 				$fprice=number_format($_SESSION['final_price'.$blog_id], 2,'.','');
+
 				$espost['amount']=$fprice;
 				$espost['custom']=$date;
 				$espost['numberofproducts']=sizeof($_SESSION['eshopcart'.$blog_id]);

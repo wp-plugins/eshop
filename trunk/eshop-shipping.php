@@ -66,6 +66,7 @@ case ('countries'):
 		//create the query
 		$build="INSERT INTO $dtable (`code`,`country`,`zone`,`list`) VALUES";
 		$count=count($_POST['code']);
+		$inlinecount=0;
 		for($i=0;$i<=$count-1;$i++){
 			//so if none of them are empty
 			if(($_POST['code'][$i]!='' && $_POST['country'][$i]!='' && $_POST['zone'][$i]!='') && !isset($_POST['delete'][$i])){
@@ -83,6 +84,7 @@ case ('countries'):
 						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['country'][$i]."</li>\n";
 					}else{
 						//all must be ok
+						$inlinecount++;
 						$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$wpdb->escape($list[$i])."'),";
 					}
 				}
@@ -97,13 +99,13 @@ case ('countries'):
 		}
 		$build=trim($build,",");
 		//check to stop someone being dumb enough to try and delete all the countries
-		if($count>1){
+		if($inlinecount==0){
+			$error .='<li>'.__('You cannot delete all the Countries!','eshop').'</li>'."\n";
+		}else{
 			//warning this truncates the table and then recreates it
 			$query=$wpdb->query("TRUNCATE TABLE $dtable");
 			$query=$wpdb->query($build);
-			//and the errors are because I truncate :(
-		}else{
-			$error='<li>'.__('You cannot delete all the Countries!','eshop').'</li>'."\n";
+		//	//and the errors are because I truncate :(
 		}
 	}
 	//each time re-request from the database

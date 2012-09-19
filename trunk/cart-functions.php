@@ -34,7 +34,7 @@ if (!function_exists('display_cart')) {
 		}
 		//therefore if cart exists and has products
 		if($check > 0){
-			//global $final_price, $sub_total;
+			global $final_price, $sub_total;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
 				$echo.= '<form action="'.get_permalink($eshopoptions['cart']).'" method="post" id="eshopcartform" class="eshop eshopcart">';
@@ -198,8 +198,6 @@ if (!function_exists('display_cart')) {
 			}
 			$echo.= "<tr class=\"stotal\"><th id=\"subtotal$iswidget\" class=\"leftb\">".__('Sub-Total','eshop').' '.$disc_applied."</th><td headers=\"subtotal$iswidget cartTotal$iswidget\" class=\"amts lb\" colspan=\"2\">".sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($sub_total,__('2','eshop')))."</td>$emptycell</tr>\n";
 
-			
-			
 			$final_price=$sub_total;
 			$_SESSION['final_price'.$blog_id]=$final_price;
 			// SHIPPING PRICE HERE
