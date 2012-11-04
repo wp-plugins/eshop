@@ -282,6 +282,7 @@ switch ($eshopaction) {
 			//check txn_id is unique
 			$checktrans=$wpdb->get_results("select transid from $detailstable");
 			$astatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
+
 			foreach($checktrans as $trans){
 				if(strpos($trans->transid, $p->ipn_data['txn_id'])===true){
 					$astatus='Failed';
@@ -319,7 +320,7 @@ switch ($eshopaction) {
 				$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
 				$subject .=__("A Failed Payment",'eshop');
 				$ok='no';
-				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order.",'eshop');
+				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order. Please double check all settings in eShop and at paypal to confirm they are both correct.",'eshop');
 				//$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt."\n"; //debug
 				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
 					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];

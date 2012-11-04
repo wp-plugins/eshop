@@ -153,7 +153,7 @@ class eshop_cart_widget extends WP_Widget {
 				
 				if(isset($_SESSION['final_price'.$blog_id])) $thetotal=$_SESSION['final_price'.$blog_id];
 				
-				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($_SESSION['final_price'.$blog_id],__('2','eshop')));
+				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($thetotal,__('2','eshop')));
 				if($showwhat=='full'){
 					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'';
 					$eecho .='</div></div>';

@@ -134,7 +134,7 @@ if(!isset($_GET['change'])){
 		$array=$grabit;
 		$grab=subval_sort($array,$sortby); 
 	?>	
-		<table class="widefat" summary="<?php _e('product listing','eshop'); ?>">
+		<table class="widefat">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -248,7 +248,7 @@ if(!isset($_GET['change'])){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s','eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
@@ -360,7 +360,7 @@ if(!isset($_GET['change'])){
 			}
 		}
 		?>	
-		<table class="widefat" summary="<?php _e('product listing','eshop'); ?>">
+		<table class="widefat">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>

@@ -152,7 +152,7 @@ if (!function_exists('displayorders')) {
 		
 			echo "<form id=\"orderstatus\" action=\"".$phpself."\" method=\"post\">";
 			echo '<div class="orderlist tablecontainer">';
-			echo '<table class="hidealllabels widefat" summary="order listing">
+			echo '<table class="hidealllabels widefat">
 			<caption class="offset">'.__('eshop Order Listing','eshop').'</caption>
 			<thead>
 			<tr>
@@ -216,7 +216,7 @@ if (!function_exists('displayorders')) {
 				if($records!=$max){
 					$eecho = $page_links;
 				}
-				echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+				echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 					number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 					number_format_i18n( min( $epage * $records, $max ) ),
 					number_format_i18n( $max)
@@ -524,7 +524,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	}
 	?>
 	
-	<table class="widefat" summary="<?php _e('Table for order details','eshop'); ?>">
+	<table class="widefat">
 	<caption><?php _e('Order Details','eshop'); ?></caption>
 	<thead>
 	<tr>

@@ -58,7 +58,7 @@ if (!function_exists('eshopShowform')) {
 			if($query['0']->maxweight!='' && $cartweight > $query['0']->maxweight)
 				continue;
 			$eshopshiptableinner ='
-			<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
+			<table class="eshopshiprates eshop">
 			<thead>
 			<tr>';
 			for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
@@ -120,9 +120,9 @@ if (!function_exists('eshopShowform')) {
 		$echo .='<legend>'.__('Contact Details','eshop').'</legend>';
 	}
 	$echo .='<span class="firstname"><label for="first_name">'.__('First Name','eshop').eshop_checkreqd($reqdarray,'first_name').'</label>
-	  <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="40" size="40" /><br /></span>
+	  <input class="med" type="text" name="first_name" value="'.$first_name.'" id="first_name" maxlength="50" size="40" /><br /></span>
 	 <span class="lastname"><label for="last_name">'.__('Last Name','eshop').eshop_checkreqd($reqdarray,'last_name').'</label>
-	  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="40" size="40" /><br /></span>';
+	  <input class="med" type="text" name="last_name" value="'.$last_name.'" id="last_name" maxlength="50" size="40" /><br /></span>';
 	if('no' == $eshopoptions['downloads_only']){
 	$echo .='<span class="company"><label for="company">'.__('Company','eshop').eshop_checkreqd($reqdarray,'company').'</label>
 	  <input class="med" type="text" name="company" value="'.$company.'" id="company" size="40" maxlength="255" /><br /></span>';
@@ -133,11 +133,11 @@ if (!function_exists('eshopShowform')) {
 		$echo .='<span class="phone"><label for="phone">'.__('Phone','eshop').eshop_checkreqd($reqdarray,'phone').'</label>
 		  <input class="med" type="text" name="phone" value="'.$phone.'" id="phone" maxlength="30" size="30" /><br /></span>
 		 <span class="address1"><label for="address1">'.__('Address','eshop').eshop_checkreqd($reqdarray,'address').'</label>
-		  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="40" size="40" /><br /></span>
+		  <input class="med" type="text" name="address1" id="address1" value="'.$address1.'" maxlength="255" size="40" /><br /></span>
 		 <span class="address2"><label for="address2">'.__('Address (continued)','eshop').'</label>
-		  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="40" size="40" /><br /></span>
+		  <input class="med" type="text" name="address2" id="address2" value="'.$address2.'" maxlength="255" size="40" /><br /></span>
 		 <span class="city"><label for="city">'.__('City or town','eshop').eshop_checkreqd($reqdarray,'city').'</label>
-		  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="40" size="40" /><br /></span>'."\n";
+		  <input class="med" type="text" name="city" value="'.$city.'" id="city" maxlength="100" size="40" /><br /></span>'."\n";
 
 		// state list from db
 		$table=$wpdb->prefix.'eshop_states';
@@ -226,15 +226,15 @@ if (!function_exists('eshopShowform')) {
 			$echo .='<fieldset class="eshop fld4">
 			<legend>'.__('Shipping address (if different)','eshop').'</legend>
 			 <span class="ship_name"><label for="ship_name">'.__('Name','eshop').'</label>
-			  <input class="med" type="text" name="ship_name" id="ship_name" value="'.stripslashes(esc_attr($ship_name)).'" maxlength="40" size="40" /><br /></span>
+			  <input class="med" type="text" name="ship_name" id="ship_name" value="'.stripslashes(esc_attr($ship_name)).'" maxlength="100" size="40" /><br /></span>
 			 <span class="ship_company"><label for="ship_company">'.__('Company','eshop').'</label>
 			  <input class="med" type="text" name="ship_company" value="'.stripslashes(esc_attr($ship_company)).'" id="ship_company" size="40" maxlength="255" /><br /></span>
 			 <span class="ship_phone"><label for="ship_phone">'.__('Phone','eshop').'</label>
 			  <input class="med" type="text" name="ship_phone" value="'.$ship_phone.'" id="ship_phone" maxlength="30" size="30" /><br /></span>
 			 <span class="ship_address"><label for="ship_address">'.__('Address','eshop').'</label>
-			  <input class="med" type="text" name="ship_address" id="ship_address" value="'.stripslashes(esc_attr($ship_address)).'" maxlength="40" size="40" /><br /></span>
+			  <input class="med" type="text" name="ship_address" id="ship_address" value="'.stripslashes(esc_attr($ship_address)).'" maxlength="255" size="40" /><br /></span>
 			 <span class="ship_city"><label for="ship_city">'.__('City or town','eshop').'</label>
-			  <input class="med" type="text" name="ship_city" id="ship_city" value="'.stripslashes(esc_attr($ship_city)).'" maxlength="40" size="40" /><br /></span>'."\n";
+			  <input class="med" type="text" name="ship_city" id="ship_city" value="'.stripslashes(esc_attr($ship_city)).'" maxlength="100" size="40" /><br /></span>'."\n";
 			if(isset($stateList) && sizeof($stateList)>0){
 				$echo .='<span class="ship_state"><label for="shipstate">'.__('State/County/Province','eshop').'</label>
 				  <select class="med pointer" name="ship_state" id="shipstate">';
@@ -1025,6 +1025,7 @@ if (!function_exists('eshop_checkout')) {
 			$ship_phone=$ship_address=$ship_city=$ship_postcode='';
 			$ship_country=$ship_state=$ship_altstate=$comments='';
 			$eshopsetcookie=apply_filters('eshop_use_cookie',true);
+			
 			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0 && $eshopsetcookie==true){
 				$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
@@ -1044,7 +1045,13 @@ if (!function_exists('eshop_checkout')) {
 					$email=esc_attr($current_user->user_email);
 				}
 			}
+			
+			if($state=='' && isset($eshopoptions['shipping_state_selected']))
+				$state=$eshopoptions['shipping_state_selected'];
+			if($country=='' && isset($eshopoptions['shipping_country_selected']))
+				$country=$eshopoptions['shipping_country_selected'];
 		}
+
 	}
 
 	if($chkerror!=0 || (!isset ($espost['submit'])) && $numberofproducts>=1){

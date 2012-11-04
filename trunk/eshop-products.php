@@ -246,7 +246,7 @@ function eshop_products_manager() {
 	?>	
 		<form action="" method="post" class="eshop">
 		<div class="eshopwidetable">
-		<table class="hidealllabels widefat" summary="product listing">
+		<table class="hidealllabels widefat">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -434,7 +434,7 @@ function eshop_products_manager() {
 			}else{
 				--$records;
 			}
-			echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 				number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 				number_format_i18n( min( $epage * $records, $max ) ),
 				number_format_i18n( $max)

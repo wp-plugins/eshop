@@ -269,7 +269,7 @@ function eshop_discounts_manager() {
 		?>
 		<div id="eshopdisccodesexisting">
 		<h3><?php _e('Current Discount Codes','eshop'); ?></h3>
-		<table class="widefat" summary="<?php _e('Discount Codes','eshop'); ?>">
+		<table class="widefat">
 		<caption><?php _e('Discount codes reference table','eshop'); ?></caption>
 		<thead>
 		<tr>

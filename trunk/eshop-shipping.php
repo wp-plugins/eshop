@@ -151,7 +151,7 @@ case ('countries'):
 
 	<form id="zoneform" action="" method="post">
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
-	<table class="hidealllabels widefat" summary="<?php _e('Countries, with their 2 letter code, and applicable zone','eshop'); ?>">
+	<table class="hidealllabels widefat">
 	<caption><?php _e('Countries','eshop'); ?></caption>
 
 	<thead>
@@ -303,7 +303,7 @@ case ('states'):
 	<form id="zoneform" action="" method="post">
 	<fieldset><legend><?php _e('Shipping Zones','eshop'); ?></legend>
 
-	<table class="hidealllabels widefat" summary="<?php _e('States, with their 2 letter code, and applicable zone','eshop'); ?>">
+	<table class="hidealllabels widefat">
 	<caption><?php _e('State/County/Province','eshop'); ?></caption>
 	<thead>
 	<tr>
@@ -358,6 +358,8 @@ default:
 		$eshopoptions['ship_types']=trim($_POST['eshop_ship_types']);
 		$eshopoptions['weight_unit']=$_POST['eshop_weight_unit'];
 		$eshopoptions['numb_shipzones']=$_POST['eshop_numb_shipzones'];
+		$eshopoptions['shipping_country_selected']=$_POST['eshop_shipping_country_selected'];
+		$eshopoptions['shipping_state_selected']=$_POST['eshop_shipping_state_selected'];
 		update_option('eshop_plugin_settings',$eshopoptions);
 	}
 	if(isset($_POST['eshopstd'])){
@@ -475,6 +477,52 @@ default:
 	echo '<option value="no" '.selected($eshopoptions['show_zones'],'no',false).'>'.__('No','eshop').'</option>';
 	?>
 	</select><br />
+	<br />
+	<?php /* choose one to be selected */ ?>
+	<label for="eshop_shipping_country_selected"><?php _e('Default country','eshop'); ?></label>
+	<select id="eshop_shipping_country_selected" name="eshop_shipping_country_selected">
+	<option value=""><?php _e('Please Select','eshop'); ?></option>
+	<?php
+	$eshop_shipping_country_selected='';
+	if(isset($eshopoptions['shipping_country_selected']))
+		$eshop_shipping_country_selected=$eshopoptions['shipping_country_selected'];
+		
+	$ctable=$wpdb->prefix.'eshop_countries';
+	$currentlocations=$wpdb->get_results("SELECT * from $ctable ORDER BY country");
+	foreach ($currentlocations as $row){
+		echo '<option value="'.$row->code.'"'. selected($row->code,$eshop_shipping_country_selected,false).'>'. $row->country .'</option>';
+	}
+	?>
+	</select><br />
+	<?php
+	$eshop_shipping_state_selected='';
+	if(isset($eshopoptions['shipping_state_selected']))
+		$eshop_shipping_state_selected=$eshopoptions['shipping_state_selected'];
+	$tablest=$wpdb->prefix.'eshop_states';
+	$stateList=$wpdb->get_results("SELECT id,code,stateName,list FROM $tablest ORDER BY list,stateName",ARRAY_A);
+	if(sizeof($stateList)>0){
+		$echo ='<label for="eshop_shipping_state_selected">'.__('Default State/County/Province','eshop').'</label>
+		  <select class="med pointer" name="eshop_shipping_state_selected" id="eshop_shipping_state_selected">';
+		$echo .='<option value="">'.__('Please Select','eshop').'</option>';
+		foreach($stateList as $code => $value){
+			if(isset($value['list'])) $li=$value['list'];
+			else $li='1';
+			$eshopstatelist[$li][$value['id']]=array($value['id'],$value['stateName']);
+		}
+		$tablec=$wpdb->prefix.'eshop_countries';
+		foreach($eshopstatelist as $egroup =>$value){
+			$eshopcname=$wpdb->get_var("SELECT country FROM $tablec where code='$egroup' limit 1");
+			$echo .='<optgroup label="'.$eshopcname.'">'."\n";
+
+			foreach($value as $code =>$stateName){
+				$echo.= '<option value="'.$code.'"'. selected($code,$eshop_shipping_state_selected,false).'>'. $stateName['1'] .'</option>'."\n";
+			}
+			$echo .="</optgroup>\n";
+		}
+	}
+	$echo.= "</select><br />\n";
+	echo $echo;
+	/* end */ ?>
 	<label for="eshop_ship_types"><?php _e('Shipping Modes (by weight) - 1 mode per line','eshop'); ?></label><br />
 	<?php
 	if(isset($eshopoptions['ship_types']))	
@@ -494,7 +542,7 @@ default:
 <?php if($eshopoptions['shipping']!=4){ ?>
 	<form id="shipform" action="" method="post">
 	<fieldset><legend><span><?php _e('Shipping Classes and Zones','eshop'); ?></span></legend>
-	<table class="hidealllabels widefat" summary="Shipping rates">
+	<table class="hidealllabels widefat">
 	<caption><?php _e('Shipping rates by class and zone','eshop'); ?></caption>
 	<thead>
 	<tr>
@@ -618,7 +666,7 @@ default:
 		?>
 		</select>
 		<label for="eshop_max_weight<?php echo $eshopletter; ?>"><?php _e('Max weight allowed','eshop'); ?></label><input id="eshop_max_weight<?php echo $eshopletter; ?>" name="eshop_max_weight[<?php echo $k; ?>]" type="text" value="<?php echo $maxweight; ?>" size="4" />
-		<table class="hidealllabels widefat" summary="Shipping rates per mode">
+		<table class="hidealllabels widefat">
 		<thead>
 		<tr>
 		<th id="<?php echo $eshopletter; ?>weight"><?php _e('Starting weight','eshop'); ?></th>

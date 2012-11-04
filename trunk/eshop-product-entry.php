@@ -63,7 +63,7 @@ function eshop_inner_custom_box($post) {
     	$eshopoptions['etax']['bands'] = 0;
     ?>
     <div class="eshopwidetable">
-    <table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option price and download','eshop'); ?>">
+    <table class="hidealllabels widefat eshoppopt">
     <caption><?php _e('Product Options','eshop'); ?></caption>
     <thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th>
     <th id="eshopprice"><?php _e('Price','eshop'); ?></th>
@@ -203,7 +203,8 @@ function eshop_inner_custom_box($post) {
 			$eshop_product['shiprate']='';
 		}
 		
-		$shipcodes=array('A','B','C','D','E','F');
+		$shipcodes_arr=array('A','B','C','D','E','F');
+		$shipcodes=apply_filters('eshop_ship_rate_class_array',$shipcodes_arr);
 		$size = sizeof($shipcodes)-1;
 		for($i=0;$i<=$size;$i++){
 			$disshipclass=apply_filters('eshop_shipping_rate_class',$shipcodes[$i]);
