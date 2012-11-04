@@ -162,7 +162,7 @@ function eshop_list_alpha($atts){
 			if($records!=$max){
 				$eecho = $page_links;
 			}
-			$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+			$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 				number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 				number_format_i18n( min( $epage * $records, $max ) ),
 				number_format_i18n( $max)
@@ -281,7 +281,7 @@ function eshop_list_subpages($atts){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
@@ -403,7 +403,7 @@ function eshop_list_cat_tags($atts){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
@@ -480,7 +480,7 @@ function eshop_list_new($atts){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
@@ -563,7 +563,7 @@ function eshop_best_sellers($atts){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		$echo .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
@@ -731,7 +731,7 @@ function eshop_listpages($subpages,$eshopclass,$form,$imgsize,$links,$price){
 			if($links=='yes')
 				$echo .='<a class="itemref" href="'.get_permalink($post->ID).'">'.get_the_post_thumbnail( $post->ID, array($w, $h)).'</a>'."\n";
 			else
-				$echo .=get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
+				$echo .= get_the_post_thumbnail( $post->ID, array($w, $h))."\n";
 
 		}else{
 			$eimage=eshop_files_directory();
@@ -871,7 +871,7 @@ function eshop_show_discounts(){
 	if($discarray>0){
 		ksort($edisc);
 		$echo='
-		<table class="eshop eshopdiscounts" summary="'.__('Discount for amount sold','eshop').'">
+		<table class="eshop eshopdiscounts">
 		<caption>'.__('Discount for amount sold','eshop').'</caption>
 		<thead>
 		<tr>
@@ -945,7 +945,7 @@ function eshop_show_shipping($atts) {
 		$query=$wpdb->get_results("SELECT * from $dtable where rate_type='shipping' OR rate_type='ship_weight'");
 		$currsymbol=$eshopoptions['currency_symbol'];
 
-		$eshopshiptable='<table id="eshopshiprates" summary="'.__('This is a table of our online order shipping rates','eshop').'" class="eshopshiprates eshop">';
+		$eshopshiptable='<table id="eshopshiprates" class="eshopshiprates eshop">';
 		$eshopshiptable.='<caption><span>'.__('Shipping rates by class and zone <small>(subject to change)</small>','eshop').'</span></caption>'."\n";
 		$eshopshiptable.='<thead><tr><th id="class">'.__('Ship Class','eshop').'</th>';
 		for($z=1;$z<=$eshopoptions['numb_shipzones'];$z++){
@@ -1050,7 +1050,7 @@ function eshop_show_shipping($atts) {
 			foreach ($typearr as $k=>$type){
 				$k++;
 				$eshopshiptableinner ='
-				<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
+				<table class="eshopshiprates eshop">
 				<caption>'.stripslashes(esc_attr($type)).'</caption>
 				<thead>
 				<tr>
@@ -1441,7 +1441,7 @@ function eshop_details($atts){
 				    $thclass='';
 					$listed.='<dt>'.__('Product Options','eshop')."</dt>\n";
 					$listed.='<dd>';
-					$listed.='<table class="eshop" summary="'.__('Product Options by option price and download','eshop').'">
+					$listed.='<table class="eshop">
     				<thead>
     				<tr>';
     				if(!in_array('option',$willhide))
@@ -1643,7 +1643,7 @@ function eshop_details($atts){
 								}
 								$listed.='<strong>'.stripslashes(esc_attr($ename)).'</strong><br />';
 								$listed.=nl2br(stripslashes(esc_attr($edesc)));
-								$listed.='<table class="eshop" summary="'.__('Product Options by option and price','eshop').'">
+								$listed.='<table class="eshop">
 								<thead><tr>
 								<th id="'.$eshopletter.'eshopnum">#</th>';
 								if(!in_array('option',$willhide))
@@ -1693,7 +1693,7 @@ function eshop_details($atts){
 					$dtable=$wpdb->prefix.'eshop_rates';
 					foreach ($typearr as $k=>$type){
 						$k++;
-						$eshopshiptabletop = '<table class="eshopshiprates eshop" summary="'.__('Shipping rates per mode','eshop').'">
+						$eshopshiptabletop = '<table class="eshopshiprates eshop">
 						<thead>
 						<tr>
 						<th id="'.$eshopletter.'wt">'. __('Weight','eshop').'</th>';

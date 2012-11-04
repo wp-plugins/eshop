@@ -317,6 +317,11 @@ if (!function_exists('eshop_admin_mode')) {
 			echo __(' Merchant Gateways in use:','eshop').' <span class="eshopgate">'.ucwords(implode(', ',(array)$displaymethods)).'</span>';
 		else
 			_e(' No Merchant Gateway selected.','eshop');
+			
+		//bad themes
+		$eshopbadtheme = wp_get_theme();
+		if($eshopbadtheme->{'Author URI'} == 'http://www.elegantthemes.com')
+			echo '<br />'.__('<span class="test">Warning:</span> The developers of eShop <strong>do not</strong> support anyone using this theme.'.'eshop');
 		echo '</p>'."\n";
 	}
 }

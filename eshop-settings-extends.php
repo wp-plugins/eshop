@@ -407,7 +407,7 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 		?>
 		<fieldset>
 			<p><?php _e('In all cases deleting the entry will disable the discount.', 'eshop'); ?></p>
-			<table class="hidealllabels widefat eshopdisc" summary="<?php _e('Discount for amount sold','eshop'); ?>">
+			<table class="hidealllabels widefat eshopdisc">
 			<caption><?php _e('Discount for amount sold','eshop'); ?></caption>
 			<thead>
 				<tr>

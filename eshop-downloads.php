@@ -198,7 +198,7 @@ function eshop_downloads_manager() {
 			<div class="wrap">
 			<div id="eshopicon" class="icon32"></div><h2><?php _e('Edit File details','eshop'); ?></h2>
 			<?php eshop_admin_mode(); ?>
-			<table class="widefat" summary="<?php _e('downloadable file details','eshop'); ?>">
+			<table class="widefat">
 			<caption><?php _e('File details','eshop'); ?></caption>
 			<thead>
 			 <tr>
@@ -371,7 +371,7 @@ function eshop_downloads_manager() {
 		<p><strong><?php _e('Total Downloads:','eshop'); ?> </strong><?php echo $total; ?><br />
 		<strong><?php _e('Total Purchases:','eshop'); ?> </strong><?php echo $purchased; ?><br />
 		</p>  
-		<table class="widefat" summary="<?php _e('download listing','eshop'); ?>">
+		<table class="widefat">
 		<caption><?php _e('Available downloads','eshop'); ?></caption>
 		<thead>
 		 <tr>
@@ -417,7 +417,7 @@ function eshop_downloads_manager() {
 		if($records!=$max){
 			$eecho = $page_links;
 		}
-		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>',
+		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'eshop' ) . '</span>',
 			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)

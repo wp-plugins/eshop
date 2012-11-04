@@ -34,12 +34,13 @@ if (!function_exists('display_cart')) {
 		}
 		//therefore if cart exists and has products
 		if($check > 0){
-			global $final_price, $sub_total;
+			global $final_price;
+			$sub_total=0;
 			// no fieldset/legend added - do we need it?
 			if ($change == 'true'){
 				$echo.= '<form action="'.get_permalink($eshopoptions['cart']).'" method="post" id="eshopcartform" class="eshop eshopcart">';
 			}
-			$echo.= '<table class="eshop cart" summary="'.__('Shopping cart contents overview','eshop').'">
+			$echo.= '<table class="eshop cart">
 			<caption>'.__('Shopping Cart','eshop').'</caption>
 			<thead>
 			<tr class="thead">';
@@ -446,17 +447,17 @@ if (!function_exists('is_discountable')) {
 if (!function_exists('is_shipfree')) {
 	function is_shipfree($total){
 		global $blog_id,$eshopoptions;
+		$shipfree = false;
+		$amt=$eshopoptions['discount_shipping'];
 		if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if($chkcode && apply_eshop_discount_code('shipping'))
-				return true;
+				$shipfree = true;
 		}
-		$amt=$eshopoptions['discount_shipping'];
 		if($amt!='' && $amt <= $total)
-			return true;
+			$shipfree = true;
 		
-		return false;
-
+		return apply_filters('eshop_is_shipfree',$shipfree, $total);
 	}
 }
 
@@ -1074,7 +1075,7 @@ if (!function_exists('orderhandle')) {
 				$i++;
 
 			}
-			$postage=$wpdb->escape(str_replace(',', "", $espost['shipping_1']));
+			$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
 			$shiptaxamt=$shiptaxrate='';
 			if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 				if(isset($_SESSION['shipping'.$blog_id]['cost']))
@@ -1999,13 +2000,14 @@ if (!function_exists('eshop_cart_process')) {
 						$error='<p><strong class="eshoperror error">'.__('Error: The quantity must contain numbers only, with a 999 maximum.','eshop').'</strong></p>';
 					}elseif('yes' == $eshopoptions['stock_control'] && ($stkav!='1' || $stkqty<$testqty)){
 						$error='<p><strong class="eshoperror error">'.__('Error: That quantity is not available for that product.','eshop').'</strong></p>';
-						//$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
+						$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$stkqty;
 					}else{
 						$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
 					}
 				}else{
 					$_SESSION['eshopcart'.$blog_id][$identifier]['qty']=$qty;
-				}	
+				}
+				
 				$_SESSION['lastproduct'.$blog_id]=$postid;
 				$_SESSION['eshopcart'.$blog_id][$identifier]['item']=$item;
 				$_SESSION['eshopcart'.$blog_id][$identifier]['option']=stripslashes($option);
@@ -2042,7 +2044,8 @@ if (!function_exists('eshop_cart_process')) {
 				if(isset($error)){
 					unset($_SESSION['eshopcart'.$blog_id][$identifier]);
 				}
-				do_action('eshop_product_added_to_cart',$_SESSION['eshopcart'.$blog_id][$identifier]);
+				if(isset($_SESSION['eshopcart'.$blog_id][$identifier]))
+					do_action('eshop_product_added_to_cart',$_SESSION['eshopcart'.$blog_id][$identifier]);
 
 			}
 		}

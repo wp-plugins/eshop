@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.4.2
-Version: 6.2.17
+Version: 6.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,17 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog == 
+
+Version 6.3.0
+
+* *Fixed* Bug with stock quantity
+* *Fixed* Widget doubling issue
+* *Added* Ability to set a default Country, and State/County/Province to the shipping page.
+* *Added* new filter eshop_is_shipfree added
+* *Amended* Maxlength on checkout address fields, now match what the db allows.
+* *removed* Summary from tables
+* *Possible fix* For an edge issue with shipping not being charged
+* *Added* Problem themes can are now highlighted if in use
 
 Version 6.2.17
 

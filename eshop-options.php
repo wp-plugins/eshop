@@ -147,7 +147,7 @@ if (isset($_POST['eaddopt'])) {
 			</p>
 			<label for="edesc"><?php _e('Description','eshop'); ?></label><br />
 			<textarea id="edesc" name="description" rows="3" cols="80"><?php echo stripslashes(esc_attr($edesc)); ?></textarea>
-			<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
+			<table class="hidealllabels widefat eshoppopt">
 			<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($ename)); ?></caption>
 			<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
 		<tbody>
@@ -175,7 +175,7 @@ function createform($opttable){
 	if(sizeof($myrowres)>0){
 		?>
 		<h3><?php _e('Existing Option Sets','eshop'); ?></h3>
-		<table class="widefat" summary="<?php _e('Option Sets','eshop'); ?>">
+		<table class="widefat">
 		<caption><?php _e('Option sets reference table','eshop'); ?></caption>
 		<thead>
 		<tr>
@@ -231,7 +231,7 @@ global $eshopoptions;
 
 	<label for="edesc"><?php _e('Description','eshop'); ?></label>
 	<textarea id="edesc" name="description" rows="3" cols="80"></textarea>
-	<table class="hidealllabels widefat eshoppopt" summary="<?php _e('Product Options by option and price','eshop'); ?>">
+	<table class="hidealllabels widefat eshoppopt">
 	<caption><?php _e('Options for','eshop'); ?> <?php echo stripslashes(esc_attr($name)); ?></caption>
 	<thead><tr><th id="eshopnum">#</th><th id="eshopoption"><?php _e('Option','eshop'); ?></th><th id="eshopprice"><?php _e('Price','eshop'); ?></th><?php if($eshopoptions['shipping']=='4'){?><th id="eshopweight"><?php _e('Weight','eshop'); ?></th><?php } ?></tr></thead>
 	<tbody>
