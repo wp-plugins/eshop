@@ -140,7 +140,12 @@ switch ($eshopaction) {
 			
 			$p->add_field($name, $value);
 		}
-	
+		//required for discounts to work -updating amount.
+		$runningtotal=0;
+		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
+			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		}
+		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_payson_post(); // submit the fields to payson
     		//$p->dump_fields();      // for debugging, output a table of all the fields

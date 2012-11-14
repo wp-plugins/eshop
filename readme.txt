@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.4.2
-Version: 6.3.0
+Version: 6.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,7 +44,17 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
-== Changelog == 
+== Changelog ==
+
+Version 6.3.1
+
+* *Added* Download allowance can now be decreased as well as increased on the order details page.
+* *Fixed* discount code issue.
+* *Fixed* all payments - bug with discount codes not working.
+* *Fixed* deleting an order from the system now removes permission to download an item.
+* *Fixed* quick fix for slashes appearing in names - a more robust solution will be in a future release.
+* *Amended* cart in widget no longer shows on cart or checkout pages.
+* *Removed* old cart widget.
 
 Version 6.3.0
 

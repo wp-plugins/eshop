@@ -1,6 +1,6 @@
 <?php
 function eshopwidgets_init(){
-	register_widget('eshop_widget');
+	//register_widget('eshop_widget');
 	register_widget('eshop_cart_widget');
 	register_widget('eshop_pay_widget');
 	register_widget('eshop_products_widget');
@@ -10,7 +10,7 @@ add_action("widgets_init", "eshopwidgets_init");
 
 /* *************************
 ** Main eShop cart widget **
-************************** */
+************************** 
 class eshop_widget extends WP_Widget {
 
 	function eshop_widget() {
@@ -115,7 +115,7 @@ class eshop_widget extends WP_Widget {
 	<?php
 	}
 }
-
+*/
 /* *********************************************
 ** Main eShop cart widget - new and improved **
 *********************************************** */
@@ -129,78 +129,80 @@ class eshop_cart_widget extends WP_Widget {
 	function widget( $args, $instance ) {
 		extract( $args );
 		global $blog_id,$eshopoptions;
-		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
-		$show = apply_filters( 'widget_text', $instance['show'], $instance );
-		$showwhat = apply_filters( 'widget_text', $instance['showwhat'], $instance );
-		$text = apply_filters( 'widget_text', $instance['text'], $instance );
-		$items = apply_filters( 'widget_text', $instance['items'], $instance );
-		$qty = apply_filters( 'widget_text', $instance['qty'], $instance );
-		$total = apply_filters( 'widget_text', $instance['total'], $instance );
-		//$fc=apply_filters( 'widget_text', $instance['fc'], $instance );
-		//$fcimg=apply_filters( 'widget_text', $instance['fcimg'], $instance );
+		if (get_the_ID() != $eshopoptions['cart'] && get_the_ID() != $eshopoptions['checkout']){
+			$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
+			$show = apply_filters( 'widget_text', $instance['show'], $instance );
+			$showwhat = apply_filters( 'widget_text', $instance['showwhat'], $instance );
+			$text = apply_filters( 'widget_text', $instance['text'], $instance );
+			$items = apply_filters( 'widget_text', $instance['items'], $instance );
+			$qty = apply_filters( 'widget_text', $instance['qty'], $instance );
+			$total = apply_filters( 'widget_text', $instance['total'], $instance );
+			//$fc=apply_filters( 'widget_text', $instance['fc'], $instance );
+			//$fcimg=apply_filters( 'widget_text', $instance['fcimg'], $instance );
 
-		$currsymbol=$eshopoptions['currency_symbol'];
-		if(isset($_SESSION['eshopcart'.$blog_id])){
-			$eshopsize=0;
-			$eshopqty=0;
-			$thetotal=0;
+			$currsymbol=$eshopoptions['currency_symbol'];
 			if(isset($_SESSION['eshopcart'.$blog_id])){
-				$eshopsize=sizeof($_SESSION['eshopcart'.$blog_id]);
-				
-				foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
-					$eshopqty+=$eshopwop['qty'];
-				}
-				
-				if(isset($_SESSION['final_price'.$blog_id])) $thetotal=$_SESSION['final_price'.$blog_id];
-				
-				$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($thetotal,__('2','eshop')));
-				if($showwhat=='full'){
-					$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'';
-					$eecho .='</div></div>';
-				}else{
-					$any=0;
-					$eecho='<p class="eshopwidget">';
-					if(isset($items) & $items=='1'){
-						$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
-						$any++;
-					}
-					if(isset($qty) & $qty=='1'){
-						if($any>0) $eecho.= '<br />';
-						$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopqty,'eshop'),$eshopqty);
-						$any++;
-					}
-					if(isset($total) & $total=='1'){
-						if($any>0) $eecho.= '<br />';
-						$eecho .=sprintf(__('<span>%s</span> cart total.','eshop'),$eshoptotal);
-					}
-					$eecho.= '<br /><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-					$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
-					$eecho .='</p>';
-				}			
+				$eshopsize=0;
+				$eshopqty=0;
+				$thetotal=0;
+				if(isset($_SESSION['eshopcart'.$blog_id])){
+					$eshopsize=sizeof($_SESSION['eshopcart'.$blog_id]);
 
+					foreach($_SESSION['eshopcart'.$blog_id] as $eshopdo=>$eshopwop){
+						$eshopqty+=$eshopwop['qty'];
+					}
+
+					if(isset($_SESSION['final_price'.$blog_id])) $thetotal=$_SESSION['final_price'.$blog_id];
+
+					$eshoptotal=sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($thetotal,__('2','eshop')));
+					if($showwhat=='full'){
+						$eecho='<div class="eshopcartwidget"><div class="ajaxcart">'.display_cart($_SESSION['eshopcart'.$blog_id],false, $eshopoptions['checkout'],'widget').'';
+						$eecho .='</div></div>';
+					}else{
+						$any=0;
+						$eecho='<p class="eshopwidget">';
+						if(isset($items) & $items=='1'){
+							$eecho .=sprintf(_n('<span>%d</span> product in cart.','<span>%d</span> products in cart.',$eshopsize,'eshop'),$eshopsize);
+							$any++;
+						}
+						if(isset($qty) & $qty=='1'){
+							if($any>0) $eecho.= '<br />';
+							$eecho .=sprintf(_n('<span>%d</span> item in cart.','<span>%d</span> items in cart.',$eshopqty,'eshop'),$eshopqty);
+							$any++;
+						}
+						if(isset($total) & $total=='1'){
+							if($any>0) $eecho.= '<br />';
+							$eecho .=sprintf(__('<span>%s</span> cart total.','eshop'),$eshoptotal);
+						}
+						$eecho.= '<br /><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+						$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a>';
+						$eecho .='</p>';
+					}			
+
+					echo $before_widget;
+					echo $before_title.$title.$after_title;
+					echo $eecho;
+					echo $after_widget;
+				}			
+			}elseif($show!='no'){
+				$eecho='';
+				if($showwhat=='full')
+					$eecho .= '<div class="ajaxcart">';
+				$eecho .= '<div class="eshopcartwidget"><p>'.$text.'</p><p><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
+				$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p></div>';
+				if($showwhat=='full')
+					$eecho .= '</div>';
 				echo $before_widget;
 				echo $before_title.$title.$after_title;
 				echo $eecho;
 				echo $after_widget;
-			}			
-		}elseif($show!='no'){
-			$eecho='';
-			if($showwhat=='full')
-				$eecho .= '<div class="ajaxcart">';
-			$eecho .= '<div class="eshopcartwidget"><p>'.$text.'</p><p><a class="cartlink" href="'.get_permalink($eshopoptions['cart']).'">'.__('View Cart','eshop').'</a>';
-			$eecho .='<br /><a class="checkoutlink" href="'.get_permalink($eshopoptions['checkout']).'">'.__('Checkout','eshop').'</a></p></div>';
-			if($showwhat=='full')
-				$eecho .= '</div>';
-			echo $before_widget;
-			echo $before_title.$title.$after_title;
-			echo $eecho;
-			echo $after_widget;
-		}else{
-			if($showwhat=='full'){
-				echo $before_widget;
-				//echo $before_title.$title.$after_title;
-				echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
-				echo $after_widget;
+			}else{
+				if($showwhat=='full'){
+					echo $before_widget;
+					//echo $before_title.$title.$after_title;
+					echo '<div class="eshopcartwidget"><div class="ajaxcart"></div></div>';
+					echo $after_widget;
+				}
 			}
 		}
 	}

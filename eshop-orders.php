@@ -200,7 +200,7 @@ if (!function_exists('displayorders')) {
 					echo '<tr'.$alt.'>
 					<td headers="line" id="numb'.$c.'">'.$myrow->id.'</td>
 					<td headers="date numb'.$c.'">'.$thisdate.'</td>
-					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.$myrow->last_name.$company.'</a>'.$userlink.'</td>
+					<td headers="customer numb'.$c.'"><a href="'.$phpself.'&amp;view='.$myrow->id.'" title="'.__('View complete order details','eshop').'">'.$myrow->first_name.' '.stripslashes($myrow->last_name).$company.'</a>'.$userlink.'</td>
 					<td headers="items numb'.$c.'">'.$ic.'</td>
 					<td headers="price numb'.$c.'" class="right">'.sprintf( __('%1$s%2$s','eshop'), $currsymbol, number_format_i18n($total, __('2','eshop'))).'</td>
 					<td headers="downloads numb'.$c.'" class="right">'.$myrow->downloads.'</td>
@@ -288,9 +288,12 @@ if (!function_exists('deleteorder')) {
 		global $wpdb;
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
+		$dltable=$wpdb->prefix.'eshop_download_orders';
 		$checkid=$wpdb->get_var("Select checkid From $dtable where id='$delid' && status='Deleted'");
 		$delquery2=$wpdb->get_results("DELETE FROM $itable WHERE checkid='$checkid'");
 		$delquery=$wpdb->get_results("DELETE FROM $dtable WHERE checkid='$checkid'");
+		$delquery=$wpdb->get_results("DELETE FROM $dltable WHERE checkid='$checkid'");
+
 		echo '<div class="updated fade">'.__('That order has now been deleted from the system.','eshop').'</div>';
 	}
 }
@@ -400,10 +403,12 @@ if(isset($_POST['dall'])){
 		if($delay==24){$replace=__('1 day','eshop');}
 		$dtable=$wpdb->prefix.'eshop_orders';
 		$itable=$wpdb->prefix.'eshop_order_items';
+		$dltable=$wpdb->prefix.'eshop_download_orders';
 		$myrows=$wpdb->get_results("Select checkid From $dtable where status='Deleted' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
 		foreach($myrows as $myrow){
 			$checkid=$myrow->checkid;
 			$delquery2=$wpdb->query("DELETE FROM $itable WHERE checkid='$checkid'");
+			$delquery=$wpdb->get_results("DELETE FROM $dltable WHERE checkid='$checkid'");
 			$query2=$wpdb->query("DELETE FROM $dtable WHERE status='Deleted' && checkid='$checkid' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
 		}
 		echo '<div class="updated fade">'.__('Deleted orders older than','eshop').' '.$replace.' '.__('have now been <strong>completely</strong> deleted.','eshop').'</div>';
@@ -465,9 +470,14 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
 		$adddown=$wpdb->escape($_GET['adddown']);
 		$wpdb->query("UPDATE $dordtable SET downloads=downloads+1 where id='$adddown' limit 1");
-		echo '<div class="updated fade">'.__('Download allowance increased.','eshop').'</div>';
+		echo '<div class="updated fade"><p>'.__('Download allowance increased.','eshop').'</p></div>';
 	}
-	
+	if (isset($_GET['decdown']) && is_numeric($_GET['decdown'])){
+		$dordtable=$wpdb->prefix.'eshop_download_orders';
+		$decdown=$wpdb->escape($_GET['decdown']);
+		$wpdb->query("UPDATE $dordtable SET downloads=downloads-1 where id='$decdown' limit 1");
+		echo '<div class="updated fade"><p>'.__('Download allowance decreased.','eshop').'</p></div>';
+	}
 	$dquery=$wpdb->get_results("Select * From $dtable where id='$view'");
 	foreach($dquery as $drow){
 		$status=$drow->status;
@@ -567,7 +577,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$dlinfo= $wpdb->get_row("SELECT d.downloads, d.id FROM $dordtable as d, $downstable as dl WHERE d.checkid='$myrow->checkid' AND dl.id='$myrow->down_id' AND d.files=dl.files");
 			if(isset($dlinfo->downloads)){
 				$downloadable='<span class="downprod">'.__('Yes - remaining:','eshop');
-				$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a></span>';
+				$downloadable .=' '.$dlinfo->downloads.'<a href="'.$phpself.'&amp;view='.$view.'&amp;adddown='.$dlinfo->id.'" title="'.__('Increase download allowance by 1','eshop').'">'.__('Increase','eshop').'</a>, <a href="'.$phpself.'&amp;view='.$view.'&amp;decdown='.$dlinfo->id.'" title="'.__('Decrease download allowance by 1','eshop').'">'.__('Decrease','eshop').'</a></span>';
 			}else{
 				$downloadable = __('Download Item Missing','eshop');
 			}
@@ -619,9 +629,9 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	foreach($dquery as $drow){
 		$userlink='';
 		if(isset($drow->user_id) && $drow->user_id!='0')
-			$userlink=' (<a href="user-edit.php?user_id='.$drow->user_id.'" title="'.esc_attr(sprintf(__('Profile for %1$s','eshop'),$drow->first_name.' '.$drow->last_name)).'" class="eshop-userlink">*</a>)';
+			$userlink=' (<a href="user-edit.php?user_id='.$drow->user_id.'" title="'.esc_attr(sprintf(__('Profile for %1$s','eshop'),$drow->first_name.' '.stripslashes($drow->last_name))).'" class="eshop-userlink">*</a>)';
 
-		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".$drow->last_name.$userlink."<br />\n";
+		echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->first_name." ".stripslashes($drow->last_name).$userlink."<br />\n";
 		if($drow->company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->company."<br />\n";
 		echo '<strong>'.__('Email:','eshop').'</strong>'." <a href=\"".$phpself."&amp;viewemail=".$view."\" title=\"".__('Send a form email','eshop')."\">".$drow->email.'</a> <small class="noprint">'.__('(sends a form email)','eshop')."</small><br />\n";
 		if('no' == $eshopoptions['downloads_only']){
@@ -631,7 +641,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			$address=$drow->address1;
 			if($drow->address2!='') $address.= ', '.$drow->address2;
 
-			echo '<address>'.$drow->first_name." ".$drow->last_name."<br />\n";
+			echo '<address>'.$drow->first_name." ".stripslashes($drow->last_name)."<br />\n";
 			if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
 			echo $address."<br />\n";
 			echo $drow->city."<br />\n";
@@ -661,11 +671,11 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			echo "</div>\n";
 			if($drow->ship_name!='' && $drow->ship_address!='' && $drow->ship_city!='' && $drow->ship_postcode!=''){
 				echo "<div class=\"shippingaddress\"><h4>".__('Shipping','eshop')."</h4>";
-				echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.$drow->ship_name."<br />\n";
+				echo '<p><strong>'.__("Name: ",'eshop').'</strong>'.stripslashes($drow->ship_name)."<br />\n";
 				if($drow->ship_company!='') echo '<strong>'.__("Company: ",'eshop').'</strong>'.$drow->ship_company."<br />\n";
 				echo '<strong>'.__("Phone: ",'eshop').'</strong>'.$drow->ship_phone."</p>\n";
 				echo '<h5>'.__('Address','eshop').'</h5>';
-				echo '<address>'.$drow->ship_name.'<br />'."\n";
+				echo '<address>'.stripslashes($drow->ship_name).'<br />'."\n";
 				if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
 				echo $drow->ship_address."<br />\n";
 				echo $drow->ship_city."<br />\n";

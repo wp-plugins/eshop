@@ -27,7 +27,6 @@ if (!function_exists('eshopShowform')) {
 	$reqdarray=apply_filters('eshopCheckoutReqd', $reqdvalues );
 
 	$xtralinks=eshop_show_extra_links();
-
 	$echo = '
 	<div class="hr"></div>
 	<div class="eshopcustdetails custdetails">
@@ -111,6 +110,9 @@ if (!function_exists('eshopShowform')) {
 		$echo .='</fieldset>';
 	}
 	
+	//for display:
+	$first_name=wp_specialchars((stripslashes(trim($first_name))),'1');
+	$last_name=wp_specialchars((stripslashes(trim($last_name))),'1');
 	
 	$echo.='<fieldset class="eshop fld1"><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'</legend>
 	<fieldset class="eshop fld2">';
@@ -285,7 +287,9 @@ if (!function_exists('eshopShowform')) {
 	$discounttotal=0;
 	if(eshop_discount_codes_check()){
 		$eshop_discount='';
-		if(isset($_POST['eshop_discount'])) $eshop_discount=esc_attr($_POST['eshop_discount']);
+		if(isset($_POST['eshop_discount'])) $eshop_discount=$_POST['eshop_discount'];
+		//for display:
+		$eshop_discount=wp_specialchars((stripslashes(trim($eshop_discount))),'1');
 		$echo .='<fieldset class="eshop fld5"><legend><label for="eshop_discount">'.__('Discount Code','eshop').'</label></legend>
 	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></fieldset>'."\n";
 	}
