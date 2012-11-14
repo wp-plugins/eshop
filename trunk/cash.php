@@ -79,7 +79,7 @@ switch ($eshopaction) {
 		$subject .=__(" Ref:",'eshop').$ecash->ipn_data['RefNr'];
 		// email to business a complete copy of the notification from cash to keep!!!!!
 		$array=eshop_rtn_order_details($checkid);
-		$ecash->ipn_data['payer_email']=$array['ename'].' '.$array['eemail'].' ';
+		$ecash->ipn_data['payer_email']=stripslashes($array['ename']).' '.$array['eemail'].' ';
 		 $body =  __("A cash purchase was made",'eshop')."\n";
 		 $body .= "\n".__("from ",'eshop').$ecash->ipn_data['payer_email'].__(" on ",'eshop').date('m/d/Y');
 		 $body .= __(" at ",'eshop').date('g:i A')."\n\n";
@@ -144,7 +144,12 @@ switch ($eshopaction) {
 			}
 			$p->add_field($name, $value);
 		}
-	
+	//required for discounts to work -updating amount.
+			$runningtotal=0;
+			for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
+				$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+			}
+		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_cash_post(); // submit the fields to cash
     		//$p->dump_fields();      // for debugging, output a table of all the fields

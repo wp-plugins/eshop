@@ -59,6 +59,7 @@ class epn_class {
       foreach ($this->fields as $name => $value) {
 			$pos = strpos($name, 'amount');
 			if ($pos === false) {
+				$value=stripslashes($value);
 			   $echo.= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
 			}else{
 				$echo .= eshopTaxCartFields($name,$value);

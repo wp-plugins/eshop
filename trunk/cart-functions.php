@@ -258,6 +258,8 @@ if (!function_exists('display_cart')) {
 							break;
 						case '4'://by weight/zone etc
 							//$totalweight
+							if(sizeof($shiparray)<1)
+								$shiparray='';
 							$shipzone='zone'.$pzone;
 							$shipcost=$wpdb->get_var("SELECT $shipzone FROM $table2 where weight <= '$totalweight' && class='$shiparray' and rate_type='ship_weight' order by weight DESC limit 1");
 							$shipping+=$shipcost;
@@ -527,7 +529,7 @@ if (!function_exists('valid_eshop_discount_code')) {
 	function valid_eshop_discount_code($code){
 		global $wpdb;
 		$now=date('Y-m-d');
-		$code=$wpdb->escape(strtolower($code));
+		$code=$wpdb->escape(stripslashes(strtolower($code)));
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$code'");
 		if(is_object($row)){
@@ -1717,7 +1719,7 @@ if (!function_exists('eshop_email_parse')) {
 	//	require_once ( ABSPATH . WPINC . '/registration.php' );
 		$this_email = str_replace('{STATUS}', $array['status'], $this_email);
 		$this_email = str_replace('{FIRSTNAME}', $array['firstname'], $this_email);
-		$this_email = str_replace('{NAME}', $array['ename'], $this_email);
+		$this_email = str_replace('{NAME}', stripslashes($array['ename']), $this_email);
 		$this_email = str_replace('{EMAIL}', $array['eemail'], $this_email);
 		$this_email = str_replace('{CART}', $array['cart'], $this_email);
 		if(isset($eshopoptions['downloads_email']) && 'yes' == $eshopoptions['downloads_email'] || $d=='yes')
