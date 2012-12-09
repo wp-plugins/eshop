@@ -58,7 +58,7 @@ if (!function_exists('eshop_admin')) {
 		<p><strong>' . __('eShop Help','eshop') . '</strong></p>
 		<ul>
 		<li>'.__('<a href="http://quirm.net/wiki/eshop/">eShop Wiki</a>','eshop').'</li>
-		<li>'.__('<a href="http://wordpress.org/tags/eshop">Wordpress forums</a>','eshop').'</li>
+		<li>'.__('<a href="http://wordpress.org/support/plugin/eshop">Wordpress forums</a>','eshop').'</li>
 		<li>'.__('<a href="http://quirm.net/forum/forum.php?id=14">Quirm.net</a>','eshop').'</li>
 		</ul>';
 		foreach ($page as $paged){

@@ -113,8 +113,10 @@ if (!function_exists('displayorders')) {
 			}else{
 				$records='10';
 			}
-			if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
-			else $epage='1';
+			if(isset($_GET['_p']) && is_numeric($_GET['_p']))
+				$epage=$_GET['_p'];
+			else 
+				$epage='1';
 			if(!isset($_GET['eshopall'])){
 				$page_links = paginate_links( array(
 					'base' => add_query_arg( '_p', '%#%' ),
@@ -147,9 +149,8 @@ if (!function_exists('displayorders')) {
 			echo '<li><a href="'.$apge.'&amp;by=tn"'.$ctn.'>'.__('ID Number','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=ca"'.$cca.'>'.__('Company','eshop').'</a></li>';
 			echo '<li><a href="'.$apge.'&amp;by=na"'.$cna.'>'.__('Customer','eshop').'</a></li>';
-
 			echo '</ul>';
-		
+			
 			echo "<form id=\"orderstatus\" action=\"".$phpself."\" method=\"post\">";
 			echo '<div class="orderlist tablecontainer">';
 			echo '<table class="hidealllabels widefat">

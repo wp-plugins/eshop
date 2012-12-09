@@ -48,7 +48,7 @@ if (!function_exists('eshopShowform')) {
 		if(isset($_POST['eshop_shiptype'])) $stype=$_POST['eshop_shiptype'];
 		$first=apply_filters('eshop_default_shipping','1');
 		/* '1- text 2 - weight 3-weight symbol' */
-		$echo .='<p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</p>';
+		$echo .='<label for ="eshop_shiptype1"><p>'.sprintf( __('%1$s %2$s %3$s','eshop'),__('Total weight: ','eshop'), number_format_i18n($cartweight,__('2','eshop')),$weightsymbol).'</label></p>';
 		foreach ($typearr as $k=>$type){
 			$k++;
 			$query=$wpdb->get_results("SELECT * from $dtable  where weight<='$cartweight' &&  class='$k' && rate_type='ship_weight' order by weight DESC limit 1");
@@ -111,8 +111,8 @@ if (!function_exists('eshopShowform')) {
 	}
 	
 	//for display:
-	$first_name=wp_specialchars((stripslashes(trim($first_name))),'1');
-	$last_name=wp_specialchars((stripslashes(trim($last_name))),'1');
+	$first_name=esc_html((stripslashes(trim($first_name))),'1');
+	$last_name=esc_html((stripslashes(trim($last_name))),'1');
 	
 	$echo.='<fieldset class="eshop fld1"><legend id="mainlegend">'. __('Please Enter Your Details','eshop').'</legend>
 	<fieldset class="eshop fld2">';
@@ -289,7 +289,7 @@ if (!function_exists('eshopShowform')) {
 		$eshop_discount='';
 		if(isset($_POST['eshop_discount'])) $eshop_discount=$_POST['eshop_discount'];
 		//for display:
-		$eshop_discount=wp_specialchars((stripslashes(trim($eshop_discount))),'1');
+		$eshop_discount=esc_html((stripslashes(trim($eshop_discount))),'1');
 		$echo .='<fieldset class="eshop fld5"><legend><label for="eshop_discount">'.__('Discount Code','eshop').'</label></legend>
 	  	<input class="med" type="text" name="eshop_discount" value="'.$eshop_discount.'" id="eshop_discount" size="40" /></fieldset>'."\n";
 	}

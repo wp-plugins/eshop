@@ -1,11 +1,11 @@
 <?php
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.3.1');
+	define('ESHOP_VERSION', '6.3.2');
 /*
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.4 and above.
-Version: 6.3.1
+Version: 6.3.2
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -51,14 +51,14 @@ if (!function_exists('eshopsession')) {
 add_action('eshop_event', 'eshop_cron');
 if (!function_exists('eshop_cron')) {
 	function eshop_cron(){
-		global $wpdb,$eshopoptions;
+		global $wpdb,$eshopoptions,$blog_id;
 		if($eshopoptions['cron_email']!=''){
 			$dtable=$wpdb->prefix.'eshop_orders';
 			$max = $wpdb->get_var("SELECT COUNT(id) FROM $dtable WHERE status='Completed' OR status='Waiting'");
 			if($max>0){
 				$to = $eshopoptions['cron_email'];    //  your email
 				$body =  __("You may have some outstanding orders to process\n\nregards\n\nYour eShop plugin",'eshop');
-				$body .="\n\n".get_bloginfo('url').'/wp-admin/admin.php?page=eshop-orders.php&action=Dispatch'."\n";
+				$body .="\n\n".get_admin_url($blog_id).'/admin.php?page=eshop-orders.php&action=Completed'."\n";
 				$headers=eshop_from_address();
 				$subject=get_bloginfo('name').__(": outstanding orders");
 				wp_mail($to, $subject, $body, $headers);

@@ -38,8 +38,10 @@ if (!function_exists('displaymyorders')) {
 			}else{
 				$records='10';
 			}
-			if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
-			else $epage='1';
+			if(isset($_GET['_p']) && is_numeric($_GET['_p']))
+				$epage=$_GET['_p'];
+			else 
+				$epage='1';
 			if(!isset($_GET['eshopall'])){
 				$page_links = paginate_links( array(
 					'base' => add_query_arg( '_p', '%#%' ),

@@ -169,6 +169,7 @@ class eshop_paypal_class {
 		  foreach ($espost as $name => $value) {
 			if($name!='submit' && $name!='ppsubmit'){			
 				if($name!='return' && $name!='cancel_return' && $name!='notify_url'){
+					$value=stripslashes($value);
 					$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 					$value = str_replace($replace, " ", $value);
 				}

@@ -129,7 +129,10 @@ class eshop_cart_widget extends WP_Widget {
 	function widget( $args, $instance ) {
 		extract( $args );
 		global $blog_id,$eshopoptions;
-		if (get_the_ID() != $eshopoptions['cart'] && get_the_ID() != $eshopoptions['checkout']){
+		$eshopsw=true;
+		if (get_the_ID() == $eshopoptions['cart'] || get_the_ID() == $eshopoptions['checkout'])
+			$eshopsw=apply_filters('eshopshowcartoncart',false);
+		if ($eshopsw){
 			$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
 			$show = apply_filters( 'widget_text', $instance['show'], $instance );
 			$showwhat = apply_filters( 'widget_text', $instance['showwhat'], $instance );
