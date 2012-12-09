@@ -3,8 +3,8 @@ Contributors: elfin
 Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
-Tested up to: 3.4.2
-Version: 6.3.1
+Tested up to: 3.5
+Version: 6.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,16 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.2
+
+* *Fixed* lising issue on admin products nad base pages.
+* *Added* set eshopshowcartoncart filter to true to show cart widget again on cart and checkout pages
+* *Fixed* names with apostrophes being sent to Paypal (note: apostrophe is currently removed)
+* *Fixed* link in cron email is now correct.
+* *Fixed* deprectaed notices
+* *Amended* Link to new WordPress.org support forum for eShop
+* *Fixed* accessibility issue on the checkout form.
 
 Version 6.3.1
 

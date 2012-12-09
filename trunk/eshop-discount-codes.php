@@ -160,12 +160,9 @@ function eshop_discounts_manager() {
 				$editid='0';
 			}
 		}
-
-
-		
 	}
 	//for display:
-	$eshop_code=wp_specialchars((stripslashes(trim($eshop_code))),'1');
+	$eshop_code=esc_html((stripslashes(trim($eshop_code))),'1');
 
 	if($edit==false){
 		$eshop_suggest='<p>'.__('Suggested random codes:','eshop').'</p>';

@@ -74,28 +74,30 @@ if(!isset($_GET['change'])){
 	}else{
 		$records='10';
 	}
-	if(isset($_GET['_p']) && is_numeric($_GET['_p']))$epage=$_GET['_p'];
-		else $epage='1';
-		if(!isset($_GET['eshopall'])){
-			$page_links = paginate_links( array(
-				'base' => add_query_arg( '_p', '%#%' ),
-				'format' => '',
-				'total' => ceil($max / $records),
-				'current' => $epage,
-				'type'=>'array'
-				));
-			$offset=($epage*$records)-$records;
-		}else{
-			$page_links = paginate_links( array(
-				'base' => add_query_arg( '_p', '%#%' ),
-				'format' => '',
-				'total' => ceil($max / $records),
-				'current' => $epage,
-				'type'=>'array',
-				'show_all' => true,
+	if(isset($_GET['_p']) && is_numeric($_GET['_p']))
+		$epage=$_GET['_p'];
+	else 
+		$epage='1';
+	if(!isset($_GET['eshopall'])){
+		$page_links = paginate_links( array(
+			'base' => add_query_arg( '_p', '%#%' ),
+			'format' => '',
+			'total' => ceil($max / $records),
+			'current' => $epage,
+			'type'=>'array'
 			));
-			$offset='0';
-			$records=$max;
+		$offset=($epage*$records)-$records;
+	}else{
+		$page_links = paginate_links( array(
+			'base' => add_query_arg( '_p', '%#%' ),
+			'format' => '',
+			'total' => ceil($max / $records),
+			'current' => $epage,
+			'type'=>'array',
+			'show_all' => true,
+		));
+		$offset='0';
+		$records=$max;
 	}
 	
 	if($max>0){
@@ -152,6 +154,8 @@ if(!isset($_GET['change'])){
 		<tbody>
 		<?php
 		$start =($epage * $records)-($records);
+		if(isset($_GET['eshopall']))
+			$start=0;
 		$grab=array_slice($grab,$start,$records);
 		foreach($grab as $foo=>$grabit){
 			$eshop_product=$grabit;
@@ -248,8 +252,12 @@ if(!isset($_GET['change'])){
 		if($records!=$max){
 			$eecho = $page_links;
 		}
+		if(isset($_GET['eshopall']))
+			$eshopdisp=number_format_i18n( 1 );
+		else
+			$eshopdisp=number_format_i18n( ( $epage - 1 ) * $records + 1 );
 		echo sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s','eshop' ) . '</span>',
-			number_format_i18n( ( $epage - 1 ) * $records + 1 ),
+			$eshopdisp,
 			number_format_i18n( min( $epage * $records, $max ) ),
 			number_format_i18n( $max)
 		);
