@@ -4,7 +4,7 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.5
-Version: 6.3.2
+Version: 6.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,15 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.3
+
+* *Fixed* add to cart javascript filter.
+* *Fixed* wpdb>prepare issues.
+* *amendment* minor change to checkout page that may help translation plugins
+* *amendment* small change to Paypal, possible fix for phone number not being sent
+* *possibe fix* for discounts and authorize.net
+* *added* for new installs only, Berkshire was missing from the UK counties list. For existing installs, add it via the normal method.
 
 Version 6.3.2
 

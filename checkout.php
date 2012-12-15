@@ -32,7 +32,7 @@ if (!function_exists('eshopShowform')) {
 	<div class="eshopcustdetails custdetails">
 	<p><small class="privacy"><span class="reqd" title="Asterisk">*</span> '.__('Denotes Required Field ','eshop').'
 	'.__($xtralinks,'eshop').'</small></p>
-	<form action="'.esc_url($_SERVER['REQUEST_URI']).'" method="post" class="eshop eshopform">';
+	<form action="'.get_permalink($eshopoptions['checkout']).'" method="post" class="eshop eshopform">';
 	
 	if($eshopoptions['shipping']=='4' && 'no' == $eshopoptions['downloads_only'] && !eshop_only_downloads()){
 		//only for ship by weight

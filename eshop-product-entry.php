@@ -340,11 +340,11 @@ function eshop_save_postdata( $post_id ) {
 			$sql = "select post_id from $stocktable WHERE post_id=$pid AND option_id=$i";
 			$result=$wpdb->get_results($sql);
 			if( !empty( $result ) ){
-				$sql = "UPDATE $stocktable set available=$stkv where post_id=$pid AND option_id=$i";
-				$wpdb->query($wpdb->prepare($sql));
+				$sql = "UPDATE $stocktable set available=$stkv where post_id=%d AND option_id=%d";
+				$wpdb->query($wpdb->prepare($sql,$pid,$i));
 			} else {
-				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($pid,$i,$stkv,0)";
-				$wpdb->query($wpdb->prepare($sql));
+				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES (%d,%d,%d,0)";
+				$wpdb->query($wpdb->prepare($sql,$pid,$i,$stkv));
 			}
 		}
 	}

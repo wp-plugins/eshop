@@ -126,7 +126,7 @@ function eshop_discounts_manager() {
 			//create date
 			$eshop_code_date=$eshop_code_year.'-'.$eshop_code_month.'-'.$eshop_code_day;
 			$eshop_id=trim($_POST['editid']);
-			$eshop_code=trim($_POST['eshop_code']);
+			$eshop_code=stripslashes(trim($_POST['eshop_code']));
 			$eshop_percent=$_POST['eshop_percent'];
 			$eshop_remain=$_POST['eshop_remain'];
 			$eshop_code_type=$_POST['eshop_code_type'];
@@ -138,22 +138,22 @@ function eshop_discounts_manager() {
 				//$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$id"));
 
 				$query="UPDATE $disctable SET 
-				dtype='$eshop_code_type', 
-				disccode='$eshop_code',
-				percent='$eshop_percent',
-				remain='$eshop_remain',
-				enddate='$eshop_code_date',
-				live='$eshop_live'
-				WHERE id='$eshop_id' limit 1";
-				$wpdb->query($wpdb->prepare($query));
+				dtype=%s, 
+				disccode=%s,
+				percent=%s,
+				remain=%s,
+				enddate=%s,
+				live=%s
+				WHERE id=%d limit 1";
+				$wpdb->query($wpdb->prepare($query,$eshop_code_type,$eshop_code,$eshop_percent,$eshop_remain,$eshop_code_date,$eshop_live,$eshop_id));
 				echo '<div class="updated fade"><p>'.__('Discount code details updated','eshop').'</p></div>';
 			}else{
 				//new
 				$query="INSERT INTO $disctable 
 				(dtype,disccode,percent,remain,enddate,live)
 				VALUES
-				('$eshop_code_type','$eshop_code','$eshop_percent','$eshop_remain','$eshop_code_date','$eshop_live')";
-				$wpdb->query($wpdb->prepare($query));
+				(%s,%s,%s,%d,%s,%s)";
+				$wpdb->query($wpdb->prepare($query,$eshop_code_type,$eshop_code,$eshop_percent,$eshop_remain,$eshop_code_date,$eshop_live));
 				echo '<div class="updated fade"><p>'.__('Discount code details entered','eshop').'</p></div>';
 				//resetvalues
 				$eshop_code=$eshop_percent=$eshop_remain=$eshop_used=$eshop_live=$eshop_free_ship=$eshop_code_date=$eshop_code_type='';
