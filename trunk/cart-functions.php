@@ -57,7 +57,7 @@ if (!function_exists('display_cart')) {
 				<th id="carttaxamt" class="btbr">'.__('Tax Amt','eshop').'</th>';
 			}
 			if($iswidget=='' && $change == 'true'){
-				$eshopdeleteheaderimage=apply_filters('eshop_delete_header_image',WP_PLUGIN_URL.'/eshop/no.png');
+				$eshopdeleteheaderimage=apply_filters('eshop_delete_header_image',plugins_url('/eshop/no.png'));
 				$echo.= '<th id="cartDelete" class="btbr"><img src="'.$eshopdeleteheaderimage.'" alt="'.__('Delete','eshop').'" title="'.__('Delete','eshop').'" /></th>';
 			}
 			$echo .= '</tr></thead><tbody>';
@@ -170,7 +170,7 @@ if (!function_exists('display_cart')) {
 					//
 					
 					if($iswidget=='' && $change == 'true'){
-						$eshopdeleteimage=apply_filters('eshop_delete_image',WP_PLUGIN_URL.'/eshop/no.png');
+						$eshopdeleteimage=apply_filters('eshop_delete_image',plugins_url('/eshop/no.png'));
 						$echo .='<td headers="cartDelete" class="deletecartitem"><label for="delete'.$productid.$iswidget.'" class="hide">'.__('Delete this item','eshop').'</label><input type="image" src="'.$eshopdeleteimage.'" id="delete'.$productid.$iswidget.'" name="eshopdeleteitem['.$productid.']" value="'.$opt["qty"].'" title="'.__('Delete this item','eshop').'"/></td>';
 					}
 					$echo .="</tr>\n";

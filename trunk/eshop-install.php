@@ -279,6 +279,7 @@ if(isset($eshopoptions['version'])){
 		('YU', 'Yukon', 3,'CA'),
 		('Lond','London', 1,'GB'),
 		('Beds','Bedfordshire', 1,'GB'),
+		('Berk','Berkshire', 1,'GB'),
 		('Buck','Buckinghamshire', 1,'GB'),
 		('Camb','Cambridgeshire', 1,'GB'),
 		('Ches','Cheshire', 1,'GB'),

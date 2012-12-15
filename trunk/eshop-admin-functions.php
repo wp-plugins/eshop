@@ -37,7 +37,7 @@ if (!function_exists('eshop_admin')) {
      */
     function eshop_admin() {    
 		global $wp_version;
-		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop-orders.php', 'eshop_admin_orders',WP_PLUGIN_URL.'/eshop/eshop.png');
+		$page[]=add_menu_page(__('eShop','eshop'), __('eShop','eshop'), 'eShop', 'eshop-orders.php', 'eshop_admin_orders',plugins_url('/eshop/eshop.png'));
 
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop Orders','eshop'), __('Orders','eshop'),'eShop_admin', basename('eshop-orders.php'),'eshop_admin_orders');
 		$page[]=add_submenu_page('eshop-orders.php',__('eShop Shipping','eshop'), __('Shipping','eshop'),'eShop_admin', basename('eshop-shipping.php'),'eshop_admin_shipping');
@@ -75,9 +75,9 @@ if (!function_exists('eshop_admin')) {
 if (!function_exists('eshop_admin_init')) {
 	function eshop_admin_init(){
 		/* Register our stylesheet. */
-		wp_register_style('eShopAdminStyles', WP_PLUGIN_URL . '/eshop/eshop-admin.css');
-		wp_register_style('eShopAdminPrint', WP_PLUGIN_URL . '/eshop/eshop-print.css','','','print');
-		wp_register_script('eShopCheckAll', WP_PLUGIN_URL . '/eshop/eshopcheckall.js', array('jquery'));
+		wp_register_style('eShopAdminStyles', plugins_url( '/eshop/eshop-admin.css'));
+		wp_register_style('eShopAdminPrint', plugins_url( '/eshop/eshop-print.css'),'','','print');
+		wp_register_script('eShopCheckAll', plugins_url( '/eshop/eshopcheckall.js'), array('jquery'));
 		wp_enqueue_style('eShopAdminStyles');
 		//recall this function to fix multisite
 		eshop_caps_check();

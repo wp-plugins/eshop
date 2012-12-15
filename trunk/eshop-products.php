@@ -53,9 +53,9 @@ function eshop_products_manager() {
 					$meta_value=$type[$i]['stkqty'];
 					$results=$wpdb->get_results("select post_id from $stocktable where post_id=$pid && option_id=$i");
 					if(!empty($results)){
-						$wpdb->query($wpdb->prepare("UPDATE $stocktable set available=$meta_value where post_id=$pid && option_id=$i"));
+						$wpdb->query($wpdb->prepare("UPDATE $stocktable SET available=%d WHERE post_id=%d && option_id=%d",$meta_value,$pid,$i));
 					}else{
-						$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($pid,$i,$meta_value,0)"));
+						$wpdb->query($wpdb->prepare("INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES (%d,%d,%d,0)",$pid,$i,$meta_value));
 					}
 					$total=$total+$type[$i]['stkqty'];
 				}

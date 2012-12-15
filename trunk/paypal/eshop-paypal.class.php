@@ -173,6 +173,8 @@ class eshop_paypal_class {
 					$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 					$value = str_replace($replace, " ", $value);
 				}
+				if($name=='phone')
+					$name='contact_phone';
 				$rtnecho .= "<input type=\"hidden\" name=\"$name\" value=\"$value\" />\n";
 			 }
 

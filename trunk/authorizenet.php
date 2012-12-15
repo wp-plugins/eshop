@@ -143,6 +143,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
+		$runningtotal=0;
 		foreach($_POST as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
@@ -158,6 +159,8 @@ switch ($eshopaction) {
 					$discount=is_discountable(calculate_total())/100;
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
+				$i=substr($name,7);
+				$runningtotal+=$_POST['quantity_'.$i]*$value;
 			}
 			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
 				if($value!='')
@@ -166,10 +169,12 @@ switch ($eshopaction) {
 			$p->add_field($name, $value);
 		}
 		//required for discounts to work -updating amount.
+		/*
 		$runningtotal=0;
 		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
 			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
 		}
+		*/
 		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
 			$echoit .= $p->submit_authorizenet_post(); // submit the fields to authorizenet

@@ -150,7 +150,7 @@ function eshop_postmeta_upgrade() {
 function eshop_updatestockcontrol(){
 	global $wpdb,$eshopoptions;
 	$dib='_eshop_product';
-	$querystr = $wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '$dib'" );
+	$querystr = $wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s",$dib );
  	$metaResults = $wpdb->get_results($querystr);
 	$stocktable=$wpdb->prefix ."eshop_stock";
 	 if ($metaResults){
@@ -166,12 +166,12 @@ function eshop_updatestockcontrol(){
 			$numoptions=$eshopoptions['options_num'];
 			if(!is_numeric($numoptions)) $numoptions='3';
 			//update the first, add the rest
-			$sql = "DELETE FROM $stocktable WHERE post_id = $post->post_id limit 1";
-			$wpdb->query($wpdb->prepare($sql));
+			$sql = "DELETE FROM $stocktable WHERE post_id = %d limit 1";
+			$wpdb->query($wpdb->prepare($sql,$post->post_id));
 			$eprod['products'][1]['stkqty']=$newqty;
 			for($i=1;$i<=$numoptions;$i++){
-				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES ($post->post_id,$i,$newqty,$purc)";
-				$wpdb->query($wpdb->prepare($sql));
+				$sql = "INSERT INTO $stocktable (post_id,option_id,available,purchases) VALUES (%d,%d,%d,%d)";
+				$wpdb->query($wpdb->prepare($sql,$post->post_id,$i,$newqty,$purc));
 				$eprod['products'][$i]['stkqty']=$newqty;
 			}
 			update_post_meta( $post->post_id, '_eshop_product', $eprod);		
@@ -684,6 +684,16 @@ if(version_compare($eshopoptions['version'], '6.2.1' ,'<')){
 
 
 if(version_compare($eshopoptions['version'], '6.2.13' ,'<')){
+	$dirs=wp_upload_dir();
+	$upload_dir=$dirs['basedir'];
+	$plugin_dir=WP_PLUGIN_DIR;
+	//new_files
+	$eshop_goto=$upload_dir.'/eshop_files';
+	$eshop_from=$plugin_dir.'/eshop/files';
+	copy($eshop_from.'/eshop-cart.js',$eshop_goto.'/eshop-cart.js');
+	chmod($eshop_goto.'/eshop-cart.js',0666);
+}
+if(version_compare($eshopoptions['version'], '6.3.3' ,'<')){
 	$dirs=wp_upload_dir();
 	$upload_dir=$dirs['basedir'];
 	$plugin_dir=WP_PLUGIN_DIR;
