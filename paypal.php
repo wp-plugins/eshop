@@ -21,12 +21,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/paypal/index.php');
+include_once (ESHOP_PATH.'paypal/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/paypal/eshop-paypal.class.php');  // include the class file
+require_once(ESHOP_PATH.'paypal/eshop-paypal.class.php');  // include the class file
 $p = new eshop_paypal_class;             // initiate an instance of the class
 
 if($eshopoptions['status']=='live'){
@@ -60,24 +60,25 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$token = uniqid(md5($_SESSION['date'.$blog_id]), true);
 		
-		//was $pvalue = $_POST['amount'] + $_POST['shipping_1'];
-		$pvalue = $_POST['amount'] + eshopShipTaxAmt();
+		//was $pvalue = $espost['amount'] + $espost['shipping_1'];
+		$pvalue = $espost['amount'] + eshopShipTaxAmt();
 
 		//eShop own check for extra security
 		$eshopemailbus=$eshopoptions['business'];
 		if(isset( $eshopoptions['business_sec'] ) && $eshopoptions['business_sec'] !=''){
 			$eshopemailbus=$eshopoptions['business_sec'];
-			$_POST['business']=$eshopemailbus;
+			$espost['business']=$eshopemailbus;
 		}
 		$checkid=md5($eshopemailbus.$token.number_format($pvalue,2));
 		//echo 'business '.$eshopemailbus.' custom '.$token.' amount '.number_format($pvalue,2);//debug
 		
 		//affiliates
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
-		
-		$_POST['custom']=$token;
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
+		$espost['custom']=$token;
 		$p = new eshop_paypal_class; 
 		if($eshopoptions['status']=='live'){
 			$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
@@ -85,9 +86,9 @@ switch ($eshopaction) {
 			$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';   // testing paypal url
 		}
 		if('no'==$eshopoptions['paypal_noemail']){
-			unset($_POST['email']);
+			unset($espost['email']);
 		}
-		$echoit.=$p->eshop_submit_paypal_post($_POST);
+		$echoit.=$p->eshop_submit_paypal_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
@@ -106,8 +107,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -145,7 +146,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				
@@ -162,7 +163,7 @@ switch ($eshopaction) {
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
 				//amending for discounts
-				$_POST[$name]=$value;
+				$espost[$name]=$value;
 			}
 			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
 				if($value!='')
@@ -172,8 +173,8 @@ switch ($eshopaction) {
 		}
 		//required for discounts to work -updating amount.
 		$runningtotal=0;
-		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+			$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 		}
 		$p->add_field('amount',$runningtotal);
 
@@ -207,9 +208,9 @@ switch ($eshopaction) {
 		$_SESSION = array();
       	session_destroy();
       	if($eshopoptions['status']=='live'){
-			$txn_id = $wpdb->escape($_POST['txn_id']);
+			$txn_id = $wpdb->escape($espost['txn_id']);
 		}else{
-			$txn_id = "TEST-".$wpdb->escape($_POST['txn_id']);
+			$txn_id = "TEST-".$wpdb->escape($espost['txn_id']);
 		}
 		$frow=$wpdb->get_var("select first_name from $detailstable where transid='$txn_id' limit 1");
 		$lrow=$wpdb->get_var("select last_name from $detailstable where transid='$txn_id' limit 1");
@@ -323,7 +324,7 @@ switch ($eshopaction) {
 				$extradetails .= __("The transaction was not completed successfully. eShop could not validate the order. Please double check all settings in eShop and at paypal to confirm they are both correct.",'eshop');
 				//$extradetails .="business ".$p->ipn_data['business'].' custom '.$p->ipn_data['custom'].' amount '.$chkamt."\n"; //debug
 				if($p->ipn_data['payment_status']!='Completed' && isset($p->ipn_data['pending_reason']))
-					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
+					$extradetails .= __("The transaction was not completed successfully at Paypal. The pending reason for this is",'eshop').' '.$espost['pending_reason'];
 			}
 			$subject .=" Ref:".$txn_id;
 			$array=eshop_rtn_order_details($checked);
@@ -350,7 +351,7 @@ switch ($eshopaction) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+				include_once(ESHOP_PATH.'cart-functions.php');
 				eshop_send_customer_email($checked, '3');
 			}
 			
@@ -381,8 +382,8 @@ switch ($eshopaction) {
 				do_action( 'eshop_order_status_updated', $checked, 'Failed' );
 				$subject .=__("Invalid and Failed Payment",'eshop');
 				$extradetails .= __("Paypal has reported an invalid, and failed payment.",'eshop');
-				if($_POST['payment_status']!='Completed' && isset($_POST['pending_reason']))
-					$extradetails .= __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$_POST['pending_reason'];
+				if($espost['payment_status']!='Completed' && isset($espost['pending_reason']))
+					$extradetails .= __("Paypal has reported an invalid, and failed payment. The pending reason for this is",'eshop').' '.$espost['pending_reason'];
 
 			}
 			$subject .=__(" Ref:",'eshop').$txn_id;

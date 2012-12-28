@@ -8,12 +8,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/ogone/index.php');
+include_once (ESHOP_PATH.'ogone/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/ogone/ogone.class.php');  // include the class file
+require_once(ESHOP_PATH.'ogone/ogone.class.php');  // include the class file
 $p = new ogone_class;             // initiate an instance of the class
 if($eshopoptions['status']=='live'){
 	$p->ogone_url = 'https://secure.ogone.com/ncol/prod/orderstandard.asp';     // ogone url
@@ -49,16 +49,16 @@ switch ($eshopaction) {
 		// a sequence number is randomly generated
 		$refid=uniqid(rand());
 		
-		$theamount = $_POST['amount'];
-		if(isset($_POST['tax']))
-			$theamount += $_POST['tax'];
+		$theamount = $espost['amount'];
+		if(isset($espost['tax']))
+			$theamount += $espost['tax'];
 					
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];		
 		
 		if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1')
 			$amount=($theamount)*100;
 		else
-			$amount=($theamount+$_POST['shipping_1'])*100;
+			$amount=($theamount+$espost['shipping_1'])*100;
 		//change to sha
 		if($eshopoptions['cart_success']!=''){
 			$slink=add_query_arg('eshopaction','success',get_permalink($eshopoptions['cart_success']));
@@ -72,33 +72,35 @@ switch ($eshopaction) {
 		}
 		/*
 		$sha=
-		'ACCEPTURL='.$slink.$Secret.'AMOUNT='.$amount.$Secret.'CANCELURL='.$clink.$Secret.'CN='.$_POST['first_name'].' '.$_POST['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'DECLINEURL='.$clink.$Secret.'EMAIL='.$_POST['email'].$Secret.'EXCEPTIONURL='.$clink.$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'OPERATION=SAL'.$Secret.'ORDERID='.$refid.$Secret.'OWNERADDRESS='.$_POST['address1'].$Secret.'OWNERCTY='.$_POST['country'].$Secret.'OWNERTELNO='.$_POST['phone'].$Secret.'OWNERTOWN='.$_POST['city'].$Secret.'OWNERZIP='.$_POST['zip'].$Secret.'PSPID='.$Pspid.$Secret;
+		'ACCEPTURL='.$slink.$Secret.'AMOUNT='.$amount.$Secret.'CANCELURL='.$clink.$Secret.'CN='.$espost['first_name'].' '.$espost['last_name'].$Secret.'COM='.$description.$Secret.'CURRENCY='.$eshopoptions['currency'].$Secret.'DECLINEURL='.$clink.$Secret.'EMAIL='.$espost['email'].$Secret.'EXCEPTIONURL='.$clink.$Secret.'LANGUAGE='.$eshopoptions['location'].$Secret.'OPERATION=SAL'.$Secret.'ORDERID='.$refid.$Secret.'OWNERADDRESS='.$espost['address1'].$Secret.'OWNERCTY='.$espost['country'].$Secret.'OWNERTELNO='.$espost['phone'].$Secret.'OWNERTOWN='.$espost['city'].$Secret.'OWNERZIP='.$espost['zip'].$Secret.'PSPID='.$Pspid.$Secret;
 		$SHASign=strtoupper(sha1($sha));
 		*/
 		$ogonelocation=apply_filters('ogone-location',$eshopoptions['location']);
 		$checkid=md5($refid);
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
 		//$p = new ogone_class; 
 		$oarray=array(
 		'accepturl'=>$slink,
 		'amount'=>$amount,
 		'cancelurl'=>$clink,
-		'CN'=>$_POST['first_name'].' '.$_POST['last_name'],
+		'CN'=>$espost['first_name'].' '.$espost['last_name'],
 		'COM'=>$description,
 		'currency'=>$eshopoptions['currency'],
 		'declineurl'=>$clink,
-		'email'=>$_POST['email'],
+		'email'=>$espost['email'],
 		'exceptionurl'=>$clink,
 		'language'=>$ogonelocation,
 		'operation'=>'SAL',
 		'orderID'=>$refid,
-		'owneraddress'=>$_POST['address1'],
-		'ownercty'=>$_POST['country'],
-		'ownertelno'=>$_POST['phone'],
-		'ownertown'=>$_POST['city'],
-		'ownerzip'=>$_POST['zip'],
+		'owneraddress'=>$espost['address1'],
+		'ownercty'=>$espost['country'],
+		'ownertelno'=>$espost['phone'],
+		'ownertown'=>$espost['city'],
+		'ownerzip'=>$espost['zip'],
 		'PSPID'=>$Pspid);
 		$sha='';
 		foreach($oarray as $k=>$v){
@@ -109,7 +111,7 @@ switch ($eshopaction) {
 		}
 		$SHASign=strtoupper(sha1($sha));
 		$p->add_field('SHASign',$SHASign);
-		$echoit.=$p->eshop_submit_ogone_post($_POST);
+		$echoit.=$p->eshop_submit_ogone_post($espost);
 		
 		break;
         
@@ -128,8 +130,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -147,7 +149,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -171,8 +173,8 @@ switch ($eshopaction) {
 		}
 		//required for discounts to work -updating amount.
 			$runningtotal=0;
-			for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-				$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+			for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+				$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 			}
 		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
@@ -286,7 +288,7 @@ switch ($eshopaction) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+				include_once(ESHOP_PATH.'cart-functions.php');
 				eshop_send_customer_email($checked, '10');
 				do_shortcode('[eshop_show_success]');
 			}

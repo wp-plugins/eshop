@@ -74,7 +74,7 @@ echo '</p>';
 <?php
 }
 //check for new css
-$plugin_dir=WP_PLUGIN_DIR;
+$plugin_dir=ESHOP_PATH;
 $dirs=wp_upload_dir();
 $upload_dir=$dirs['basedir'];
 $eshop_goto=$upload_dir.'/eshop_files/eshop.css';

@@ -8,12 +8,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/authorizenet/index.php');
+include_once (ESHOP_PATH.'authorizenet/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/authorizenet/authorizenet.class.php');  // include the class file
+require_once(ESHOP_PATH.'authorizenet/authorizenet.class.php');  // include the class file
 $p = new authorizenet_class;             // initiate an instance of the class
 
 if($eshopoptions['status']=='live'){
@@ -57,13 +57,13 @@ switch ($eshopaction) {
 		$sequence	= rand(1, 1000);
 		// a timestamp is generated
 		$timestamp	= time ();
-		$pvalue=str_replace(',','',$_POST['amount']);
+		$pvalue=str_replace(',','',$espost['amount']);
 		//next 2 lines added to solve an issue 12/8/22
-		$pship=str_replace(',','',$_POST['shipping_1']);
+		$pship=str_replace(',','',$espost['shipping_1']);
 		$pvalue+=$pship;
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $pvalue += $_SESSION['shipping'.$blog_id]['tax'];
 		// above may be able to be changed by using + eshopShipTaxAmt() for the shipping.
-		if(isset($_POST['tax'])) $pvalue += str_replace(',','',$_POST['tax']);
+		if(isset($espost['tax'])) $pvalue += str_replace(',','',$espost['tax']);
 		$pvalue = number_format($pvalue, 2, '.', '');
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
@@ -76,9 +76,11 @@ switch ($eshopaction) {
 
 		$md5hash=$secret.$LID.$invoice.$pvalue;
 		$checkid=md5($md5hash);
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
 		$p = new authorizenet_class; 
 		$p->add_field('x_login',$LID);
 		$p->add_field('x_amount',$pvalue);
@@ -98,7 +100,7 @@ switch ($eshopaction) {
 		if(isset($authorizenet['developer']) && $authorizenet['developer']=='1'){
 			$p->authorizenet_url = 'https://test.authorize.net/gateway/transact.dll';   // devloper testing authorizenet url
 		}
-		$echoit.=$p->eshop_submit_authorizenet_post($_POST);
+		$echoit.=$p->eshop_submit_authorizenet_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
@@ -117,8 +119,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -144,7 +146,7 @@ switch ($eshopaction) {
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
 		$runningtotal=0;
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -160,7 +162,7 @@ switch ($eshopaction) {
 					$value = number_format(round($value-($value * $discount), 2),2);
 				}
 				$i=substr($name,7);
-				$runningtotal+=$_POST['quantity_'.$i]*$value;
+				$runningtotal+=$espost['quantity_'.$i]*$value;
 			}
 			if(sizeof($stateList)>0 && ($name=='state' || $name=='ship_state')){
 				if($value!='')
@@ -171,8 +173,8 @@ switch ($eshopaction) {
 		//required for discounts to work -updating amount.
 		/*
 		$runningtotal=0;
-		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+			$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 		}
 		*/
 		$p->add_field('amount',$runningtotal);
@@ -273,7 +275,7 @@ switch ($eshopaction) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+				include_once(ESHOP_PATH.'cart-functions.php');
 				eshop_send_customer_email($checked, '8');
 
 				do_shortcode('[eshop_show_success]');

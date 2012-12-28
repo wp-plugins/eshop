@@ -15,10 +15,10 @@ else {
 
 add_filter('query_vars', 'add_settings_query_vars');
 
-require (WP_PLUGIN_DIR."/eshop/eshop-settings-class.php");
-require (WP_PLUGIN_DIR."/eshop/eshop-settings-extends.php");
-include_once (WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-include_once (WP_PLUGIN_DIR.'/eshop/eshop-base-functions.php');
+require (ESHOP_PATH."eshop-settings-class.php");
+require (ESHOP_PATH."eshop-settings-extends.php");
+include_once (ESHOP_PATH.'cart-functions.php');
+include_once (ESHOP_PATH.'eshop-base-functions.php');
 
 define('ESHOP_SETTINGS_PAGE_NAME', 'eshop-settings.php');
 

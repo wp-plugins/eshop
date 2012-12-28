@@ -128,8 +128,10 @@ function eshop_list_alpha($atts){
 	if($qbuild!=''){
 		$max=$wpdb->get_var("SELECT count($wpdb->posts.ID) from $wpdb->postmeta,$wpdb->posts WHERE $addwhere $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' $qbuild");
 		if($max>0){
-			if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
-			else $epage='1';
+			if(isset($wp_query->query_vars['_p']))
+				$epage=$wp_query->query_vars['_p'];
+			else 
+				$epage='1';
 			if(!isset($wp_query->query_vars['eshopall'])){
 				$page_links = paginate_links( array(
 					'base' => add_query_arg( '_p', '%#%' ),
@@ -327,7 +329,6 @@ function eshop_list_cat_tags($atts){
 	if(!in_array($order,$allowedorder)) 
 		$order='ASC';
 	
-	
 	//defaults only.
 	switch($sortby){
 		case ('post_date'):
@@ -344,8 +345,6 @@ function eshop_list_cat_tags($atts){
 	if($outofstock=='yes')
 		$addwhere="_eshop_product";
 		
-		
-	$thisispage=get_permalink($post->ID);
 	$array=array('post','page');
 	$array=apply_filters('eshop_post_types',$array);
 	$args = array(
@@ -354,15 +353,25 @@ function eshop_list_cat_tags($atts){
 	$type => $find, 
 	'meta_key'=>$addwhere,
 	'posts_per_page'=>-1
-	); 
-	if($records>$show) $records=$show;
+	);
+	//lost after query_posts, so add it here
+	if(isset($wp_query->query_vars['_p']))
+		$e_p=$wp_query->query_vars['_p'];
+	if(isset($wp_query->query_vars['eshopall']))
+		$e_all=$wp_query->query_vars['eshopall'];
+
 	$max = sizeof(query_posts($args));
+
+	if($records>$show) $records=$show;
+	
 	if($max>$show)
 		$max=$show;
 	if($max>0){
-		if(isset($wp_query->query_vars['_p']))$epage=$wp_query->query_vars['_p'];
-		else $epage='1';
-		if(!isset($wp_query->query_vars['eshopall'])){
+		if(isset($e_p))
+			$epage=$e_p;
+		else 
+			$epage='1';
+		if(!isset($e_all)){
 			$page_links = paginate_links( array(
 				'base' => add_query_arg( '_p', '%#%' ),
 				'format' => '',
@@ -385,6 +394,7 @@ function eshop_list_cat_tags($atts){
 		}
 	}
 	if(!isset($offset)) $offset='0';
+	
 	$args = array(
 	'post_type' => $array,
 	'post_status' => 'publish',
@@ -397,6 +407,8 @@ function eshop_list_cat_tags($atts){
 	); 
 	$pages = get_posts($args);
 	wp_reset_query();
+	$thisispage=get_permalink($post->ID);
+
 	if($pages) {
 		//paginate
 		$echo .= '<div class="paginate eshop-paginate">';
@@ -1305,7 +1317,7 @@ function eshop_show_success(){
 				}
 			}
 		}elseif($eshopaction=='success' && isset($_GET['epn'])){
-			include_once (WP_PLUGIN_DIR.'/eshop/epn/process.php');
+			include_once (ESHOP_PATH.'epn/process.php');
 			if(isset($_GET['epn']) && $_GET['epn']=='ok' && isset($_POST['transid'])){
 				$detailstable=$wpdb->prefix.'eshop_orders';
 				$dltable=$wpdb->prefix.'eshop_download_orders';
