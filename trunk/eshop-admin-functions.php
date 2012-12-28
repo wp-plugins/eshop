@@ -68,7 +68,7 @@ if (!function_exists('eshop_admin')) {
 				//add_contextual_help($paged,$help); 
 		}
 		if(is_admin())
-			include WP_PLUGIN_DIR.'/eshop/user.php';
+			include ESHOP_PATH.'user.php';
     
     }
 }

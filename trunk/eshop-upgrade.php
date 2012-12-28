@@ -348,7 +348,7 @@ if(version_compare($eshopoptions['version'], '5.0.0' ,'<')){
 	
 	$dirs=wp_upload_dir();
 	$upload_dir=$dirs['basedir'];
-	$plugin_dir=WP_PLUGIN_DIR;
+	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
 	$eshop_from=$plugin_dir.'/eshop/files';
@@ -686,7 +686,7 @@ if(version_compare($eshopoptions['version'], '6.2.1' ,'<')){
 if(version_compare($eshopoptions['version'], '6.2.13' ,'<')){
 	$dirs=wp_upload_dir();
 	$upload_dir=$dirs['basedir'];
-	$plugin_dir=WP_PLUGIN_DIR;
+	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
 	$eshop_from=$plugin_dir.'/eshop/files';
@@ -696,7 +696,7 @@ if(version_compare($eshopoptions['version'], '6.2.13' ,'<')){
 if(version_compare($eshopoptions['version'], '6.3.3' ,'<')){
 	$dirs=wp_upload_dir();
 	$upload_dir=$dirs['basedir'];
-	$plugin_dir=WP_PLUGIN_DIR;
+	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
 	$eshop_from=$plugin_dir.'/eshop/files';

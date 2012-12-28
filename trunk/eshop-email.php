@@ -13,7 +13,7 @@ else {
     require_once(ABSPATH . 'wp-includes/wp-l10n.php');
 }
 global $wpdb,$eshopoptions;
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+include_once(ESHOP_PATH.'cart-functions.php');
 
 // Back to our regularly scheduled script :)
 

@@ -28,12 +28,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/ideallite/index.php');
+include_once (ESHOP_PATH.'ideallite/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/ideallite/ideallite.class.php');  // include the class file
+require_once(ESHOP_PATH.'ideallite/ideallite.class.php');  // include the class file
 $p = new ideallite_class;             // initiate an instance of the class
 
 $this_script = site_url();
@@ -107,19 +107,19 @@ switch ($eshopaction) {
 		//enters all the data into the database
 		$ideallite = $eshopoptions['ideallite']; 
 				
-		$checkid=md5($_POST['RefNr']);
+		$checkid=md5($espost['RefNr']);
 		
 		// Set codes & hash
 			$replace = array("&#039;","'", "\"","&quot;","&amp;","&");
 			$desc = str_replace($replace, " ", $ideallite['idealdescription']);
 			$p->desc30 =substr($desc, 0, 30);
 			
-			$p->refid=$_POST['RefNr'];
+			$p->refid=$espost['RefNr'];
 			
-			$totalCosts = $_POST['amount'];
+			$totalCosts = $espost['amount'];
 			
-			if(isset($_POST['tax']))
-				$totalCosts += $_POST['tax'];
+			if(isset($espost['tax']))
+				$totalCosts += $espost['tax'];
 			if(isset($_SESSION['shipping'.$blog_id]['tax'])) $totalCosts += $_SESSION['shipping'.$blog_id]['tax'];	
 			
 			$p->totalCosts100 = round($totalCosts * 100);
@@ -143,19 +143,20 @@ switch ($eshopaction) {
 			
 	
 		// Set URLs
-		$sUrlBase = $_POST['notify_url'];
+		$sUrlBase = $espost['notify_url'];
 		
 		$p->sUrlCancel = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('CANCEL');
 		$p->sUrlError = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('ERROR');
 		$p->sUrlSuccess = $sUrlBase.'&ideal[trxid]=' . $p->sTransactionId . '&ideal[ec]=' . $p->sEntranceCode . '&RefNr=' . $p->refid . '&ideal[status]=' . md5('SUCCESS');
 
 
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
-		
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
 		$traxid = $p->sTransactionId;
-		$_POST['custom']=$traxid;
+		$espost['custom']=$traxid;
 		
 		if($eshopoptions['status']=='live'){
 			//$p->ideallite_url = 'http://www.google.com/the-real-bank-site.html';     // ideallite url
@@ -163,7 +164,7 @@ switch ($eshopaction) {
 		}else{
 			$p->ideallite_url = 'https://www.ideal-simulator.nl/lite/';   // testing ideallite url
 		}
-		$echoit.=$p->eshop_submit_ideallite_post($_POST);
+		$echoit.=$p->eshop_submit_ideallite_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
@@ -182,8 +183,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -207,7 +208,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -354,7 +355,7 @@ switch ($eshopaction) {
 				if($ok=='yes'){
 					//only need to send out for the successes!
 					//lets make sure this is here and available
-					include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+					include_once(ESHOP_PATH.'cart-functions.php');
 					eshop_send_customer_email($checked, '9');
 					// Clear the session - Empty the cart
 					$_SESSION = array();

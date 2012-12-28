@@ -4,7 +4,8 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.5
-Version: 6.3.3
+Stable tag: 6.3.4
+Version: 6.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +47,13 @@ Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
 
+Version 6.3.4
+
+* *Fixed* Pagination issues for the shortcode: eshop_list_cat_tags
+* *Possible fix* for Jetpack and Simple Facebook Connect users. __Warning__ if you have a custom merchant gateway, please see the [FAQ](http://wordpress.org/extend/plugins/eshop/faq/) before you upgrade. This is a temporary fix until a more permanent solution can be found.
+* *Added* The filter `eshopaddtocheckoutlast` has been added for adding info at the bottom of the checkout.
+* *amended* many files, to remove old constants.
+
 Version 6.3.3
 
 * *Fixed* add to cart javascript filter.
@@ -57,7 +65,7 @@ Version 6.3.3
 
 Version 6.3.2
 
-* *Fixed* lising issue on admin products nad base pages.
+* *Fixed* listing issue on admin products and base pages.
 * *Added* set eshopshowcartoncart filter to true to show cart widget again on cart and checkout pages
 * *Fixed* names with apostrophes being sent to Paypal (note: apostrophe is currently removed)
 * *Fixed* link in cron email is now correct.
@@ -226,8 +234,20 @@ Available via the WordPress forums (please tag the post eshop) or via [Quirm.net
 
 Due to increasing demands we no longer offer free CSS support.
 
+= Custom Merchant Gateways =
+
+If you are using a custom gateway you will need to update the code before upgrading past 6.3.3.
+Find this code:
+`//affiliate
+if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+orderhandle($espost,$checkid);
+if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);`
+and insert after it:
+`//necessary evil fix
+$_SESSION['orderhandle']=true;`
+
 == Upgrade Notice ==
 
-= 6.2.9 =
+= 6.3.4 =
 
-Please remember to backup your database before upgrading. Please update asap.
+This release has a possible fix for Jetpack and Simple Facebook Connect users. __Warning__ if you have a custom merchant gateway, please see the [FAQ](http://wordpress.org/extend/plugins/eshop/faq/) before you upgrade.  This is a temporary fix until a more permanent solution can be found.

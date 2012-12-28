@@ -776,7 +776,19 @@ if (!function_exists('orderhandle')) {
 	function orderhandle($espost,$checkid){
 		//This function puts the order into the db.
 		global $wpdb, $blog_id,$eshopoptions;
-
+		//this is a workaround until I can get a more permament fix - may require complete plugin rewrite though.
+		$eshopproblemplugins=apply_filters(eshop_problem_plugins,array('jetpack'));
+		$opts=get_option('active_plugins');
+		$eshopproblem=false;
+		foreach($eshopproblemplugins as $eshopplug){
+			foreach($opts as $opt){
+				if($opt==$eshopplug.'/'.$eshopplug.'.php')
+					$eshopproblem=true;
+			}
+		}
+		if(!isset($_SESSION['orderhandle']) && $eshopproblem)
+			return;
+		$_SESSION['orderhandle']=true;
 		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;

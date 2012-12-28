@@ -8,12 +8,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/payson/index.php');
+include_once (ESHOP_PATH.'payson/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/payson/payson.class.php');  // include the class file
+require_once(ESHOP_PATH.'payson/payson.class.php');  // include the class file
 $p = new payson_class;             // initiate an instance of the class
 
 if($eshopoptions['status']=='live'){
@@ -46,35 +46,37 @@ switch ($eshopaction) {
 		$payson = $eshopoptions['payson']; 
 		$Key=$payson['key'];
 		
-		$theamount=str_replace(',','',$_POST['amount']);
-		if(isset($_POST['tax']))
-			$theamount += str_replace(',','',$_POST['tax']);
+		$theamount=str_replace(',','',$espost['amount']);
+		if(isset($espost['tax']))
+			$theamount += str_replace(',','',$espost['tax']);
 					
 		if(isset($_SESSION['shipping'.$blog_id]['tax'])) $theamount += $_SESSION['shipping'.$blog_id]['tax'];	
 		
-		$Cost=$theamount-$_POST['shipping_1'];
-		$ExtraCost=$_POST['shipping_1'];
+		$Cost=$theamount-$espost['shipping_1'];
+		$ExtraCost=$espost['shipping_1'];
 		//payson uses comma not decimal point
 		$Cost=number_format($Cost, 2, ',', '');
 		$ExtraCost=number_format($ExtraCost, 2, ',', '');
-		$OkUrl=urlencode($_POST['notify_url']);
+		$OkUrl=urlencode($espost['notify_url']);
 		$GuaranteeOffered='1';
 		$MD5string = $payson['email'] . ":" . $Cost . ":" . $ExtraCost . ":" . $OkUrl . ":" . $GuaranteeOffered . $Key;
 		$token=$MD5Hash = md5($MD5string);
 
-		$checkid=md5($_POST['RefNr']);
+		$checkid=md5($espost['RefNr']);
 		//
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);		
-		$_POST['custom']=$token;
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
+		$espost['custom']=$token;
 		$p = new payson_class; 
 		if($eshopoptions['status']=='live'){
 			$p->payson_url = 'https://www.payson.se/merchant/default.aspx';     // payson url
 		}else{
 			$p->payson_url = 'https://www.payson.se/testagent/default.aspx';   // testing payson url
 		}
-		$echoit.=$p->eshop_submit_payson_post($_POST);
+		$echoit.=$p->eshop_submit_payson_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
@@ -93,8 +95,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -117,7 +119,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -142,8 +144,8 @@ switch ($eshopaction) {
 		}
 		//required for discounts to work -updating amount.
 		$runningtotal=0;
-		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+			$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 		}
 		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
@@ -238,16 +240,16 @@ switch ($eshopaction) {
 			if($ok=='yes'){
 				//only need to send out for the successes!
 				//lets make sure this is here and available
-				include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+				include_once(ESHOP_PATH.'cart-functions.php');
 				eshop_send_customer_email($checked, '4');
 			}
 
 		}else{
 			$payson = $eshopoptions['payson']; 
 			$Key=$payson['key'];
-			$strOkURL = $_POST["OkURL"];
-			$strRefNr = $_POST["RefNr"];
-			$strPaysonRef = $_POST["Paysonref"];
+			$strOkURL = $espost["OkURL"];
+			$strRefNr = $espost["RefNr"];
+			$strPaysonRef = $espost["Paysonref"];
 			$strTestMD5String = $strOkURL . $strPaysonRef . $Key;
 			$token = md5($strTestMD5String);
 			$checked=md5($token);	

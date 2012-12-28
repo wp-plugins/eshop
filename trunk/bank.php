@@ -7,12 +7,12 @@ $detailstable=$wpdb->prefix.'eshop_orders';
 $derror=__('There appears to have been an error, please contact the site admin','eshop');
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/bank/index.php');
+include_once (ESHOP_PATH.'bank/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/bank/bank.class.php');  // include the class file
+require_once(ESHOP_PATH.'bank/bank.class.php');  // include the class file
 $p = new bank_class;             // initiate an instance of the class
 $p->bank_url = get_permalink($eshopoptions['cart_success']);     // bank url
 
@@ -38,18 +38,20 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$bank = $eshopoptions['bank']; 
-		if(!isset($_POST['RefNr'])){
-			$_POST['RefNr']=uniqid(rand());
-			$ebank->ipn_data['RefNr']=$_POST['RefNr'];
+		if(!isset($espost['RefNr'])){
+			$espost['RefNr']=uniqid(rand());
+			$ebank->ipn_data['RefNr']=$espost['RefNr'];
 		}
-		$checkid=md5($_POST['RefNr']);
+		$checkid=md5($espost['RefNr']);
 		foreach ($_REQUEST as $field=>$value) { 
 		  $ebank->ipn_data["$field"] = $value;
       	}
 		//affiliate
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
 		/* ############### */
 		if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($ebank->ipn_data['RefNr']);
@@ -101,7 +103,7 @@ switch ($eshopaction) {
 			die('<p>'.$derror.'</p>');
 		}
 		$p->bank_url = $ilink;     // bank url
-		$echoit.=$p->eshop_submit_bank_post($_POST);
+		$echoit.=$p->eshop_submit_bank_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		
 		break;
@@ -123,7 +125,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -147,8 +149,8 @@ switch ($eshopaction) {
 		}
 		//required for discounts to work -updating amount.
 			$runningtotal=0;
-			for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-				$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+			for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+				$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 			}
 		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){

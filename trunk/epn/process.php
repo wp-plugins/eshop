@@ -1,7 +1,7 @@
 <?php
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/epn/epn.class.php');  // include the class file
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
+require_once(ESHOP_PATH.'epn/epn.class.php');  // include the class file
+include_once(ESHOP_PATH.'cart-functions.php');
 global $wpdb,$eshopoptions;
 $detailstable=$wpdb->prefix.'eshop_orders';
 $ps = new epn_class; 

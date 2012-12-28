@@ -9,12 +9,12 @@ $derror=__('There appears to have been an error, please contact the site admin',
 
 
 //sanitise
-include_once(WP_PLUGIN_DIR.'/eshop/cart-functions.php');
-$_POST=sanitise_array($_POST);
+include_once(ESHOP_PATH.'cart-functions.php');
+$espost=sanitise_array($espost);
 
-include_once (WP_PLUGIN_DIR.'/eshop/epn/index.php');
+include_once (ESHOP_PATH.'epn/index.php');
 // Setup class
-require_once(WP_PLUGIN_DIR.'/eshop/epn/epn.class.php');  // include the class file
+require_once(ESHOP_PATH.'epn/epn.class.php');  // include the class file
 $p = new epn_class;             // initiate an instance of the class
 
 $p->epn_url = 'https://www.eProcessingNetwork.com/cgi-bin/dbe/order.pl';     // epn url
@@ -41,15 +41,17 @@ switch ($eshopaction) {
 		header('Pragma: no-cache'); //HTTP/1.0
 
 		//enters all the data into the database
-		$checkid=md5($_POST['RefNr']);
+		$checkid=md5($espost['RefNr']);
 		//
-		if(isset($_COOKIE['ap_id'])) $_POST['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($_POST,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($_POST['affiliate']);
-		$_POST['ID']=$checkid;
+		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
+		orderhandle($espost,$checkid);
+		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+		//necessary evil fix
+		$_SESSION['orderhandle']=true;
+		$espost['ID']=$checkid;
 		$p = new epn_class; 
 		$p->epn_url = 'https://www.eProcessingNetwork.com/cgi-bin/dbe/order.pl';     // epn url
-		$echoit.=$p->eshop_submit_epn_post($_POST);
+		$echoit.=$p->eshop_submit_epn_post($espost);
 		break;
         
    case 'process':      // Process and order...
@@ -67,8 +69,8 @@ switch ($eshopaction) {
 		// For example, after ensureing all the POST variables from your custom
 		// order form are valid, you might have:
 		//
-		// $p->add_field('first_name', $_POST['first_name']);
-		// $p->add_field('last_name', $_POST['last_name']);
+		// $p->add_field('first_name', $espost['first_name']);
+		// $p->add_field('last_name', $espost['last_name']);
       
       /****** The order has already gone into the database at this point ******/
       
@@ -93,7 +95,7 @@ switch ($eshopaction) {
 		foreach($stateList as $code => $value){
 			$eshopstatelist[$value['id']]=$value['code'];
 		}		
-		foreach($_POST as $name=>$value){
+		foreach($espost as $name=>$value){
 			//have to do a discount code check here - otherwise things just don't work - but fine for free shipping codes
 			if(strstr($name,'amount_')){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && eshop_discount_codes_check()){
@@ -117,8 +119,8 @@ switch ($eshopaction) {
 		}
 		//required for discounts to work -updating amount.
 		$runningtotal=0;
-		for ($i = 1; $i <= $_POST['numberofproducts']; $i++) {
-			$runningtotal+=$_POST['quantity_'.$i]*$_POST['amount_'.$i];
+		for ($i = 1; $i <= $espost['numberofproducts']; $i++) {
+			$runningtotal+=$espost['quantity_'.$i]*$espost['amount_'.$i];
 		}
 		$p->add_field('amount',$runningtotal);
 		if($eshopoptions['status']!='live' && is_user_logged_in() &&  current_user_can('eShop_admin')||$eshopoptions['status']=='live'){
