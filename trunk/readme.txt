@@ -4,8 +4,8 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 6.3.4
-Version: 6.3.4
+Stable tag: 6.3.5
+Version: 6.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,10 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.5
+
+* *reverted* Fix for jetpack users was too buggy and has been removed - however, if you are using jetpack and 6.3.4 works for you - you do not need to upgrade.
 
 Version 6.3.4
 
@@ -235,7 +239,7 @@ Available via the WordPress forums (please tag the post eshop) or via [Quirm.net
 Due to increasing demands we no longer offer free CSS support.
 
 = Custom Merchant Gateways =
-
+Note - the fix in 6.3.4 was reverted in 6.3.5 - this code is not necessary at this time.
 If you are using a custom gateway you will need to update the code before upgrading past 6.3.3.
 Find this code:
 `//affiliate
@@ -248,6 +252,6 @@ $_SESSION['orderhandle']=true;`
 
 == Upgrade Notice ==
 
-= 6.3.4 =
+= 6.3.5 =
 
-This release has a possible fix for Jetpack and Simple Facebook Connect users. __Warning__ if you have a custom merchant gateway, please see the [FAQ](http://wordpress.org/extend/plugins/eshop/faq/) before you upgrade.  This is a temporary fix until a more permanent solution can be found.
+*reverted* Fix for jetpack users was too buggy and has been removed - however, if you are using jetpack and 6.3.4 works for you - you do not need to upgrade.
