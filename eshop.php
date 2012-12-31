@@ -1,6 +1,6 @@
 <?php
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.3.4');
+	define('ESHOP_VERSION', '6.3.5');
 
 if(!defined('ESHOP_PATH'))
 	define( 'ESHOP_PATH', plugin_dir_path(__FILE__) );
@@ -8,7 +8,7 @@ if(!defined('ESHOP_PATH'))
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.4 and above.
-Version: 6.3.4
+Version: 6.3.5
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 

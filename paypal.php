@@ -76,8 +76,10 @@ switch ($eshopaction) {
 		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($espost,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+/*
 		//necessary evil fix
 		$_SESSION['orderhandle']=true;
+*/
 		$espost['custom']=$token;
 		$p = new eshop_paypal_class; 
 		if($eshopoptions['status']=='live'){

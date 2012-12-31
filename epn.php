@@ -46,8 +46,10 @@ switch ($eshopaction) {
 		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($espost,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+/*
 		//necessary evil fix
 		$_SESSION['orderhandle']=true;
+*/
 		$espost['ID']=$checkid;
 		$p = new epn_class; 
 		$p->epn_url = 'https://www.eProcessingNetwork.com/cgi-bin/dbe/order.pl';     // epn url

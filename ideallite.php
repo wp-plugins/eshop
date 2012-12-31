@@ -153,8 +153,10 @@ switch ($eshopaction) {
 		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($espost,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+/*
 		//necessary evil fix
 		$_SESSION['orderhandle']=true;
+*/
 		$traxid = $p->sTransactionId;
 		$espost['custom']=$traxid;
 		
