@@ -32,10 +32,10 @@ else
 
 switch ($eshopaction) {
     case 'redirect':
-    	//auto-redirect bits
-		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
-		header('Expires: Sun, 01 Jul 2005 00:00:00 GMT');
-		header('Pragma: no-cache'); //HTTP/1.0
+    	if(isset($_SESSION['espost'.$blog_id]))
+			$espost=$_SESSION['espost'.$blog_id];
+		else
+			break;
 
 		//enters all the data into the database
 		$cash = $eshopoptions['cash']; 
@@ -47,14 +47,7 @@ switch ($eshopaction) {
 		foreach ($_REQUEST as $field=>$value) { 
 		  $ecash->ipn_data["$field"] = $value;
       	}
-		//affiliate
-		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
-		orderhandle($espost,$checkid);
-		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
-/*
-		//necessary evil fix
-		$_SESSION['orderhandle']=true;
-*/
+
 		/* ############### */
 		if($eshopoptions['status']=='live'){
 			$txn_id = $wpdb->escape($ecash->ipn_data['RefNr']);

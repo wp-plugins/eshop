@@ -1,6 +1,6 @@
 <?php
 if(!defined('ESHOP_VERSION'))
-	define('ESHOP_VERSION', '6.3.5');
+	define('ESHOP_VERSION', '6.3.7');
 
 if(!defined('ESHOP_PATH'))
 	define( 'ESHOP_PATH', plugin_dir_path(__FILE__) );
@@ -8,7 +8,7 @@ if(!defined('ESHOP_PATH'))
 Plugin Name: eShop for Wordpress
 Plugin URI: http://wordpress.org/extend/plugins/eshop/
 Description: The accessible shopping cart for WordPress 3.4 and above.
-Version: 6.3.5
+Version: 6.3.7
 Author: Rich Pedley 
 Author URI: http://quirm.net/
 
@@ -34,7 +34,7 @@ $eshopoptions = get_option('eshop_plugin_settings');
 add_action('init','eshop_load_lang',1);
 if (!function_exists('eshop_load_lang')) {
 	function eshop_load_lang(){
-		$eshoplanguage=apply_filters( 'eshop_language_dir',dirname( plugin_basename( __FILE__ ) ) );
+		$eshoplanguage=apply_filters( 'eshop_language_dir', dirname( plugin_basename( __FILE__ ) ) );
 		load_plugin_textdomain('eshop', false, $eshoplanguage );
 		//grab all options here in one go 
 		$eshopoptions = get_option('eshop_plugin_settings');
@@ -83,6 +83,8 @@ if (!function_exists('eshop_update_routine')) {
 	}
 }
 include_once 'cart-functions.php';
+//process order - not working on init
+add_action ('wp','eshop_orderhandle_process');
 /* the widget */
 include_once 'eshop-widget.php';
 //make sure theme thumbnail support is on, even for those themes that don't use it.
@@ -110,7 +112,11 @@ if(is_admin()){
 	include_once 'public-functions.php';
 	include_once( 'eshop-shortcodes.php' );
 	include_once( 'eshop-add-cart.php' );
-	
+	include_once 'eshop-mgs-redirect.php';
+	/*
+	add_filter('eshop_orderhandle_process', 'eshop_paypal_redirect');
+	add_filter('eshop_orderhandle_process', 'eshop_cash_redirect');
+	*/
 	//add credits
 	add_action('wp_footer', 'eshop_visible_credits');
 	//process cart

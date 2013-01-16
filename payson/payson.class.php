@@ -132,7 +132,10 @@ class payson_class {
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to Payson &raquo;','eshop').'" /></p>
 	     </form>
 	  </div>';
-		return $echortn;
+		global $eshopoptions;
+		if($eshopoptions['status']!='live'){
+			$echortn .= "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+		}		return $echortn;
    }   
    function validate_ipn() {
       // generate the post string from the _POST vars aswell as load the

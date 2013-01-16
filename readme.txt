@@ -5,7 +5,7 @@ Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wp
 Requires at least: 3.4
 Tested up to: 3.5
 Stable tag: 6.3.5
-Version: 6.3.5
+Version: 6.3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,19 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.7
+
+* *fixed* recopying javascript to eshop_files
+* *fixed* small issue when in testmode, only the redirect page was affected for 'all' merchant gateways.
+* *fixed* small issue on appearance/eshop
+* *added* new filter added eshopproddetails to the eshop_rtn_order_details function.
+
+
+Version 6.3.6
+
+* *TEST* release for better jetpack fix.
+
 
 Version 6.3.5
 

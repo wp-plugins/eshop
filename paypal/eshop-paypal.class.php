@@ -160,6 +160,7 @@ class eshop_paypal_class {
       // The user will briefly see a message on the screen that reads:
       // "Please wait, your order is being processed..." and then immediately
       // is redirected to paypal.
+
 		$rtnecho ='
        <div id="process">
          <p><strong>'.__('Please wait, your order is being processed&#8230;','eshop').'</strong></p>
@@ -182,7 +183,10 @@ class eshop_paypal_class {
       	$rtnecho .= '<input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to Paypal &raquo;','eshop').'" /></p>
 	     </form>
 	  </div>';
-
+      	global $eshopoptions;
+      	if($eshopoptions['status']!='live'){
+	  		$rtnecho .= "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+	  	}
 		return $rtnecho;
    }   
    function validate_ipn() {

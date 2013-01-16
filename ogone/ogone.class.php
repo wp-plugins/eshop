@@ -91,8 +91,10 @@ class ogone_class {
 	     </form>
 	  </div>';
 	  
-	  //debug
-	  	
+		global $eshopoptions;
+		if($eshopoptions['status']!='live'){
+			$echortn .= "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+		}	
 	  
 		return $echortn;
    }   
