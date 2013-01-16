@@ -42,21 +42,17 @@ else
 
 switch ($eshopaction) {
     case 'redirect':
-    	//auto-redirect bits
-		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
-		header('Expires: Sun, 01 Jul 2005 00:00:00 GMT');
-		header('Pragma: no-cache'); //HTTP/1.0
-		
+    	if(isset($_SESSION['espost'.$blog_id]))
+			$espost=$_SESSION['espost'.$blog_id];
+		else
+			break;
+
 		//enters all the data into the database
 		$authorizenet = $eshopoptions['authorizenet']; 
 		$Key=$authorizenet['key'];
 		$LID=$authorizenet['id'];
 		$secret=$authorizenet['secret'];
 		$description=$authorizenet['desc'];
-		// a sequence number is randomly generated
-		$sequence	= rand(1, 1000);
-		// a timestamp is generated
-		$timestamp	= time ();
 		$pvalue=str_replace(',','',$espost['amount']);
 		//next 2 lines added to solve an issue 12/8/22
 		$pship=str_replace(',','',$espost['shipping_1']);
@@ -65,20 +61,31 @@ switch ($eshopaction) {
 		// above may be able to be changed by using + eshopShipTaxAmt() for the shipping.
 		if(isset($espost['tax'])) $pvalue += str_replace(',','',$espost['tax']);
 		$pvalue = number_format($pvalue, 2, '.', '');
+/*		
+		// a sequence number is randomly generated
+		$sequence	= rand(1, 1000);
+		// a timestamp is generated
+		$timestamp	= time ();
 		$subinv=uniqid(rand()).'eShop';
 		$invoice=substr($subinv,0,20);
-		
 		if( phpversion() >= '5.1.2' ){
 			$fingerprint = hash_hmac("md5", $LID . "^" . $sequence . "^" . $timestamp . "^" . $pvalue . "^", $Key); 
 		}else{ 
 			$fingerprint = bin2hex(mhash(MHASH_MD5, $LID . "^" . $sequence . "^" . $timestamp . "^" . $pvalue . "^", $Key)); 
 		}
-
 		$md5hash=$secret.$LID.$invoice.$pvalue;
 		$checkid=md5($md5hash);
 		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($espost,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
+*/
+		$sequence=$espost['auth']['sequence'];
+		$timestamp=$espost['auth']['timestamp'];
+		$subinv=$espost['auth']['subinv'];
+		$invoice=$espost['auth']['invoice'];
+		$fingerprint=$espost['auth']['fingerprint'];
+		unset($espost['auth']);
+
 /*
 		//necessary evil fix
 		$_SESSION['orderhandle']=true;

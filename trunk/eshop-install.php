@@ -111,10 +111,11 @@ if (!function_exists('eshop_create_dirs')) {
 		if(wp_mkdir_p( $upload_dir )){
 			$url_dir=$dirs['baseurl'];
 			if(substr($url_dir, -1)!='/')$url_dir.='/';
-			$plugin_dir=WP_PLUGIN_DIR;
+			$plugin_dir=ESHOP_PATH;
+
 			//files
 			$eshop_goto=$upload_dir.'/eshop_files';
-			$eshop_from=$plugin_dir.'/eshop/files';
+			$eshop_from=$plugin_dir.'files';
 			if(!file_exists($eshop_goto.'/eshop.css')){
 				if(wp_mkdir_p( $eshop_goto )){
 					if ($handle = opendir($eshop_from)) {
@@ -133,7 +134,7 @@ if (!function_exists('eshop_create_dirs')) {
 			}
 			//downloads
 			$eshop_goto=$upload_dir.'/../eshop_downloads';
-			$eshop_from=$plugin_dir.'/eshop/downloads';
+			$eshop_from=$plugin_dir.'downloads';
 			if(!file_exists($eshop_goto.'/.htaccess')){
 				if(wp_mkdir_p( $eshop_goto )){
 					if ($handle = opendir($eshop_from)) {
@@ -158,7 +159,7 @@ if (!function_exists('eshop_create_dirs')) {
 				foreach ($files as $file){
 					if(!file_exists($eshop_goto.'/'.$file.'.png')){
 						//copy the files
-						copy($plugin_dir.'/eshop/'.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
+						copy($plugin_dir.$file.'/'.$file.'.png',$eshop_goto.'/'.$file.'.png');
 						chmod($eshop_goto.'/'.$file.'.png',0666);
 					}
 				}

@@ -187,6 +187,10 @@ class webtopay_class {
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to webtopay &raquo;','eshop').'" /></p>
 	     </form>
 	  </div>';
+		global $eshopoptions;
+		if($eshopoptions['status']!='live'){
+			$echortn .= "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+		}
 		return $echortn;
    }   
    function validate_ipn() {

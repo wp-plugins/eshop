@@ -351,7 +351,7 @@ if(version_compare($eshopoptions['version'], '5.0.0' ,'<')){
 	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
-	$eshop_from=$plugin_dir.'/eshop/files';
+	$eshop_from=$plugin_dir.'files';
 	copy($eshop_from.'/noimage.png',$eshop_goto.'/noimage.png');
 	chmod($eshop_goto.'/noimage.png',0666);
 	copy($eshop_from.'/eshop-onload.js',$eshop_goto.'/eshop-onload.js');
@@ -689,7 +689,7 @@ if(version_compare($eshopoptions['version'], '6.2.13' ,'<')){
 	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
-	$eshop_from=$plugin_dir.'/eshop/files';
+	$eshop_from=$plugin_dir.'files';
 	copy($eshop_from.'/eshop-cart.js',$eshop_goto.'/eshop-cart.js');
 	chmod($eshop_goto.'/eshop-cart.js',0666);
 }
@@ -699,7 +699,17 @@ if(version_compare($eshopoptions['version'], '6.3.3' ,'<')){
 	$plugin_dir=ESHOP_PATH;
 	//new_files
 	$eshop_goto=$upload_dir.'/eshop_files';
-	$eshop_from=$plugin_dir.'/eshop/files';
+	$eshop_from=$plugin_dir.'files';
+	copy($eshop_from.'/eshop-cart.js',$eshop_goto.'/eshop-cart.js');
+	chmod($eshop_goto.'/eshop-cart.js',0666);
+}
+if(version_compare($eshopoptions['version'], '6.3.7' ,'<')){
+	$dirs=wp_upload_dir();
+	$upload_dir=$dirs['basedir'];
+	$plugin_dir=ESHOP_PATH;
+	//new_files
+	$eshop_goto=$upload_dir.'/eshop_files';
+	$eshop_from=$plugin_dir.'files';
 	copy($eshop_from.'/eshop-cart.js',$eshop_goto.'/eshop-cart.js');
 	chmod($eshop_goto.'/eshop-cart.js',0666);
 }

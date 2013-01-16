@@ -1134,10 +1134,6 @@ if (!function_exists('orderhandle')) {
 			}
 			
 			do_action('eshoporderhandle',$espost,$checkid);
-
-			if($eshopoptions['status']!='live'){
-				echo "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
-			}
 		}
 	}
 }
@@ -1275,6 +1271,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			if($myrow->down_id!='0'){
 				$containsdownloads++;
 			}
+			$cart .= apply_filters('eshopproddetails',$myrow);
 		}
 		$arrtotal=number_format_i18n($total, __('2','eshop'));
 		$arrtaxtotal=number_format_i18n($taxtotal, __('2','eshop'));
@@ -2520,4 +2517,5 @@ if (!function_exists('eshop_real_date')){
 		return apply_filters('eshop_real_date',$newdate,$custom);
 	}
 }
+
 ?>

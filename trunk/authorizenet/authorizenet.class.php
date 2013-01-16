@@ -164,7 +164,10 @@ class authorizenet_class {
          <input class="button" type="submit" id="ppsubmit" name="ppsubmit" value="'. __('Proceed to authorize.net &raquo;','eshop').'" /></p>
 	     </form>
 	  </div>';
-	  
+	   	global $eshopoptions;
+	    if($eshopoptions['status']!='live'){
+	  	  $echortn .= "<p class=\"testing\"><strong>".__('Test Mode &#8212; No money will be collected. This page will not auto redirect in test mode.','eshop')."</strong></p>\n";
+	  	}
 	  //debug
 	  	
 	  

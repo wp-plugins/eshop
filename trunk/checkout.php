@@ -7,10 +7,10 @@ global $wpdb;
 if (!function_exists('eshopShowform')) {
 	function eshopShowform($first_name,$last_name,$company,$phone,$email,$address1,$address2,$city,$state,$altstate,$zip,$country,$reference,$comments,$ship_name,$ship_company,$ship_phone,$ship_address,$ship_city,$ship_postcode,$ship_state,$ship_altstate,$ship_country){
 	global $wpdb, $blog_id,$eshopoptions;
-/*
-	if(isset($_SESSION['orderhandle']))
-		unset($_SESSION['orderhandle']);
-*/
+
+	if(isset($_SESSION['espost'.$blog_id]))
+		unset($_SESSION['espost'.$blog_id]);
+
 	$reqdvalues=array('shipping','first_name','last_name','email','phone','address','city','zip','pay');
 	//setupshipping arrays
 	if($eshopoptions['shipping']!='4'){

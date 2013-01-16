@@ -52,6 +52,7 @@ else
 
 switch ($eshopaction) {
     case 'redirect':
+/*
     	//auto-redirect bits
 		header('Cache-Control: no-cache, no-store, must-revalidate'); //HTTP/1.1
 		header('Expires: Sun, 01 Jul 2005 00:00:00 GMT');
@@ -76,11 +77,14 @@ switch ($eshopaction) {
 		if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
 		orderhandle($espost,$checkid);
 		if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);
-/*
 		//necessary evil fix
-		$_SESSION['orderhandle']=true;
-*/
+		//$_SESSION['orderhandle']=true;
 		$espost['custom']=$token;
+*/
+		if(isset($_SESSION['espost'.$blog_id]))
+			$espost=$_SESSION['espost'.$blog_id];
+		else
+			break;
 		$p = new eshop_paypal_class; 
 		if($eshopoptions['status']=='live'){
 			$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';     // paypal url
@@ -90,7 +94,8 @@ switch ($eshopaction) {
 		if('no'==$eshopoptions['paypal_noemail']){
 			unset($espost['email']);
 		}
-		$echoit.=$p->eshop_submit_paypal_post($espost);
+		if(isset($echoit))
+			$echoit.=$p->eshop_submit_paypal_post($espost);
 		//$p->dump_fields();      // for debugging, output a table of all the fields
 		break;
         
