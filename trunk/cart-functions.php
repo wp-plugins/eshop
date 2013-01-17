@@ -1271,7 +1271,7 @@ if (!function_exists('eshop_rtn_order_details')) {
 			if($myrow->down_id!='0'){
 				$containsdownloads++;
 			}
-			$cart .= apply_filters('eshopproddetails',$myrow);
+			//$cart .= apply_filters('eshopproddetails',$myrow);
 		}
 		$arrtotal=number_format_i18n($total, __('2','eshop'));
 		$arrtaxtotal=number_format_i18n($taxtotal, __('2','eshop'));
@@ -2517,5 +2517,27 @@ if (!function_exists('eshop_real_date')){
 		return apply_filters('eshop_real_date',$newdate,$custom);
 	}
 }
+if (!function_exists('eshop_orderhandle_process')) {
+ 	function eshop_orderhandle_process($espost=''){
+ 		global $blog_id,$eshopoptions,$wpdb,$wp_query,$_POST;
+ 		
+ 		if(isset($wp_query->query_vars['eshopaction']) && $wp_query->query_vars['eshopaction']=='redirect'){
+ 			$espost=$_POST;
+ 			
+ 			if(isset($espost['eshop_payment'])){
+				$_SESSION['eshop_payment'.$blog_id]=preg_replace('/[^a-zA-Z0-9\-_]/','',$espost['eshop_payment']);
+				$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
+			}
+			if(!isset($_SESSION['eshop_payment'.$blog_id])){
+				$paymentmethod='paypal';
+			}else{
+				$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
+			}
+			
+			$eshop_order_function = 'eshop_' . $paymentmethod.'_redirect';
+			$espost = $eshop_order_function($espost);
+		}
 
+	}
+}
 ?>
