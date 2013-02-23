@@ -4,8 +4,8 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 6.3.8
-Version: 6.3.8
+Stable tag: 6.3.9
+Version: 6.3.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,13 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.9
+
+* *fixed* issue with the unsupported gateways, thanks to iDeal these might now work.
+* *fixed* issue with eShop style
+* *fixed* eshop_best_sellers shortcode and widget, now only shows a product once, and not for each option
+* *added* further link to the wiki in the FAQ section.
 
 Version 6.3.8
 
@@ -235,6 +242,10 @@ You then need to create a top level shop page, and start creating departments an
 
 == Frequently Asked Questions ==
 
+= Got a question? = 
+
+Please see the see the [eShop wiki](http://quirm.net/wiki/eshop/) before posting on the forums.
+
 = Yet Another Related Posts Plugin =
 If you are using this plugin I recommend you disable it before upgrading or deactivating/reactivating eShop, as it may be the cause of some incompatibility issues.
 
@@ -257,20 +268,5 @@ Available via the WordPress forums (please tag the post eshop) or via [Quirm.net
 
 Due to increasing demands we no longer offer free CSS support.
 
-= Custom Merchant Gateways =
-Note - the fix in 6.3.4 was reverted in 6.3.5 - this code is not necessary at this time.
-If you are using a custom gateway you will need to update the code before upgrading past 6.3.3.
-Find this code:
-`//affiliate
-if(isset($_COOKIE['ap_id'])) $espost['affiliate'] = $_COOKIE['ap_id'];
-orderhandle($espost,$checkid);
-if(isset($_COOKIE['ap_id'])) unset($espost['affiliate']);`
-and insert after it:
-`//necessary evil fix
-$_SESSION['orderhandle']=true;`
 
 == Upgrade Notice ==
-
-= 6.3.5 =
-
-*reverted* Fix for jetpack users was too buggy and has been removed - however, if you are using jetpack and 6.3.4 works for you - you do not need to upgrade.

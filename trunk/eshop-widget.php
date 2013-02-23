@@ -507,11 +507,23 @@ function eshopw_best_sellers($atts){
 	global $wpdb, $post;
 	$stktable=$wpdb->prefix.'eshop_stock';
 	extract(shortcode_atts(array('class'=>'eshopw_best','images'=>'no','show'=>'6','size'=>''), $atts));
+	/*
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.* 
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 	WHERE $wpdb->postmeta.meta_key='_eshop_stock' 
 	AND $wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 	order by stk.purchases DESC limit $show");
+	*/
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.*
+		FROM $wpdb->postmeta,$wpdb->posts
+		JOIN(SELECT post_id as daids FROM $stktable GROUP BY post_id ORDER BY sum(purchases) DESC LIMIT $show) j
+		WHERE $wpdb->postmeta.meta_key='_eshop_stock'
+		AND $wpdb->posts.ID=$wpdb->postmeta.post_id 
+		AND $wpdb->posts.post_status='publish' 
+		AND $wpdb->posts.ID IN(daids)
+		ORDER BY FIELD( $wpdb->posts.ID,daids)
+		LIMIT $show");
+		
 	if($pages) {
 		if($images=='no'){
 			$echo = eshopw_listpages($pages,$class);

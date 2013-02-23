@@ -78,11 +78,10 @@ $plugin_dir=ESHOP_PATH;
 $dirs=wp_upload_dir();
 $upload_dir=$dirs['basedir'];
 $eshop_goto=$upload_dir.'/eshop_files/eshop.css';
-$eshop_from=$plugin_dir.'/eshop/files/eshop.css';
+$eshop_from=$plugin_dir.'files/eshop.css';
 $eshopver=explode('\.',ESHOP_VERSION);
 $left_string = file_get_contents($eshop_from, true);
 $right_string = file_get_contents($eshop_goto, true);
-
 ?>
 </div>
 <div class="wrap">

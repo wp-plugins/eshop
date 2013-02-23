@@ -530,9 +530,13 @@ function eshop_best_sellers($atts){
 		$addwhere="$wpdb->postmeta.meta_key='_eshop_product' AND";
 		
 	$max=$wpdb->get_var("SELECT COUNT($wpdb->postmeta.post_id)
-		from $wpdb->postmeta,$wpdb->posts, $stktable as stk
-		WHERE $addwhere
-		$wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID");
+		FROM $wpdb->postmeta,$wpdb->posts
+		JOIN(SELECT post_id as daids FROM $stktable GROUP BY post_id ORDER BY sum(purchases) DESC) j
+		WHERE $addwhere 
+		$wpdb->posts.ID=$wpdb->postmeta.post_id 
+		AND $wpdb->posts.post_status='publish' 
+		AND $wpdb->posts.ID IN(daids)
+		");
 	if($records>$show) $records=$show;
 
 	if($max>$show)
@@ -563,11 +567,25 @@ function eshop_best_sellers($atts){
 		}
 	}
 	if(!isset($offset)) $offset='0';
+	/* 
+	old query in case anyone wants products with options to show differently
 	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.*
 	from $wpdb->postmeta,$wpdb->posts, $stktable as stk
 	WHERE $addwhere
 	$wpdb->posts.ID=$wpdb->postmeta.post_id AND $wpdb->posts.post_status='publish' AND stk.post_id=$wpdb->posts.ID
 	order by stk.purchases DESC limit $offset,$records");
+	*/
+	
+	$pages=$wpdb->get_results("SELECT $wpdb->postmeta.post_id, $wpdb->posts.*
+	FROM $wpdb->postmeta,$wpdb->posts
+	JOIN(SELECT post_id as daids FROM $stktable GROUP BY post_id ORDER BY sum(purchases) DESC LIMIT $offset,$records) j
+	WHERE $addwhere 
+	$wpdb->posts.ID=$wpdb->postmeta.post_id 
+	AND $wpdb->posts.post_status='publish' 
+	AND $wpdb->posts.ID IN(daids)
+	ORDER BY FIELD( $wpdb->posts.ID,daids)
+	LIMIT $offset,$records");
+	
 	$thisispage=get_permalink($post->ID);
 	if($pages) {
 		//paginate
