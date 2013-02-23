@@ -2535,7 +2535,11 @@ if (!function_exists('eshop_orderhandle_process')) {
 			}
 			
 			$eshop_order_function = 'eshop_' . $paymentmethod.'_redirect';
-			$espost = $eshop_order_function($espost);
+			if(function_exists($eshop_order_function)){
+				$espost = $eshop_order_function($espost);
+			}elseif(preg_match('/^([a-zA-Z0-9_\-]+)$/', $paymentmethod)){
+				require_once(dirname(__FILE__) . '/' . $paymentmethod . '.php');
+			}
 		}
 
 	}

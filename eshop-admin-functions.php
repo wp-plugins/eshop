@@ -321,7 +321,7 @@ if (!function_exists('eshop_admin_mode')) {
 		//bad themes
 		$eshopbadtheme = wp_get_theme();
 		if($eshopbadtheme->{'Author URI'} == 'http://www.elegantthemes.com')
-			echo '<br />'.__('<span class="test">Warning:</span> The developers of eShop <strong>do not</strong> support anyone using this theme.'.'eshop');
+			echo '<br />'.__('<span class="test">Warning:</span> The developers of eShop <strong>will not</strong> support anyone using a theme from Elegant Themes.'.'eshop');
 		echo '</p>'."\n";
 	}
 }
