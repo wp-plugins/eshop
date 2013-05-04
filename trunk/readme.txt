@@ -4,8 +4,8 @@ Donate link: http://quirm.net/download/
 Tags: eshop, ecommerce, shop, store, estore, stock control, cart, e-commerce, wpmu, multisite, authorize.net, paypal, payson, eProcessingNetwork, Webtopay, ideal, cash, bank, tax, sale
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 6.3.9
-Version: 6.3.9
+Stable tag: 6.3.10
+Version: 6.3.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,7 +35,7 @@ eShop is an accessible shopping cart plugin for WordPress, packed with various f
 * Merchant gateways: Paypal and Cash/Cheque!
 * Merchant gateways still included but no longer supported: Authorize.net, Payson, eProcessingNetwork, Webtopay, iDEAL
 * Sales tax!
-* Now compatible with WP Affiliate for affiliates - see [eShop wiki](http://quirm.net/wiki/eshop/).
+* Several companion plugins are now available please see [eShop wiki](http://quirm.net/wiki/eshop/).
 * able to be used as a product catalogue with no sales.
 * and much much more
 
@@ -46,6 +46,17 @@ Documentation is available via [Quirm.net](http://quirm.net/wiki/eshop/)
 Videos and screenshots available on [Quirm.net](http://quirm.net/)
 
 == Changelog ==
+
+Version 6.3.10
+
+* *fixed* zero cost orders should now work again.
+* *fixed* slashes no longer appear for download item names
+* *added* warning for max weight ussage in Shipping method 4
+* *added* filter to allow for larger number of top sellers to show on the dashboard
+* *added* filters to change default order listing, check bottom of eshop-orders.php for the various filter names
+* *added* filter to eshop_mg_process_product function
+* *added* filter for subject of the customer emails, eshop_customer_email_subject
+* *NOTE* Due to changes at paypla, I ahve been unable to test this release. If therea re issues, please roll back to a previous version.
 
 Version 6.3.9
 

@@ -19,6 +19,7 @@ if (!function_exists('eshop_pre_wp_head')) {
 				if(isset($eshopoptions['zero']) && $eshopoptions['zero']=='1'){
 					if($_POST['amount']=='0' && $_SESSION['final_price'.$blog_id]== '0')
 						$_POST['eshop_payment']=$_SESSION['eshop_payment'.$blog_id]='cash';
+
 				}
 			}
 			if($eshopaction=='webtopayipn'){
