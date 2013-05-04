@@ -1,6 +1,9 @@
 <?php
 if ('checkout.php' == basename($_SERVER['SCRIPT_FILENAME']))
      die ('<h2>Direct File Access Prohibited</h2>');
+     
+if(!defined('ESHOP_PATH'))
+	define( 'ESHOP_PATH', plugin_dir_path(__FILE__) );
 
 global $wpdb;
 

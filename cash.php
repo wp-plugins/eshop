@@ -39,6 +39,7 @@ switch ($eshopaction) {
 
 		//enters all the data into the database
 		$cash = $eshopoptions['cash']; 
+		//this may not work
 		if(!isset($espost['RefNr'])){
 			$espost['RefNr']=uniqid(rand());
 			$ecash->ipn_data['RefNr']=$espost['RefNr'];
@@ -47,6 +48,11 @@ switch ($eshopaction) {
 		foreach ($_REQUEST as $field=>$value) { 
 		  $ecash->ipn_data["$field"] = $value;
       	}
+      	//but this should
+ 		if(!isset($ecash->ipn_data['RefNr'])){
+ 			$espost['RefNr']=uniqid(rand());
+ 			$ecash->ipn_data['RefNr']=$espost['RefNr'];
+		}
 
 		/* ############### */
 		if($eshopoptions['status']=='live'){

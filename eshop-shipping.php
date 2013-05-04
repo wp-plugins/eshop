@@ -391,7 +391,6 @@ default:
 			$eshopmaxweight=$_POST['eshop_max_weight'][$k];
 			if(!is_numeric($eshopmaxweight) && $eshopmaxweight!='')
 				$eshopmaxweight='';
-				
 			foreach($v as $f=>$value){
 				if($value['weight']!=''){
 					$bvarray=array();
@@ -665,7 +664,7 @@ default:
 		echo '<option value="state"'.selected($eshoparea,'state',false).'>'.__('State/County/Province','eshop').'</option>';
 		?>
 		</select>
-		<label for="eshop_max_weight<?php echo $eshopletter; ?>"><?php _e('Max weight allowed','eshop'); ?></label><input id="eshop_max_weight<?php echo $eshopletter; ?>" name="eshop_max_weight[<?php echo $k; ?>]" type="text" value="<?php echo $maxweight; ?>" size="4" />
+		<label for="eshop_max_weight<?php echo $eshopletter; ?>"><?php _e('Max weight allowed','eshop'); ?></label><input id="eshop_max_weight<?php echo $eshopletter; ?>" name="eshop_max_weight[<?php echo $k; ?>]" type="text" value="<?php echo $maxweight; ?>" size="4" /><label for="eshop_max_weight<?php echo $eshopletter; ?>"><?php _e('<small>Warning: if weight of the order goes above this value the shipping value may be zero.</small>','eshop'); ?></label>
 		<table class="hidealllabels widefat">
 		<thead>
 		<tr>

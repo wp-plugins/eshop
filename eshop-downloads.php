@@ -221,7 +221,7 @@ function eshop_downloads_manager() {
 			   $label = (strlen($row->title) >= 20) ? substr($row->title,0,20) . "&#8230;" : $row->title;
 			   echo "<tr>\n";
 			   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
-			   echo '<td headers="edtitle redid'.$row->id.'">'.$label."</td>\n";
+			   echo '<td headers="edtitle redid'.$row->id.'">'.stripslashes($label)."</td>\n";
 			   echo '<td headers="edsize redid'.$row->id.'">'.eshop_read_filesize($size)."</td>\n";
 			   echo '<td headers="edfile redid'.$row->id.'">'.$row->files."</td>\n";
 			   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";
@@ -252,7 +252,7 @@ function eshop_downloads_manager() {
 			<fieldset><legend><?php _e('Amend File details','eshop'); ?></legend>
 			<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
 
-			<label for="filetitle"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo $row->title; ?>" /><br />
+			<label for="filetitle"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo  wp_specialchars(stripslashes($row->title),1); ?>" /><br />
 			<label for="downloads"><?php _e('Downloads','eshop'); ?></label><input type="text" name="downloads" id="downloads" size="5" value="<?php echo $row->downloads; ?>" /><br />
 			<label for="purchases"><?php _e('Purchases','eshop'); ?></label><input type="text" name="purchases" id="purchases" size="5" value="<?php echo $row->purchases; ?>" /><br />
 			<?php 
@@ -398,7 +398,7 @@ function eshop_downloads_manager() {
 		   $alt = ($calt % 2) ? '' : ' class="alternate"';
 		   echo "<tr".$alt.">\n";
 		   echo '<td id="redid'.$row->id.'" headers="edid">#'.$row->id."</td>\n";
-		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.$label."</a></td>\n";
+		   echo '<td headers="edtitle redid'.$row->id.'"><a href="?page=eshop-downloads.php&amp;edit='.$row->id.'" title="'. __('edit details for','eshop').' '.$row->title.'">'.stripslashes($label)."</a></td>\n";
 		   echo '<td headers="edsize redid'.$row->id.'">'.eshop_read_filesize($size)."</td>\n";
 		   echo '<td headers="edstatus redid'.$row->id.'">'.eshop_check_brokenlink($row->files)."</td>\n";
 		   echo '<td headers="eddate redid'.$row->id.'">'.$row->added."</td>\n";

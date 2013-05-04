@@ -745,23 +745,23 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	if (empty($_GET['action'])) $_GET['action'] = 'Completed';  
 	switch ($_GET['action']) {
 		case 'Completed':
-			displayorders('Completed','da');
+			displayorders('Completed',apply_filters('eshop-orders-orderby-completed','da'));
 			break;
 		case 'Failed':
-			displayorders('Failed','dd');
+			displayorders('Failed',apply_filters('eshop-orders-orderby-failed','dd'));
 			break;
 		case 'Waiting':
-			displayorders('Waiting','da');
+			displayorders('Waiting',apply_filters('eshop-orders-orderby-waiting','da'));
 			break;
 		case 'Sent':
-			displayorders('Sent','dd');
+			displayorders('Sent',apply_filters('eshop-orders-orderby-sent','dd'));
 			break;
 		case 'Deleted':
-			displayorders('Deleted','dd');
+			displayorders('Deleted',apply_filters('eshop-orders-orderby-deleted','dd'));
 			break;
 		case 'Pending':
 		default:
-			displayorders('Pending','da');
+			displayorders('Pending',apply_filters('eshop-orders-orderby-pending','da'));
 			break;
 	}
 }

@@ -776,22 +776,7 @@ if (!function_exists('orderhandle')) {
 	function orderhandle($espost,$checkid){
 		//This function puts the order into the db.
 		global $wpdb, $blog_id,$eshopoptions;
-/*		
-		//this is a workaround until I can get a more permament fix - may require complete plugin rewrite though.
-		$eshopproblemplugins=apply_filters('eshop_problem_plugins',array('jetpack'));
-		$opts=get_option('active_plugins');
-		$eshopproblem=false;
-		foreach($eshopproblemplugins as $eshopplug){
-			foreach($opts as $opt){
-				if($opt==$eshopplug.'/'.$eshopplug.'.php')
-					$eshopproblem=true;
-			}
-		}
-		
-		if(isset($_SESSION['orderhandle']) && $eshopproblem)
-			return;
-		$_SESSION['orderhandle']=true;
-*/
+
 		if (!is_user_logged_in() && isset($eshopoptions['users']) && $eshopoptions['users']=='yes' && isset($_SESSION['eshop_user'.$blog_id])) {
 			//set up blank user if in case anything goes phooey
 			$user_id=0;
@@ -1228,6 +1213,9 @@ if (!function_exists('eshop_rtn_order_details')) {
 			$paidvia=$drow->paidvia;
 			$dbid=$drow->id;
 		}
+		if(!isset($status))
+			return;
+		
 		if($status=='Completed'){$status=__('Order Received','eshop');}
 		if($status=='Pending' || $status=='Waiting'){$status=__('Pending Payment','eshop');}
 		$contact=$cart=$address=$extras= '';
@@ -2214,7 +2202,7 @@ if (!function_exists('eshop_mg_process_product')) {
 					$wpdb->query("INSERT INTO $stocktable (available, purchases, post_id, option_id) VALUES ('0','$uqty','$pid', '$optid')");
 				}
 			}
-
+			do_action('eshop_after_upsert_stock_purchase', $pid, $optid, $uqty);
 		}
 	}
 }
@@ -2254,7 +2242,7 @@ if (!function_exists('eshop_send_customer_email')) {
 		$this_email = stripslashes($thisemail->emailContent);
 
 		// START SUBST
-		$csubject=stripslashes($thisemail->emailSubject);
+		$csubject=apply_filters('eshop_customer_email_subject',$thisemail->emailSubject,$array);
 		$this_email = eshop_email_parse($this_email,$array);
 
 		//try and decode various bits
@@ -2526,14 +2514,19 @@ if (!function_exists('eshop_orderhandle_process')) {
  			
  			if(isset($espost['eshop_payment'])){
 				$_SESSION['eshop_payment'.$blog_id]=preg_replace('/[^a-zA-Z0-9\-_]/','',$espost['eshop_payment']);
-				$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
+				$paymentmethod=$_SESSION['eshop_payment'.$blog_id];	
+				
+				if(isset($eshopoptions['zero']) && $eshopoptions['zero']=='1'){
+					if($espost['amount']=='0' && $_SESSION['final_price'.$blog_id]== '0')
+						$paymentmethod=$espost['eshop_payment']=$_SESSION['eshop_payment'.$blog_id]='cash';
+				}
 			}
 			if(!isset($_SESSION['eshop_payment'.$blog_id])){
 				$paymentmethod='paypal';
 			}else{
 				$paymentmethod=$_SESSION['eshop_payment'.$blog_id];
 			}
-			
+
 			$eshop_order_function = 'eshop_' . $paymentmethod.'_redirect';
 			if(function_exists($eshop_order_function)){
 				$espost = $eshop_order_function($espost);
