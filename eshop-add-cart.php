@@ -269,7 +269,6 @@ function eshop_boing($pee,$short='no',$postid='',$isshortcode='n'){
 				$replace .='<label for="qty'.$theid.$uniq.'" class="qty">'.__('<abbr title="Quantity">Qty</abbr>:','eshop').'</label>
 				<input type="text" value="'.$addqty.'" id="qty'.$theid.$uniq.'" maxlength="3" size="3" name="qty" class="iqty" />';
 			}
-
 			$replace .='
 			<input type="hidden" name="pclas" value="'.$eshop_product['shiprate'].'" />
 			<input type="hidden" name="pname" value="'.stripslashes(esc_attr($eshop_product['description'])).'" />

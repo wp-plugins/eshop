@@ -51,7 +51,7 @@ function eshop_discounts_manager() {
 	//new or edit
 	
 	if(isset($_POST['editid'])){
-		$eshop_id=$wpdb->escape(trim($_POST['editid']));
+		$eshop_id=esc_sql(trim($_POST['editid']));
 		if(isset($_POST['eshop_live']))
 			$eshop_live='yes';
 		else
@@ -101,7 +101,7 @@ function eshop_discounts_manager() {
 			$error[]=__('You must specify a code','eshop');
 		
 		if($eshop_code!=''){
-			$ecode=$wpdb->escape(trim(strtolower($eshop_code)));
+			$ecode=esc_sql(trim(strtolower($eshop_code)));
 			$ecount=$wpdb->get_var("SELECT COUNT(id) FROM $disctable WHERE LOWER(disccode)='$ecode' && id!='$eshop_id'");
 			if($ecount!=0)
 				$error[]=__('That code already exists','eshop');

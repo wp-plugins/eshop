@@ -215,9 +215,9 @@ switch ($eshopaction) {
 		$_SESSION = array();
       	session_destroy();
       	if($eshopoptions['status']=='live'){
-			$txn_id = $wpdb->escape($espost['txn_id']);
+			$txn_id = esc_sql($espost['txn_id']);
 		}else{
-			$txn_id = "TEST-".$wpdb->escape($espost['txn_id']);
+			$txn_id = "TEST-".esc_sql($espost['txn_id']);
 		}
 		$frow=$wpdb->get_var("select first_name from $detailstable where transid='$txn_id' limit 1");
 		$lrow=$wpdb->get_var("select last_name from $detailstable where transid='$txn_id' limit 1");
@@ -243,9 +243,9 @@ switch ($eshopaction) {
 	  		$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$p->ipn_data['payer_email'].$p->ipn_data['mc_gross']);
 	  		$tstatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
 	  		if($eshopoptions['status']=='live'){
-	  			$txn_id = 'Cancelled-'.$wpdb->escape($p->ipn_data['txn_id']);
+	  			$txn_id = 'Cancelled-'.esc_sql($p->ipn_data['txn_id']);
 	  		}else{
-	  			$txn_id = "TEST-Cancelled-".$wpdb->escape($p->ipn_data['txn_id']);
+	  			$txn_id = "TEST-Cancelled-".esc_sql($p->ipn_data['txn_id']);
 	  		}
 	  		if($tstatus=='Pending'){
 	  			$query2=$wpdb->query("UPDATE $detailstable set status='Failed',transid='$txn_id' where checkid='$checked'");
@@ -281,10 +281,10 @@ switch ($eshopaction) {
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = esc_sql($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = __("TEST-",'eshop').esc_sql($p->ipn_data['txn_id']);
 				$subject = __('Testing: Paypal IPN - ','eshop');
 			}
 			//check txn_id is unique
@@ -312,7 +312,7 @@ switch ($eshopaction) {
 				$extradetails .= __("The business email address in eShop does not match your main email address at Paypal.",'eshop');
 			}
 			//add any memo from user at paypal here
-			$memo=$wpdb->escape($p->ipn_data['memo']);
+			$memo=esc_sql($p->ipn_data['memo']);
 			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){
@@ -367,16 +367,16 @@ switch ($eshopaction) {
       		$chkamt=number_format($p->ipn_data['mc_gross']-$p->ipn_data['tax'],2);
 			$checked=md5($p->ipn_data['business'].$p->ipn_data['custom'].$chkamt);
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = esc_sql($p->ipn_data['txn_id']);
 				$subject = __('Paypal IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($p->ipn_data['txn_id']);
+				$txn_id = __("TEST-",'eshop').esc_sql($p->ipn_data['txn_id']);
 				$subject = __('Testing: Paypal IPN - ','eshop');
 			}
 
 			$astatus=$wpdb->get_var("select status from $detailstable where checkid='$checked' limit 1");
 			//add any memo from user at paypal here
-			$memo=$wpdb->escape($p->ipn_data['memo']);
+			$memo=esc_sql($p->ipn_data['memo']);
 			$mquery=$wpdb->query("UPDATE $detailstable set thememo='$memo' where checkid='$checked'");
 			//the magic bit  + creating the subject for our email.
 			if($astatus=='Pending' && $p->ipn_data['payment_status']=='Completed'){

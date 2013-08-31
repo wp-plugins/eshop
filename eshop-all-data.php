@@ -89,14 +89,14 @@ foreach($dquery as $drow){
 		//address
 		$theaddress=$drow->address1."\n".$drow->address2;
 		if(is_numeric($drow->state)){
-			$qcode=$wpdb->escape($drow->state);
+			$qcode=esc_sql($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 			$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 			$thestate=$qstate;
 		}else{
 			$thestate=$drow->state;
 		}
-		$qcode=$wpdb->escape($drow->country);
+		$qcode=esc_sql($drow->country);
 		$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 		$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 		$thecountry=$qcountry;
@@ -113,14 +113,14 @@ foreach($dquery as $drow){
 		$data.=	eshopcleanit($drow->ship_name).$delim.eshopcleanit($drow->ship_company).$delim.eshopcleanit($drow->ship_phone).$delim;
 
 		$shipaddress=$drow->ship_address;
-		$qcode=$wpdb->escape($drow->ship_state);
+		$qcode=esc_sql($drow->ship_state);
 		$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 		$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
 		$shipstate=$qstate;
 		$shipcity=$drow->ship_city;
 		$shippostcode=$drow->ship_postcode;
 		
-		$qcode=$wpdb->escape($drow->ship_country);
+		$qcode=esc_sql($drow->ship_country);
 		$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 		$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 		$shipcountry=$qcountry;

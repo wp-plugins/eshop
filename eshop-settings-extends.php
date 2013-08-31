@@ -61,11 +61,11 @@ class eshop_setting_base_class extends eshop_metabox_class {
 		//cross check the given referer
 		check_admin_referer('eshop-metaboxes-general');
 		$eshopoptions = get_option('eshop_plugin_settings');
-		$eshopoptions['base_brand']=$wpdb->escape($_POST['eshop_base_brand']);
-		$eshopoptions['base_condition']=$wpdb->escape($_POST['eshop_base_condition']);
-		$eshopoptions['base_expiry']=$wpdb->escape($_POST['eshop_base_expiry']);
-		$eshopoptions['base_ptype']=$wpdb->escape($_POST['eshop_base_ptype']);
-		$eshopoptions['base_payment']=$wpdb->escape($_POST['eshop_base_payment']);
+		$eshopoptions['base_brand']=esc_sql($_POST['eshop_base_brand']);
+		$eshopoptions['base_condition']=esc_sql($_POST['eshop_base_condition']);
+		$eshopoptions['base_expiry']=esc_sql($_POST['eshop_base_expiry']);
+		$eshopoptions['base_ptype']=esc_sql($_POST['eshop_base_ptype']);
+		$eshopoptions['base_payment']=esc_sql($_POST['eshop_base_payment']);
 
 		update_option('eshop_plugin_settings',$eshopoptions);
 		if(isset($_POST['eshopbasereset'])){
@@ -148,7 +148,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_xtra_privacy'])){
 			$ptitle=get_post($_POST['eshop_xtra_privacy']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['xtra_privacy']=$wpdb->escape($_POST['eshop_xtra_privacy']);
+				$eshopoptions['xtra_privacy']=esc_sql($_POST['eshop_xtra_privacy']);
 			}else{
 				$err=1;
 				$eshopoptions['xtra_privacy']='';
@@ -162,7 +162,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_xtra_help'])){
 			$ptitle=get_post($_POST['eshop_xtra_help']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['xtra_help']=$wpdb->escape($_POST['eshop_xtra_help']);
+				$eshopoptions['xtra_help']=esc_sql($_POST['eshop_xtra_help']);
 			}else{
 				$err=2;
 			}	
@@ -175,7 +175,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_cart_shipping'])){
 			$ptitle=get_post($_POST['eshop_cart_shipping']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['cart_shipping']=$wpdb->escape($_POST['eshop_cart_shipping']);
+				$eshopoptions['cart_shipping']=esc_sql($_POST['eshop_cart_shipping']);
 			}else{
 				$err=3;
 			}	
@@ -188,7 +188,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_shop_page'])){
 			$ptitle=get_post($_POST['eshop_shop_page']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['shop_page']=$wpdb->escape($_POST['eshop_shop_page']);
+				$eshopoptions['shop_page']=esc_sql($_POST['eshop_shop_page']);
 			}else{
 				$err=4;
 			}	
@@ -201,7 +201,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_cart'])){
 			$ptitle=get_post($_POST['eshop_cart']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['cart']=$wpdb->escape($_POST['eshop_cart']);
+				$eshopoptions['cart']=esc_sql($_POST['eshop_cart']);
 			}else{
 				$err=5;
 			}	
@@ -212,7 +212,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_cart_cancel'])){
 			$ptitle=get_post($_POST['eshop_cart_cancel']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['cart_cancel']=$wpdb->escape($_POST['eshop_cart_cancel']);
+				$eshopoptions['cart_cancel']=esc_sql($_POST['eshop_cart_cancel']);
 			}else{
 				$err=6;
 			}	
@@ -223,7 +223,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_checkout'])){
 			$ptitle=get_post($_POST['eshop_checkout']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['checkout']=$wpdb->escape($_POST['eshop_checkout']);
+				$eshopoptions['checkout']=esc_sql($_POST['eshop_checkout']);
 			}else{
 				$err=7;
 			}	
@@ -234,7 +234,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_cart_success'])){
 			$ptitle=get_post($_POST['eshop_cart_success']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['cart_success']=$wpdb->escape($_POST['eshop_cart_success']);
+				$eshopoptions['cart_success']=esc_sql($_POST['eshop_cart_success']);
 			}else{
 				$err=8;
 			}	
@@ -245,7 +245,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 		if(is_numeric($_POST['eshop_show_downloads'])){
 			$ptitle=get_post($_POST['eshop_show_downloads']);
 			if($ptitle->post_title!=''){
-				$eshopoptions['show_downloads']=$wpdb->escape($_POST['eshop_show_downloads']);
+				$eshopoptions['show_downloads']=esc_sql($_POST['eshop_show_downloads']);
 			}else{
 				$err=9;		
 			}	
@@ -256,7 +256,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 			if(is_numeric($_POST['eshop_details_tax'])){
 				$ptitle=get_post($_POST['eshop_details_tax']);
 				if($ptitle->post_title!=''){
-					$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
+					$eshopoptions['details']['tax']=esc_sql($_POST['eshop_details_tax']);
 				}else{
 					$err=10;		
 				}	
@@ -264,7 +264,7 @@ class eshop_setting_pages_class extends eshop_metabox_class {
 				$err=10;		
 			}
 		}else{
-			$eshopoptions['details']['tax']=$wpdb->escape($_POST['eshop_details_tax']);
+			$eshopoptions['details']['tax']=esc_sql($_POST['eshop_details_tax']);
 		}
 		//lets redirect the post request into get request
 		$_POST['_wp_http_referer']=add_query_arg('eshop_message',$err,$_POST['_wp_http_referer']);
@@ -371,14 +371,14 @@ class eshop_setting_downloads_class extends eshop_metabox_class {
 		$eshopoptions = get_option('eshop_plugin_settings');
 		//process here your on $_POST validation and / or option saving
 		if(is_numeric($_POST['eshop_downloads_num'])){
-			$eshopoptions['downloads_num']=$wpdb->escape($_POST['eshop_downloads_num']);
+			$eshopoptions['downloads_num']=esc_sql($_POST['eshop_downloads_num']);
 		}else{
 			$err=1;
 			$eshopoptions['downloads_num']='3';
 		}
-		$eshopoptions['downloads_email']=$wpdb->escape($_POST['eshop_downloads_email']);
-		$eshopoptions['downloads_only']=$wpdb->escape($_POST['eshop_downloads_only']);
-		$eshopoptions['downloads_hideall']=$wpdb->escape($_POST['eshop_downloads_hideall']);
+		$eshopoptions['downloads_email']=esc_sql($_POST['eshop_downloads_email']);
+		$eshopoptions['downloads_only']=esc_sql($_POST['eshop_downloads_only']);
+		$eshopoptions['downloads_hideall']=esc_sql($_POST['eshop_downloads_hideall']);
 		update_option('eshop_plugin_settings',$eshopoptions);
 		//lets redirect the post request into get request
 		
@@ -446,7 +446,7 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 		//process here your on $_POST validation and / or option saving
 		$eshopoptions = get_option('eshop_plugin_settings');
 		if(is_numeric($_POST['eshop_discount_shipping'])){
-				$eshopoptions['discount_shipping']=$wpdb->escape($_POST['eshop_discount_shipping']);
+				$eshopoptions['discount_shipping']=esc_sql($_POST['eshop_discount_shipping']);
 		}elseif($_POST['eshop_discount_shipping']!=''){
 			$err=1;
 			$eshopoptions['discount_shipping']='';
@@ -456,8 +456,8 @@ class eshop_setting_discount_class extends eshop_metabox_class {
 
 		for ($x=1;$x<=3;$x++){
 			if(is_numeric($_POST['eshop_discount_spend'.$x]) && is_numeric($_POST['eshop_discount_value'.$x])){
-				$eshopoptions['discount_spend'.$x]=$wpdb->escape($_POST['eshop_discount_spend'.$x]);
-				$eshopoptions['discount_value'.$x]=$wpdb->escape($_POST['eshop_discount_value'.$x]);
+				$eshopoptions['discount_spend'.$x]=esc_sql($_POST['eshop_discount_spend'.$x]);
+				$eshopoptions['discount_value'.$x]=esc_sql($_POST['eshop_discount_value'.$x]);
 			}elseif($_POST['eshop_discount_spend'.$x]=='' || $_POST['eshop_discount_value'.$x]=='') {
 				$eshopoptions['discount_spend'.$x]='';
 				$eshopoptions['discount_value'.$x]='';
@@ -942,63 +942,63 @@ class eshop_setting_general_class extends eshop_metabox_class {
 		$err='100';
 		$eshopoptions = get_option('eshop_plugin_settings');
 		//process here your on $_POST validation and / or option saving
-		$eshopoptions['sale']=$wpdb->escape($_POST['eshop_sale']);
-		$eshopoptions['from_email']=$wpdb->escape($_POST['eshop_from_email']);
-		$eshopoptions['cron_email']=$wpdb->escape($_POST['eshop_cron_email']);
-		$eshopoptions['sysemails']=$wpdb->escape($_POST['eshop_sysemails']);
-		$eshopoptions['currency_symbol']=$wpdb->escape($_POST['eshop_currency_symbol']);
-		$eshopoptions['cart_nostock']=$wpdb->escape($_POST['eshop_cart_nostock']);
-		$eshopoptions['credits']=$wpdb->escape($_POST['eshop_credits']);
-		$eshopoptions['fold_menu']=$wpdb->escape($_POST['eshop_fold_menu']);
-		$eshopoptions['hide_cartco']=$wpdb->escape($_POST['eshop_hide_cartco']);
-		$eshopoptions['stock_control']=$wpdb->escape($_POST['eshop_stock_control']);
-		$eshopoptions['min_qty']=$wpdb->escape($_POST['eshop_min_qty']);
-		$eshopoptions['max_qty']=$wpdb->escape($_POST['eshop_max_qty']);
-		$eshopoptions['search_img']=$wpdb->escape($_POST['eshop_search_img']);
-		$eshopoptions['show_forms']=$wpdb->escape($_POST['eshop_show_forms']);
-		$eshopoptions['addtocart_image']=$wpdb->escape($_POST['eshop_addtocart_image']);
-		$eshopoptions['hide_addinfo']=$wpdb->escape($_POST['eshop_hide_addinfo']);
-		$eshopoptions['hide_shipping']=$wpdb->escape($_POST['eshop_hide_shipping']);
-		$eshopoptions['tandc']=$wpdb->escape($_POST['eshop_tandc']);
-		$eshopoptions['tandc_use']=$wpdb->escape($_POST['eshop_tandc_use']);
-		$eshopoptions['tandc_id']=$wpdb->escape($_POST['eshop_tandc_id']);
-		$eshopoptions['set_cacheability']=$wpdb->escape($_POST['eshop_set_cacheability']);
+		$eshopoptions['sale']=esc_sql($_POST['eshop_sale']);
+		$eshopoptions['from_email']=esc_sql($_POST['eshop_from_email']);
+		$eshopoptions['cron_email']=esc_sql($_POST['eshop_cron_email']);
+		$eshopoptions['sysemails']=esc_sql($_POST['eshop_sysemails']);
+		$eshopoptions['currency_symbol']=esc_sql($_POST['eshop_currency_symbol']);
+		$eshopoptions['cart_nostock']=esc_sql($_POST['eshop_cart_nostock']);
+		$eshopoptions['credits']=esc_sql($_POST['eshop_credits']);
+		$eshopoptions['fold_menu']=esc_sql($_POST['eshop_fold_menu']);
+		$eshopoptions['hide_cartco']=esc_sql($_POST['eshop_hide_cartco']);
+		$eshopoptions['stock_control']=esc_sql($_POST['eshop_stock_control']);
+		$eshopoptions['min_qty']=esc_sql($_POST['eshop_min_qty']);
+		$eshopoptions['max_qty']=esc_sql($_POST['eshop_max_qty']);
+		$eshopoptions['search_img']=esc_sql($_POST['eshop_search_img']);
+		$eshopoptions['show_forms']=esc_sql($_POST['eshop_show_forms']);
+		$eshopoptions['addtocart_image']=esc_sql($_POST['eshop_addtocart_image']);
+		$eshopoptions['hide_addinfo']=esc_sql($_POST['eshop_hide_addinfo']);
+		$eshopoptions['hide_shipping']=esc_sql($_POST['eshop_hide_shipping']);
+		$eshopoptions['tandc']=esc_sql($_POST['eshop_tandc']);
+		$eshopoptions['tandc_use']=esc_sql($_POST['eshop_tandc_use']);
+		$eshopoptions['tandc_id']=esc_sql($_POST['eshop_tandc_id']);
+		$eshopoptions['set_cacheability']=esc_sql($_POST['eshop_set_cacheability']);
 		$eshopoptions['cart_text']=$_POST['eshop_cart_text'];
-		$eshopoptions['cart_text_where']=$wpdb->escape($_POST['eshop_cart_text_where']);
-		$eshopoptions['sale_prices']=$wpdb->escape($_POST['eshop_sale_prices']);
+		$eshopoptions['cart_text_where']=esc_sql($_POST['eshop_cart_text_where']);
+		$eshopoptions['sale_prices']=esc_sql($_POST['eshop_sale_prices']);
 
 		if (eshop_wp_version('3')){
-			$eshopoptions['users']=$wpdb->escape($_POST['eshop_users']);
-			$eshopoptions['users_text']=$wpdb->escape($_POST['eshop_users_text']);
+			$eshopoptions['users']=esc_sql($_POST['eshop_users']);
+			$eshopoptions['users_text']=esc_sql($_POST['eshop_users_text']);
 		}
-		$eshopoptions['zero']=$wpdb->escape($_POST['eshop_zero']);
+		$eshopoptions['zero']=esc_sql($_POST['eshop_zero']);
 		$remove = array("&#039;", '&quot;', '"',"'","!"," ");
 
-		$eshopoptions['details']['show']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_show']));
-		$eshopoptions['details']['class']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_class']));
-		$eshopoptions['details']['hide']=$wpdb->escape(str_replace($remove, "", $_POST['eshop_details_hide']));
+		$eshopoptions['details']['show']=esc_sql(str_replace($remove, "", $_POST['eshop_details_show']));
+		$eshopoptions['details']['class']=esc_sql(str_replace($remove, "", $_POST['eshop_details_class']));
+		$eshopoptions['details']['hide']=esc_sql(str_replace($remove, "", $_POST['eshop_details_hide']));
 		
-		$eshopoptions['details']['display']=$wpdb->escape($_POST['eshop_details_display']);
+		$eshopoptions['details']['display']=esc_sql($_POST['eshop_details_display']);
 		//minimal form
-		$eshopoptions['downloads_only']=$wpdb->escape($_POST['eshop_downloads_only']);
+		$eshopoptions['downloads_only']=esc_sql($_POST['eshop_downloads_only']);
 		//ajax
-		$eshopoptions['ajax_cart']=$wpdb->escape($_POST['eshop_ajax_cart']);
+		$eshopoptions['ajax_cart']=esc_sql($_POST['eshop_ajax_cart']);
 		//error grabbing
 		if(is_numeric($_POST['eshop_records'])){
-			$eshopoptions['records']=$wpdb->escape($_POST['eshop_records']);
+			$eshopoptions['records']=esc_sql($_POST['eshop_records']);
 		}else{
 			$err='1';
 			$eshopoptions['records']='10';
 		}
 		if(is_numeric($_POST['eshop_options_num']) && $_POST['eshop_options_num']>'0'){
-			$eshopoptions['options_num']=$wpdb->escape($_POST['eshop_options_num']);
+			$eshopoptions['options_num']=esc_sql($_POST['eshop_options_num']);
 		}else{
 			$err='2';
 			$eshopoptions['options_num']='3';
 		}
 
 		if(is_numeric($_POST['eshop_image_in_cart']) || $_POST['eshop_image_in_cart']==''){
-			$eshopoptions['image_in_cart']=$wpdb->escape($_POST['eshop_image_in_cart']);
+			$eshopoptions['image_in_cart']=esc_sql($_POST['eshop_image_in_cart']);
 		}else{
 			$err='3';
 			$eshopoptions['image_in_cart']='75';
@@ -1014,9 +1014,9 @@ class eshop_setting_general_class extends eshop_metabox_class {
 			if($eshopoptions['from_email']=='')
 				$err='6';
 			if($err=='100')
-				$eshopoptions['status']=$wpdb->escape($_POST['eshop_status']);
+				$eshopoptions['status']=esc_sql($_POST['eshop_status']);
 		}else{
-			$eshopoptions['status']=$wpdb->escape($_POST['eshop_status']);
+			$eshopoptions['status']=esc_sql($_POST['eshop_status']);
 		}
 
 		update_option('eshop_plugin_settings',$eshopoptions);
@@ -1396,31 +1396,31 @@ class eshop_setting_merchant extends eshop_metabox_class {
 		if(!isset($_POST['eshop_method'])) $_POST['eshop_method']='';
 		//process here your on $_POST validation and / or option saving
 		$eshopoptions = get_option('eshop_plugin_settings');
-		$eshopoptions['method']=$wpdb->escape($_POST['eshop_method']);
+		$eshopoptions['method']=esc_sql($_POST['eshop_method']);
 
 		//these are all for paypal
-		$eshopoptions['currency']=$wpdb->escape($_POST['eshop_currency']);
-		$eshopoptions['location']=$wpdb->escape($_POST['eshop_location']);
-		$eshopoptions['business']=$wpdb->escape(trim($_POST['eshop_business']));
-		$eshopoptions['business_sec']=$wpdb->escape(trim($_POST['eshop_business_sec']));
-		$eshopoptions['paypal_noemail']=$wpdb->escape($_POST['eshop_paypal_noemail']);
+		$eshopoptions['currency']=esc_sql($_POST['eshop_currency']);
+		$eshopoptions['location']=esc_sql($_POST['eshop_location']);
+		$eshopoptions['business']=esc_sql(trim($_POST['eshop_business']));
+		$eshopoptions['business_sec']=esc_sql(trim($_POST['eshop_business_sec']));
+		$eshopoptions['paypal_noemail']=esc_sql($_POST['eshop_paypal_noemail']);
 
 		//payson
-		$paysonpost['email']=$wpdb->escape($_POST['payson']['email']);
-		$paysonpost['id']=$wpdb->escape($_POST['payson']['id']);
-		$paysonpost['key']=$wpdb->escape($_POST['payson']['key']);
-		$paysonpost['description']=$wpdb->escape($_POST['payson']['description']);
-		$paysonpost['minimum']=$wpdb->escape($_POST['payson']['minimum']);
+		$paysonpost['email']=esc_sql($_POST['payson']['email']);
+		$paysonpost['id']=esc_sql($_POST['payson']['id']);
+		$paysonpost['key']=esc_sql($_POST['payson']['key']);
+		$paysonpost['description']=esc_sql($_POST['payson']['description']);
+		$paysonpost['minimum']=esc_sql($_POST['payson']['minimum']);
 		$eshopoptions['payson']=$paysonpost;
 
 		//ideallite
-		$ideallitepost['IDEAL_AQUIRER']=$wpdb->escape($_POST['ideallite']['IDEAL_AQUIRER']);
-		$ideallitepost['IDEAL_HASH_KEY']=$wpdb->escape($_POST['ideallite']['IDEAL_HASH_KEY']);
-		$ideallitepost['IDEAL_MERCHANT_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_MERCHANT_ID']);
-		$ideallitepost['IDEAL_SUB_ID']=$wpdb->escape($_POST['ideallite']['IDEAL_SUB_ID']);
-		$ideallitepost['IDEAL_TEST_MODE']=$wpdb->escape($_POST['ideallite']['IDEAL_TEST_MODE']);
-		$ideallitepost['idealownermail']=$wpdb->escape($_POST['ideallite']['idealownermail']);
-		$ideallitepost['idealdescription']=$wpdb->escape($_POST['ideallite']['idealdescription']);
+		$ideallitepost['IDEAL_AQUIRER']=esc_sql($_POST['ideallite']['IDEAL_AQUIRER']);
+		$ideallitepost['IDEAL_HASH_KEY']=esc_sql($_POST['ideallite']['IDEAL_HASH_KEY']);
+		$ideallitepost['IDEAL_MERCHANT_ID']=esc_sql($_POST['ideallite']['IDEAL_MERCHANT_ID']);
+		$ideallitepost['IDEAL_SUB_ID']=esc_sql($_POST['ideallite']['IDEAL_SUB_ID']);
+		$ideallitepost['IDEAL_TEST_MODE']=esc_sql($_POST['ideallite']['IDEAL_TEST_MODE']);
+		$ideallitepost['idealownermail']=esc_sql($_POST['ideallite']['idealownermail']);
+		$ideallitepost['idealdescription']=esc_sql($_POST['ideallite']['idealdescription']);
 		$eshopoptions['ideallite']=$ideallitepost;
 
 		//authorize.net
@@ -1428,47 +1428,47 @@ class eshop_setting_merchant extends eshop_metabox_class {
 			$authorizenetpost['developer']='1';
 		else
 			$authorizenetpost['developer']='0';
-		$authorizenetpost['email']=$wpdb->escape($_POST['authorizenet']['email']);
-		$authorizenetpost['id']=$wpdb->escape($_POST['authorizenet']['id']);
-		$authorizenetpost['key']=$wpdb->escape($_POST['authorizenet']['key']);
-		$authorizenetpost['secret']=$wpdb->escape($_POST['authorizenet']['secret']);
-		$authorizenetpost['desc']=$wpdb->escape($_POST['authorizenet']['desc']);
+		$authorizenetpost['email']=esc_sql($_POST['authorizenet']['email']);
+		$authorizenetpost['id']=esc_sql($_POST['authorizenet']['id']);
+		$authorizenetpost['key']=esc_sql($_POST['authorizenet']['key']);
+		$authorizenetpost['secret']=esc_sql($_POST['authorizenet']['secret']);
+		$authorizenetpost['desc']=esc_sql($_POST['authorizenet']['desc']);
 		$eshopoptions['authorizenet']=$authorizenetpost;
 
 		//epn
-		$epnpost['email']=$wpdb->escape($_POST['epn']['email']);
-		$epnpost['id']=$wpdb->escape($_POST['epn']['id']);
-		$epnpost['description']=$wpdb->escape($_POST['epn']['description']);
+		$epnpost['email']=esc_sql($_POST['epn']['email']);
+		$epnpost['id']=esc_sql($_POST['epn']['id']);
+		$epnpost['description']=esc_sql($_POST['epn']['description']);
 		$eshopoptions['epn']=$epnpost;
 
 		//cash
-		$cashpost['email']=$wpdb->escape($_POST['cash']['email']);
-		$cashpost['rename']=$wpdb->escape($_POST['cash']['rename']);
+		$cashpost['email']=esc_sql($_POST['cash']['email']);
+		$cashpost['rename']=esc_sql($_POST['cash']['rename']);
 		$eshopoptions['cash']=$cashpost;
 
 		//bank
-		$bankpost['email']=$wpdb->escape($_POST['bank']['email']);
-		$bankpost['rename']=$wpdb->escape($_POST['bank']['rename']);
+		$bankpost['email']=esc_sql($_POST['bank']['email']);
+		$bankpost['rename']=esc_sql($_POST['bank']['rename']);
 		$eshopoptions['bank']=$bankpost;
 
 		//webtopay
-		$webtopaypost['id']=$wpdb->escape($_POST['webtopay']['id']);
-		$webtopaypost['lang']=$wpdb->escape($_POST['webtopay']['lang']);
-		$webtopaypost['signature']=$wpdb->escape($_POST['webtopay']['signature']);
-		$webtopaypost['projectid']=$wpdb->escape($_POST['webtopay']['projectid']);
-		$webtopaypost['email']=$wpdb->escape($_POST['webtopay']['email']);
+		$webtopaypost['id']=esc_sql($_POST['webtopay']['id']);
+		$webtopaypost['lang']=esc_sql($_POST['webtopay']['lang']);
+		$webtopaypost['signature']=esc_sql($_POST['webtopay']['signature']);
+		$webtopaypost['projectid']=esc_sql($_POST['webtopay']['projectid']);
+		$webtopaypost['email']=esc_sql($_POST['webtopay']['email']);
 
 		$eshopoptions['webtopay']=$webtopaypost;
 		if(!is_array($eshopoptions['method'])){
-			$eshopoptions['status']=$wpdb->escape('testing');
+			$eshopoptions['status']=esc_sql('testing');
 			$err='1';
 		}
 
 		//ogone
-		$ogonepost['PSPID']=$wpdb->escape($_POST['ogone']['PSPID']);
-		$ogonepost['COM']=$wpdb->escape($_POST['ogone']['COM']);
-		$ogonepost['secret']=$wpdb->escape($_POST['ogone']['secret']);
-		$ogonepost['email']=$wpdb->escape($_POST['ogone']['email']);
+		$ogonepost['PSPID']=esc_sql($_POST['ogone']['PSPID']);
+		$ogonepost['COM']=esc_sql($_POST['ogone']['COM']);
+		$ogonepost['secret']=esc_sql($_POST['ogone']['secret']);
+		$ogonepost['email']=esc_sql($_POST['ogone']['email']);
 		$eshopoptions['ogone']=$ogonepost;
 		
 		$eshopoptions=apply_filters('eshop_setting_merchant_save',$eshopoptions,$_POST);
@@ -1693,13 +1693,13 @@ class eshop_setting_tax extends eshop_metabox_class {
 		$eshopoptions = get_option('eshop_plugin_settings');
 		//process here your on $_POST validation and / or option saving
 		if(is_numeric($_POST['eshop_tax_bands']) || $_POST['eshop_tax_bands']==''){
-			$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
+			$eshopoptions['etax']['bands']=esc_sql($_POST['eshop_tax_bands']);
 		}else{
 			$err=1;
 			$_POST['eshop_tax_bands']=$eshopoptions['etax']['bands']='';
 		}
 		if(is_numeric($_POST['eshop_tax_unknown']) || $_POST['eshop_tax_unknown']==''){
-			$eshopoptions['etax']['unknown']=$wpdb->escape($_POST['eshop_tax_unknown']);
+			$eshopoptions['etax']['unknown']=esc_sql($_POST['eshop_tax_unknown']);
 		}else{
 			$err=2;
 			$_POST['eshop_tax_unknown']=$eshopoptions['etax']['unknown']='';
@@ -1709,13 +1709,13 @@ class eshop_setting_tax extends eshop_metabox_class {
 		else
 			$eshopiszonal='0';
 		$eshopisbands=$eshopoptions['etax']['bands'];
-		$eshopoptions['tax']=$wpdb->escape($_POST['eshop_tax']);
-		$eshopoptions['etax']['zonal']=$wpdb->escape($_POST['eshop_tax_zonal']);
-		$eshopoptions['etax']['bands']=$wpdb->escape($_POST['eshop_tax_bands']);
-		$eshopoptions['etax']['unknown']=$wpdb->escape($_POST['eshop_tax_unknown']);
+		$eshopoptions['tax']=esc_sql($_POST['eshop_tax']);
+		$eshopoptions['etax']['zonal']=esc_sql($_POST['eshop_tax_zonal']);
+		$eshopoptions['etax']['bands']=esc_sql($_POST['eshop_tax_bands']);
+		$eshopoptions['etax']['unknown']=esc_sql($_POST['eshop_tax_unknown']);
 
 		if( isset($_POST['eshop_tax_shipping']))
-			$eshopoptions['etax']['shipping']=$wpdb->escape($_POST['eshop_tax_shipping']);
+			$eshopoptions['etax']['shipping']=esc_sql($_POST['eshop_tax_shipping']);
 	
 		update_option('eshop_plugin_settings',$eshopoptions);
 		$etax=$eshopoptions['etax'];

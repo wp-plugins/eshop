@@ -120,15 +120,15 @@ function eshop_downloads_manager() {
 			$error.='<p>'.__('A title must be provided.','eshop').'</p>';
 		}
 		if(isset($success) && !isset($newfile)){
-			$entfile=$wpdb->escape($file_name);
+			$entfile=esc_sql($file_name);
 			$dafile=$wpdb->get_var("SELECT id FROM $table WHERE files='$entfile'");
-			$enttitle=$wpdb->escape($_POST['title']);
+			$enttitle=esc_sql($_POST['title']);
 			$wpdb->query("UPDATE $table SET title='$enttitle',added=NOW() WHERE id=$dafile");
 			echo '<div id="message" class="updated fade"><p>' . $_FILES["upfile"]["name"] . " ".__('has successfully overwritten existing file','eshop').'</p></div>';
 			do_action('eshop_file_upload',$dafile, $_POST);//file id & post variables
 		}elseif($error==''){ //ie a successful upload
-			$enttitle=$wpdb->escape($_POST['title']);
-			$entfile=$wpdb->escape($file_name);
+			$enttitle=esc_sql($_POST['title']);
+			$entfile=esc_sql($file_name);
 			$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$enttitle',NOW(),'$entfile')");
 			$dafile=$wpdb->get_var("SELECT id FROM $table WHERE files='$entfile'");
 			do_action('eshop_file_upload',$dafile,$_POST);//file id & post variables
@@ -144,7 +144,7 @@ function eshop_downloads_manager() {
 
 	if (isset($_POST['editdelete'])) {
 		// deleting entry
-		$delid=$wpdb->escape($_POST['delid']);
+		$delid=esc_sql($_POST['delid']);
 		$delfile=$wpdb->get_var("SELECT files FROM $table WHERE id =$delid");
 		$filepath=$dir_upload.$delfile;
 		@unlink($filepath);
@@ -157,7 +157,7 @@ function eshop_downloads_manager() {
 	if(isset($_POST['editamend'])){
 		if(is_numeric($_POST['downloads']) && is_numeric($_POST['purchases']) && $_POST['title']!=''){
 			//add in mysql update here
-			$query= 'UPDATE '.$table.' SET title = "'.$wpdb->escape($_POST['title']).'", downloads = "'.$wpdb->escape($_POST['downloads']).'", purchases = "'.$wpdb->escape($_POST['purchases']).'"  WHERE id = "'.$wpdb->escape($_POST['id']).'"';
+			$query= 'UPDATE '.$table.' SET title = "'.esc_sql($_POST['title']).'", downloads = "'.esc_sql($_POST['downloads']).'", purchases = "'.esc_sql($_POST['purchases']).'"  WHERE id = "'.esc_sql($_POST['id']).'"';
 			$wpdb->query("$query");
 			do_action('eshop_file_upload_amend',$_POST['id'], $_POST);//file id & post variables
 			echo '<div id="message" class="updated fade"><p>'.__('File updated successfully','eshop').'</p></div>';
@@ -180,16 +180,16 @@ function eshop_downloads_manager() {
 	if(isset($_GET['eshop_orphan'])){
 		if(is_array(eshop_contains_files())){
 			foreach(eshop_contains_files() as $filename){
-				$file=$wpdb->escape($filename);
+				$file=esc_sql($filename);
 				list($title, $ext) = explode('.', $filename);
-				$title=$wpdb->escape($title);
+				$title=esc_sql($title);
 				$wpdb->query("INSERT INTO $table (title,added,files) VALUES ('$title',NOW(),'$file')");
 			}
 		}
 	}
 	
 	if(isset($_GET['edit'])){
-		$id=$wpdb->escape($_GET['edit']);
+		$id=esc_sql($_GET['edit']);
 		if($wpdb->get_var("SELECT title FROM $table WHERE id =$id")!=''){
 		//ie exists
 			//echo '<div id="message" class="updated fade"><p>found it</p></div>';

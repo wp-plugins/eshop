@@ -14,7 +14,7 @@ function eshop_process_style($styleFile) {
 	}
 	if(!empty($_POST['usestyle'])){
 		$eshopoptions = get_option('eshop_plugin_settings');
-		$eshopoptions['style']=$wpdb->escape($_POST['usestyle']);
+		$eshopoptions['style']=esc_sql($_POST['usestyle']);
 		update_option('eshop_plugin_settings',$eshopoptions);
 		if($_POST['usestyle']=='yes'){
 			$use=__('Default style has been applied.','eshop');

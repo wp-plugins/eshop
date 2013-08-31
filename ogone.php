@@ -238,10 +238,10 @@ switch ($eshopaction) {
 		$ps->ipn_data["mycheckid"]=$checked;
 		if('9' == $_REQUEST["STATUS"]  && strtoupper(sha1($tosha)) == $ps->ipn_data['SHASIGN']){
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($transid);
+				$txn_id = esc_sql($transid);
 				$subject = __('ogone IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($transid);
+				$txn_id = __("TEST-",'eshop').esc_sql($transid);
 				$subject = __('Testing: ogone IPN - ','eshop');
 			}
 			//check txn_id is unique
@@ -251,7 +251,7 @@ switch ($eshopaction) {
 				foreach($checktrans as $trans){
 					if(strpos($trans->transid, $transid)===true){
 						$astatus='Failed';
-						$txn_id = __("Duplicated-",'eshop').$wpdb->escape($transid);
+						$txn_id = __("Duplicated-",'eshop').esc_sql($transid);
 					}
 				}
 			}
@@ -300,10 +300,10 @@ switch ($eshopaction) {
 			$subject='ogone testing';
 			$checked=md5($ps->ipn_data["orderID"]);	
 			if($eshopoptions['status']=='live'){
-				$txn_id = __('Failed','eshop').$wpdb->escape($ps->ipn_data['orderID']);
+				$txn_id = __('Failed','eshop').esc_sql($ps->ipn_data['orderID']);
 				$subject = __('ogone IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-Failed",'eshop').$wpdb->escape($ps->ipn_data['orderID']);
+				$txn_id = __("TEST-Failed",'eshop').esc_sql($ps->ipn_data['orderID']);
 				$subject = __('Testing: ogone IPN - ','eshop');
 			}
 			$array=@eshop_rtn_order_details($checked);

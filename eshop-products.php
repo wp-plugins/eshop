@@ -239,7 +239,7 @@ function eshop_products_manager() {
 		}
 
 		$array=$grabit;
-		$grab=subval_sort($array,$sortby); 
+		$grab=eshop_subval_sort($array,$sortby); 
 
 		//grabs some tax data
 		if(!isset($eshopoptions['etax']))$eshopoptions['etax']=array();
