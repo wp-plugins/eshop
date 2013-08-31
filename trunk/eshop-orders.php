@@ -54,9 +54,9 @@ if(isset($_POST['eshop-adnote'])){
 	$dtable=$wpdb->prefix.'eshop_orders';
 	if (isset($_GET['view']) && is_numeric($_GET['view'])){
 		$view=$_GET['view'];
-		$admin_note=$wpdb->escape($_POST['eshop-adnote']);
+		$admin_note=esc_sql($_POST['eshop-adnote']);
 		if (isset($eshopoptions['users']) && $eshopoptions['users']=='yes'){
-			$user_notes=$wpdb->escape($_POST['eshop-unote']);
+			$user_notes=esc_sql($_POST['eshop-unote']);
 		}else{
 			$user_notes='';
 		}
@@ -399,7 +399,7 @@ if(isset($_GET['delid']) && !isset($_GET['view'])){
 if(isset($_POST['dall'])){
 	$dhours=$_POST['dhours'];
 	if($_POST['dhours']=='0' ||$_POST['dhours']=='4'||$_POST['dhours']=='8'||$_POST['dhours']=='16'||$_POST['dhours']=='24'||$_POST['dhours']=='48'||$_POST['dhours']=='72'){
-		$delay=$wpdb->escape($_POST['dhours']);
+		$delay=esc_sql($_POST['dhours']);
 		$replace=$delay.__(' hours','eshop');
 		if($delay==24){$replace=__('1 day','eshop');}
 		$dtable=$wpdb->prefix.'eshop_orders';
@@ -408,6 +408,7 @@ if(isset($_POST['dall'])){
 		$myrows=$wpdb->get_results("Select checkid From $dtable where status='Deleted' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
 		foreach($myrows as $myrow){
 			$checkid=$myrow->checkid;
+			do_action( 'eshop_order_delete', $checkid );
 			$delquery2=$wpdb->query("DELETE FROM $itable WHERE checkid='$checkid'");
 			$delquery=$wpdb->get_results("DELETE FROM $dltable WHERE checkid='$checkid'");
 			$query2=$wpdb->query("DELETE FROM $dtable WHERE status='Deleted' && checkid='$checkid' && edited < DATE_SUB(NOW(), INTERVAL $delay HOUR)");
@@ -466,16 +467,16 @@ echo '</ul><br class="clear" />';
 
 
 if (isset($_GET['view']) && is_numeric($_GET['view'])){
-	$view=$wpdb->escape($_GET['view']);
+	$view=esc_sql($_GET['view']);
 	if (isset($_GET['adddown']) && is_numeric($_GET['adddown'])){
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
-		$adddown=$wpdb->escape($_GET['adddown']);
+		$adddown=esc_sql($_GET['adddown']);
 		$wpdb->query("UPDATE $dordtable SET downloads=downloads+1 where id='$adddown' limit 1");
 		echo '<div class="updated fade"><p>'.__('Download allowance increased.','eshop').'</p></div>';
 	}
 	if (isset($_GET['decdown']) && is_numeric($_GET['decdown'])){
 		$dordtable=$wpdb->prefix.'eshop_download_orders';
-		$decdown=$wpdb->escape($_GET['decdown']);
+		$decdown=esc_sql($_GET['decdown']);
 		$wpdb->query("UPDATE $dordtable SET downloads=downloads-1 where id='$decdown' limit 1");
 		echo '<div class="updated fade"><p>'.__('Download allowance decreased.','eshop').'</p></div>';
 	}
@@ -565,8 +566,12 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				$value = $value + $myrow->tax_amt;
 			}
 		}
+		$eprodlink=$myrow->post_id;
 		$total=$total+$value;
 		$itemid=$myrow->item_id;
+		if ( $eprodlink != 0 )
+			$itemid='<a href="'.get_permalink($eprodlink).'">'.$myrow->item_id.'</a>';
+		
 		if($myrow->optsets!='')
 			$itemid.='<span class="eshopoptsets">'.nl2br($myrow->optsets).'</span>';
 		//check if downloadable product
@@ -646,7 +651,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
 			echo $address."<br />\n";
 			echo $drow->city."<br />\n";
-			$qcode=$wpdb->escape($drow->state);
+			$qcode=esc_sql($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 			if($qstate!=''){
 				echo $qstate."<br />";
@@ -656,7 +661,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 			}
 			echo $drow->zip."<br />\n";
 
-			$qcode=$wpdb->escape($drow->country);
+			$qcode=esc_sql($drow->country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 			$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 			echo $qcountry."</address>";
@@ -680,7 +685,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
 				echo $drow->ship_address."<br />\n";
 				echo $drow->ship_city."<br />\n";
-				$qcode=$wpdb->escape($drow->ship_state);
+				$qcode=esc_sql($drow->ship_state);
 				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 				if($qstate!=''){
 					$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
@@ -689,7 +694,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 					echo $drow->ship_state."<br />";
 				}
 				echo $drow->ship_postcode."<br />\n";
-				$qcode=$wpdb->escape($drow->ship_country);
+				$qcode=esc_sql($drow->ship_country);
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 				echo $qcountry."</address>";

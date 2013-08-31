@@ -48,10 +48,10 @@ switch ($eshopaction) {
       	}
 
 		if($eshopoptions['status']=='live'){
-			$txn_id = $wpdb->escape($ebank->ipn_data['RefNr']);
+			$txn_id = esc_sql($ebank->ipn_data['RefNr']);
 			$subject = __('bank awaiting payment -','eshop');
 		}else{
-			$txn_id = __("TEST-",'eshop').$wpdb->escape($ebank->ipn_data['RefNr']);
+			$txn_id = __("TEST-",'eshop').esc_sql($ebank->ipn_data['RefNr']);
 			$subject = __('Testing: bank awaiting payment - ','eshop');
 		}
 		//check txn_id is unique
@@ -60,7 +60,7 @@ switch ($eshopaction) {
 		foreach($checktrans as $trans){
 			if(strpos($trans->transid, $ebank->ipn_data['RefNr'])===true){
 				$astatus='Failed';
-				$txn_id = __("Duplicated-",'eshop').$wpdb->escape($ebank->ipn_data['RefNr']);
+				$txn_id = __("Duplicated-",'eshop').esc_sql($ebank->ipn_data['RefNr']);
 			}
 		}
 		//the magic bit  + creating the subject for our email.

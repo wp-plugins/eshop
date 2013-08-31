@@ -886,15 +886,15 @@ if(isset($eshopoptions['version'])){
 	}
 	//additions
 	$esubject=__('Your order from ','eshop').get_bloginfo('name');
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('3','".__('Automatic Paypal email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('4','".__('Automatic Payson email','eshop')."','$esubject')");
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('5','".__('Automatic Cash email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('6','".__('Automatic ePN email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('7','".__('Automatic webtopay email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('8','".__('Automatic Authorize.net email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('9','".__('Automatic iDeal Lite email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('10','".__('Automatic ogone email','eshop')."','$esubject')"); 
-	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject) VALUES ('11','".__('Automatic Bank email','eshop')."','$esubject')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('3','".__('Automatic Paypal email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('4','".__('Automatic Payson email','eshop')."','$esubject','')");
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('5','".__('Automatic Cash email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('6','".__('Automatic ePN email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('7','".__('Automatic webtopay email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('8','".__('Automatic Authorize.net email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('9','".__('Automatic iDeal Lite email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('10','".__('Automatic ogone email','eshop')."','$esubject','')"); 
+	$wpdb->query("INSERT INTO ".$table." (id,emailType,emailSubject,emailContent) VALUES ('11','".__('Automatic Bank email','eshop')."','$esubject','')"); 
 
 	/* page insertion */
 	/*

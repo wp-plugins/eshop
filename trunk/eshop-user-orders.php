@@ -158,7 +158,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 	global $current_user;
 	get_currentuserinfo();
 	$user_id=$current_user->ID;
-	$view=$wpdb->escape($_GET['view']);
+	$view=esc_sql($_GET['view']);
 	$dquery=$wpdb->get_results("Select * From $dtable where id='$view' && user_id='$user_id'");
 	if(sizeof($dquery)>0){
 		foreach($dquery as $drow){
@@ -297,7 +297,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				if($drow->company!='') echo __("Company: ",'eshop').$drow->company."<br />\n";
 				echo $address."<br />\n";
 				echo $drow->city."<br />\n";
-				$qcode=$wpdb->escape($drow->state);
+				$qcode=esc_sql($drow->state);
 				$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 				if($qstate!=''){
 					echo $qstate."<br />";
@@ -307,7 +307,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 				}
 				echo $drow->zip."<br />\n";
 
-				$qcode=$wpdb->escape($drow->country);
+				$qcode=esc_sql($drow->country);
 				$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 				$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 				echo $qcountry."</address>";
@@ -328,7 +328,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 					if($drow->ship_company!='') echo $drow->ship_company."<br />\n";
 					echo $drow->ship_address."<br />\n";
 					echo $drow->ship_city."<br />\n";
-					$qcode=$wpdb->escape($drow->ship_state);
+					$qcode=esc_sql($drow->ship_state);
 					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 					if($qstate!=''){
 						$statezone = $wpdb->get_var("SELECT zone FROM $stable WHERE id='$qcode' limit 1");
@@ -337,7 +337,7 @@ if (isset($_GET['view']) && is_numeric($_GET['view'])){
 						echo $drow->ship_state."<br />";
 					}
 					echo $drow->ship_postcode."<br />\n";
-					$qcode=$wpdb->escape($drow->ship_country);
+					$qcode=esc_sql($drow->ship_country);
 					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qcode' limit 1");
 					$countryzone = $wpdb->get_var("SELECT zone FROM $ctable WHERE code='$qcode' limit 1");
 					echo $qcountry."</address>";

@@ -19,7 +19,7 @@ if (!function_exists('display_cart')) {
 		$tempshiparray=array();
 		//this checks for an empty cart, may not be required but leaving in just in case.
 		$eshopcartarray=$_SESSION['eshopcart'.$blog_id];
-		
+	
 		if($change==true){
 			if(isset($_SESSION['eshop_discount'.$blog_id]))
 				unset($_SESSION['eshop_discount'.$blog_id]);
@@ -473,7 +473,7 @@ if (!function_exists('apply_eshop_discount_code')) {
 			$chkcode=valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id]);
 			if(!$chkcode)
 				return false;
-			$grabthis=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
+			$grabthis=esc_sql($_SESSION['eshop_discount'.$blog_id]);
 			$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$grabthis'");
 			if($disc=='shipping'){
 				switch($row->dtype){
@@ -529,7 +529,7 @@ if (!function_exists('valid_eshop_discount_code')) {
 	function valid_eshop_discount_code($code){
 		global $wpdb;
 		$now=date('Y-m-d');
-		$code=$wpdb->escape(stripslashes(strtolower($code)));
+		$code=esc_sql(stripslashes(strtolower($code)));
 		$disctable=$wpdb->prefix.'eshop_discount_codes';
 		$row = $wpdb->get_row("SELECT * FROM $disctable WHERE id > 0 && live='yes' && disccode='$code'");
 		if(is_object($row)){
@@ -602,8 +602,8 @@ if (!function_exists('eshop_get_tax_rate')) {
 				$pzone = 1;
 		}
 		$ratetable = $wpdb->prefix.'eshop_rates';
-		$band=$wpdb->escape($band);
-		$zone='zone'.$wpdb->escape($pzone);
+		$band=esc_sql($band);
+		$zone='zone'.esc_sql($pzone);
 		$taxrate = $wpdb->get_var("SELECT $zone FROM $ratetable WHERE id > 0 && class='$band' && area='$area' && rate_type='tax' ");
 
 		return $taxrate;
@@ -768,6 +768,7 @@ if (!function_exists('eshopShipTaxAmt')) {
 		
 		if(isset($_SESSION['shipping'.$blog_id]['tax']))
 			$shipping += $_SESSION['shipping'.$blog_id]['tax'];
+			
 		return number_format($shipping,2);
 
 	}
@@ -810,7 +811,7 @@ if (!function_exists('orderhandle')) {
 					if(isset($espost['altstate']) && $espost['altstate']!='')
 						$eshopuser['altstate']=$espost['altstate'];
 					if(!is_numeric($espost['state'])){
-						$statechk=$wpdb->escape($espost['state']);
+						$statechk=esc_sql($espost['state']);
 						$sttable=$wpdb->prefix.'eshop_states';
 						$eshopuser['state']=$wpdb->get_var("SELECT id FROM $sttable where code='$statechk' limit 1");
 					}else{
@@ -837,29 +838,29 @@ if (!function_exists('orderhandle')) {
 		}
 		$custom_field=date('YmdHis');
 		if(isset($espost['custom']))
-			$custom_field=$wpdb->escape($espost['custom']);
-		$first_name=$wpdb->escape($espost['first_name']);
-		$last_name=$wpdb->escape($espost['last_name']);
-		$email=$wpdb->escape($espost['email']);
+			$custom_field=esc_sql($espost['custom']);
+		$first_name=esc_sql($espost['first_name']);
+		$last_name=esc_sql($espost['last_name']);
+		$email=esc_sql($espost['email']);
 		//set up some defaults
 		$phone=$company=$address1=$address2=$city=$zip=$state=$country=$paidvia='';
 		if(isset($espost['phone']))
-			$phone=$wpdb->escape($espost['phone']);
+			$phone=esc_sql($espost['phone']);
 		if(isset($espost['company']))
-			$company=$wpdb->escape($espost['company']);
+			$company=esc_sql($espost['company']);
 		if(isset($espost['address1']))
-			$address1=$wpdb->escape($espost['address1']);
+			$address1=esc_sql($espost['address1']);
 		if(isset($espost['address2']))
-			$address2=$wpdb->escape($espost['address2']);
+			$address2=esc_sql($espost['address2']);
 		if(isset($espost['city']))
-			$city=$wpdb->escape($espost['city']);
+			$city=esc_sql($espost['city']);
 		if(isset($espost['zip']))
-			$zip=$wpdb->escape($espost['zip']);
+			$zip=esc_sql($espost['zip']);
 		if(isset($espost['state']))
-			$state=$wpdb->escape($espost['state']);
+			$state=esc_sql($espost['state']);
 		if(isset($espost['country']))
-			$country=$wpdb->escape($espost['country']);
-		$paidvia=$wpdb->escape($_SESSION['eshop_payment'.$blog_id]);
+			$country=esc_sql($espost['country']);
+		$paidvia=esc_sql($_SESSION['eshop_payment'.$blog_id]);
 		if(strtolower($paidvia)==__('cash','eshop')){
 			$eshopcash = $eshopoptions['cash'];
 			if($eshopcash['rename']!='')
@@ -871,64 +872,64 @@ if (!function_exists('orderhandle')) {
 				$paidvia=$eshopbank['rename'];
 		}
 		if(isset($espost['state']) && $espost['state']=='' && isset($espost['altstate']) && $espost['altstate']!='')
-			$state=$wpdb->escape($espost['altstate']);
+			$state=esc_sql($espost['altstate']);
 
 		if(isset($espost['ship_name']) && $espost['ship_name']!=''){
-			$ship_name=$wpdb->escape($espost['ship_name']);
+			$ship_name=esc_sql($espost['ship_name']);
 		}else{
 			$ship_name=$first_name.' '.$last_name;
 		}
 		if(isset($espost['ship_phone']) && $espost['ship_phone']!=''){
-			$ship_phone=$wpdb->escape($espost['ship_phone']);
+			$ship_phone=esc_sql($espost['ship_phone']);
 		}else{
 			$ship_phone=$phone;
 		}
 		if(isset($espost['ship_company']) && $espost['ship_company']!=''){
-			$ship_company=$wpdb->escape($espost['ship_company']);
+			$ship_company=esc_sql($espost['ship_company']);
 		}else{
 			$ship_company=$company;
 		}
 		if(isset($espost['ship_address']) && $espost['ship_address']!=''){
-			$ship_address=$wpdb->escape($espost['ship_address']);
+			$ship_address=esc_sql($espost['ship_address']);
 		}else{
 			$ship_address=$address1.' '.$address2;
 		}
 		if(isset($espost['ship_city']) && $espost['ship_city']!=''){
-			$ship_city=$wpdb->escape($espost['ship_city']);
+			$ship_city=esc_sql($espost['ship_city']);
 		}else{
 			$ship_city=$city;
 		}
 		if(isset($espost['ship_postcode']) && $espost['ship_postcode']!=''){
-			$ship_postcode=$wpdb->escape($espost['ship_postcode']);
+			$ship_postcode=esc_sql($espost['ship_postcode']);
 		}else{
 			$ship_postcode=$zip;
 		}
 		if(isset($espost['ship_country']) && $espost['ship_country']!=''){
-			$ship_country=$wpdb->escape($espost['ship_country']);
+			$ship_country=esc_sql($espost['ship_country']);
 		}else{
 			$ship_country=$country;
 		}
 		if(isset($espost['ship_state']) && $espost['ship_state']!=''){
-			$ship_state=$wpdb->escape($espost['ship_state']);
+			$ship_state=esc_sql($espost['ship_state']);
 		}else{
 			$ship_state=$state;
 		}
 		
 		if(empty($espost['ship_state']) && !empty($espost['ship_altstate']))
-			$ship_state=$wpdb->escape($espost['ship_altstate']);
+			$ship_state=esc_sql($espost['ship_altstate']);
 
 		if(isset($espost['reference'])){
-			$reference=$wpdb->escape($espost['reference']);
+			$reference=esc_sql($espost['reference']);
 		}else{
 			$reference='';
 		}
 		if(isset($espost['comments'])){
-			$comments=$wpdb->escape($espost['comments']);
+			$comments=esc_sql($espost['comments']);
 		}else{
 			$comments='';
 		}
 		if(isset($espost['affiliate']))
-			$affiliate=$wpdb->escape($espost['affiliate']);
+			$affiliate=esc_sql($espost['affiliate']);
 		else
 			$affiliate='';
 		$detailstable=$wpdb->prefix.'eshop_orders';
@@ -1007,16 +1008,16 @@ if (!function_exists('orderhandle')) {
 					$chk_tax='tax_'.$i;
 					$chk_tax_rate='tax_rate_'.$i;
 					if(isset($espost[$chk_tax])){				
-						$tax_amt=$wpdb->escape($espost[$chk_tax]);
-						$tax_rate=$wpdb->escape($espost[$chk_tax_rate]);
+						$tax_amt=esc_sql($espost[$chk_tax]);
+						$tax_rate=esc_sql($espost[$chk_tax_rate]);
 					}
 				}
-				$item_id=$wpdb->escape($espost[$chk_id]);
-				$item_qty=$wpdb->escape($espost[$chk_qty]);
-				$item_amt=$wpdb->escape(str_replace(',', "", $espost[$chk_amt]));;
-				$optname=$wpdb->escape($espost[$chk_opt]);
-				$post_id=$wpdb->escape($espost[$chk_postid]);
-				$weight=$wpdb->escape($espost[$chk_weight]);
+				$item_id=esc_sql($espost[$chk_id]);
+				$item_qty=esc_sql($espost[$chk_qty]);
+				$item_amt=esc_sql(str_replace(',', "", $espost[$chk_amt]));;
+				$optname=esc_sql($espost[$chk_opt]);
+				$post_id=esc_sql($espost[$chk_postid]);
+				$weight=esc_sql($espost[$chk_weight]);
 				$dlchking=$espost['eshopident_'.$i];
 				//add opt sets
 				if(isset($_SESSION['eshopcart'.$blog_id][$dlchking]['optset'])){
@@ -1028,10 +1029,10 @@ if (!function_exists('orderhandle')) {
 				}else{
 					$optset='';
 				}
-				$optset=$wpdb->escape($optset);
+				$optset=esc_sql($optset);
 				//end
 				$thechk=$_SESSION['eshopcart'.$blog_id][$dlchking]['option'];
-				$option_id=$wpdb->escape($thechk);
+				$option_id=esc_sql($thechk);
 				if(strpos($thechk,' ')===true){
 					$edown=explode(' ',$thechk);
 					$edl=$edown[1];
@@ -1077,15 +1078,15 @@ if (!function_exists('orderhandle')) {
 				$i++;
 
 			}
-			$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
+			$postage=esc_sql(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
 			$shiptaxamt=$shiptaxrate='';
 			if(isset($eshopoptions['tax']) && $eshopoptions['tax']=='1'){
 				if(isset($_SESSION['shipping'.$blog_id]['cost']))
-					$postage=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
+					$postage=esc_sql(str_replace(',', "", $_SESSION['shipping'.$blog_id]['cost']));
 				if(isset($_SESSION['shipping'.$blog_id]['tax']))
-					$shiptaxamt=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['tax']));
+					$shiptaxamt=esc_sql(str_replace(',', "", $_SESSION['shipping'.$blog_id]['tax']));
 				if(isset($_SESSION['shipping'.$blog_id]['taxrate']))
-					$shiptaxrate=$wpdb->escape(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
+					$shiptaxrate=esc_sql(str_replace(',', "", $_SESSION['shipping'.$blog_id]['taxrate']));
 			}
 			$postage_name='';
 			if(isset($_SESSION['eshopshiptype'.$blog_id])  && !eshop_only_downloads() && $_SESSION['eshopshiptype'.$blog_id]!='0'){
@@ -1107,7 +1108,7 @@ if (!function_exists('orderhandle')) {
 			$disctable=$wpdb->prefix.'eshop_discount_codes';
 			if(eshop_discount_codes_check()){
 				if(isset($_SESSION['eshop_discount'.$blog_id]) && valid_eshop_discount_code($_SESSION['eshop_discount'.$blog_id])){
-					$discvalid=$wpdb->escape($_SESSION['eshop_discount'.$blog_id]);
+					$discvalid=esc_sql($_SESSION['eshop_discount'.$blog_id]);
 					do_action('eshop_discount_code_used',$checkid,$discvalid);
 					$wpdb->query("UPDATE $disctable SET used=used+1 where disccode='$discvalid' limit 1");
 
@@ -1271,12 +1272,12 @@ if (!function_exists('eshop_rtn_order_details')) {
 		foreach($dquery as $drow){
 			$address.= "\n".__('Mailing Address:','eshop')."\n".$drow->address1.", ".$drow->address2."\n";
 			$address.= $drow->city."\n";
-			$qcode=$wpdb->escape($drow->state);
+			$qcode=esc_sql($drow->state);
 			$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 			if($qstate=='') $qstate=$drow->state;
 			$address.= $qstate."\n";
 			$address.= $drow->zip."\n";
-			$qccode=$wpdb->escape($drow->country);
+			$qccode=esc_sql($drow->country);
 			$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 			$address.= $qcountry."\n";
 		
@@ -1292,12 +1293,12 @@ if (!function_exists('eshop_rtn_order_details')) {
 				}
 				$address.= $drow->ship_address."\n";
 				$address.= $drow->ship_city."\n";
-				$qcode=$wpdb->escape($drow->ship_state);
+				$qcode=esc_sql($drow->ship_state);
 				$sqstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 				if($sqstate=='') $sqstate=$drow->ship_state;
 				$address.= $sqstate."\n";
 				$address.= $drow->ship_postcode."\n";
-				$qccode=$wpdb->escape($drow->ship_country);
+				$qccode=esc_sql($drow->ship_country);
 				$sqcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 				$address.= $sqcountry."\n";
 			}
@@ -1419,9 +1420,9 @@ if (!function_exists('eshop_download_the_product')) {
 		$echo='';
 		if (isset($espost['eshoplongdownloadname'])){
 			//check again everything else ok then go ahead
-			$id=$wpdb->escape($espost['id']);
-			$code=$wpdb->escape($espost['code']);
-			$email=$wpdb->escape($espost['email']);
+			$id=esc_sql($espost['id']);
+			$code=esc_sql($espost['code']);
+			$email=esc_sql($espost['email']);
 			set_time_limit(1000);
 			if($id!='all'){
 				//single file handling
@@ -1897,7 +1898,7 @@ if (!function_exists('eshop_cart_process')) {
 				$productid=$pid=$_POST['pid'];
 				$pname=$_POST['pname'];
 				/* if download option then it must be free shipping */
-				$postid=$wpdb->escape($_POST['postid']);
+				$postid=esc_sql($_POST['postid']);
 				$eshop_product=maybe_unserialize(get_post_meta( $postid, '_eshop_product',true ));
 				$dlchk='';
 				if(isset($eshop_product['products'][$option]['download']))
@@ -1984,8 +1985,8 @@ if (!function_exists('eshop_cart_process')) {
 					$optnum=$optid;
 					$testqty=$qty;
 				}else{
-					$postid=$wpdb->escape($_POST['postid']);
-					$optid=$wpdb->escape($_POST['option']);
+					$postid=esc_sql($_POST['postid']);
+					$optid=esc_sql($_POST['option']);
 					$optnum=$optid;
 					$_SESSION['eshopcart'.$blog_id][$identifier]['postid']=$postid;
 					$testqty=$qty;
@@ -2414,8 +2415,8 @@ if (!function_exists('get_eshop_product')) {
 	}
 }
 
-if (!function_exists('subval_sort')){
-	function subval_sort($a,$subkey) {
+if (!function_exists('eshop_subval_sort')){
+	function eshop_subval_sort($a,$subkey) {
 		foreach($a as $k=>$v) {
 			$b[$k] = strtolower($v[$subkey]);
 		}
@@ -2435,7 +2436,7 @@ if (!function_exists('eshop_parse_optsets')){
 		$oset=$qb=array();
 		$optings=unserialize($opt['optset']);
 		//then sort it how we want.
-		$optings=subval_sort($optings,'id'); 
+		$optings=eshop_subval_sort($optings,'id'); 
 		$c=0;
 		if(isset($newoptings)) unset($newoptings);
 

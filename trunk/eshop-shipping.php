@@ -32,9 +32,9 @@ $dtable=$wpdb->prefix.'eshop_states';
 
 if(isset($_POST['submitstate'])){
 	$eshopoptions = get_option('eshop_plugin_settings');
-	$eshopoptions['shipping_state']=$wpdb->escape($_POST['eshop_shipping_state']);
+	$eshopoptions['shipping_state']=esc_sql($_POST['eshop_shipping_state']);
 	if(!isset($_POST['eshop_show_allstates']))$_POST['eshop_show_allstates']='0';
-	$eshopoptions['show_allstates']=$wpdb->escape($_POST['eshop_show_allstates']);
+	$eshopoptions['show_allstates']=esc_sql($_POST['eshop_show_allstates']);
 	update_option('eshop_plugin_settings',$eshopoptions);
 
 }
@@ -85,7 +85,7 @@ case ('countries'):
 					}else{
 						//all must be ok
 						$inlinecount++;
-						$build.=" ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['country'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$wpdb->escape($list[$i])."'),";
+						$build.=" ('".esc_sql($_POST['code'][$i])."','".esc_sql($_POST['country'][$i])."','".esc_sql($_POST['zone'][$i])."','".esc_sql($list[$i])."'),";
 					}
 				}
 			}elseif($_POST['code'][$i]=='' && $_POST['country'][$i]=='' && $_POST['zone'][$i]==''){
@@ -232,7 +232,7 @@ case ('states'):
 						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
 					}else{
 						//all must be ok
-						$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".$wpdb->escape($_POST['code'][$i])."','".$wpdb->escape($_POST['stateName'][$i])."','".$wpdb->escape($_POST['zone'][$i])."','".$eshopoptions['shipping_state']."')";
+						$buildit="INSERT INTO $dtable (code,stateName,zone,list) VALUES ('".esc_sql($_POST['code'][$i])."','".esc_sql($_POST['stateName'][$i])."','".esc_sql($_POST['zone'][$i])."','".$eshopoptions['shipping_state']."')";
 						$wpdb->query($buildit);
 					}
 				}elseif($_POST['code'][$i]!='' && $_POST['stateName'][$i]!='' && $_POST['zone'][$i]!='' && !isset($_POST['delete'][$i])){
@@ -243,7 +243,7 @@ case ('states'):
 						$error.="<li>".__('Zone:','eshop').$_POST['zone'][$i]." ".__('is not valid.','eshop')." ".__('Code:','eshop').$_POST['code'][$i].", ".__('State:','eshop').$_POST['stateName'][$i]."</li>\n";
 					}else{
 						//all must be ok
-						$buildit=$build." code='".$wpdb->escape($_POST['code'][$i])."',stateName='".$wpdb->escape($_POST['stateName'][$i])."',zone='".$wpdb->escape($_POST['zone'][$i])."' where id='$id'";
+						$buildit=$build." code='".esc_sql($_POST['code'][$i])."',stateName='".esc_sql($_POST['stateName'][$i])."',zone='".esc_sql($_POST['zone'][$i])."' where id='$id'";
 						$wpdb->query($buildit);
 					}
 				}elseif($_POST['code'][$i]=='' && $_POST['stateName'][$i]=='' && $_POST['zone'][$i]==''){

@@ -41,7 +41,7 @@ if(isset($_POST['thisemail']) && isset($_GET['viewemail'])){
 	echo '<p><a class="return" href="'.$page.'">'.__('&laquo; Return to Order Detail','eshop').'</a></p>';
 	
 }elseif(isset($_GET['viewemail'])){
-	$view=$wpdb->escape($_GET['viewemail']);
+	$view=esc_sql($_GET['viewemail']);
 	$dtable=$wpdb->prefix.'eshop_orders';
 	$checked=$wpdb->get_var("Select checkid From $dtable where id='$view'");
 	$email=$wpdb->get_var("Select email From $dtable where id='$view'");

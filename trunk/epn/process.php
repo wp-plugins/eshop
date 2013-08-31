@@ -15,10 +15,10 @@ if(isset($ps->ipn_data['ID'])){
 		$eshopdosend='yes';
 
 		if($eshopoptions['status']=='live'){
-			$txn_id = $wpdb->escape($ps->ipn_data['transid']);
+			$txn_id = esc_sql($ps->ipn_data['transid']);
 			$subject = __('epn IPN -','eshop');
 		}else{
-			$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['transid']);
+			$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['transid']);
 			$subject = __('Testing: epn IPN - ','eshop');
 		}
 		//check txn_id is unique
@@ -27,7 +27,7 @@ if(isset($ps->ipn_data['ID'])){
 		foreach($checktrans as $trans){
 			if(strpos($trans->transid, $ps->ipn_data['ID'])===true){
 				$astatus='Failed';
-				$txn_id = __("Duplicated-",'eshop').$wpdb->escape($ps->ipn_data['ID']);
+				$txn_id = __("Duplicated-",'eshop').esc_sql($ps->ipn_data['ID']);
 			}
 		}
 		//the magic bit  + creating the subject for our email.
@@ -53,10 +53,10 @@ if(isset($ps->ipn_data['ID'])){
 	}elseif(isset($_POST['approved']) && isset($_GET['epn']) && $_GET['epn']=='fail' && $_POST['approved']=='N'){
 		$eshopdosend='yes';
 		if($eshopoptions['status']=='live'){
-			$txn_id = $wpdb->escape($ps->ipn_data['auth_response']);
+			$txn_id = esc_sql($ps->ipn_data['auth_response']);
 			$subject = __('epn IPN -','eshop');
 		}else{
-			$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['auth_response']);
+			$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['auth_response']);
 			$subject = __('Testing: epn IPN - ','eshop');
 		}
 		$array=@eshop_rtn_order_details($checked);

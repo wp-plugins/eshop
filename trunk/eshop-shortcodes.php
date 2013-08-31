@@ -1187,7 +1187,7 @@ if (!function_exists('eshop_show_zones')) {
 			<span class="buttonwrap"><input type="submit" class="button" id="submititc" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
 			if(isset($_POST['country']) && $_POST['country']!=''){
-				$qccode=$wpdb->escape($_POST['country']);
+				$qccode=esc_sql($_POST['country']);
 				$qcountry = $wpdb->get_row("SELECT country,zone FROM $tablec WHERE code='$qccode' limit 1",ARRAY_A);
 				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qcountry['country'],$qcountry['zone']).'.</p>';
 			}
@@ -1236,7 +1236,7 @@ if (!function_exists('eshop_show_zones')) {
 			<span class="buttonwrap"><input type="submit" class="button" id="submitist" name="submit" value="'.__('Submit','eshop').'" /></span>
 			</fieldset></form>';
 			if(isset($_POST['state']) && $_POST['state']!=''){
-				$qccode=$wpdb->escape($_POST['state']);
+				$qccode=esc_sql($_POST['state']);
 				$qstate = $wpdb->get_row("SELECT stateName,zone FROM $table WHERE code='$qccode' limit 1",ARRAY_A);
 				$echo .='<p id="customzone">'.sprintf(__('%1$s is in Zone %2$s','eshop'),$qstate['stateName'],$qstate['zone']).'.</p>';
 			}
@@ -1316,9 +1316,9 @@ function eshop_show_success(){
 			$detailstable=$wpdb->prefix.'eshop_orders';
 			$dltable=$wpdb->prefix.'eshop_download_orders';
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($_POST['txn_id']);
+				$txn_id = esc_sql($_POST['txn_id']);
 			}else{
-				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['txn_id']);
+				$txn_id = __('TEST-','eshop').esc_sql($_POST['txn_id']);
 			}
 			$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
 			$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
@@ -1340,9 +1340,9 @@ function eshop_show_success(){
 				$detailstable=$wpdb->prefix.'eshop_orders';
 				$dltable=$wpdb->prefix.'eshop_download_orders';
 				if($eshopoptions['status']=='live'){
-					$txn_id = $wpdb->escape($_POST['transid']);
+					$txn_id = esc_sql($_POST['transid']);
 				}else{
-					$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['transid']);
+					$txn_id = __('TEST-','eshop').esc_sql($_POST['transid']);
 				}
 				$checkid=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
 				$checkstatus=$wpdb->get_var("select status from $detailstable where transid='$txn_id' && downloads='yes' limit 1");
@@ -1365,9 +1365,9 @@ function eshop_show_success(){
 			$detailstable=$wpdb->prefix.'eshop_orders';
 			$dltable=$wpdb->prefix.'eshop_download_orders';
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($_POST['x_trans_id']);
+				$txn_id = esc_sql($_POST['x_trans_id']);
 			}else{
-				$txn_id = __('TEST-','eshop').$wpdb->escape($_POST['x_trans_id']);
+				$txn_id = __('TEST-','eshop').esc_sql($_POST['x_trans_id']);
 			}
 			$checked=$wpdb->get_var("select checkid from $detailstable where transid='$txn_id' && downloads='yes' order by id DESC limit 1");
 

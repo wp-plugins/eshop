@@ -233,10 +233,10 @@ switch ($eshopaction) {
 		$ps->ipn_data["mycheckedid"]=$checked;
 		if('1' == $_REQUEST["x_response_code"] && $ps->ipn_data["mycheckmd5"]==$ps->ipn_data["x_MD5_Hash"]){
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($ps->ipn_data['x_trans_id']);
+				$txn_id = esc_sql($ps->ipn_data['x_trans_id']);
 				$subject = __('authorizenet IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['x_trans_id']);
+				$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['x_trans_id']);
 				$subject = __('Testing: authorizenet IPN - ','eshop');
 			}
 			//check txn_id is unique
@@ -246,7 +246,7 @@ switch ($eshopaction) {
 				foreach($checktrans as $trans){
 					if(strpos($trans->transid, $ps->ipn_data['x_trans_id'])===true){
 						$astatus='Failed';
-						$txn_id = __("Duplicated-",'eshop').$wpdb->escape($ps->ipn_data['x_trans_id']);
+						$txn_id = __("Duplicated-",'eshop').esc_sql($ps->ipn_data['x_trans_id']);
 					}
 				}
 			}
@@ -295,10 +295,10 @@ switch ($eshopaction) {
 			$Key=$authorizenet['key'];
 			//$checked=$ps->ipn_data["x_MD5_Hash"];	
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($ps->ipn_data['x_trans_id']);
+				$txn_id = esc_sql($ps->ipn_data['x_trans_id']);
 				$subject = __('authorizenet IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['x_trans_id']);
+				$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['x_trans_id']);
 				$subject = __('Testing: authorizenet IPN - ','eshop');
 			}
 			$array=@eshop_rtn_order_details($checked);

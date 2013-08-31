@@ -489,15 +489,15 @@ if (!function_exists('eshop_checkout')) {
 			$tablestates=$wpdb->prefix.'eshop_states';
 			$shippingzone=$eshopoptions['shipping_zone'];
 			if(isset($espost['eshop_shiptype']) && $espost['eshop_shiptype'] != '0'){
-				$sztype=$espost['eshop_shiptype'];
+				$sztype=esc_sql($espost['eshop_shiptype']);
 				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
 			}
 			$pzoneid='';//$eshopoptions['unknown_state'];
 			if($shippingzone=='country'){
 				if(isset($espost['ship_country']) && $espost['ship_country']!=''){
-					$pzoneid=$espost['ship_country'];
+					$pzoneid=esc_sql($espost['ship_country']);
 				}elseif(isset($espost['country']) && $espost['country']!=''){
-					$pzoneid=$espost['country'];
+					$pzoneid=esc_sql($espost['country']);
 				}
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
 
@@ -529,14 +529,14 @@ if (!function_exists('eshop_checkout')) {
 			$tablestates=$wpdb->prefix.'eshop_states';
 			$shippingzone=$eshopoptions['shipping_zone'];
 			if(isset($espost['eshop_shiptype'])){
-				$sztype=$espost['eshop_shiptype'];
+				$sztype=esc_sql($espost['eshop_shiptype']);
 				$shippingzone=$wpdb->get_var("SELECT area FROM ".$wpdb->prefix."eshop_rates WHERE rate_type='ship_weight' && class='$sztype' LIMIT 1");
 			}
 			if($shippingzone=='country'){
 				if(isset($espost['ship_country']) && $espost['ship_country']!=''){
-					$pzoneid=$espost['ship_country'];
+					$pzoneid=esc_sql($espost['ship_country']);
 				}elseif(isset($espost['country']) && $espost['country']!=''){
-					$pzoneid=$espost['country'];
+					$pzoneid=esc_sql($espost['country']);
 				}
 				$pzone=$wpdb->get_var("SELECT zone FROM $tablecountries WHERE code='$pzoneid' LIMIT 1");
 
@@ -609,6 +609,7 @@ if (!function_exists('eshop_checkout')) {
 		}
 	}
 	$error='';
+	$dtable=$wpdb->prefix.'eshop_rates';
 
 	if (isset ($espost['submit'])) {
 		//form handling
@@ -626,7 +627,6 @@ if (!function_exists('eshop_checkout')) {
 			}
 		}else{
 			$creqd='';
-			$dtable=$wpdb->prefix.'eshop_rates';
 			$query=$wpdb->get_results("SELECT DISTINCT(area) from $dtable where rate_type='ship_weight'");
 			foreach($query as $k)
 				$reqdvalues[]=$k->area;
@@ -830,7 +830,7 @@ if (!function_exists('eshop_checkout')) {
 					$echoit.= "<li class=\"phone\"><span class=\"items\">".__('Phone:','eshop')."</span> ".$espost['phone']."</li>\n";
 					$echoit.= "<li class=\"address\"><span class=\"items\">".__('Address:','eshop')."</span> ".$espost['address1']." ".$espost['address2']."</li>\n";
 					$echoit.= "<li class=\"city\"><span class=\"items\">".__('City or town:','eshop')."</span> ".$espost['city']."</li>\n";
-					$qcode=$wpdb->escape($espost['state']);
+					$qcode=esc_sql($espost['state']);
 					$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 					if($espost['altstate']!='')
 						$echoit.= "<li class=\"state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$espost['altstate']."</li>\n";
@@ -838,7 +838,7 @@ if (!function_exists('eshop_checkout')) {
 						$echoit.= "<li class=\"state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
 										
 					$echoit.= "<li class=\"zip\"><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$espost['zip']."</li>\n";
-					$qccode=$wpdb->escape($espost['country']);
+					$qccode=esc_sql($espost['country']);
 					$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 					$echoit.= "<li class=\"country\"><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
 				}
@@ -874,7 +874,7 @@ if (!function_exists('eshop_checkout')) {
 							$echoit.= "<li><span class=\"items\">".__('Phone:','eshop')."</span> ".$espost['ship_phone']."</li>\n";
 							$echoit.= "<li><span class=\"items\">".__('Address:','eshop')."</span> ".$espost['ship_address']."</li>\n";
 							$echoit.= "<li><span class=\"items\">".__('City or town:','eshop')."</span> ".$espost['ship_city']."</li>\n";
-							$qcode=$wpdb->escape($espost['ship_state']);
+							$qcode=esc_sql($espost['ship_state']);
 							$qstate = $wpdb->get_var("SELECT stateName FROM $stable WHERE id='$qcode' limit 1");
 							if($espost['ship_altstate']!='')
 								$echoit.= "<li class=\"ship_state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$espost['ship_altstate']."</li>\n";
@@ -882,7 +882,7 @@ if (!function_exists('eshop_checkout')) {
 								$echoit.= "<li class=\"ship_state\"><span class=\"items\">".__('State/County/Province:','eshop')."</span> ".$qstate."</li>\n";
 
 							$echoit.= "<li><span class=\"items\">".__('Zip/Post code:','eshop')."</span> ".$espost['ship_postcode']."</li>\n";
-							$qccode=$wpdb->escape($espost['ship_country']);
+							$qccode=esc_sql($espost['ship_country']);
 							$qcountry = $wpdb->get_var("SELECT country FROM $ctable WHERE code='$qccode' limit 1");
 							$echoit.= "<li class=\"shipcountry\"><span class=\"items\">".__('Country:','eshop')."</span> ".$qcountry."</li>\n";
 							$echoit.= "</ul></div>\n";
@@ -985,7 +985,7 @@ if (!function_exists('eshop_checkout')) {
 			$country=$_SESSION['addy'.$blog_id]['country'];
 			$state=$_SESSION['addy'.$blog_id]['state'];
 			if (!is_numeric($state) ){
-				$li = $wpdb->escape($state);
+				$li = esc_sql($state);
 				$table=$wpdb->prefix.'eshop_states';
 				$stateList = $wpdb->get_var("SELECT id FROM $table WHERE code='$li' limit 1");
 			    $state = $stateList;
@@ -1015,7 +1015,7 @@ if (!function_exists('eshop_checkout')) {
 			if(isset($_SESSION['addy'.$blog_id]['ship_state'])){
 				$ship_state=$_SESSION['addy'.$blog_id]['ship_state'];
 				if (!is_numeric($ship_state) ){
-					$li = $wpdb->escape($ship_state);
+					$li = esc_sql($ship_state);
 					$table=$wpdb->prefix.'eshop_states';
 					$stateSList = $wpdb->get_var("SELECT id FROM $table WHERE code='$li' limit 1");
 					$ship_state = $stateSList;

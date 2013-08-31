@@ -4,7 +4,7 @@ jQuery(document).ready(function($){
 			var data = {action: 'eshop_special_action',post:$('#'+Id).serialize() };
 			$.post(""+eshopCartParams.adminajax, data,
 				function(response){
-				$('#'+Id +" .eshopajax").insertAfter(this).fadeIn(parseInt(eshopCartParams.addfadein)).html(response).fadeOut(parseInt(eshopCartParams.addfadeout));
+				$('#'+Id +" .eshopajax").after(this).fadeIn(parseInt(eshopCartParams.addfadein)).html(response).fadeOut(parseInt(eshopCartParams.addfadeout));
 				setTimeout (cleareshopCart,parseInt(eshopCartParams.cartcleardelay));
 				setTimeout (doeshopRequest,parseInt(eshopCartParams.cartdelay));
 				setTimeout (cleareshopRequest,parseInt(eshopCartParams.cartupdate));
@@ -13,14 +13,14 @@ jQuery(document).ready(function($){
 				var tdata = {action: 'eshop_cart'};
 				$.post(""+eshopCartParams.adminajax, tdata,
 				function(response){
-					$(".ajaxcart").insertAfter(this).fadeOut(parseInt(eshopCartParams.cartfadeout)).html(response).fadeIn(parseInt(eshopCartParams.cartfadein));
+					$(".ajaxcart").after(this).fadeOut(parseInt(eshopCartParams.cartfadeout)).html(response).fadeIn(parseInt(eshopCartParams.cartfadein));
 				});
 			}
 			function cleareshopRequest(){
 				$(".eshopajax").empty();
 			}
 			function cleareshopCart(){
-				$(".ajaxcart").insertAfter();
+				$(".ajaxcart").after();
 			}
 			return false;
 		});

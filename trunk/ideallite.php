@@ -306,10 +306,10 @@ switch ($eshopaction) {
 			if(strcasecmp($sStatus, 'SUCCESS') === 0) {
 				//Set transaction IDs
 				if($eshopoptions['status']=='live'){
-					$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
+					$txn_id = esc_sql($ps->ipn_data['RefNr']);
 					$subject = __('iDeal -','eshop');
 				}else{
-					$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+					$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 					$subject = __('Testing: ideallite IPN - ','eshop');
 				}
 				//check txn_id is unique
@@ -318,7 +318,7 @@ switch ($eshopaction) {
 				foreach($checktrans as $trans){
 					if(strpos($trans->transid, $ps->ipn_data['RefNr'])===true){
 						$astatus='Failed';
-						$txn_id = __("Duplicated-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+						$txn_id = __("Duplicated-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 					}
 				}
 				//the magic bit  + creating the subject for our email.
@@ -371,10 +371,10 @@ switch ($eshopaction) {
 			else{
 				$ideallite = $eshopoptions['ideallite']; 
 				if($eshopoptions['status']=='live'){
-					$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
+					$txn_id = esc_sql($ps->ipn_data['RefNr']);
 					$subject = __('iDeal -','eshop');
 				}else{
-					$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+					$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 					$subject = __('Testing: ideallite IPN - ','eshop');
 				}
 				$txn_id = $sStatus.': '.$txn_id; //prepend statuscode to transaction-id for the indication in the backend

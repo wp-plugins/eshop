@@ -15,8 +15,8 @@ if (!function_exists('eshop_downloads')) {
 		/*
 		Need to add in check about number of downloads here, including unlimited!
 		*/
-			$code=$wpdb->escape($espost['code']);
-			$email=$wpdb->escape($espost['email']);
+			$code=esc_sql($espost['code']);
+			$email=esc_sql($espost['email']);
 			$dlcount = $wpdb->get_var("SELECT COUNT(id) FROM $ordertable where email='$email' && code='$code' && downloads!='0'");
 			if($dlcount>0){
 				$echo .= $content;

@@ -3,9 +3,9 @@ function eshop_template_email(){
 	global $wpdb;
 	$table=$wpdb->prefix.'eshop_emails';
 	if(isset($_POST['edit'])){
-		$subject=$wpdb->escape($_POST['subject']);
-		$content=$wpdb->escape($_POST['templateContent']);
-		$edit=$wpdb->escape($_POST['edit']);
+		$subject=esc_sql($_POST['subject']);
+		$content=esc_sql($_POST['templateContent']);
+		$edit=esc_sql($_POST['edit']);
  		$wpdb->query("UPDATE $table set emailSubject='$subject',emailContent='$content' where id='$edit'");
    		echo '<div id="message" class="updated fade"><p><strong>'.__('The Template Has Been Updated','eshop').'</strong></p></div>'."\n";
 	}

@@ -134,7 +134,7 @@ if(!isset($_GET['change'])){
 		}
 
 		$array=$grabit;
-		$grab=subval_sort($array,$sortby); 
+		$grab=eshop_subval_sort($array,$sortby); 
 	?>	
 		<table class="widefat">
 		<caption><?php _e('Product Quick reference table','eshop'); ?></caption>
@@ -286,17 +286,17 @@ if(!isset($_GET['change'])){
 			$_POST=sanitise_array($_POST);
 			$err='';
 			if(isset($_POST['baseimg'])){
-				$baseimg=$wpdb->escape($_POST['baseimg']);
+				$baseimg=esc_sql($_POST['baseimg']);
 			}else{
 				$baseimg='';
 			}
-			$basebrand=$wpdb->escape($_POST['basebrand']);
-			$baseean=$wpdb->escape($_POST['baseean']);
-			$baseisbn=$wpdb->escape($_POST['baseisbn']);
-			$basempn=$wpdb->escape($_POST['basempn']);
-			$baseptype=$wpdb->escape($_POST['baseptype']);
-			$baseqty=$wpdb->escape($_POST['baseqty']);
-			$basecondition=$wpdb->escape($_POST['basecondition']);
+			$basebrand=esc_sql($_POST['basebrand']);
+			$baseean=esc_sql($_POST['baseean']);
+			$baseisbn=esc_sql($_POST['baseisbn']);
+			$basempn=esc_sql($_POST['basempn']);
+			$baseptype=esc_sql($_POST['baseptype']);
+			$baseqty=esc_sql($_POST['baseqty']);
+			$basecondition=esc_sql($_POST['basecondition']);
 			$baseexpiration_year=$_POST['baseexpiration_year'];
 			$baseexpiration_month=$_POST['baseexpiration_month'];
 			$baseexpiration_day=$_POST['baseexpiration_day'];
@@ -305,7 +305,7 @@ if(!isset($_GET['change'])){
 				$baseqty='25';
 				$err.='<li>'.__('Quantity was not numeric, a default of 25 has been applied.','eshop').'</li>';
 			}
-			$baseexpiration=$wpdb->escape($baseexpiration_year.'-'.$baseexpiration_month.'-'.$baseexpiration_day);
+			$baseexpiration=esc_sql($baseexpiration_year.'-'.$baseexpiration_month.'-'.$baseexpiration_day);
 
 			//enter in db - delete old record first, 
 			//then it will always be an insert and easier than checking for update.

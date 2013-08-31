@@ -192,10 +192,10 @@ switch ($eshopaction) {
 		$eshopdosend='yes';
 		if($token == $_REQUEST["MD5"]){
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
+				$txn_id = esc_sql($ps->ipn_data['RefNr']);
 				$subject = __('Payson IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+				$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 				$subject = __('Testing: Payson IPN - ','eshop');
 			}
 			//check txn_id is unique
@@ -204,7 +204,7 @@ switch ($eshopaction) {
 			foreach($checktrans as $trans){
 				if(strpos($trans->transid, $ps->ipn_data['RefNr'])===true){
 					$astatus='Failed';
-					$txn_id = __("Duplicated-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+					$txn_id = __("Duplicated-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 				}
 			}
 			//the magic bit  + creating the subject for our email.
@@ -256,10 +256,10 @@ switch ($eshopaction) {
 			$token = md5($strTestMD5String);
 			$checked=md5($token);	
 			if($eshopoptions['status']=='live'){
-				$txn_id = $wpdb->escape($ps->ipn_data['RefNr']);
+				$txn_id = esc_sql($ps->ipn_data['RefNr']);
 				$subject = __('Payson IPN -','eshop');
 			}else{
-				$txn_id = __("TEST-",'eshop').$wpdb->escape($ps->ipn_data['RefNr']);
+				$txn_id = __("TEST-",'eshop').esc_sql($ps->ipn_data['RefNr']);
 				$subject = __('Testing: Payson IPN - ','eshop');
 			}
 			$array=@eshop_rtn_order_details($checked);
