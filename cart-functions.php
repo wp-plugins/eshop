@@ -1135,6 +1135,7 @@ if (!function_exists('sanitise_array')) {
 		return is_array($array) ? array_map('sanitise_array', $array) : esc_attr($array);
 	}
 }
+/*
 if(!function_exists('eshop_build_cookie')) {
 	function eshop_build_cookie($var_array) {
 		$out='';
@@ -1157,7 +1158,7 @@ if (!function_exists('eshop_break_cookie')) {
 	  return $array;
 	}
 }
-
+*/
 if (!function_exists('eshop_only_downloads')) {
 	function eshop_only_downloads() {
 		global $blog_id;
@@ -1852,7 +1853,7 @@ if (!function_exists('eshop_cart_process')) {
 		if(!isset($_POST['save'])){
 			//on windows this check isn't working correctly, so I've added ==0 
 			if (get_magic_quotes_gpc()) {
-				$_COOKIE = stripslashes_array($_COOKIE);
+//				$_COOKIE = stripslashes_array($_COOKIE);
 				$_FILES = stripslashes_array($_FILES);
 				$_GET = stripslashes_array($_GET);
 				$_POST = stripslashes_array($_POST);

@@ -1263,12 +1263,13 @@ function eshop_welcome($atts, $content = ''){
 	$echo='';
 	if($before!='')
 		$echo.=$before.' ';
-	if(isset($_COOKIE["eshopcart"]) || is_user_logged_in()){
+//	if(isset($_COOKIE["eshopcart"]) || is_user_logged_in()){
+	if(is_user_logged_in()){
 		if($returning!='')
 			$echo.=$returning.' ';
-		$eshopsetcookie=apply_filters('eshop_use_cookie',true);
-		if(isset($_COOKIE["eshopcart"]) && $eshopsetcookie==true)
-			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
+//		$eshopsetcookie=apply_filters('eshop_use_cookie',true);
+//		if(isset($_COOKIE["eshopcart"]) && $eshopsetcookie==true)
+//			$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 		if(is_user_logged_in()){
 			global $current_user;
 		     get_currentuserinfo();

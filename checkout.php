@@ -952,7 +952,7 @@ if (!function_exists('eshop_checkout')) {
 				$_SESSION['addy'.$blog_id]['comments']='';
 			
 			if(!isset($_SESSION['shipping'.$blog_id]))$_SESSION['shipping'.$blog_id]['cost']=$shipping;
-
+/*
 			//grab all the POST variables and store in cookie
 			$array=$espost;
 			//but first make a few extra equal nothing
@@ -963,7 +963,7 @@ if (!function_exists('eshop_checkout')) {
 				$biscuits=eshop_build_cookie($array);
 				setcookie("eshopcart", $biscuits,time()+60*60*24*365);
 			}
-
+*/
 			$eshopmgincpath=apply_filters('eshop_mg_inc_path',ESHOP_PATH.$paymentmethod.'.php',$paymentmethod);
 			include($eshopmgincpath);
 			$contineproceed='3';
@@ -1036,14 +1036,15 @@ if (!function_exists('eshop_checkout')) {
 			$state=$altstate=$zip=$ship_name=$ship_company='';
 			$ship_phone=$ship_address=$ship_city=$ship_postcode='';
 			$ship_country=$ship_state=$ship_altstate=$comments='';
+/*			
 			$eshopsetcookie=apply_filters('eshop_use_cookie',true);
-			
 			if(isset($_COOKIE["eshopcart"]) && calculate_items()!=0 && $eshopsetcookie==true){
 				$crumbs=eshop_break_cookie($_COOKIE["eshopcart"]);
 				foreach($crumbs as $k=>$v){
 					$$k=$v;
 				}
 			}
+*/
 			if(is_user_logged_in() && isset($eshopoptions['users']) && 'yes' == $eshopoptions['users']){
 				global $current_user;
 				get_currentuserinfo();
