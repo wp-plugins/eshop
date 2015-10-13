@@ -114,7 +114,7 @@ update_option('eshop_plugin_settings',$eshopoptions);
   <li><a href="http://www.coffee2code.com">Scott Reilly</a> - inspiration for the add to cart form.</li>
   <li><a href="http://justintadlock.com">Justin Tadlock</a> - for the sub page listing.</li>
   <li><a href="http://www.vtardia.com">Vito Tardia</a> - utilised this script to enhance the sub page listing.</li>
-  <li><a href="http://www.mealldubh.org">John McCreesh</a> - for the additional page lisitng enhancement.</li>
+  <li><a href="http://www.mealldubh.org">John McCreesh</a> - for the additional page listing enhancement.</li>
   <li><a href="http://green-beast.com/">Mike Cherim</a> - design and layout, plus the style and templates pages.</li>
   <li><a href="http://www.blackwidows.co.uk/">Mel Pedley</a> - design and layout, and proof reading at various stages.</li>
   <li><a href="http://4visions.nl/">Allard van Hagen</a> (aka RavanH) - help with Wordpress MU coding, general bug hunting and extra Paypal help.</li>

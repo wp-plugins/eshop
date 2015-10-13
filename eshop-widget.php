@@ -121,12 +121,23 @@ class eshop_widget extends WP_Widget {
 *********************************************** */
 class eshop_cart_widget extends WP_Widget {
 
+	/*
 	function eshop_cart_widget() {
 		$widget_ops = array('classname' => 'eshop-widget eshopcarti_widget', 'description' => __('Displays eShop cart','eshop'));
 		$this->WP_Widget('eshopwi_cart', __('eShop Cart (Improved)','eshop'), $widget_ops);
 	}
-
-	function widget( $args, $instance ) {
+	*/
+	/**
+	 * Register widget with WordPress.
+	 */
+	function __construct() {
+		parent::__construct(
+			'eshopwi_cart', // Base ID
+			__( 'eShop Cart (Improved)', 'eshop' ), // Name
+			array( 'classname' => 'eshop-widget eshopcarti_widget', 'description' => __('Displays eShop cart','eshop'), ) // Args
+		);
+	}
+	public function widget( $args, $instance ) {
 		extract( $args );
 		global $blog_id,$eshopoptions;
 		$eshopsw=true;
@@ -210,7 +221,7 @@ class eshop_cart_widget extends WP_Widget {
 		}
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['show'] = strip_tags( $new_instance['show'] );
@@ -238,7 +249,7 @@ class eshop_cart_widget extends WP_Widget {
 		return $instance;
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => '', 'show'=>'no', 'showwhat'=>'', 'text'=>'', 'items'=>'','qty'=>'','total'=>'','fc'=>'2','fcimg'=>'') );
 		$title = strip_tags($instance['title']);
 		$show = $instance['show'];
@@ -292,13 +303,20 @@ class eshop_cart_widget extends WP_Widget {
 ** eShop payment options widget **
 ******************************** */
 class eshop_pay_widget extends WP_Widget {
-
+/*
 	function eshop_pay_widget() {
 		$widget_ops = array('classname' => 'eshop-widget eshoppay_widget', 'description' => __('Displays accepted payment logos','eshop'));
 		$this->WP_Widget('eshopw_pay', __('eShop Payments Accepted','eshop'), $widget_ops);
 	}
-
-	function widget( $args, $instance ) {
+	*/
+	function __construct() {
+		parent::__construct(
+			'eshopw_pay', // Base ID
+			__( 'eShop Payments Accepted', 'eshop' ), // Name
+			array('classname' => 'eshop-widget eshoppay_widget', 'description' => __('Displays accepted payment logos','eshop'))
+		);
+	}
+	public function widget( $args, $instance ) {
 		extract( $args );
 		global $blog_id,$eshopoptions;
 		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
@@ -336,13 +354,13 @@ class eshop_pay_widget extends WP_Widget {
 		echo $after_widget;
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags($new_instance['title']);
 		return $instance;
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => '' ) );
 		$title = strip_tags($instance['title']);
 		?>
@@ -359,13 +377,20 @@ class eshop_pay_widget extends WP_Widget {
 **  eShop products widget  **
 *************************** */
 class eshop_products_widget extends WP_Widget {
-
+/*
 	function eshop_products_widget() {
 		$widget_ops = array('classname' => 'eshop-widget eshopproducts_widget', 'description' => __('Displays products','eshop'));
 		$this->WP_Widget('eshopw_prod', __('eShop Products','eshop'), $widget_ops);
 	}
-
-	function widget( $args, $instance ) {
+	*/
+	function __construct() {
+		parent::__construct(
+			'eshopw_prod', // Base ID
+			__( 'eShop Products', 'eshop' ), // Name
+		array('classname' => 'eshop-widget eshopproducts_widget', 'description' => __('Displays products','eshop'))
+		);
+	}
+	public function widget( $args, $instance ) {
 		extract( $args );
 		global $blog_id;
 		$title = apply_filters( 'widget_title', empty($instance['title']) ? '' : $instance['title'], $instance, $this->id_base);
@@ -414,7 +439,7 @@ class eshop_products_widget extends WP_Widget {
 		echo $after_widget;
 	}
 
-	function update( $new_instance, $old_instance ) {
+	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$instance['title'] = strip_tags($new_instance['title']);
 		$instance['show_size'] = strip_tags($new_instance['show_size']);
@@ -427,7 +452,7 @@ class eshop_products_widget extends WP_Widget {
 		return $instance;
 	}
 
-	function form( $instance ) {
+	public function form( $instance ) {
 		$instance = wp_parse_args( (array) $instance, array( 'title' => '','show_size'=>'','show_id'=>'','show_type'=>'','show_what'=>'','order_by'=>'','show_amts'=>'',) );
 		$title = strip_tags($instance['title']);
 		$show_size=$instance['show_size'];
@@ -730,12 +755,19 @@ function eshopw_listpanels($subpages,$eshopclass,$size){
 /* product serach widget */
 
 class eshop_search_widget extends WP_Widget {
-
+	/*
 	function eshop_search_widget() {
 		$widget_ops = array('classname' => 'eshop-widget eshop_search_widget', 'description' => __('Displays a product search, optional link to an index page, and a random wiki page link','eshop'));
 		$this->WP_Widget('eshop_search_widget', __('eShop Product Search','eshop'), $widget_ops);
 	}
-
+	*/
+	function __construct() {
+		parent::__construct(
+			'eshop_search_widget', // Base ID
+			__('eShop Product Search','eshop'), // Name
+			array('classname' => 'eshop-widget eshop_search_widget', 'description' => __('Displays a product search, optional link to an index page, and a random wiki page link','eshop'))
+		);
+	}
 	function widget( $args, $instance ) {
 		extract( $args );
 		$output='';

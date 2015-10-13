@@ -299,7 +299,7 @@ function eshop_products_manager() {
 							$dltable=$wpdb->prefix.'eshop_downloads';
 							$fileid=$eshop_product['products'][$i]['download'];
 							$filetitle=$wpdb->get_var("SELECT title FROM $dltable WHERE id='$fileid'");;
-							$pdown.='<a href="admin.php?page=eshop-downloads.php&amp;edit='.$fileid.'">'.wp_specialchars(stripslashes($filetitle),1).'</a>';
+							$pdown.='<a href="admin.php?page=eshop-downloads.php&amp;edit='.$fileid.'">'.esc_html(stripslashes($filetitle),1).'</a>';
 							$pdownloads='yes';
 						}else{
 							$pdown.='<br />';

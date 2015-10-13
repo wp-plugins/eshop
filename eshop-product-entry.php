@@ -139,7 +139,7 @@ function eshop_inner_custom_box($post) {
 				<?php
 				foreach($myrowres as $prow){
 					$checked = ( trim( $prow->id ) == trim( $downl ) ) ? ' selected="selected"' : '';
-					echo '<option value="'.$prow->id.'"'.$checked.'>'.wp_specialchars(stripslashes($prow->title),1).'</option>'."\n";
+					echo '<option value="'.$prow->id.'"'.$checked.'>'.esc_html(stripslashes($prow->title),1).'</option>'."\n";
 				}
 				?>
 				</select></td>

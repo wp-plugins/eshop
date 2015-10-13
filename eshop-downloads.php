@@ -135,7 +135,7 @@ function eshop_downloads_manager() {
 			echo '<div id="message" class="updated fade"><p>' . $_FILES["upfile"]["name"] . " ".__('has successfully uploaded','eshop').'</p></div>';
 		}else{ //ie a failed upload
 			echo '<div id="message" class="error fade">'.$error.'</div>';
-			$atitle=$_POST['title'];
+			$atitle=sanitize_text_field($_POST['title']);
 		}
 		
 		unset($_GET['edit']);
@@ -252,7 +252,7 @@ function eshop_downloads_manager() {
 			<fieldset><legend><?php _e('Amend File details','eshop'); ?></legend>
 			<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
 
-			<label for="filetitle"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo  wp_specialchars(stripslashes($row->title),1); ?>" /><br />
+			<label for="filetitle"><?php _e('Title','eshop'); ?></label><input type="text" name="title" id="filetitle" size="35" value="<?php echo  esc_html(stripslashes($row->title),1); ?>" /><br />
 			<label for="downloads"><?php _e('Downloads','eshop'); ?></label><input type="text" name="downloads" id="downloads" size="5" value="<?php echo $row->downloads; ?>" /><br />
 			<label for="purchases"><?php _e('Purchases','eshop'); ?></label><input type="text" name="purchases" id="purchases" size="5" value="<?php echo $row->purchases; ?>" /><br />
 			<?php 
